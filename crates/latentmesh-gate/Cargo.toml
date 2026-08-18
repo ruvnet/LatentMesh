@@ -1,0 +1,17 @@
+# latentmesh-gate — the admission gate (ADR-008) and causal edge verification
+# (ADR-003). `execute(z) iff signature(z) ∧ authority(z) ∧ provenance(z) ∧
+# risk(z) < τ`, and the four-control statistical test an edge must pass before
+# it can earn execution authority above ObserveOnly.
+[package]
+name = "latentmesh-gate"
+version = "0.1.0"
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+repository.workspace = true
+description = "Capability-governed latent execution and causal edge verification: an edge only earns execution authority by surviving a zero/random/mismatched/self-generated counterfactual test."
+
+[dependencies]
+latentmesh-core = { path = "../latentmesh-core" }
+serde = { workspace = true }
+rand = { workspace = true }

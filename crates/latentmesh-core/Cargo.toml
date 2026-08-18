@@ -1,0 +1,16 @@
+# latentmesh-core — the LatentFrame wire type and the domain vocabulary
+# (encoding, provenance, authority) shared by every other crate. Zero I/O.
+[package]
+name = "latentmesh-core"
+version = "0.1.0"
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+repository.workspace = true
+description = "LatentFrame: the wire type for a latent communication packet — sender/receiver space, transform binding, confidence, provenance, authority, and quantized payload."
+
+[dependencies]
+serde = { workspace = true }
+serde_json = { workspace = true }
+sha2 = { workspace = true }
+half = { version = "2", features = ["serde"] }

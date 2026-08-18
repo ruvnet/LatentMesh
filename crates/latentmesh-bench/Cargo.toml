@@ -1,0 +1,23 @@
+# latentmesh-bench — REAL, measured numbers only. No live LLM access in this
+# environment, so this crate does not claim end-to-end task accuracy; it
+# measures what IS measurable without model weights: wire bytes at each
+# encoding/dimension, and wall-clock cost of the alignment computation itself.
+[package]
+name = "latentmesh-bench"
+version = "0.1.0"
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+repository.workspace = true
+description = "Synthetic, honestly-scoped benchmarks: measured wire-byte costs across encodings/dimensions and measured alignment-fit latency. Does not claim live cross-model task accuracy."
+publish = false
+
+[[bin]]
+name = "latentmesh-bench"
+path = "src/main.rs"
+
+[dependencies]
+latentmesh-core = { path = "../latentmesh-core" }
+latentmesh-align = { path = "../latentmesh-align" }
+latentmesh-gate = { path = "../latentmesh-gate" }
+rand = { workspace = true }
