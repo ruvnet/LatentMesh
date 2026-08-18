@@ -15,6 +15,24 @@
 
 ---
 
+## In plain language
+
+Today, when one AI agent needs to hand a problem to another, it has to explain its whole train of thought in words first — write it out, send it, have the other agent read and re-parse it. That's slow, and a lot gets lost in translation. LatentMesh asks: what if an agent could hand over its actual "thinking" — the internal numbers a model uses before it turns them into words — directly to another agent, skipping the write-it-out-and-read-it-back step entirely?
+
+The catch is that this can't just be trusted blindly. A connection between two agents earns the right to influence anything only after it passes a test proving it actually made the receiving agent smarter — not just busier. Every claimed connection is checked against five decoys (nothing sent, random noise, the wrong topic, talking to itself, and even the old-fashioned written-out version) before it's allowed to matter. Connections that don't clearly help get cut.
+
+This repository is the research prototype: the message format, the math that translates one agent's internal state into another's, the "does this connection actually help" test, and the safety gate that governs who's allowed to act on what — all built, tested, and measured on real (if synthetic) numbers, with nine short design documents explaining every decision and every open question honestly.
+
+<p align="center">
+  <a href="https://ruvnet.github.io/LatentMesh/">
+    <img src="docs/assets/story-page.jpg" alt="LatentMesh story page — hero section showing the rotating coordinate-frame diagram and the causal-verification thesis" width="820">
+  </a>
+  <br>
+  <sub><a href="https://ruvnet.github.io/LatentMesh/">→ ruvnet.github.io/LatentMesh — the full illustrated story</a></sub>
+</p>
+
+---
+
 > Agents should not need to convert everything they know into language before communicating with another agent. LatentMesh is a research prototype exploring what happens when an agent's hidden state — not its serialized text — becomes the network primitive. It is not a claim that this is unclaimed territory: as of 2026-08-18, [StateBridge](docs/adr/001-latentmesh-architecture-and-prior-art.md), LatentMAS, AVP, and AAFLOW+ already occupy most of the wire-format and raw-transfer ground, and [E2 Explainer](docs/adr/009-online-causal-control-loop.md) and MANTA already do causal attribution and dynamic topology respectively. What this repo bets on instead: **an agent-to-agent latent edge only earns execution authority if it survives a counterfactual test proving it transferred real information** — a continuously-running control loop, not a wire format. See [ADR-001](docs/adr/001-latentmesh-architecture-and-prior-art.md) and [ADR-009](docs/adr/009-online-causal-control-loop.md) for the full, corrected positioning — including where the claim narrowed after a second literature pass in the same day it was written.
 
 ## The loop
