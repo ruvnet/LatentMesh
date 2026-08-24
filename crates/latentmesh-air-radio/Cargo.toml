@@ -1,0 +1,16 @@
+[package]
+name = "latentmesh-air-radio"
+version = "0.1.0"
+edition = "2021"
+rust-version = "1.77"
+license = "MIT OR Apache-2.0"
+repository = "https://github.com/ruvnet/LatentMesh"
+description = "LatentMesh Air transmitter, receiver, BPSK and CPFSK/AFSK modems"
+
+[features]
+default = ["std"]
+std = ["latentmesh-air-core/std"]
+
+[dependencies]
+latentmesh-air-core = { path = "../latentmesh-air-core", default-features = false }
+libm = "0.2"

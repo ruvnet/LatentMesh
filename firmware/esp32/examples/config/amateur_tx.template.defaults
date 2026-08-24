@@ -1,0 +1,11 @@
+# Template only. A licensed control operator must replace the call sign, choose
+# the correct local band/mode on an external compliant radio, review current
+# rules, and physically assert the configured interlock. No frequency, power,
+# antenna, or PTT setting is controlled by this firmware.
+CONFIG_LM_UART_KISS_ENABLE=y
+CONFIG_LM_RF_TX_ENABLE=y
+CONFIG_LM_OPERATOR_ATTESTED=y
+CONFIG_LM_AMATEUR_CALLSIGN="REPLACE_ME"
+CONFIG_LM_JURISDICTION_CANADA=y
+CONFIG_LM_RF_TX_INTERLOCK_GPIO=9
+CONFIG_LM_CALLSIGN_INTERVAL_SECONDS=540

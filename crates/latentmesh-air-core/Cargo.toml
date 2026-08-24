@@ -1,0 +1,15 @@
+[package]
+name = "latentmesh-air-core"
+version = "0.1.0"
+edition = "2021"
+rust-version = "1.77"
+license = "MIT OR Apache-2.0"
+repository = "https://github.com/ruvnet/LatentMesh"
+description = "Deterministic, bounded LatentMesh Air framing, semantic deltas, replay defense, and FEC"
+
+[features]
+default = ["std"]
+std = ["sha2/std"]
+
+[dependencies]
+sha2 = { version = "0.10", default-features = false }

@@ -1,0 +1,113 @@
+name: LatentMesh Air CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: air-ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  rust:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          components: rustfmt, clippy
+      - uses: Swatinem/rust-cache@v2
+      - run: cargo fmt --all -- --check
+      - run: cargo clippy --workspace --all-targets -- -D warnings
+      - run: cargo test --workspace
+      - run: cargo check -p latentmesh-air-core --no-default-features
+      - run: cargo check -p latentmesh-air-radio --no-default-features
+
+  rust-msrv:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@master
+        with:
+          toolchain: 1.77.0
+      - run: cargo check --workspace --all-targets
+
+  portable-c:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Cross-language golden vectors
+        run: |
+          cmp c/tests/testdata/wire_frame_v1.hex crates/latentmesh-air-core/testdata/wire_frame_v1.hex
+          cmp c/tests/testdata/semantic_envelope_v1.hex crates/latentmesh-air-core/testdata/semantic_envelope_v1.hex
+      - name: Configure with sanitizers
+        run: cmake -S c -B /tmp/latentmesh-air-c -DCMAKE_BUILD_TYPE=RelWithDebInfo -DLM_AIR_ENABLE_SANITIZERS=ON
+      - name: Build
+        run: cmake --build /tmp/latentmesh-air-c --parallel 2
+      - name: Test
+        env:
+          ASAN_OPTIONS: detect_leaks=1:halt_on_error=1
+          UBSAN_OPTIONS: halt_on_error=1:print_stacktrace=1
+        run: ctest --test-dir /tmp/latentmesh-air-c --output-on-failure
+      - name: Loopback
+        run: /tmp/latentmesh-air-c/latentmesh-air-loopback
+      - name: Microbenchmark
+        run: /tmp/latentmesh-air-c/latentmesh-air-bench
+      - name: GCC static analyzer
+        run: >-
+          gcc -std=c11 -O0 -Wall -Wextra -Wpedantic -Wconversion -Wshadow
+          -fanalyzer -Ic/include c/src/air.c c/src/fec.c c/src/frame.c
+          c/src/modem.c c/src/neural.c c/tests/test_air.c -lm
+          -o /tmp/latentmesh-air-analyzer
+
+  firmware-host:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: make -C firmware/esp32/host_tests test
+
+  firmware-esp-idf:
+    runs-on: ubuntu-latest
+    container: espressif/idf:v6.0.2
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build ESP32 S3 firmware
+        shell: bash
+        run: |
+          idf.py -C firmware/esp32 set-target esp32s3
+          idf.py -C firmware/esp32 build
+          idf.py -C firmware/esp32 size
+
+  metaharness:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: harness/air
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: npm install --ignore-scripts
+      - run: npm audit --audit-level=high
+      - run: npm run validate
+      - uses: actions/upload-artifact@v4
+        with:
+          name: latentmesh-air-simulated-evidence
+          path: harness/air/artifacts/
+          if-no-files-found: error
+
+  dependency-security:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+      - name: RustSec audit
+        run: |
+          cargo install cargo-audit --locked
+          cargo generate-lockfile
+          cargo audit

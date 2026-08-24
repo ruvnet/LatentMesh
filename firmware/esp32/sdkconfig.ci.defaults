@@ -1,0 +1,9 @@
+# Non-secret values used only by compile and host validation.  RF TX remains
+# disabled in CI.
+CONFIG_LM_WIFI_ENABLE=n
+CONFIG_LM_BLE_ENABLE=y
+CONFIG_LM_UART_KISS_ENABLE=y
+CONFIG_LM_I2S_AUDIO_ENABLE=n
+CONFIG_LM_RF_TX_ENABLE=n
+CONFIG_LM_OPERATOR_ATTESTED=n
+CONFIG_LM_AMATEUR_CALLSIGN=""
