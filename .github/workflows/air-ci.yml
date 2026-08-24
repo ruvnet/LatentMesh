@@ -78,6 +78,7 @@ jobs:
       - name: Build ESP32 S3 firmware
         shell: bash
         run: |
+          . "$IDF_PATH/export.sh"
           idf.py -C firmware/esp32 set-target esp32s3
           idf.py -C firmware/esp32 build
           idf.py -C firmware/esp32 size
