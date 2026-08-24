@@ -1,0 +1,10 @@
+# External TNC receive path. The UART is active, but every outbound KISS data
+# frame remains blocked by the central external RF policy.
+CONFIG_LM_WIFI_ENABLE=n
+CONFIG_LM_BLE_ENABLE=n
+CONFIG_LM_UART_KISS_ENABLE=y
+CONFIG_LM_KISS_UART_NUM=1
+CONFIG_LM_KISS_UART_TX_GPIO=17
+CONFIG_LM_KISS_UART_RX_GPIO=18
+CONFIG_LM_KISS_UART_BAUD=115200
+CONFIG_LM_RF_TX_ENABLE=n

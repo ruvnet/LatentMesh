@@ -7,9 +7,9 @@
 [![License: MIT OR Apache-2.0](https://img.shields.io/badge/License-MIT_OR_Apache--2.0-yellow?style=for-the-badge)](#license)
 [![rust](https://img.shields.io/badge/rust-1.77%2B-orange?style=for-the-badge)](#workspace)
 [![status](https://img.shields.io/badge/status-research%20prototype-e6b45a?style=for-the-badge)](#honest-status)
-[![ADRs: 9](https://img.shields.io/badge/ADRs-9_decisions-6366f1?style=for-the-badge)](docs/adr/README.md)
+[![ADRs: 14](https://img.shields.io/badge/ADRs-14_decisions-6366f1?style=for-the-badge)](docs/adr/README.md)
 
-**[ADRs](docs/adr) · [The story](https://ruvnet.github.io/LatentMesh/)**
+**[LatentMesh Air Studio](https://latentmesh-air.ruv.chatgpt.site/) · [ADRs](docs/adr) · [The original story](https://ruvnet.github.io/LatentMesh/)**
 
 </div>
 
@@ -21,7 +21,7 @@ Today, when one AI agent needs to hand a problem to another, it has to explain i
 
 The catch is that this can't just be trusted blindly. A connection between two agents earns the right to influence anything only after it passes a test proving it actually made the receiving agent smarter — not just busier. Every claimed connection is checked against five decoys (nothing sent, random noise, the wrong topic, talking to itself, and even the old-fashioned written-out version) before it's allowed to matter. Connections that don't clearly help get cut.
 
-This repository is the research prototype: the message format, the math that translates one agent's internal state into another's, the "does this connection actually help" test, and the safety gate that governs who's allowed to act on what — all built, tested, and measured on real (if synthetic) numbers, with nine short design documents explaining every decision and every open question honestly.
+This repository is the research prototype: the message format, the math that translates one agent's internal state into another's, the "does this connection actually help" test, and the safety gate that governs who's allowed to act on what. LatentMesh Air now adds a bounded semantic radio protocol, portable C and Rust transmitters and receivers, ESP32 firmware adapters, and an evidence-labelled optimization harness. Fourteen design records explain what is implemented, what remains simulated, and what still requires real radio hardware.
 
 <p align="center">
   <a href="https://ruvnet.github.io/LatentMesh/">
@@ -30,6 +30,84 @@ This repository is the research prototype: the message format, the math that tra
   <br>
   <sub><a href="https://ruvnet.github.io/LatentMesh/">→ ruvnet.github.io/LatentMesh — the full illustrated story</a></sub>
 </p>
+
+---
+
+## LatentMesh Air
+
+LatentMesh Air changes the optimization target from bits delivered to useful
+knowledge delivered per hertz, joule, and second.
+
+```text
+agent state → semantic delta → importance → adaptive encoding → radio
+           → confidence-gated receiver → state reconciliation → authority gate
+```
+
+The first release remains radio agnostic. It can move the same bounded semantic
+envelope through packet bytes, PCM audio, or complex IQ samples while retaining
+deterministic critical facts, priorities, replay defense, compact state hashes,
+and optional application signatures. Learned likelihood correction is bounded
+by a confidence gate and cannot bypass CRC, signature verification, replay,
+reassembly, or state consistency checks. WorldGraph provenance and authority
+gates remain integration work.
+
+| Layer | Implemented now | Deliberate boundary |
+|---|---|---|
+| Semantic transport | `LMS1` envelope, deterministic `LMAD` state delta, importance, residual bytes, state hash, fragmentation, replay window | Cross-model semantic projection and WorldGraph reconciliation remain integration work |
+| Rust | `latentmesh-air-core` and `latentmesh-air-radio`, `no_std` capable core, WiFi, BLE, HF, VHF, AM, FM and ham profiles | Hardware drivers stay below the transport abstraction |
+| Portable C11 | Allocation-free framing, FEC, interleaving, transmit and receive state machines, BPSK IQ, CPFSK and AFSK PCM, neural LLR assist | External transceiver, TNC, SDR, filtering, antenna and operator remain responsible for legal RF |
+| ESP32 S3 | WiFi UDP, BLE fragmentation, KISS UART, I2S audio bridge, bounded queues, replay state, metrics and fail-closed transmit policy; ESP IDF 6.0.2 target build passes | ESP32 does not directly synthesize compliant HF or VHF RF |
+| MetaHarness | Frozen policy domains, holdout and anchor suites, signed replay evidence, stage-separated benchmark receipt | Current evaluator is deterministic simulation, not over-the-air evidence |
+
+The migration path is intentionally staged:
+
+```text
+semantic transport → neural receiver → adaptive PHY → learned components
+                   → experimental end-to-end learned radio
+```
+
+Every stage is benchmarkable without pretending the later stages already
+exist. See [ADRs 010 through 014](docs/adr/README.md) and the
+[interactive engineering Studio](https://latentmesh-air.ruv.chatgpt.site/).
+
+### Air evidence, with labels
+
+| Result | Evidence label | What it proves | What it does not prove |
+|---|---|---|---|
+| C HF framing: 1,800 byte state to 64 byte delta, 16.04 times fewer air bits | Host software benchmark | Framing and FEC cost reduction | Equivalent downstream task accuracy |
+| Rust fixture: 65,536 byte dense reference to 173 transmitted bytes, exact critical hash | Deterministic simulation | Bounded semantic delta and state agreement on the fixture | General semantic quality or RF performance |
+| Rust impaired channel fixture: 128 of 512 classical bits versus 448 of 512 assisted bits | Deterministic simulation | Confidence-gated assist can improve this frozen synthetic channel | Generalization, energy gain, or hardware RF performance |
+| MetaHarness 64-case degraded suite: 1.07 times neural physical-layer gain | Deterministic simulation, target not met | The wider frozen suite catches the narrow fixture's lack of generalization | Hardware or over-the-air performance |
+| C codec: roughly 470,000 encode plus decode frames per second | Host benchmark | Portable codec headroom on this runner | ESP32 timing or end-to-end radio throughput |
+| ESP32 S3 image: 491,387 bytes | Target compiled in ESP IDF 6.0.2 CI | The component graph, NimBLE, WiFi, UART, I2S and portable C compile together for ESP32 S3 | Flash, runtime, timing, energy or RF behavior |
+
+The binding research gates are separate: at least ten times less transmitted
+data with equivalent downstream task accuracy for the semantic layer, then at
+least two times additional task-weighted useful information per airtime or
+energy for the neural physical layer under held-out degraded channels, while
+maintaining 99 percent critical WorldGraph agreement. These hardware gates have
+not yet passed. The exact protocol is in
+[the acceptance contract](docs/air/ACCEPTANCE.md).
+
+### Run Air locally
+
+```bash
+# Rust
+cargo test --workspace
+
+# Portable C with sanitizers
+cmake -S c -B /tmp/latentmesh-air-c -DLM_AIR_ENABLE_SANITIZERS=ON
+cmake --build /tmp/latentmesh-air-c
+ctest --test-dir /tmp/latentmesh-air-c --output-on-failure
+
+# ESP32 pure host logic
+make -C firmware/esp32/host_tests test
+
+# Deterministic MetaHarness evaluator
+cd harness/air
+npm install --ignore-scripts
+npm run validate
+```
 
 ---
 
@@ -81,8 +159,13 @@ struct LatentFrame {
 | [`latentmesh-align`](crates/latentmesh-align) | Training-free orthogonal alignment (Procrustes/SVD); optimized `O(d²n)` fast path (QR + small SVD) for the realistic same-dim, few-calibration-pairs case, verified against the `O(d³)` dense reference | [002](docs/adr/002-latent-packet-protocol.md) |
 | [`latentmesh-gate`](crates/latentmesh-gate) | The admission gate (`execute(z) ⟺ signature ∧ authority ∧ provenance ∧ risk<τ`) and causal edge verification (five-control permutation test) | [003](docs/adr/003-causal-edge-verification.md), [008](docs/adr/008-capability-governed-execution.md) |
 | [`latentmesh-bench`](crates/latentmesh-bench) | Real, measured numbers only — no live LLM access, so no claimed cross-model task accuracy; measures wire bytes and alignment/verification wall-clock | [002](docs/adr/002-latent-packet-protocol.md) |
+| [`latentmesh-air-core`](crates/latentmesh-air-core) | Bounded cross-language air frame, semantic envelope, deterministic state delta, CRC32C, replay defense, fragmentation and FEC | [010](docs/adr/010-latentmesh-air-protocol.md) |
+| [`latentmesh-air-radio`](crates/latentmesh-air-radio) | Packet, PCM and IQ transmitter and receiver paths with confidence-gated neural likelihood assistance | [012](docs/adr/012-neural-receiver-fallback.md) |
 
-**23 tests pass** (`cargo test --workspace`), **clippy clean** (`cargo clippy --workspace --all-targets -- -D warnings`).
+The original four crates retain their 23-test baseline. The two Air crates add
+43 tests that passed in isolated Rust validation, including formatting,
+Clippy with warnings denied, and `no_std` compilation. The integrated workspace
+is also enforced by CI.
 
 ## Measured, not asserted
 
@@ -101,11 +184,11 @@ Wire bytes at 16×4096-dim vectors: **256 KiB at F32, 128 KiB at F16, 64.1 KiB a
 
 ## Honest status
 
-This is a **research prototype**. What's real: the packet/codec types, the alignment algorithm (both the correctness *and* the performance claims, each proven by its own test), the causal-verification statistics, and the admission gate — all typed, tested, deterministic, and runnable offline right now. What's **not** done: no live open-weight model integration (this environment has no hidden-state access to a real heterogeneous LLM pair), no MidStream/RuVector/Radio/MetaHarness/RVF/RVM wiring (ADR-004–009 are integration contracts, not shipped pipelines), and every specific percentage figure attributed to external literature (StateBridge, LatentMAS, AVP, AAFLOW+, StreamMA, DMoA, E2 Explainer, MANTA, BANDMAS, CrystalMem, TTHE, FedWorld, DreamGuard, and the causal-audit papers cited in the ADRs) is exactly that — attributed, not reproduced. See [ADR-001 §8](docs/adr/001-latentmesh-architecture-and-prior-art.md#8-honest-feasibility) and [ADR-009 §6](docs/adr/009-online-causal-control-loop.md#6-honest-bench-numbers-this-repo-this-session--see-root-readme).
+This is a **research prototype**. What's real: the packet and codec types, the alignment algorithm, causal-verification statistics, admission gate, Air framing and semantic delta, portable C and Rust radio state machines, an ESP IDF 6.0.2 ESP32 S3 target build, ESP32 transport adapters, deterministic channel tests, and the MetaHarness policy contract. What's **not** done: no live heterogeneous-model latent integration, no completed RuVector or WorldGraph reconciliation pipeline, no closed-loop semantic knowledge-request scheduler, no trained universal receiver, no compliant end-to-end learned waveform, no flashed-device validation, and no hardware-in-the-loop or over-the-air acceptance result. MetaHarness currently evaluates frozen simulated channels; it does not manufacture radio evidence. Every external literature figure remains attributed rather than reproduced. See [ADR-001 §8](docs/adr/001-latentmesh-architecture-and-prior-art.md#8-honest-feasibility), [ADR-009 §6](docs/adr/009-online-causal-control-loop.md#6-honest-bench-numbers-this-repo-this-session--see-root-readme), and [the Air acceptance contract](docs/air/ACCEPTANCE.md).
 
 ```bash
 cargo build --workspace
-cargo test --workspace                              # 23 tests
+cargo test --workspace
 cargo clippy --workspace --all-targets -- -D warnings
 cargo run --release -p latentmesh-bench              # real measured numbers
 ```
@@ -123,6 +206,11 @@ cargo run --release -p latentmesh-bench              # real measured numbers
 | [007](docs/adr/007-federated-world-models.md) | Radio federating compatible transition rules across nodes |
 | [008](docs/adr/008-capability-governed-execution.md) | RVF/RVM's capability gate for opaque latent execution |
 | [009](docs/adr/009-online-causal-control-loop.md) | The corrected, narrower claim — the closed loop, and one role per existing ruvnet component |
+| [010](docs/adr/010-latentmesh-air-protocol.md) | Cross-language bounded air frame and semantic envelope |
+| [011](docs/adr/011-radio-adapters-and-legal-boundary.md) | WiFi, BLE, HF, VHF, AM, FM and amateur service adapter boundaries |
+| [012](docs/adr/012-neural-receiver-fallback.md) | Confidence-gated neural likelihood assistance with exact DSP fallback |
+| [013](docs/adr/013-esp32-firmware.md) | ESP32 S3 firmware architecture, resource limits and transmit interlocks |
+| [014](docs/adr/014-benchmark-and-acceptance-method.md) | Stage-separated semantic and physical-layer evidence contract |
 
 ## The acceptance test
 

@@ -1,0 +1,7 @@
+/build/
+/build-*/
+/build-manual/
+*.o
+*.a
+*.gcda
+*.gcno

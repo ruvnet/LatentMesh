@@ -7,6 +7,8 @@ members = [
   "crates/latentmesh-align",
   "crates/latentmesh-gate",
   "crates/latentmesh-bench",
+  "crates/latentmesh-air-core",
+  "crates/latentmesh-air-radio",
 ]
 
 [workspace.package]

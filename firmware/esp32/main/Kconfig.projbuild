@@ -1,0 +1,156 @@
+menu "LatentMesh Air"
+
+config LM_MAX_FRAME_SIZE
+    int "Maximum complete Air frame bytes"
+    range 64 1024
+    default 512
+
+config LM_QUEUE_DEPTH
+    int "Frames per transport queue"
+    range 2 64
+    default 8
+
+config LM_STREAM_ID
+    int "Base Air stream identifier"
+    range 1 65532
+    default 1
+    help
+        The four transport links use this value through this value plus three
+        as independent replay and fragment domains.
+
+menu "Wi-Fi UDP adapter"
+config LM_WIFI_ENABLE
+    bool "Enable Wi-Fi station and UDP adapter"
+    default y
+config LM_WIFI_SSID
+    string "Wi-Fi SSID"
+    default ""
+    depends on LM_WIFI_ENABLE
+config LM_WIFI_PASSWORD
+    string "Wi-Fi password"
+    default ""
+    depends on LM_WIFI_ENABLE
+config LM_WIFI_UDP_BIND_PORT
+    int "Local UDP port"
+    range 1 65535
+    default 40404
+    depends on LM_WIFI_ENABLE
+config LM_WIFI_UDP_PEER_PORT
+    int "Peer UDP port"
+    range 1 65535
+    default 40404
+    depends on LM_WIFI_ENABLE
+config LM_WIFI_UDP_PEER_IPV4
+    string "Peer IPv4 address"
+    default "255.255.255.255"
+    depends on LM_WIFI_ENABLE
+endmenu
+
+menu "BLE GATT adapter"
+config LM_BLE_ENABLE
+    bool "Enable BLE GATT write/notify adapter"
+    default y
+config LM_BLE_DEVICE_NAME
+    string "BLE device name"
+    default "LatentMesh-Air"
+    depends on LM_BLE_ENABLE
+endmenu
+
+menu "External modem bridges"
+config LM_UART_KISS_ENABLE
+    bool "Enable UART KISS TNC bridge"
+    default y
+config LM_KISS_UART_NUM
+    int "KISS UART number"
+    range 0 2
+    default 1
+    depends on LM_UART_KISS_ENABLE
+config LM_KISS_UART_TX_GPIO
+    int "KISS UART TX GPIO"
+    range -1 48
+    default 17
+    depends on LM_UART_KISS_ENABLE
+config LM_KISS_UART_RX_GPIO
+    int "KISS UART RX GPIO"
+    range -1 48
+    default 18
+    depends on LM_UART_KISS_ENABLE
+config LM_KISS_UART_BAUD
+    int "KISS UART baud"
+    range 1200 921600
+    default 115200
+    depends on LM_UART_KISS_ENABLE
+
+config LM_I2S_AUDIO_ENABLE
+    bool "Enable I2S PCM input/output hook"
+    default n
+config LM_I2S_BCLK_GPIO
+    int "I2S bit clock GPIO"
+    range -1 48
+    default 4
+    depends on LM_I2S_AUDIO_ENABLE
+config LM_I2S_WS_GPIO
+    int "I2S word select GPIO"
+    range -1 48
+    default 5
+    depends on LM_I2S_AUDIO_ENABLE
+config LM_I2S_DOUT_GPIO
+    int "I2S audio output GPIO"
+    range -1 48
+    default 6
+    depends on LM_I2S_AUDIO_ENABLE
+config LM_I2S_DIN_GPIO
+    int "I2S audio input GPIO"
+    range -1 48
+    default 7
+    depends on LM_I2S_AUDIO_ENABLE
+endmenu
+
+menu "Licensed RF safety gate"
+config LM_RF_TX_ENABLE
+    bool "DANGEROUS: compile external radio transmit paths"
+    default n
+    help
+        This affects KISS/I2S-connected transmitters, not normal certified
+        Wi-Fi/BLE operation. Runtime checks still require operator attestation,
+        a call sign, a public codec and the optional hardware interlock.
+
+config LM_OPERATOR_ATTESTED
+    bool "I attest that a licensed control operator is responsible"
+    default n
+    depends on LM_RF_TX_ENABLE
+
+config LM_AMATEUR_CALLSIGN
+    string "Assigned amateur station call sign"
+    default ""
+    depends on LM_RF_TX_ENABLE
+
+choice LM_JURISDICTION
+    prompt "Station jurisdiction"
+    default LM_JURISDICTION_CANADA
+    depends on LM_RF_TX_ENABLE
+config LM_JURISDICTION_CANADA
+    bool "Canada"
+config LM_JURISDICTION_US
+    bool "United States"
+config LM_JURISDICTION_OTHER
+    bool "Other (operator supplies policy outside this firmware)"
+endchoice
+
+config LM_RF_TX_INTERLOCK_GPIO
+    int "Active-high external RF TX interlock GPIO (-1 disables)"
+    range -1 48
+    default -1
+    depends on LM_RF_TX_ENABLE
+
+config LM_CALLSIGN_INTERVAL_SECONDS
+    int "Maximum interval between firmware identification frames"
+    range 60 600
+    default 540
+    depends on LM_RF_TX_ENABLE
+    help
+        The default is 9 minutes, inside the US 10-minute rule. This software
+        timer does not replace the control operator's legal responsibility.
+endmenu
+
+endmenu
