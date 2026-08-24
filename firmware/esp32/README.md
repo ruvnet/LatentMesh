@@ -11,10 +11,10 @@ VHF, AM, or FM radio by flashing this firmware.
 | Capability | Built | Validation in this repository | Hardware validation |
 |---|---:|---|---|
 | Portable Air codec dependency | Yes | Firmware contract loopback compiles all C sources and passes | None |
-| WiFi station plus UDP send and receive task | Yes | Source review only | None |
-| BLE GATT write, notification, fragmentation and reassembly | Yes | Fragmentation and reassembly pass native tests | None |
-| UART KISS send and receive bridge | Yes | KISS escaping and parsing pass native tests | None |
-| I2S 48 kHz mono PCM input and output hook | Yes | Source review only | None |
+| WiFi station plus UDP send and receive task | Yes | ESP IDF 6.0.2 target compile | None |
+| BLE GATT write, notification, fragmentation and reassembly | Yes | Native logic tests and ESP IDF 6.0.2 target compile | None |
+| UART KISS send and receive bridge | Yes | Native logic tests and ESP IDF 6.0.2 target compile | None |
+| I2S 48 kHz mono PCM input and output hook | Yes | ESP IDF 6.0.2 target compile | None |
 | External RF transmit policy | Yes | Native policy tests cover disabled, encrypted, call sign, identification due, and interlock cases | None |
 | AFSK, CPFSK, BPSK modem primitives | In `c/**` | Native simulated loopback tests | None through a radio |
 | Neural receiver | In `c/**` as a bounded residual adapter | Native simulation only | Not validated on ESP32 or live IQ |
@@ -63,7 +63,9 @@ idf.py -DLATENTMESH_C_COMPONENT=/absolute/path/to/c build
 
 The version constraint is `>=6.0.2,<6.1.0`. Espressif identifies 6.0.2 as the
 current stable release in its [official release list](https://github.com/espressif/esp-idf/releases/tag/v6.0.2).
-This workspace does not contain that SDK, so target compilation remains unrun.
+The local workspace does not contain that SDK. GitHub Actions uses the official
+ESP IDF 6.0.2 container and has completed the ESP32 S3 target build and size
+report. The total image size was 491,387 bytes. No board was flashed.
 
 The committed default has no WiFi credentials and external RF transmission is
 off. Do not commit credentials in `sdkconfig`. Use a local defaults file, NVS
@@ -200,9 +202,9 @@ lawful operation.
 
 1. ESP32 S3 only provides 2.4 GHz WiFi and Bluetooth LE. It has no HF or VHF RF
    chain, no general purpose SDR, and no AM or FM tuner.
-2. The current firmware has not been built with `idf.py` in this workspace
-   because ESP IDF is not installed. Native pure logic is compiled with strict
-   warnings and tested.
+2. ESP IDF 6.0.2 CI builds the ESP32 S3 target successfully, but the resulting
+   image has not been flashed or exercised on a board. Native pure logic is also
+   compiled with strict warnings and tested.
 3. No radio, TNC, BLE central, WiFi peer, audio codec, antenna, or propagation
    channel has been tested in this workspace.
 4. The firmware does not provision keys, credentials, clock synchronization,

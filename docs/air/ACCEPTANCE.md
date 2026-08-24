@@ -25,6 +25,7 @@ and the content hash of every fixture and result.
 | Channel loopback | Packet, PCM, and IQ paths recover the expected state across frozen AWGN, fading, burst loss, and frequency offset cases |
 | Neural fallback | Every low confidence or out of distribution case selects classical likelihoods or rejects the frame |
 | ESP32 host logic | BLE fragments, KISS escaping, queues, replay state, and transmit policy pass without ESP-IDF hardware |
+| ESP32 target compile | ESP IDF 6.0.2 builds the ESP32 S3 image and produces a size report |
 | Build quality | Rust formatting, linting, tests, C warnings, sanitizers, firmware host tests, and dependency checks pass |
 
 ## Hardware in the loop gate
@@ -62,6 +63,7 @@ evidence of semantic compression.
 Use exactly one evidence label for each public metric:
 
 * `unit validated`
+* `target compiled`
 * `simulated`
 * `software loopback`
 * `hardware in loop`

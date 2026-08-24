@@ -16,7 +16,7 @@ the stage it measures. Simulation never counts as an over the air claim.
 |---|---|---|---|
 | C and Rust conformance | Shared golden and malformed vectors | Identical accepted messages, rejection codes, CRC, replay, and fragmentation behavior | Outer frame and LMS1 envelope golden vectors match byte for byte; full cross-language malformed-case parity remains a CI expansion |
 | ESP32 pure logic | Native C compiler | BLE, KISS, CRC, and policy suite passes strict warnings | Passed in this implementation workspace |
-| ESP IDF compile | ESP IDF 6.0.2 | Clean build for ESP32 S3, size report, no warnings | Blocked because ESP IDF is absent here |
+| ESP IDF compile | ESP IDF 6.0.2 | Clean build for ESP32 S3 and size report | Passed in GitHub Actions; 491,387 byte total image, no flashed-device claim |
 | Hardware transport | Two ESP32 boards plus host | WiFi, BLE, KISS, and I2S loopback with measured loss and latency | Not run |
 | Conducted modem | SDR or radio service monitor through attenuation | BER, PER, synchronization, occupied bandwidth, spectral mask, power | Not run |
 | Over the air channel | Licensed lawful station and recorded channel set | Blind BER, PER, fallback, and task metrics across unseen conditions | Not run |
@@ -201,10 +201,13 @@ The receipt sets overall acceptance to false until the physical-layer target,
 hardware evidence, confidence intervals, and blind propagation evidence all
 pass.
 
-The exact gap is that `idf.py` is not installed in this workspace. No target
-binary, flash image, size report, NimBLE link, WiFi link, UART device, I2S codec,
-or RF result was produced. The acceptance status is therefore protocol logic
-passed, embedded and over the air acceptance not passed.
+The ESP IDF 6.0.2 CI job produced an ESP32 S3 target binary and size report. The
+reported total image size was 491,387 bytes, with 75 percent of the smallest app
+partition free. The runner artifact was not retained as a release image, and no
+board was flashed. No NimBLE link, WiFi link, UART device, I2S codec or RF result
+was produced. The acceptance status is therefore protocol logic and target
+compilation passed, while embedded runtime and over the air acceptance remain
+open.
 
 The dominant benchmark failure mode is leakage: adapting on the same channel
 recordings used for the headline result. The fix is a sealed blind corpus owned

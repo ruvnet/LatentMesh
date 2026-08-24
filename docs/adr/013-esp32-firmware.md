@@ -114,14 +114,16 @@ receiver ingestion, semantic reassembly, and callback data. Both native binaries
 print PASS.
 
 Every ESP specific C translation unit also passed strict compiler syntax checks
-against narrow local interface stubs. That catches C syntax and warning defects
-but cannot establish that an Espressif type or function signature matches 6.0.2.
-Only an actual ESP IDF build closes that gap.
+against narrow local interface stubs. GitHub Actions then sourced the official
+ESP IDF 6.0.2 container environment and completed an ESP32 S3 build and size
+report. That compiled the portable component, component graph, NimBLE, WiFi,
+UART and I2S interfaces together. The reported total image size was 491,387
+bytes; the application binary occupied 0x77ff0 bytes and left 75 percent of the
+smallest configured application partition free.
 
-`idf.py` is not present in the implementation workspace. Therefore the ESP IDF
-component graph, NimBLE calls, WiFi calls, UART driver, I2S driver, binary size,
-and target execution have not been compiled here. This is an explicit validation
-gap, not an implied success.
+No board was flashed. Target execution, peripherals, latency, energy, RF output
+and receive performance remain unvalidated. A successful target compile closes
+the SDK signature gap, not the hardware gate.
 
 Espressif identifies 6.0.2 as the current stable release in its
 [official release list](https://github.com/espressif/esp-idf/releases/tag/v6.0.2).

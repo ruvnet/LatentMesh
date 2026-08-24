@@ -159,8 +159,10 @@ Portable frame, FEC, modem, replay, and reassembly logic is implemented under
 Rust lock the outer frame and `LMS1` envelope to shared golden vectors. ESP32
 pure fragmentation, CRC16, KISS, portable codec contract, and transmit policy
 tests compile with strict warnings and pass. No ESP32 binary or RF path has been
-validated in this workspace because ESP IDF and radio hardware are absent. The
-protocol is not accepted as an over the air system until ADR 014 passes. Entity
+validated on hardware in this workspace. The ESP IDF 6.0.2 CI gate builds the
+complete ESP32 S3 image and runs its size report, but no board has been flashed
+and no RF path has been exercised. The protocol is not accepted as an over the
+air system until ADR 014 passes. Entity
 and units schemas, provenance resolution, confidence policy, authority binding,
 periodic reconciliation, and the cross-language `LMAD` body codec remain
 integration work. The frame class reserves acknowledgement and control messages,

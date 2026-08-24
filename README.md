@@ -56,7 +56,7 @@ gates remain integration work.
 | Semantic transport | `LMS1` envelope, deterministic `LMAD` state delta, importance, residual bytes, state hash, fragmentation, replay window | Cross-model semantic projection and WorldGraph reconciliation remain integration work |
 | Rust | `latentmesh-air-core` and `latentmesh-air-radio`, `no_std` capable core, WiFi, BLE, HF, VHF, AM, FM and ham profiles | Hardware drivers stay below the transport abstraction |
 | Portable C11 | Allocation-free framing, FEC, interleaving, transmit and receive state machines, BPSK IQ, CPFSK and AFSK PCM, neural LLR assist | External transceiver, TNC, SDR, filtering, antenna and operator remain responsible for legal RF |
-| ESP32 S3 | WiFi UDP, BLE fragmentation, KISS UART, I2S audio bridge, bounded queues, replay state, metrics and fail-closed transmit policy | ESP32 does not directly synthesize compliant HF or VHF RF |
+| ESP32 S3 | WiFi UDP, BLE fragmentation, KISS UART, I2S audio bridge, bounded queues, replay state, metrics and fail-closed transmit policy; ESP IDF 6.0.2 target build passes | ESP32 does not directly synthesize compliant HF or VHF RF |
 | MetaHarness | Frozen policy domains, holdout and anchor suites, signed replay evidence, stage-separated benchmark receipt | Current evaluator is deterministic simulation, not over-the-air evidence |
 
 The migration path is intentionally staged:
@@ -79,6 +79,7 @@ exist. See [ADRs 010 through 014](docs/adr/README.md) and the
 | Rust impaired channel fixture: 128 of 512 classical bits versus 448 of 512 assisted bits | Deterministic simulation | Confidence-gated assist can improve this frozen synthetic channel | Generalization, energy gain, or hardware RF performance |
 | MetaHarness 64-case degraded suite: 1.07 times neural physical-layer gain | Deterministic simulation, target not met | The wider frozen suite catches the narrow fixture's lack of generalization | Hardware or over-the-air performance |
 | C codec: roughly 470,000 encode plus decode frames per second | Host benchmark | Portable codec headroom on this runner | ESP32 timing or end-to-end radio throughput |
+| ESP32 S3 image: 491,387 bytes | Target compiled in ESP IDF 6.0.2 CI | The component graph, NimBLE, WiFi, UART, I2S and portable C compile together for ESP32 S3 | Flash, runtime, timing, energy or RF behavior |
 
 The binding research gates are separate: at least ten times less transmitted
 data with equivalent downstream task accuracy for the semantic layer, then at
@@ -183,7 +184,7 @@ Wire bytes at 16×4096-dim vectors: **256 KiB at F32, 128 KiB at F16, 64.1 KiB a
 
 ## Honest status
 
-This is a **research prototype**. What's real: the packet and codec types, the alignment algorithm, causal-verification statistics, admission gate, Air framing and semantic delta, portable C and Rust radio state machines, ESP32 transport adapters, deterministic channel tests, and the MetaHarness policy contract. What's **not** done: no live heterogeneous-model latent integration, no completed RuVector or WorldGraph reconciliation pipeline, no closed-loop semantic knowledge-request scheduler, no trained universal receiver, no compliant end-to-end learned waveform, no ESP32 target build in this workspace, and no hardware-in-the-loop or over-the-air acceptance result. MetaHarness currently evaluates frozen simulated channels; it does not manufacture radio evidence. Every external literature figure remains attributed rather than reproduced. See [ADR-001 §8](docs/adr/001-latentmesh-architecture-and-prior-art.md#8-honest-feasibility), [ADR-009 §6](docs/adr/009-online-causal-control-loop.md#6-honest-bench-numbers-this-repo-this-session--see-root-readme), and [the Air acceptance contract](docs/air/ACCEPTANCE.md).
+This is a **research prototype**. What's real: the packet and codec types, the alignment algorithm, causal-verification statistics, admission gate, Air framing and semantic delta, portable C and Rust radio state machines, an ESP IDF 6.0.2 ESP32 S3 target build, ESP32 transport adapters, deterministic channel tests, and the MetaHarness policy contract. What's **not** done: no live heterogeneous-model latent integration, no completed RuVector or WorldGraph reconciliation pipeline, no closed-loop semantic knowledge-request scheduler, no trained universal receiver, no compliant end-to-end learned waveform, no flashed-device validation, and no hardware-in-the-loop or over-the-air acceptance result. MetaHarness currently evaluates frozen simulated channels; it does not manufacture radio evidence. Every external literature figure remains attributed rather than reproduced. See [ADR-001 §8](docs/adr/001-latentmesh-architecture-and-prior-art.md#8-honest-feasibility), [ADR-009 §6](docs/adr/009-online-causal-control-loop.md#6-honest-bench-numbers-this-repo-this-session--see-root-readme), and [the Air acceptance contract](docs/air/ACCEPTANCE.md).
 
 ```bash
 cargo build --workspace
