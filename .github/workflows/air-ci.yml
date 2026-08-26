@@ -26,6 +26,11 @@ jobs:
       - run: cargo test --workspace
       - run: cargo check -p latentmesh-air-core --no-default-features
       - run: cargo check -p latentmesh-air-radio --no-default-features
+      # Feature-gated integrations (ADR-015/016): the MidStream QUIC transport
+      # and the RuVector backend live behind features kept off the MSRV path,
+      # so lint and test them explicitly on stable.
+      - run: cargo clippy -p latentmesh-stream -p latentmesh-memory --all-features --all-targets -- -D warnings
+      - run: cargo test -p latentmesh-stream -p latentmesh-memory --all-features
 
   rust-msrv:
     runs-on: ubuntu-latest
@@ -100,6 +105,25 @@ jobs:
         with:
           name: latentmesh-air-simulated-evidence
           path: harness/air/artifacts/
+          if-no-files-found: error
+
+  metaharness-evolve:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: harness/evolve
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: Swatinem/rust-cache@v2
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: npm run validate
+      - uses: actions/upload-artifact@v4
+        with:
+          name: latentmesh-evolve-simulated-evidence
+          path: harness/evolve/artifacts/
           if-no-files-found: error
 
   dependency-security:

@@ -16,8 +16,18 @@ publish = false
 name = "latentmesh-bench"
 path = "src/main.rs"
 
+[features]
+# Adds the RuVector (ruvector-core HNSW) backend to the memory benchmark.
+# Off by default so the MSRV path never builds the third-party graph.
+ruvector = ["latentmesh-memory/ruvector"]
+
 [dependencies]
 latentmesh-core = { path = "../latentmesh-core" }
 latentmesh-align = { path = "../latentmesh-align" }
 latentmesh-gate = { path = "../latentmesh-gate" }
+latentmesh-stream = { path = "../latentmesh-stream" }
+latentmesh-memory = { path = "../latentmesh-memory" }
+latentmesh-federation = { path = "../latentmesh-federation" }
+latentmesh-evolve = { path = "../latentmesh-evolve" }
 rand = { workspace = true }
+serde_json = { workspace = true }

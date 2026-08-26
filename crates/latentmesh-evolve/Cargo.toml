@@ -1,0 +1,27 @@
+# latentmesh-evolve — ADR-018: the MetaHarness Darwin loop implementing
+# ADR-006's objective G* = argmax[Quality − λ·Cost − μ·Latency − ρ·Risk] with
+# *causal* Quality: an edge contributes only if its ΔV survives the gate's
+# four-control test in the evaluation environment. Deterministic (seeded RNG,
+# frozen synthetic environment), authority-never-expands enforced in the
+# mutation applier, JSON receipts with explicit evidence labels for the
+# harness/evolve MetaHarness suite.
+[package]
+name = "latentmesh-evolve"
+version = "0.1.0"
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+repository.workspace = true
+description = "MetaHarness Darwin topology evolution for LatentMesh: causal fitness, authority invariant, deterministic loop, evidence-labelled receipts (ADR-018)"
+
+[dependencies]
+serde = { workspace = true }
+serde_json = { workspace = true }
+rand = { workspace = true }
+latentmesh-core = { path = "../latentmesh-core" }
+latentmesh-gate = { path = "../latentmesh-gate" }
+latentmesh-memory = { path = "../latentmesh-memory" }
+
+[[bin]]
+name = "latentmesh-evolve"
+path = "src/main.rs"
