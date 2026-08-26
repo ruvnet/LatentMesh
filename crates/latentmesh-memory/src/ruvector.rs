@@ -12,6 +12,8 @@ use latentmesh_core::Encoding;
 use ruvector_core::types::{DbOptions, DistanceMetric, HnswConfig, SearchQuery, VectorEntry};
 use ruvector_core::vector_db::VectorDB;
 use std::collections::HashMap;
+use std::path::{Path, PathBuf};
+use std::sync::atomic::{AtomicU64, Ordering};
 
 const METADATA_KEY: &str = "latentmesh_record";
 
@@ -19,24 +21,70 @@ fn backend_err<E: core::fmt::Display>(e: E) -> MemoryError {
     MemoryError::Backend(e.to_string())
 }
 
-/// `ruvector-core`-backed store. In-memory HNSW (no storage path) — a
-/// persistent path is a `DbOptions` change, not an API change.
+/// `ruvector-core`-backed store over redb persistence + an HNSW index.
+/// [`RuVectorStore::open`] is the durable contract ADR-016 claims: records
+/// (vectors *and* trajectory metadata) survive dropping the store and
+/// reopening the same path — covered by a close/reopen regression test.
+/// [`RuVectorStore::new`] is an ephemeral convenience over a unique
+/// temporary directory (removed on drop) for tests and benchmarks.
 pub struct RuVectorStore {
     config: MemoryConfig,
+    // Declared before `ephemeral_dir` so the database closes before the
+    // backing directory is removed on drop.
     db: VectorDB,
+    ephemeral_dir: Option<PathBuf>,
 }
 
+impl Drop for RuVectorStore {
+    fn drop(&mut self) {
+        if let Some(dir) = self.ephemeral_dir.take() {
+            let _ = std::fs::remove_dir_all(dir);
+        }
+    }
+}
+
+static EPHEMERAL_COUNTER: AtomicU64 = AtomicU64::new(0);
+
 impl RuVectorStore {
-    pub fn new(config: MemoryConfig) -> Result<Self, MemoryError> {
+    fn open_at(config: MemoryConfig, storage_path: String) -> Result<Self, MemoryError> {
         let db = VectorDB::new(DbOptions {
             dimensions: config.dimensions,
             distance_metric: DistanceMetric::Cosine,
-            storage_path: String::new(),
+            storage_path,
             hnsw_config: Some(HnswConfig::default()),
             quantization: None,
         })
         .map_err(backend_err)?;
-        Ok(RuVectorStore { config, db })
+        Ok(RuVectorStore {
+            config,
+            db,
+            ephemeral_dir: None,
+        })
+    }
+
+    /// Open (or create) a durable store at `storage_path`. Reopening the same
+    /// path after dropping the store recovers every record, including the
+    /// trajectory metadata and the HNSW index rebuilt from storage. Note:
+    /// when the path already holds a database, `ruvector-core` uses the
+    /// *stored* dimensionality; `config.dimensions` must match it.
+    pub fn open(config: MemoryConfig, storage_path: impl AsRef<Path>) -> Result<Self, MemoryError> {
+        Self::open_at(config, storage_path.as_ref().to_string_lossy().into_owned())
+    }
+
+    /// Ephemeral store in a unique temporary directory, removed when the
+    /// store is dropped. Convenience for tests and benchmarks — use
+    /// [`RuVectorStore::open`] for the persistent contract.
+    pub fn new(config: MemoryConfig) -> Result<Self, MemoryError> {
+        let unique = EPHEMERAL_COUNTER.fetch_add(1, Ordering::Relaxed);
+        let dir = std::env::temp_dir().join(format!(
+            "latentmesh-memory-ephemeral-{}-{unique}",
+            std::process::id()
+        ));
+        std::fs::create_dir_all(&dir).map_err(backend_err)?;
+        let path = dir.join("ruvector.db");
+        let mut store = Self::open_at(config, path.to_string_lossy().into_owned())?;
+        store.ephemeral_dir = Some(dir);
+        Ok(store)
     }
 
     pub fn config(&self) -> &MemoryConfig {

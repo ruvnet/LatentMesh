@@ -11,9 +11,9 @@ four-tier fidelity continuum (raw → compressed → prototype → rule) but had
 live RuVector wiring. RuVector's embeddable core is now published as
 `ruvector-core 2.3.0` (MIT, MSRV 1.77 — equal to this workspace's MSRV), with
 `VectorDB` / HNSW indexing / optional redb persistence. Depending on the lean
-feature set (`default-features = false`, `hnsw`) keeps the dependency graph
-small and avoids pulling `reqwest`, SIMD, or storage backends into a research
-prototype by default.
+feature set (`default-features = false`, `hnsw` + `storage`) keeps the
+dependency graph small — redb persistence is exactly the capability this ADR
+exists for, while `reqwest`, SIMD, and the embedding stacks stay out.
 
 ## Decision
 
@@ -29,9 +29,16 @@ New crate **`latentmesh-memory`**:
   - `RuVectorStore` — behind the `ruvector` feature (exercised in CI and
     benchmarks on stable; kept off the MSRV check path so the workspace's
     1.77 floor is not hostage to a third-party dependency graph), backed by
-    `ruvector_core::VectorDB` with HNSW + cosine distance; trajectory metadata
+    `ruvector_core::VectorDB` with HNSW + cosine distance over redb
+    persistence (`ruvector-core`'s `storage` feature); trajectory metadata
     rides in the entry's metadata map, so recall returns full records, not
-    bare vectors.
+    bare vectors. **The durable contract is `RuVectorStore::open(config,
+    path)`**: dropping the store and reopening the same path recovers every
+    record — vectors, metadata, and prior fidelity steps — with the HNSW
+    index rebuilt from storage; a close/reopen regression test in CI proves
+    retrieval and metadata fidelity after restart. `RuVectorStore::new` is an
+    ephemeral convenience over a unique temporary directory (removed on
+    drop) for tests and benchmarks.
 - **Fidelity is explicit and downward-only per record**:
   `Fidelity::{Raw, Compressed, Prototype, Rule}`. `compress_to` re-encodes the
   latent through `latentmesh-core`'s real quantizers (`F16`, then `Int8`) so

@@ -163,3 +163,65 @@ fn ruvector_store_satisfies_the_contract() {
     let mut store = latentmesh_memory::RuVectorStore::new(config()).unwrap();
     contract(&mut store);
 }
+
+/// The persistence contract ADR-016 claims (review acceptance gate): store,
+/// drop the backend entirely, reopen the same durable path, and recover the
+/// records with full metadata fidelity — including one that went through a
+/// lossy fidelity step before the restart.
+#[cfg(feature = "ruvector")]
+#[test]
+fn ruvector_store_persists_across_close_and_reopen() {
+    use latentmesh_memory::RuVectorStore;
+
+    let dir = std::env::temp_dir().join(format!(
+        "latentmesh-memory-persist-test-{}",
+        std::process::id()
+    ));
+    std::fs::create_dir_all(&dir).unwrap();
+    let db_path = dir.join("ruvector.db");
+
+    let query = record("q", 3.0, 0.9).latent;
+    let compressed_error;
+    {
+        let mut store = RuVectorStore::open(config(), &db_path).unwrap();
+        store.store(record("a", 2.0, 0.9)).unwrap();
+        store.store(record("b", 3.0, 0.8)).unwrap();
+        store.store_compressed(record("weak", 4.0, 0.1)).unwrap();
+        compressed_error = store.compress_to("a", Fidelity::Compressed).unwrap();
+        assert_eq!(store.len(), 3);
+    } // store dropped: database closed.
+
+    {
+        let store = RuVectorStore::open(config(), &db_path).unwrap();
+        assert_eq!(store.len(), 3, "records must survive the reopen");
+
+        let hits = store.recall(&query, 3).unwrap();
+        let b = hits
+            .iter()
+            .find(|h| h.record.id == "b")
+            .expect("record b recalled after reopen");
+        assert_eq!(b.record.fidelity, Fidelity::Raw);
+        assert_eq!(b.record.causal_value, 0.8);
+        assert_eq!(b.record.context_hash, "ctx-b");
+        assert_eq!(b.record.action, "solve");
+
+        let a = hits
+            .iter()
+            .find(|h| h.record.id == "a")
+            .expect("record a recalled after reopen");
+        assert_eq!(
+            a.record.fidelity,
+            Fidelity::Compressed,
+            "the pre-restart fidelity step must persist"
+        );
+        assert_eq!(a.record.reconstruction_error, compressed_error);
+
+        let weak = hits
+            .iter()
+            .find(|h| h.record.id == "weak")
+            .expect("compressed-tier record recalled after reopen");
+        assert_eq!(weak.record.fidelity, Fidelity::Compressed);
+    }
+
+    std::fs::remove_dir_all(&dir).ok();
+}
