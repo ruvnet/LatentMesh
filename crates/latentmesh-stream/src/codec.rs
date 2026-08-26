@@ -51,17 +51,56 @@ pub fn decode_frame(input: &[u8]) -> Result<Option<(LatentFrame, usize)>, Stream
     }
     let frame: LatentFrame = serde_json::from_slice(&input[LENGTH_PREFIX_BYTES..total])
         .map_err(|e| StreamError::Malformed(e.to_string()))?;
+    validate_payload_shape(&frame)?;
     Ok(Some((frame, total)))
 }
 
+/// Reject frames whose payload shape is internally inconsistent — a
+/// shape-mismatched frame decodes "successfully" as JSON but poisons any
+/// consumer that trusts `dim` (e.g. `AlignmentTransform::apply` asserts on
+/// length). Checked at the wire boundary so nothing downstream ever sees it:
+/// `bytes.len()` must match `dim × bytes_per_element`, `Int8` must carry its
+/// dequantization params, and those params must be finite.
+pub fn validate_payload_shape(frame: &LatentFrame) -> Result<(), StreamError> {
+    let payload = &frame.payload;
+    let expected = payload
+        .dim
+        .checked_mul(payload.encoding.bytes_per_element())
+        .ok_or_else(|| StreamError::Malformed("payload dim overflows".into()))?;
+    if payload.bytes.len() != expected {
+        return Err(StreamError::Malformed(format!(
+            "payload declares dim {} ({expected} bytes at {:?}) but carries {} bytes",
+            payload.dim,
+            payload.encoding,
+            payload.bytes.len()
+        )));
+    }
+    match (payload.encoding, payload.int8_params) {
+        (latentmesh_core::Encoding::Int8, None) => Err(StreamError::Malformed(
+            "int8 payload without dequantization params".into(),
+        )),
+        (latentmesh_core::Encoding::Int8, Some((scale, _))) if !scale.is_finite() => {
+            Err(StreamError::Malformed("int8 scale is not finite".into()))
+        }
+        (latentmesh_core::Encoding::F32 | latentmesh_core::Encoding::F16, Some(_)) => Err(
+            StreamError::Malformed("non-int8 payload carries int8 params".into()),
+        ),
+        _ => Ok(()),
+    }
+}
+
 /// Incremental decoder for a byte stream that arrives in arbitrary chunks
-/// (the QUIC receive path). Internal buffering is bounded by the declared
-/// frame length, which is itself bounded — a peer cannot grow the buffer past
-/// `MAX_FRAME_BYTES + LENGTH_PREFIX_BYTES`.
+/// (the QUIC receive path). Internal buffering is hard-bounded: `push`
+/// rejects growth past [`MAX_BUFFERED_BYTES`] even when the caller never
+/// drains, so no usage pattern can be tricked into unbounded buffering.
 #[derive(Debug, Default)]
 pub struct FrameDecoder {
     buffer: Vec<u8>,
 }
+
+/// Hard cap on the decoder's internal buffer: one maximal frame in flight
+/// plus one maximal frame of read-ahead.
+pub const MAX_BUFFERED_BYTES: usize = 2 * (MAX_FRAME_BYTES + LENGTH_PREFIX_BYTES);
 
 impl FrameDecoder {
     pub fn new() -> Self {
@@ -73,9 +112,17 @@ impl FrameDecoder {
         self.buffer.len()
     }
 
-    /// Append received bytes. Fails fast (before buffering the body) when the
-    /// declared length exceeds the bound.
+    /// Append received bytes. Fails fast when the head frame's declared
+    /// length exceeds the bound, and refuses to grow the buffer past
+    /// [`MAX_BUFFERED_BYTES`] regardless of content — call
+    /// [`FrameDecoder::next_frame`] to drain.
     pub fn push(&mut self, chunk: &[u8]) -> Result<(), StreamError> {
+        if self.buffer.len().saturating_add(chunk.len()) > MAX_BUFFERED_BYTES {
+            self.buffer.clear();
+            return Err(StreamError::Transport(
+                "decoder buffer bound exceeded (caller must drain frames)".into(),
+            ));
+        }
         self.buffer.extend_from_slice(chunk);
         if self.buffer.len() >= LENGTH_PREFIX_BYTES {
             let declared = u32::from_be_bytes([
@@ -185,6 +232,65 @@ mod tests {
             }
         }
         assert_eq!(seen, vec![0, 1, 2]);
+        assert_eq!(decoder.buffered(), 0);
+    }
+
+    #[test]
+    fn shape_mismatched_payloads_are_rejected_at_the_wire() {
+        // dim disagrees with bytes.len().
+        let mut f = frame(1);
+        f.payload.dim = 999;
+        let bytes = encode_frame(&f).unwrap();
+        assert!(matches!(
+            decode_frame(&bytes),
+            Err(StreamError::Malformed(_))
+        ));
+
+        // Int8 without params.
+        let mut f = frame(2);
+        f.payload = Payload::encode(&[1.0, 2.0], Encoding::Int8);
+        f.payload.int8_params = None;
+        let bytes = encode_frame(&f).unwrap();
+        assert!(matches!(
+            decode_frame(&bytes),
+            Err(StreamError::Malformed(_))
+        ));
+
+        // Int8 with a non-finite scale.
+        let mut f = frame(3);
+        f.payload = Payload::encode(&[1.0, 2.0], Encoding::Int8);
+        f.payload.int8_params = Some((f32::INFINITY, 0));
+        let bytes = encode_frame(&f).unwrap();
+        assert!(matches!(
+            decode_frame(&bytes),
+            Err(StreamError::Malformed(_))
+        ));
+
+        // F32 carrying stray int8 params.
+        let mut f = frame(4);
+        f.payload.int8_params = Some((1.0, 0));
+        let bytes = encode_frame(&f).unwrap();
+        assert!(matches!(
+            decode_frame(&bytes),
+            Err(StreamError::Malformed(_))
+        ));
+    }
+
+    #[test]
+    fn decoder_refuses_unbounded_buffering_when_never_drained() {
+        let mut decoder = FrameDecoder::new();
+        let frame_bytes = encode_frame(&frame(1)).unwrap();
+        let mut pushed = 0usize;
+        let overflow = loop {
+            match decoder.push(&frame_bytes) {
+                Ok(()) => {
+                    pushed += frame_bytes.len();
+                    assert!(pushed <= MAX_BUFFERED_BYTES);
+                }
+                Err(e) => break e,
+            }
+        };
+        assert!(matches!(overflow, StreamError::Transport(_)));
         assert_eq!(decoder.buffered(), 0);
     }
 

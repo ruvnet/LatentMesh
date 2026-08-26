@@ -62,15 +62,23 @@ impl SequenceTracker {
 
     /// Observe `sequence`. First frame establishes the baseline (any starting
     /// sequence is allowed, so a receiver can join mid-stream); after that,
-    /// only forward progress is accepted.
+    /// only forward progress is accepted. `u64::MAX` is rejected outright:
+    /// its successor is unrepresentable, so accepting it would wedge the
+    /// tracker and misclassify later frames (self-DoS a hostile peer could
+    /// otherwise trigger with one frame).
     pub fn observe(&mut self, sequence: u64) -> Result<SequenceEvent, StreamError> {
+        if sequence == u64::MAX {
+            return Err(StreamError::Malformed(
+                "sequence u64::MAX is reserved (successor unrepresentable)".into(),
+            ));
+        }
         match self.next_expected {
             None => {
-                self.next_expected = Some(sequence.saturating_add(1));
+                self.next_expected = Some(sequence + 1);
                 Ok(SequenceEvent::InOrder)
             }
             Some(expected) => {
-                if sequence.saturating_add(1) == expected {
+                if sequence + 1 == expected {
                     return Err(StreamError::DuplicateSequence(sequence));
                 }
                 if sequence < expected {
@@ -80,7 +88,7 @@ impl SequenceTracker {
                     });
                 }
                 let missing = sequence - expected;
-                self.next_expected = Some(sequence.saturating_add(1));
+                self.next_expected = Some(sequence + 1);
                 if missing == 0 {
                     Ok(SequenceEvent::InOrder)
                 } else {
@@ -132,6 +140,27 @@ mod tests {
         assert_eq!(t.observe(11).unwrap(), SequenceEvent::InOrder);
         assert_eq!(t.observe(14).unwrap(), SequenceEvent::Gap { missing: 2 });
         assert_eq!(t.watermark(), Some(14));
+    }
+
+    #[test]
+    fn tracker_rejects_the_reserved_max_sequence() {
+        let mut t = SequenceTracker::new();
+        assert!(matches!(
+            t.observe(u64::MAX),
+            Err(StreamError::Malformed(_))
+        ));
+        // The tracker is not wedged: normal sequences still work.
+        assert_eq!(t.observe(0).unwrap(), SequenceEvent::InOrder);
+        assert_eq!(
+            t.observe(u64::MAX - 1).unwrap(),
+            SequenceEvent::Gap {
+                missing: u64::MAX - 2
+            }
+        );
+        assert!(matches!(
+            t.observe(u64::MAX),
+            Err(StreamError::Malformed(_))
+        ));
     }
 
     #[test]
