@@ -9,6 +9,10 @@ members = [
   "crates/latentmesh-bench",
   "crates/latentmesh-air-core",
   "crates/latentmesh-air-radio",
+  "crates/latentmesh-stream",
+  "crates/latentmesh-memory",
+  "crates/latentmesh-federation",
+  "crates/latentmesh-evolve",
 ]
 
 [workspace.package]

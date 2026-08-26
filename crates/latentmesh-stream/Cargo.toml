@@ -1,0 +1,31 @@
+# latentmesh-stream — ADR-015: live MidStream latent streaming. Length-prefixed
+# `LatentFrame` framing with hard byte bounds, per-stream sequencing with
+# gap/reorder detection, confidence-gated authority escalation, and (behind the
+# `midstream-quic` feature) transport over `midstreamer-quic 0.3`'s published
+# `QuicTransport` surface. The in-process `ChannelTransport` exists so every
+# codec/sequencing/escalation path is testable deterministically without a
+# network.
+[package]
+name = "latentmesh-stream"
+version = "0.1.0"
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+repository.workspace = true
+description = "Live MidStream latent streaming for LatentMesh: bounded LatentFrame framing, sequencing, and confidence-gated authority escalation (ADR-015)"
+
+[features]
+default = []
+# Wires the framing codec over a MidStream QUIC bidirectional stream. Off by
+# default so the workspace MSRV (1.77) path never builds midstreamer-quic
+# (which floors at 1.88); CI exercises it on stable via --all-features.
+midstream-quic = ["dep:midstreamer-quic"]
+
+[dependencies]
+serde_json = { workspace = true }
+latentmesh-core = { path = "../latentmesh-core" }
+latentmesh-gate = { path = "../latentmesh-gate" }
+midstreamer-quic = { version = "0.3.0", optional = true }
+
+[dev-dependencies]
+latentmesh-align = { path = "../latentmesh-align" }

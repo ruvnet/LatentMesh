@@ -7,7 +7,7 @@
 [![License: MIT OR Apache-2.0](https://img.shields.io/badge/License-MIT_OR_Apache--2.0-yellow?style=for-the-badge)](#license)
 [![rust](https://img.shields.io/badge/rust-1.77%2B-orange?style=for-the-badge)](#workspace)
 [![status](https://img.shields.io/badge/status-research%20prototype-e6b45a?style=for-the-badge)](#honest-status)
-[![ADRs: 14](https://img.shields.io/badge/ADRs-14_decisions-6366f1?style=for-the-badge)](docs/adr/README.md)
+[![ADRs: 18](https://img.shields.io/badge/ADRs-18_decisions-6366f1?style=for-the-badge)](docs/adr/README.md)
 
 **[LatentMesh Air Studio](https://latentmesh-air.ruv.chatgpt.site/) · [ADRs](docs/adr) · [The original story](https://ruvnet.github.io/LatentMesh/)**
 
@@ -161,11 +161,16 @@ struct LatentFrame {
 | [`latentmesh-bench`](crates/latentmesh-bench) | Real, measured numbers only — no live LLM access, so no claimed cross-model task accuracy; measures wire bytes and alignment/verification wall-clock | [002](docs/adr/002-latent-packet-protocol.md) |
 | [`latentmesh-air-core`](crates/latentmesh-air-core) | Bounded cross-language air frame, semantic envelope, deterministic state delta, CRC32C, replay defense, fragmentation and FEC | [010](docs/adr/010-latentmesh-air-protocol.md) |
 | [`latentmesh-air-radio`](crates/latentmesh-air-radio) | Packet, PCM and IQ transmitter and receiver paths with confidence-gated neural likelihood assistance | [012](docs/adr/012-neural-receiver-fallback.md) |
+| [`latentmesh-stream`](crates/latentmesh-stream) | Live MidStream latent streaming: bounded length-prefixed `LatentFrame` framing, gap/reorder detection, confidence-gated authority escalation, and a `midstreamer-quic 0.3` transport behind the `midstream-quic` feature | [015](docs/adr/015-live-midstream-latent-streaming.md) |
+| [`latentmesh-memory`](crates/latentmesh-memory) | Persistent latent memory: the ADR-005 fidelity continuum with measured quantization error, causal-value admission, prototype/rule promotion, procedural topology records, and a RuVector (`ruvector-core` HNSW) backend behind the `ruvector` feature | [016](docs/adr/016-ruvector-persistent-latent-memory.md) |
+| [`latentmesh-federation`](crates/latentmesh-federation) | Federated world models: bounded scoped `TransitionRule`s over LMS1 Air envelopes, decoy-controlled local-scope validation reusing the gate's permutation test, structural privacy scoping, selective transmission | [017](docs/adr/017-radio-federated-world-models.md) |
+| [`latentmesh-evolve`](crates/latentmesh-evolve) | The MetaHarness Darwin loop: causal-fitness topology evolution with the authority-never-expands invariant, deterministic seeded search, warm starts from procedural memory, and evidence-labelled JSON receipts verified by [`harness/evolve`](harness/evolve) | [018](docs/adr/018-metaharness-darwin-topology-loop.md) |
 
-The original four crates retain their 23-test baseline. The two Air crates add
-43 tests that passed in isolated Rust validation, including formatting,
-Clippy with warnings denied, and `no_std` compilation. The integrated workspace
-is also enforced by CI.
+The original four crates retain their 23-test baseline; the two Air crates add
+43 tests (formatting, Clippy with warnings denied, and `no_std` compilation
+included); the four integration crates (ADRs 015–018) add roughly 60 more
+across unit, contract, loopback, and acceptance suites. The integrated
+workspace is enforced by CI.
 
 ## Measured, not asserted
 
@@ -184,7 +189,7 @@ Wire bytes at 16×4096-dim vectors: **256 KiB at F32, 128 KiB at F16, 64.1 KiB a
 
 ## Honest status
 
-This is a **research prototype**. What's real: the packet and codec types, the alignment algorithm, causal-verification statistics, admission gate, Air framing and semantic delta, portable C and Rust radio state machines, an ESP IDF 6.0.2 ESP32 S3 target build, ESP32 transport adapters, deterministic channel tests, and the MetaHarness policy contract. What's **not** done: no live heterogeneous-model latent integration, no completed RuVector or WorldGraph reconciliation pipeline, no closed-loop semantic knowledge-request scheduler, no trained universal receiver, no compliant end-to-end learned waveform, no flashed-device validation, and no hardware-in-the-loop or over-the-air acceptance result. MetaHarness currently evaluates frozen simulated channels; it does not manufacture radio evidence. Every external literature figure remains attributed rather than reproduced. See [ADR-001 §8](docs/adr/001-latentmesh-architecture-and-prior-art.md#8-honest-feasibility), [ADR-009 §6](docs/adr/009-online-causal-control-loop.md#6-honest-bench-numbers-this-repo-this-session--see-root-readme), and [the Air acceptance contract](docs/air/ACCEPTANCE.md).
+This is a **research prototype**. What's real: the packet and codec types, the alignment algorithm, causal-verification statistics, admission gate, Air framing and semantic delta, portable C and Rust radio state machines, an ESP IDF 6.0.2 ESP32 S3 target build, ESP32 transport adapters, deterministic channel tests, and the MetaHarness policy contract. What's real as of ADRs 015–018: the MidStream streaming wiring (`latentmesh-stream`, in-process + QUIC-typed transport), an embedded RuVector-backed latent memory (`latentmesh-memory`), rule federation over Air envelopes (`latentmesh-federation`), and the deterministic Darwin loop with receipts (`latentmesh-evolve` + `harness/evolve`). What's **not** done: no live heterogeneous-model latent integration, no remote/multi-tenant RuVector deployment or WorldGraph reconciliation pipeline, no closed-loop semantic knowledge-request scheduler, no trained universal receiver, no compliant end-to-end learned waveform, no flashed-device validation, and no hardware-in-the-loop or over-the-air acceptance result. MetaHarness currently evaluates frozen simulated channels; it does not manufacture radio evidence. Every external literature figure remains attributed rather than reproduced. See [ADR-001 §8](docs/adr/001-latentmesh-architecture-and-prior-art.md#8-honest-feasibility), [ADR-009 §6](docs/adr/009-online-causal-control-loop.md#6-honest-bench-numbers-this-repo-this-session--see-root-readme), and [the Air acceptance contract](docs/air/ACCEPTANCE.md).
 
 ```bash
 cargo build --workspace
@@ -211,6 +216,10 @@ cargo run --release -p latentmesh-bench              # real measured numbers
 | [012](docs/adr/012-neural-receiver-fallback.md) | Confidence-gated neural likelihood assistance with exact DSP fallback |
 | [013](docs/adr/013-esp32-firmware.md) | ESP32 S3 firmware architecture, resource limits and transmit interlocks |
 | [014](docs/adr/014-benchmark-and-acceptance-method.md) | Stage-separated semantic and physical-layer evidence contract |
+| [015](docs/adr/015-live-midstream-latent-streaming.md) | Implementing ADR-004: `latentmesh-stream` and the MidStream QUIC wiring |
+| [016](docs/adr/016-ruvector-persistent-latent-memory.md) | Implementing ADR-005: `latentmesh-memory` and the RuVector backend |
+| [017](docs/adr/017-radio-federated-world-models.md) | Implementing ADR-007: `latentmesh-federation` over the Air stack |
+| [018](docs/adr/018-metaharness-darwin-topology-loop.md) | Implementing ADR-006: `latentmesh-evolve` and the `harness/evolve` suite |
 
 ## The acceptance test
 

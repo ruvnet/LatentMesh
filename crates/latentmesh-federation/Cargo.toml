@@ -1,0 +1,24 @@
+# latentmesh-federation — ADR-017: federated world models implementing
+# ADR-007's contract. Nodes exchange bounded, scoped TransitionRules (never
+# raw experience) carried in LMS1 envelopes over the Air stack; a candidate
+# rule from another node is admitted only after decoy-controlled local-scope
+# validation reusing the gate's sign-flip permutation test — federation is
+# ADR-003's admission machinery at machine scale, not a second mechanism.
+[package]
+name = "latentmesh-federation"
+version = "0.1.0"
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+repository.workspace = true
+description = "Federated world models for LatentMesh: scoped transition rules over LMS1 Air envelopes with decoy-controlled local-scope validation (ADR-017)"
+
+[dependencies]
+serde = { workspace = true }
+sha2 = { workspace = true }
+latentmesh-gate = { path = "../latentmesh-gate" }
+latentmesh-air-core = { path = "../latentmesh-air-core" }
+rand = { workspace = true }
+
+[dev-dependencies]
+latentmesh-air-radio = { path = "../latentmesh-air-radio" }

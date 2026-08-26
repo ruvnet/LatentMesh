@@ -1,0 +1,26 @@
+# latentmesh-memory — ADR-016: persistent latent memory implementing ADR-005's
+# fidelity continuum (raw → compressed → prototype → rule) and trajectory
+# schema M = {z, r, c, a, o}. The `LatentMemory` trait is the contract; the
+# always-available `InMemoryStore` keeps tests deterministic, and the
+# `ruvector` feature adds a `ruvector-core` (HNSW) backend — the live RuVector
+# wiring ADR-005 left open. Kept off the default/MSRV path deliberately: the
+# workspace floors at 1.77 and third-party graphs move.
+[package]
+name = "latentmesh-memory"
+version = "0.1.0"
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+repository.workspace = true
+description = "Persistent latent memory for LatentMesh: fidelity continuum, causal-value admission, prototype/rule promotion, and a RuVector (ruvector-core) backend (ADR-016)"
+
+[features]
+default = []
+# RuVector-backed store (HNSW). Exercised in CI on stable via --features.
+ruvector = ["dep:ruvector-core"]
+
+[dependencies]
+serde = { workspace = true }
+serde_json = { workspace = true }
+latentmesh-core = { path = "../latentmesh-core" }
+ruvector-core = { version = "2.3", default-features = false, features = ["hnsw", "storage"], optional = true }

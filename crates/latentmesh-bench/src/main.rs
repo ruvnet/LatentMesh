@@ -16,7 +16,18 @@
 //!      counts — bounds how many candidate edges a topology search (ADR-006)
 //!      can afford to test per generation.
 //!
+//! Plus the integration benchmarks (ADRs 015–018) in `integrations.rs`:
+//!
+//!   4. Streamed-vs-sequential latent pipelining over the real codec.
+//!   5. Latent memory store/recall (`InMemoryStore` always; RuVector HNSW
+//!      backend with `--features ruvector`).
+//!   6. Federation rule bytes and negative-transfer defense.
+//!   7. The Darwin acceptance suite's receipt numbers.
+//!
 //! Run: `cargo run --release -p latentmesh-bench`
+//! Run with the RuVector backend: `cargo run --release -p latentmesh-bench --features ruvector`
+
+mod integrations;
 
 use latentmesh_align::AlignmentTransform;
 use latentmesh_core::{Encoding, Payload};
@@ -30,6 +41,10 @@ fn main() {
     bench_wire_bytes();
     bench_alignment();
     bench_causal_verification();
+    integrations::bench_stream_pipelining();
+    integrations::bench_memory_recall();
+    integrations::bench_federation();
+    integrations::bench_evolve();
     println!("\n## What this does NOT measure");
     println!("Cross-model semantic transfer quality, real task accuracy, real end-to-end");
     println!("latency vs. a text pipeline, and every specific figure attributed to external");

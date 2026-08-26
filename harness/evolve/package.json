@@ -1,0 +1,15 @@
+{
+  "name": "@latentmesh/evolve-metaharness",
+  "private": true,
+  "version": "0.1.0",
+  "description": "MetaHarness suite for the ADR-018 Darwin topology loop: runs the latentmesh-evolve binary and verifies its evidence-labelled receipt against ADR-006's acceptance bounds. Deterministic simulation only — no live-agent claims.",
+  "type": "module",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "run": "node scripts/run.mjs",
+    "test": "node --test test/*.test.mjs",
+    "validate": "npm test && npm run run"
+  }
+}
