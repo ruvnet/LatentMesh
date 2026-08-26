@@ -9,7 +9,7 @@
 //!
 //! Non-negotiables carried from the ADRs:
 //! - **Quality is causal**: an edge contributes only if its ΔV survives the
-//!   four-control test (`latentmesh-gate::causal::verify_edge`) in the
+//!   five-control test (`latentmesh-gate::causal::verify_edge`) in the
 //!   evaluation environment; apparent correlation contributes zero.
 //! - **Authority never expands**: a mutation that would raise any edge above
 //!   its constitution cap is rejected by the applier before evaluation.

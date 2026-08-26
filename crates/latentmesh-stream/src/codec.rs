@@ -16,8 +16,11 @@ pub const MAX_FRAME_BYTES: usize = 1024 * 1024;
 /// Bytes of the big-endian length prefix.
 pub const LENGTH_PREFIX_BYTES: usize = 4;
 
-/// Encode one frame as `[len: u32 BE][json bytes]`.
+/// Encode one frame as `[len: u32 BE][json bytes]`. Shape-validates first,
+/// so a locally-constructed inconsistent frame is caught at the sender
+/// instead of by the peer's decoder.
 pub fn encode_frame(frame: &LatentFrame) -> Result<Vec<u8>, StreamError> {
+    validate_payload_shape(frame)?;
     let body = serde_json::to_vec(frame).map_err(|e| StreamError::Malformed(e.to_string()))?;
     if body.len() > MAX_FRAME_BYTES {
         return Err(StreamError::FrameTooLarge {
@@ -235,43 +238,48 @@ mod tests {
         assert_eq!(decoder.buffered(), 0);
     }
 
+    /// Craft wire bytes without `encode_frame`'s own validation, to prove
+    /// the decoder independently rejects them.
+    fn raw_wire(frame: &LatentFrame) -> Vec<u8> {
+        let body = serde_json::to_vec(frame).unwrap();
+        let mut out = (body.len() as u32).to_be_bytes().to_vec();
+        out.extend_from_slice(&body);
+        out
+    }
+
     #[test]
-    fn shape_mismatched_payloads_are_rejected_at_the_wire() {
+    fn shape_mismatched_payloads_are_rejected_by_encoder_and_decoder() {
         // dim disagrees with bytes.len().
-        let mut f = frame(1);
-        f.payload.dim = 999;
-        let bytes = encode_frame(&f).unwrap();
+        let mut bad = frame(1);
+        bad.payload.dim = 999;
+        assert!(matches!(encode_frame(&bad), Err(StreamError::Malformed(_))));
         assert!(matches!(
-            decode_frame(&bytes),
+            decode_frame(&raw_wire(&bad)),
             Err(StreamError::Malformed(_))
         ));
 
         // Int8 without params.
-        let mut f = frame(2);
-        f.payload = Payload::encode(&[1.0, 2.0], Encoding::Int8);
-        f.payload.int8_params = None;
-        let bytes = encode_frame(&f).unwrap();
+        let mut bad = frame(2);
+        bad.payload = Payload::encode(&[1.0, 2.0], Encoding::Int8);
+        bad.payload.int8_params = None;
+        assert!(matches!(encode_frame(&bad), Err(StreamError::Malformed(_))));
         assert!(matches!(
-            decode_frame(&bytes),
+            decode_frame(&raw_wire(&bad)),
             Err(StreamError::Malformed(_))
         ));
 
         // Int8 with a non-finite scale.
-        let mut f = frame(3);
-        f.payload = Payload::encode(&[1.0, 2.0], Encoding::Int8);
-        f.payload.int8_params = Some((f32::INFINITY, 0));
-        let bytes = encode_frame(&f).unwrap();
-        assert!(matches!(
-            decode_frame(&bytes),
-            Err(StreamError::Malformed(_))
-        ));
+        let mut bad = frame(3);
+        bad.payload = Payload::encode(&[1.0, 2.0], Encoding::Int8);
+        bad.payload.int8_params = Some((f32::INFINITY, 0));
+        assert!(matches!(encode_frame(&bad), Err(StreamError::Malformed(_))));
 
         // F32 carrying stray int8 params.
-        let mut f = frame(4);
-        f.payload.int8_params = Some((1.0, 0));
-        let bytes = encode_frame(&f).unwrap();
+        let mut bad = frame(4);
+        bad.payload.int8_params = Some((1.0, 0));
+        assert!(matches!(encode_frame(&bad), Err(StreamError::Malformed(_))));
         assert!(matches!(
-            decode_frame(&bytes),
+            decode_frame(&raw_wire(&bad)),
             Err(StreamError::Malformed(_))
         ));
     }

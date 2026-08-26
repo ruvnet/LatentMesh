@@ -332,7 +332,7 @@ pub fn evolve(
         }
     }
 
-    // Final audit pass (ADR-006): an edge that failed the four-control test
+    // Final audit pass (ADR-006): an edge that failed the five-control test
     // contributes zero quality by construction, so cutting every unverified
     // non-mandatory edge — and every edge stranded on an inactive agent —
     // can only lower cost and risk. This is a deterministic sweep, not a

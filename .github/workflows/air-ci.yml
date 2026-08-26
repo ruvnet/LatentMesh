@@ -29,7 +29,7 @@ jobs:
       # Feature-gated integrations (ADR-015/016): the MidStream QUIC transport
       # and the RuVector backend live behind features kept off the MSRV path,
       # so lint and test them explicitly on stable.
-      - run: cargo clippy -p latentmesh-stream -p latentmesh-memory --all-features --all-targets -- -D warnings
+      - run: cargo clippy -p latentmesh-stream -p latentmesh-memory -p latentmesh-bench --all-features --all-targets -- -D warnings
       - run: cargo test -p latentmesh-stream -p latentmesh-memory --all-features
 
   rust-msrv:

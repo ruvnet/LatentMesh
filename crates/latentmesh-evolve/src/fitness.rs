@@ -1,5 +1,5 @@
 //! ADR-006's objective with causal Quality: only edges that survive the
-//! four-control test contribute; verification cost is counted and reported.
+//! five-control test contribute; verification cost is counted and reported.
 
 use crate::env::SyntheticEnv;
 use crate::topology::Topology;

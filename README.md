@@ -166,10 +166,11 @@ struct LatentFrame {
 | [`latentmesh-federation`](crates/latentmesh-federation) | Federated world models: bounded scoped `TransitionRule`s over LMS1 Air envelopes, decoy-controlled local-scope validation reusing the gate's permutation test, structural privacy scoping, selective transmission | [017](docs/adr/017-radio-federated-world-models.md) |
 | [`latentmesh-evolve`](crates/latentmesh-evolve) | The MetaHarness Darwin loop: causal-fitness topology evolution with the authority-never-expands invariant, deterministic seeded search, warm starts from procedural memory, and evidence-labelled JSON receipts verified by [`harness/evolve`](harness/evolve) | [018](docs/adr/018-metaharness-darwin-topology-loop.md) |
 
-The original four crates retain their 23-test baseline. The two Air crates add
-43 tests that passed in isolated Rust validation, including formatting,
-Clippy with warnings denied, and `no_std` compilation. The integrated workspace
-is also enforced by CI.
+The original four crates retain their 23-test baseline; the two Air crates add
+43 tests (formatting, Clippy with warnings denied, and `no_std` compilation
+included); the four integration crates (ADRs 015–018) add roughly 60 more
+across unit, contract, loopback, and acceptance suites. The integrated
+workspace is enforced by CI.
 
 ## Measured, not asserted
 

@@ -18,19 +18,27 @@ exactly the kind of small, structured, signed payload Air was built to carry.
 
 New crate **`latentmesh-federation`**:
 
-- **`TransitionRule`** — `(pre_state_hash, action, post_state_hash, support,
-  confidence, scope)` where `scope ∈ {Global, Cluster(id), Private,
-  Unresolved}` per FedWorld's knowledge classes. Rules serialize to a compact
-  bounded binary form (hard cap ≤ 200 bytes) so one rule fits one Air frame.
+- **`TransitionRule`** — `(pre, action, post, support, confidence, scope)`
+  with bounded UTF-8 state/action labels (≤ 48 bytes each — labels, not
+  hashes: local-scope validation must compare semantics, and 48-byte labels
+  keep the whole rule in one frame anyway) and `scope ∈ {Global, Cluster(id),
+  Private, Unresolved}` per FedWorld's knowledge classes. Rules serialize to
+  a compact bounded binary form (hard cap ≤ 200 bytes), inside the Air
+  fragmentation budget for every profile.
 - **`WorldModel`** — a per-node table of rules with prediction
   (`predict(pre, action) → post?`) and a held-out transition log.
-- **Local-scope validation is ADR-003's test, not a new mechanism**: a
+- **Local-scope validation is ADR-003's statistics, not a new mechanism**: a
   candidate rule from another node is admitted only if it improves held-out
-  prediction accuracy on the *local* log versus (a) no rule, (b) a
-  support-shuffled decoy of the same rule, and (c) a scope-mismatched decoy.
-  Private-scoped rules are never transmitted; cluster-scoped rules are only
-  offered to same-cluster peers. Rejected rules are recorded with the failing
-  control, mirroring the gate's audit style.
+  prediction accuracy on the *local* log — with a significant sign-flip
+  permutation p, reusing `latentmesh-gate`'s test — versus (a) no rule,
+  (b) a shuffled-post decoy (same shape, wrong content), and (c) a
+  wrong-key decoy (right content, wrong place). Too-thin holdout evidence
+  refuses to decide rather than guessing. Private-scoped rules are never
+  transmitted (encoder-refused, decoder-rejected), and scope is enforced on
+  both ends: `offerable_to`/`should_transmit_to` filter offers sender-side,
+  and the receiver's validator rejects cluster-mismatched candidates before
+  any statistics run. Rejections carry the failing control's name, mirroring
+  the gate's audit style.
 - **Selective transmission** — `should_transmit(rule, shared_state) → bool`
   implements ADR-007's information-gain rule: a node stays silent when its
   rule's prediction is already implied by what the peer set has acknowledged.

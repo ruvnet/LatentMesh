@@ -22,7 +22,7 @@ pub struct AcceptanceReport {
     pub task_success_after: f64,
     pub task_success_maintained: bool,
     /// Required: every surviving live edge individually passed the
-    /// four-control test, or is governance-mandatory.
+    /// five-control test, or is governance-mandatory.
     pub surviving_edges: usize,
     pub unverified_nonmandatory_edges: usize,
     pub all_surviving_edges_verified: bool,

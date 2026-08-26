@@ -66,10 +66,30 @@ pub fn decode_rule_envelope(
     TransitionRule::decode(&envelope.body)
 }
 
+/// Sender-side scope filter: may this rule be *offered* to a peer in
+/// `peer_cluster` at all? `Private` never leaves (also enforced by the
+/// encoder); cluster-scoped rules are offered only to same-cluster peers.
+pub fn offerable_to(rule: &TransitionRule, peer_cluster: u32) -> bool {
+    match rule.scope {
+        crate::rule::RuleScope::Private => false,
+        crate::rule::RuleScope::Cluster(id) => id == peer_cluster,
+        crate::rule::RuleScope::Global | crate::rule::RuleScope::Unresolved => true,
+    }
+}
+
 /// Selective transmission (ADR-007 / the RuView case): transmit only when the
-/// rule adds information beyond what the peer set already knows. Structurally
-/// the sending-side version of the admission question: if the shared model
-/// already predicts what this rule predicts, stay silent.
+/// rule may be offered to this peer's cluster at all AND it adds information
+/// beyond what the peer set already knows. Structurally the sending-side
+/// version of the admission question: if the shared model already predicts
+/// what this rule predicts, stay silent.
+pub fn should_transmit_to(rule: &TransitionRule, shared: &WorldModel, peer_cluster: u32) -> bool {
+    if !offerable_to(rule, peer_cluster) {
+        return false;
+    }
+    should_transmit(rule, shared)
+}
+
+/// Information-gain half of the transmission decision (scope-agnostic).
 pub fn should_transmit(rule: &TransitionRule, shared: &WorldModel) -> bool {
     match shared.predict(&rule.pre, &rule.action) {
         Some(post) => post != rule.post,
@@ -119,6 +139,19 @@ mod tests {
             decode_rule_envelope(&envelope),
             Err(FederationError::Malformed(_))
         ));
+    }
+
+    #[test]
+    fn scope_filters_offers_on_the_sending_side() {
+        let shared = WorldModel::new();
+        let mut r = rule();
+        r.scope = RuleScope::Cluster(3);
+        assert!(should_transmit_to(&r, &shared, 3));
+        assert!(!should_transmit_to(&r, &shared, 4));
+        r.scope = RuleScope::Private;
+        assert!(!should_transmit_to(&r, &shared, 3));
+        r.scope = RuleScope::Global;
+        assert!(should_transmit_to(&r, &shared, 9));
     }
 
     #[test]

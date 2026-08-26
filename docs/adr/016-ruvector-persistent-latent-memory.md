@@ -19,10 +19,11 @@ prototype by default.
 
 New crate **`latentmesh-memory`**:
 
-- **`LatentMemory` trait** — `store` / `recall` / `compress_to` / `promote` /
-  `len` over `TrajectoryRecord { frame_id, latent: Vec<f32>, reward, context_hash,
-  action, outcome, fidelity, causal_value }`. The trait is the contract; two
-  backends ship:
+- **`LatentMemory` trait** — `store` / `store_compressed` / `recall` /
+  `compress_to` / `promote_to_prototype` / `len` over
+  `TrajectoryRecord { id, latent: Vec<f32>, reward, context_hash, action,
+  outcome, causal_value, fidelity, reconstruction_error, parents }`. The trait
+  is the contract; two backends ship:
   - `InMemoryStore` — deterministic brute-force cosine store, zero extra
     dependencies, always compiled (tests, WASM-adjacent contexts).
   - `RuVectorStore` — behind the `ruvector` feature (exercised in CI and
@@ -37,17 +38,23 @@ New crate **`latentmesh-memory`**:
   the fidelity loss is the measured quantization error, not an unspecified
   transform; each step records the reconstruction error so ADR-005's
   "deliberate, measured tradeoff" is a number in the record.
-- **Admission policy**: only records whose `causal_value` (ADR-003's ΔV, as
-  measured by `latentmesh-gate`) clears a configured floor are eligible for the
-  Raw tier; everything else enters at Compressed or below. Storage cost is
-  bounded by demonstrated usefulness, per ADR-005.
-- **Prototype + rule promotion**: `promote` folds k members of a problem
-  family into a centroid prototype (nearest-prototype recall), and a prototype
-  reused successfully ≥ N times can be promoted to a `SymbolicRule { family,
-  topology, uses }` retrievable without touching the vector index.
-- **Procedural memory**: `TopologyRecord { family, agent_sequence }` is stored
-  through the same trait (family embedding as the key), giving ADR-006's
-  topology search its warm start.
+- **Admission policy**: only records whose `causal_value` clears a configured
+  floor are admitted to the Raw tier — a below-floor record is *rejected* at
+  Raw (not silently downgraded) and must be stored via `store_compressed`.
+  The value itself is caller-supplied: measuring ΔV is `latentmesh-gate`'s job
+  upstream (ADR-003); this crate enforces the floor, it does not re-measure.
+  Storage cost is bounded by demonstrated usefulness, per ADR-005.
+- **Prototype + rule promotion**: `promote_to_prototype` folds k members of a
+  problem family into a centroid prototype with lineage (both backends), and a
+  prototype reused successfully ≥ N times can be promoted to a
+  `SymbolicRule { family, rule, promoted_from, uses }` retrievable without
+  touching the vector index (rule promotion and the rules list live on
+  `InMemoryStore` today).
+- **Procedural memory**: `TopologyRecord { family, agent_sequence,
+  successful_uses }` is stored on `InMemoryStore` keyed by family label,
+  giving ADR-006's topology search its warm start. Promoting topology records
+  and rules onto the backend-agnostic trait (so the RuVector backend carries
+  them too) is named follow-up work, not claimed here.
 
 ## Consequences
 
@@ -58,10 +65,11 @@ New crate **`latentmesh-memory`**:
 - `ruvector-core`'s HNSW is approximate; tests that need determinism use
   `InMemoryStore`, and the RuVector-backed tests assert set-level recall, not
   exact ordering.
-- Recalled latents re-enter the mesh as *candidate* state: recall never
-  returns authority — a recalled trajectory is replayed through the gate at
-  `ObserveOnly` like any other inbound frame (ADR-008's "authority never
-  expands" applies to memory too).
+- Recalled latents re-enter the mesh as *candidate* state: recall returns
+  records, never authority. Nothing in this crate grants execution rights —
+  it is the caller's obligation (enforced by `latentmesh-gate` at the point
+  of use, per ADR-008) to replay recalled state through admission at
+  `ObserveOnly` like any other inbound frame.
 
 ## Implementation status
 

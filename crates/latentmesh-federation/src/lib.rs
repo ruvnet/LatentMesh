@@ -33,4 +33,6 @@ pub mod transport;
 pub use admission::{validate_candidate, AdmissionConfig, RuleVerdict};
 pub use model::{Transition, WorldModel};
 pub use rule::{FederationError, RuleScope, TransitionRule, MAX_RULE_BYTES};
-pub use transport::{decode_rule_envelope, encode_rule_envelope, should_transmit};
+pub use transport::{
+    decode_rule_envelope, encode_rule_envelope, offerable_to, should_transmit, should_transmit_to,
+};
