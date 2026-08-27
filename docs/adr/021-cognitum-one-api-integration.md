@@ -1,6 +1,6 @@
 # 021. cognitum-one API integration
 
-- **Status**: Proposed.
+- **Status**: Accepted — implemented this wave (offline/mock evidence only). Updated 2026-08-27.
 - **Date**: 2026-08-27.
 - **Related**: [008](008-capability-governed-execution.md) (authority/promotion gate this ADR's schema reference informs), [010](010-latentmesh-air-protocol.md) (the "entity identifiers, units, observation time, confidence policy, provenance references, authority" gap this ADR's §3.3 reference addresses), [016](016-ruvector-persistent-latent-memory.md) (the feature-gated optional-backend pattern this ADR mirrors)
 - **Evidence base**: [docs/research/019-meshtastic-agentbbs-cognitum-research.md](../research/019-meshtastic-agentbbs-cognitum-research.md) §3, §4.4
@@ -48,7 +48,15 @@ both through the same client path.
   `canonical_request = "POST\n{path}\n{ISO8601 timestamp}\nsha256(body)"`,
   sent as `X-Device-Id`/`X-Device-Timestamp`/`X-Device-Signature`; server
   rejects `|server_now − timestamp| > 300s` and a duplicate signature within
-  a 10-minute replay window. **Naming note**: cognitum's heartbeat body and
+  a 10-minute replay window. **Evidence correction (2026-08-27, found during
+  implementation)**: only the ±300s clock-skew check was found implemented in
+  the cloned `cognitum-one/api` source; the 10-minute replay window traces
+  only to prose in that repo's `docs/seed-integration.md` with no
+  implementation found — treat it as a documented-but-unverified server
+  behavior. The repo also contains a second, different signing scheme in
+  `functions/seed/index.js`, which its own README labels a "non-canonical
+  reference fork; do not deploy to production" — the canonical OpenAPI/docs
+  contract (implemented here) is the one to follow. **Naming note**: cognitum's heartbeat body and
   LMS1's `SemanticEnvelope.epoch` both use the field name `epoch` for
   unrelated concepts (heartbeat: a fleet-side counter; LMS1: the envelope's
   own epoch field, `envelope.rs`). This ADR keeps them explicitly distinct —
@@ -109,7 +117,10 @@ promotion path actually calls it or merely borrows its invariant shape.
 
 ## Implementation status
 
-Not implemented. This ADR is a design contract; `latentmesh-cognitum-client`
-does not yet exist as a crate. The signing primitive and mock-server-backed
-payload tests are the concrete first deliverable when this moves to
-implementation.
+Implemented 2026-08-27, same branch. `crates/latentmesh-cognitum-client`
+exists with `default = []`: Ed25519 canonical-request signing with an
+injected clock lives in the default (offline) build; the HTTP transport is
+gated behind the `http` feature (optional `ureq`). 27 tests pass by default
+(no network), 30 with `--features http` including a local mock-server test.
+No credentials are hardcoded anywhere; live `api.cognitum.one` calls remain
+credential-pending per the table above.

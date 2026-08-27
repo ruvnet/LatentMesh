@@ -1,0 +1,13 @@
+[package]
+name = "latentmesh-meshtastic"
+version = "0.1.0"
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+repository.workspace = true
+description = "LatentMesh Air adapter for the Meshtastic device-API transport (ADR-019)"
+
+[dependencies]
+# Host-side crate: always builds with std for std::io::{Read, Write} framing
+# over serial/TCP. No protobuf/protoc codegen dependency — see src/protobuf.rs.
+latentmesh-air-core = { path = "../latentmesh-air-core", version = "0.1.0" }

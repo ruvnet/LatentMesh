@@ -1,6 +1,6 @@
 # 020. agentbbs store-and-forward bridge
 
-- **Status**: Proposed.
+- **Status**: Accepted — implemented this wave (loopback/simulation evidence only). Updated 2026-08-27.
 - **Date**: 2026-08-27.
 - **Related**: [007](007-federated-world-models.md) (federation contract this bridge extends to a human-facing surface), [017](017-radio-federated-world-models.md) (the transport this bridge sits downstream of), [019](019-meshtastic-transport-adapter.md) (the likely last-mile transport carrying decoded state to a gateway node)
 - **Evidence base**: [docs/research/019-meshtastic-agentbbs-cognitum-research.md](../research/019-meshtastic-agentbbs-cognitum-research.md) §2, §4.3
@@ -105,7 +105,13 @@ ADR-164 confirmation.
 
 ## Implementation status
 
-Not implemented. This ADR is a design contract; `latentmesh-agentbbs-bridge`
-does not yet exist as a crate. The mapping-function core and the
-`LoopbackTransport`/stdio-binary tests are the concrete first deliverable
-when this moves to implementation.
+Implemented 2026-08-27, same branch. `crates/latentmesh-agentbbs-bridge`
+exists with agentbbs kept out of the Cargo dependency graph (wire contract
+transcribed field-for-field with source citations), the mapping-function
+core, a hand-rolled JSON-RPC 2.0 stdio MCP client, and an in-memory peer
+that explicitly disclaims being agentbbs's own `LoopbackTransport`. 25
+hermetic tests pass; one `#[ignore]`d opt-in test was additionally run once
+against the real `agentbbs mcp` binary built from a shallow clone and passed
+(documented reproducibly in the crate). The `federation_bbs_watch`
+poll-vs-push mapping remains inferred-not-verified pending a direct read of
+`ruvnet/ruflo` ADR-164.

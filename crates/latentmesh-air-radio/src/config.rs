@@ -113,6 +113,20 @@ impl LinkConfig {
                     amplitude: 0.8,
                 }),
             },
+            // ADR-019: Meshtastic owns PHY, FEC, interleaving, and multi-hop
+            // relay itself, so this link never sets FrameFlags::FEC and never
+            // touches the BPSK/CPFSK modem paths — it hands encoded bytes
+            // straight to `latentmesh-meshtastic`'s device-API framing.
+            // 233 is Meshtastic's `Data.payload` ceiling
+            // (`DATA_PAYLOAD_LEN`, mesh.proto), not Air's native 256-byte
+            // `FRAME_MAX_BYTES`; see `latentmesh_meshtastic::MESHTASTIC_FRAME_MTU`.
+            WireProfile::Meshtastic => Self {
+                profile,
+                frame_mtu: 233,
+                flags: FrameFlags::NONE,
+                interleaver_columns: 1,
+                modulation: Modulation::ByteTransport,
+            },
         }
     }
 

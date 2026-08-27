@@ -51,7 +51,7 @@ static lm_air_status_t validate_frame(const lm_air_frame_t *frame) {
     if (frame == NULL) {
         return LM_AIR_ERR_ARGUMENT;
     }
-    if (frame->profile > LM_AIR_PROFILE_HAM_PACKET || frame->flags > 0x0fu ||
+    if (frame->profile > LM_AIR_PROFILE_MESHTASTIC || frame->flags > 0x0fu ||
         frame->class_id > LM_AIR_CLASS_DIAGNOSTIC ||
         frame->priority > 0x0fu) {
         return LM_AIR_ERR_FORMAT;

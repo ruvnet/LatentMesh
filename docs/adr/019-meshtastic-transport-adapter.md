@@ -1,6 +1,6 @@
 # 019. Meshtastic transport adapter
 
-- **Status**: Proposed.
+- **Status**: Accepted — implemented this wave (loopback/simulation evidence only). Updated 2026-08-27.
 - **Date**: 2026-08-27.
 - **Related**: [010](010-latentmesh-air-protocol.md) (frame/envelope this adapter carries unmodified), [011](011-radio-adapters-and-legal-boundary.md) (adapter table and legal boundary this ADR extends), [013](013-esp32-firmware.md) (existing WiFi/BLE adapters, the closest precedent), [014](014-benchmark-and-acceptance-method.md) (stage-gate discipline this adapter must enter at)
 - **Evidence base**: [docs/research/019-meshtastic-agentbbs-cognitum-research.md](../research/019-meshtastic-agentbbs-cognitum-research.md) §1, §4.1-4.2
@@ -129,8 +129,15 @@ golden vector are not optional follow-up, they are part of "done" for the
 
 ## Implementation status
 
-Not implemented. This ADR is a design contract per the mission's four-ADR
-wave; `latentmesh-meshtastic` does not yet exist as a crate. Entry into
-ADR-014's stage-gate table (protocol correctness → simulated link → hardware
-transport) follows the same discipline as every other adapter row: simulation
-results do not become an over-the-air claim.
+Implemented 2026-08-27, same branch. `WireProfile::Meshtastic = 9` landed on
+both sides together (`crates/latentmesh-air-core/src/wire.rs` +
+`c/include/latentmesh_air/frame.h`) with the shared golden vector
+`wire_frame_meshtastic_v1.hex` byte-identical in both testdata trees and
+wired into the C test main. `crates/latentmesh-meshtastic` exists with a
+single path dependency on `latentmesh-air-core`, a hand-rolled minimal
+protobuf codec (no protoc), `frame_mtu = 233` / 217 usable payload bytes as
+executable assertions, and 25 loopback tests passing. Entry into ADR-014's
+stage-gate table (protocol correctness → simulated link → hardware transport)
+follows the same discipline as every other adapter row: simulation results do
+not become an over-the-air claim, and the hardware-pending rows in the table
+above remain open.

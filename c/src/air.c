@@ -90,6 +90,14 @@ lm_air_status_t lm_air_profile_defaults(
         case LM_AIR_PROFILE_HAM_PACKET:
             config->fragment_payload_bytes = 240u;
             break;
+        case LM_AIR_PROFILE_MESHTASTIC:
+            /* ADR-019: Meshtastic's Data.payload ceiling is 233 bytes and is
+             * not a stream limit (it does not auto-fragment application
+             * payloads), so Air's own 16-byte frame overhead comes out of
+             * that budget: 233 - 16 = 217 usable fragment payload bytes.
+             * Meshtastic owns FEC and interleaving itself. */
+            config->fragment_payload_bytes = 217u;
+            break;
         default:
             return LM_AIR_ERR_FORMAT;
     }
@@ -97,7 +105,7 @@ lm_air_status_t lm_air_profile_defaults(
 }
 
 static int valid_profile_config(const lm_air_profile_config_t *profile) {
-    if (profile == NULL || profile->profile > LM_AIR_PROFILE_HAM_PACKET ||
+    if (profile == NULL || profile->profile > LM_AIR_PROFILE_MESHTASTIC ||
         profile->fragment_payload_bytes == 0u ||
         profile->fragment_payload_bytes > LM_AIR_MAX_FRAME_PAYLOAD ||
         profile->use_fec > 1u || profile->interleave_rows > 64u) {

@@ -26,11 +26,12 @@ jobs:
       - run: cargo test --workspace
       - run: cargo check -p latentmesh-air-core --no-default-features
       - run: cargo check -p latentmesh-air-radio --no-default-features
-      # Feature-gated integrations (ADR-015/016): the MidStream QUIC transport
-      # and the RuVector backend live behind features kept off the MSRV path,
-      # so lint and test them explicitly on stable.
-      - run: cargo clippy -p latentmesh-stream -p latentmesh-memory -p latentmesh-bench --all-features --all-targets -- -D warnings
-      - run: cargo test -p latentmesh-stream -p latentmesh-memory --all-features
+      # Feature-gated integrations (ADR-015/016/021): the MidStream QUIC
+      # transport, the RuVector backend, and the cognitum HTTP transport live
+      # behind features kept off the MSRV path, so lint and test them
+      # explicitly on stable.
+      - run: cargo clippy -p latentmesh-stream -p latentmesh-memory -p latentmesh-bench -p latentmesh-cognitum-client --all-features --all-targets -- -D warnings
+      - run: cargo test -p latentmesh-stream -p latentmesh-memory -p latentmesh-cognitum-client --all-features
 
   rust-msrv:
     runs-on: ubuntu-latest
@@ -49,6 +50,7 @@ jobs:
         run: |
           cmp c/tests/testdata/wire_frame_v1.hex crates/latentmesh-air-core/testdata/wire_frame_v1.hex
           cmp c/tests/testdata/semantic_envelope_v1.hex crates/latentmesh-air-core/testdata/semantic_envelope_v1.hex
+          cmp c/tests/testdata/wire_frame_meshtastic_v1.hex crates/latentmesh-air-core/testdata/wire_frame_meshtastic_v1.hex
       - name: Configure with sanitizers
         run: cmake -S c -B /tmp/latentmesh-air-c -DCMAKE_BUILD_TYPE=RelWithDebInfo -DLM_AIR_ENABLE_SANITIZERS=ON
       - name: Build

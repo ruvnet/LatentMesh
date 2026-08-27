@@ -13,6 +13,9 @@ members = [
   "crates/latentmesh-memory",
   "crates/latentmesh-federation",
   "crates/latentmesh-evolve",
+  "crates/latentmesh-meshtastic",
+  "crates/latentmesh-agentbbs-bridge",
+  "crates/latentmesh-cognitum-client",
 ]
 
 [workspace.package]

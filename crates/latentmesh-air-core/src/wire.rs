@@ -22,6 +22,10 @@ pub enum WireProfile {
     AmAudio = 6,
     FmAudio = 7,
     HamPacket = 8,
+    /// Meshtastic device-API transport (ADR-019). Licence-exempt ISM PHY
+    /// owned entirely by Meshtastic firmware; this adapter carries LMS1/LMAD
+    /// unmodified inside a `Data.payload`.
+    Meshtastic = 9,
 }
 
 impl TryFrom<u8> for WireProfile {
@@ -38,6 +42,7 @@ impl TryFrom<u8> for WireProfile {
             6 => Self::AmAudio,
             7 => Self::FmAudio,
             8 => Self::HamPacket,
+            9 => Self::Meshtastic,
             _ => return Err(AirError::InvalidProfile),
         })
     }

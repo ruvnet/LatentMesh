@@ -1,0 +1,32 @@
+# latentmesh-cognitum-client — ADR-021: a client for cognitum-one/api's
+# cloud-fleet `/v1/seed/*` surface only (never the co-located V0 appliance's
+# `/api/v1/v0/*` gateway — see the module docs in src/lib.rs). Mirrors
+# latentmesh-memory's ADR-016 feature-gating shape: signing is real,
+# offline-testable, and in the default build; only the HTTP transport itself
+# is behind a feature, so `cargo test --workspace` stays hermetic and green
+# without network access by default.
+[package]
+name = "latentmesh-cognitum-client"
+version = "0.1.0"
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+repository.workspace = true
+description = "Ed25519 canonical-request signing and typed payloads for cognitum-one/api's /v1/seed/* cloud-fleet surface (ADR-021); default build has no network dependency, `http` feature adds a blocking transport"
+
+[features]
+default = []
+# Blocking HTTP transport (ureq) that executes SignedRequests against a
+# caller-supplied base URL. Exercised separately in CI via --features http.
+http = ["dep:ureq"]
+
+[dependencies]
+serde = { workspace = true }
+serde_json = { workspace = true }
+sha2 = { workspace = true }
+ed25519-dalek = { workspace = true }
+# Register/heartbeat public keys and signatures are base64 per the OpenAPI
+# spec (openapi/cognitum-api.yaml: `publicKey: { description: Base64 Ed25519
+# public key }`) — not a workspace dependency elsewhere, pinned explicitly.
+base64 = "0.22"
+ureq = { version = "2.12", optional = true }
