@@ -22,7 +22,10 @@
 // an exercised code path.
 
 export const SEARCH_SPACE = Object.freeze({
-  fragmentationThresholdBytes: Object.freeze([140, 160, 180, 200, 217]),
+  // Top of range revised 217 -> 211 (MESHTASTIC_FRAME_MTU 233 -> 227 after
+  // live-firmware interop testing found 232+ bytes rejected with
+  // Routing.Error.TOO_LARGE; see lib/verify.mjs's MESHTASTIC_BOUNDS comment).
+  fragmentationThresholdBytes: Object.freeze([140, 160, 180, 200, 211]),
   bridgeBatchingIntervalMs: Object.freeze([0, 100, 250, 500, 1000, 2000]),
 });
 
@@ -30,12 +33,12 @@ export const SEARCH_SPACE = Object.freeze({
 export const FRAGMENT_UNIT_COST = 10;
 /**
  * A deliberately tiny tie-breaker: several thresholds can tie on fragment
- * count for a given message size (e.g. 160B and 217B both need 2 fragments
+ * count for a given message size (e.g. 160B and 211B both need 2 fragments
  * for a 300B message), and among ties the larger threshold is strictly
  * preferable (more packing headroom for a larger future delta, at zero
  * extra fragment cost today). Scaled so it can never outweigh a genuine
  * one-fragment difference (`FRAGMENT_UNIT_COST`): the largest possible
- * headroom bonus (threshold 217) is `217 * 0.01 = 2.17`, well under 10.
+ * headroom bonus (threshold 211) is `211 * 0.01 = 2.11`, well under 10.
  */
 const HEADROOM_TIEBREAK_WEIGHT = 0.01;
 /** Simulated fixed per-bridge-call (MCP post_message/ReplicateMessage) overhead. */

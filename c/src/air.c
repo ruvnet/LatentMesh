@@ -91,12 +91,24 @@ lm_air_status_t lm_air_profile_defaults(
             config->fragment_payload_bytes = 240u;
             break;
         case LM_AIR_PROFILE_MESHTASTIC:
-            /* ADR-019: Meshtastic's Data.payload ceiling is 233 bytes and is
-             * not a stream limit (it does not auto-fragment application
-             * payloads), so Air's own 16-byte frame overhead comes out of
-             * that budget: 233 - 16 = 217 usable fragment payload bytes.
-             * Meshtastic owns FEC and interleaving itself. */
-            config->fragment_payload_bytes = 217u;
+            /* ADR-019 (revised after live-firmware interop testing): the raw
+             * MTU used here is 227, not mesh.proto's encoded-submessage
+             * ceiling DATA_PAYLOAD_LEN (233) -- that field bounds the
+             * *encoded* Data submessage, and the portnum varint tag/value
+             * plus the payload bytes tag/length consume ~6 bytes of
+             * protobuf field overhead a raw-payload MTU must leave headroom
+             * for. 227 is also the empirically-reliable ceiling measured
+             * live against meshtasticd v2.7.26 (portduino, simulated
+             * radio): broadcasts up to 227 bytes round-tripped
+             * consistently, and 232+ bytes were rejected with
+             * Routing.Error.TOO_LARGE ("Error=7, return NAK and drop
+             * packet"); see latentmesh-meshtastic's MESHTASTIC_FRAME_MTU
+             * doc comment and examples/meshtasticd_interop.rs for the full
+             * writeup. Meshtastic does not auto-fragment application
+             * payloads, so Air's own 16-byte frame overhead comes out of
+             * that 227-byte budget: 227 - 16 = 211 usable fragment payload
+             * bytes. Meshtastic owns FEC and interleaving itself. */
+            config->fragment_payload_bytes = 211u;
             break;
         default:
             return LM_AIR_ERR_FORMAT;

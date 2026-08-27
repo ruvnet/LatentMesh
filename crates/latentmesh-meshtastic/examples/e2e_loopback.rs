@@ -1,10 +1,13 @@
 //! ADR-022 e2e loopback driver for `harness/integration`'s Meshtastic
-//! framing suite: fragment a `SemanticEnvelope` at the 233-byte MTU
-//! (ADR-019), push fragments through a mock `Data.payload` channel with the
-//! `0x94 0xc3` device-API framing applied and stripped, confirm
-//! `Reassembler` round-trips byte-identical — for both the single-packet
-//! (~120B unsigned / ~186B signed) and multi-fragment (>217B) paths named in
-//! ADR-022's Decision section.
+//! framing suite: fragment a `SemanticEnvelope` at the 227-byte MTU
+//! (ADR-019, revised down from an initially-assumed 233 once live-firmware
+//! interop testing found 232+ bytes rejected — see
+//! `latentmesh_meshtastic::MESHTASTIC_FRAME_MTU`'s doc comment), push
+//! fragments through a mock `Data.payload` channel with the `0x94 0xc3`
+//! device-API framing applied and stripped, confirm `Reassembler`
+//! round-trips byte-identical — for both the single-packet (~120B unsigned
+//! / ~186B signed) and multi-fragment (>211B) paths named in ADR-022's
+//! Decision section.
 //!
 //! Prints one JSON object to stdout. No hardware, no live Meshtastic node —
 //! every byte here comes from [`latentmesh_meshtastic::simulate_node_echo_as_from_radio`],
@@ -120,7 +123,7 @@ fn main() {
     let (signed_result, signed_portnum_ok) = round_trip(signed_packets);
     let signed_round_trip_ok = signed_result.as_deref() == Some(signed_encoded.as_slice());
 
-    // --- Scenario 3: a message well over the 217-usable-byte-per-packet
+    // --- Scenario 3: a message well over the 211-usable-byte-per-packet
     // budget, forcing multi-fragment reassembly across several packets.
     let multi_fragment_bytes = 300_usize;
     let multi_message: Vec<u8> = (0..multi_fragment_bytes as u32).map(|v| v as u8).collect();

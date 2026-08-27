@@ -18,9 +18,19 @@ export const AGENTBBS_RECEIPT_SCHEMA = "latentmesh-integration-agentbbs-receipt-
 export const COGNITUM_RECEIPT_SCHEMA = "latentmesh-integration-cognitum-receipt-v1";
 export const OPTIMIZE_RECEIPT_SCHEMA = "latentmesh-integration-optimize-receipt-v1";
 
+// mtu/usableBytesPerPacket revised 233/217 -> 227/211: ADR-019's original
+// 233 assumed mesh.proto's DATA_PAYLOAD_LEN bounded the raw Data.payload
+// directly, but it bounds the *encoded* Data submessage — the portnum
+// varint tag/value and payload bytes tag/length cost ~6 bytes of protobuf
+// field overhead a raw-payload MTU must leave headroom for. 227 is also the
+// empirically-reliable ceiling measured live against meshtasticd v2.7.26
+// (portduino): ≤227 bytes round-tripped consistently, 232+ bytes were
+// rejected with Routing.Error.TOO_LARGE. See
+// latentmesh_meshtastic::MESHTASTIC_FRAME_MTU's doc comment and
+// crates/latentmesh-meshtastic/examples/meshtasticd_interop.rs.
 export const MESHTASTIC_BOUNDS = Object.freeze({
-  mtu: 233,
-  usableBytesPerPacket: 217,
+  mtu: 227,
+  usableBytesPerPacket: 211,
   unsignedPacketCount: 1,
   signedPacketCount: 1,
   multiFragmentMessageBytes: 300,

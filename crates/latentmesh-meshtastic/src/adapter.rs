@@ -15,13 +15,27 @@ use crate::data::{self, BROADCAST_ADDR, PRIVATE_APP_PORTNUM};
 use crate::error::{Error, Result};
 use crate::framing;
 
-/// `233 = DATA_PAYLOAD_LEN` (Meshtastic's `Data.payload` ceiling,
-/// `mesh.proto`), **not** `latentmesh_air_core::FRAME_MAX_BYTES` (256).
+/// 227, not `DATA_PAYLOAD_LEN` (233, `mesh.proto`) and not
+/// `latentmesh_air_core::FRAME_MAX_BYTES` (256). `DATA_PAYLOAD_LEN` bounds
+/// the *encoded* `Data` submessage, not the raw payload bytes carried
+/// inside it: the `portnum` varint tag+value and the `payload` bytes
+/// tag+length consume protobuf field overhead (~6 bytes at this payload's
+/// varint width) that a raw-payload MTU must leave headroom for. 227 is
+/// also the empirically-reliable ceiling measured live against a real
+/// `meshtasticd` v2.7.26 (portduino, simulated radio) instance: a binary
+/// search of raw broadcast `Data.payload` sizes found ≤227 bytes round-trip
+/// consistently, 228-231 bytes transmit at the radio layer but the
+/// self-echo delivery back to the local API client is unreliable, and 232+
+/// bytes are explicitly rejected — `ServerAPI` logs "Error=7, return NAK
+/// and drop packet", where `Error=7` is `Routing.Error.TOO_LARGE`
+/// (`meshtastic/protobufs`' `mesh.proto`). See
+/// `examples/meshtasticd_interop.rs` for the live evidence and the
+/// regression tripwire that re-checks the 232-byte rejection boundary.
 /// Meshtastic does not auto-fragment application payloads (ADR-019 §1.3),
 /// so this is the complete outer-frame MTU handed to `fragment_message` —
-/// it already includes Air's own 16-byte frame overhead, leaving 217 usable
+/// it already includes Air's own 16-byte frame overhead, leaving 211 usable
 /// LMS1/LMAD payload bytes per Meshtastic packet.
-pub const MESHTASTIC_FRAME_MTU: usize = 233;
+pub const MESHTASTIC_FRAME_MTU: usize = 227;
 
 /// One message ready to fragment and send. `profile` is deliberately not a
 /// field here — this adapter always fragments with `WireProfile::Meshtastic`;
@@ -108,7 +122,22 @@ impl MeshtasticAdapter {
         if received.portnum != PRIVATE_APP_PORTNUM {
             return Ok(None);
         }
-        let frame = SparseRadioFrame::decode(&received.payload)?;
+        self.ingest_air_payload(&received.payload)
+    }
+
+    /// Decodes `payload` as one [`SparseRadioFrame`] and pushes it into the
+    /// in-progress reassembly, returning a completed message once every
+    /// fragment of its stream has arrived. Split out from
+    /// [`ingest_from_radio`] so a caller that has already extracted an Air
+    /// fragment's bytes through some other path — e.g.
+    /// `examples/meshtasticd_interop.rs`'s portduino-simulator
+    /// `SIMULATOR_APP_PORTNUM` self-echo workaround
+    /// (`data::decode_data`'s doc comment), where the real payload arrives
+    /// one `Data` layer deeper than [`ingest_from_radio`] looks — can feed
+    /// it straight into the same reassembler without needing its own
+    /// second [`Reassembler`] instance.
+    pub fn ingest_air_payload(&mut self, payload: &[u8]) -> Result<Option<ReassembledMessage>> {
+        let frame = SparseRadioFrame::decode(payload)?;
         Ok(self.reassembler.push(frame)?)
     }
 }
@@ -255,9 +284,9 @@ mod tests {
     }
 
     #[test]
-    fn message_over_217_usable_bytes_fragments_and_reassembles_across_packets() {
-        // 300 bytes of body forces 2 Air fragments at the 217-usable-byte
-        // budget (233 - 16), which must round-trip through the full
+    fn message_over_211_usable_bytes_fragments_and_reassembles_across_packets() {
+        // 300 bytes of body forces 2 Air fragments at the 211-usable-byte
+        // budget (227 - 16), which must round-trip through the full
         // encode -> device-API frame -> (simulated node echo) -> decode ->
         // reassemble pipeline.
         let message: Vec<u8> = (0..300_u32).map(|value| value as u8).collect();
@@ -265,7 +294,7 @@ mod tests {
         let packets = adapter
             .encode_message(outgoing(FrameFlags::NONE, &message, 0xbeef))
             .unwrap();
-        assert_eq!(packets.len(), 2, "300B / 217 usable bytes needs 2 packets");
+        assert_eq!(packets.len(), 2, "300B / 211 usable bytes needs 2 packets");
         for framed in &packets {
             assert!(framed.len() <= framing::MAX_DEVICE_API_FRAME_LEN);
         }

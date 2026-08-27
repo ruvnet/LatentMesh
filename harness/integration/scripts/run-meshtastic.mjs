@@ -2,7 +2,7 @@
 // crates/latentmesh-meshtastic's `e2e_loopback` example (release, no
 // hardware) and wraps its JSON output in an evidence-labelled receipt,
 // verified against the bounds ADR-019/ADR-022 name (single-packet
-// unsigned/signed deltas, a >217-usable-byte multi-fragment message).
+// unsigned/signed deltas, a >211-usable-byte multi-fragment message).
 
 import { mkdirSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";

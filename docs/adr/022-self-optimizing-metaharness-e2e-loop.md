@@ -100,7 +100,7 @@ Implemented 2026-08-27, same branch, after ADR-019 through ADR-021 landed.
 `harness/integration/` exists with the three e2e loopback suites (each
 shelling out to an `e2e_loopback` example in the owning crate), the
 metaharness-gates runner, and the Darwin-loop optimizer (selected
-fragmentation threshold 217 B and bridge batching interval 500 ms —
+fragmentation threshold 211 B and bridge batching interval 500 ms —
 simulation-optimal only, per the receipt's own `not_claimed` list). All
 receipts land in `harness/integration/artifacts/` with `"evidence":
 "simulated"` labels and seeded determinism; CI runs the suite as the

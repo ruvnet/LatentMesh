@@ -117,12 +117,22 @@ impl LinkConfig {
             // relay itself, so this link never sets FrameFlags::FEC and never
             // touches the BPSK/CPFSK modem paths — it hands encoded bytes
             // straight to `latentmesh-meshtastic`'s device-API framing.
-            // 233 is Meshtastic's `Data.payload` ceiling
-            // (`DATA_PAYLOAD_LEN`, mesh.proto), not Air's native 256-byte
-            // `FRAME_MAX_BYTES`; see `latentmesh_meshtastic::MESHTASTIC_FRAME_MTU`.
+            // 227, not mesh.proto's `DATA_PAYLOAD_LEN` (233) and not Air's
+            // native 256-byte `FRAME_MAX_BYTES`: `DATA_PAYLOAD_LEN` bounds
+            // the encoded `Data` submessage, not the raw payload bytes
+            // inside it — the `portnum` varint tag+value and the `payload`
+            // bytes tag+length consume ~6 bytes of protobuf field overhead
+            // that this raw MTU has to leave headroom for. 227 is also the
+            // empirically-reliable ceiling measured live against a
+            // `meshtasticd` v2.7.26 (portduino) instance: broadcasts up to
+            // 227 bytes round-tripped consistently, and 232+ bytes were
+            // rejected with `Routing.Error.TOO_LARGE` (`Error=7,` "return
+            // NAK and drop packet"); see
+            // `latentmesh_meshtastic::MESHTASTIC_FRAME_MTU` and its
+            // `SIMULATOR_APP_PORTNUM` doc comment for the full writeup.
             WireProfile::Meshtastic => Self {
                 profile,
-                frame_mtu: 233,
+                frame_mtu: 227,
                 flags: FrameFlags::NONE,
                 interleaver_columns: 1,
                 modulation: Modulation::ByteTransport,

@@ -22,8 +22,8 @@ function goodMeshtasticReceipt() {
     schema: MESHTASTIC_RECEIPT_SCHEMA,
     evidence: "simulated",
     driver: {
-      mtu: 233,
-      usable_bytes_per_packet: 217,
+      mtu: 227,
+      usable_bytes_per_packet: 211,
       unsigned: { envelope_bytes: 105, air_frame_bytes: 121, packet_count: 1, portnum_ok: true, round_trip_ok: true },
       signed: { envelope_bytes: 169, air_frame_bytes: 185, packet_count: 1, portnum_ok: true, round_trip_ok: true },
       multi_fragment: { message_bytes: 300, packet_count: 2, portnum_ok: true, round_trip_ok: true },
@@ -153,25 +153,25 @@ test("an unverified cognitum signature fails", () => {
 
 // --- optimizer.mjs ---
 
-const MEASUREMENTS = Object.freeze({ usableBytesPerPacket: 217, multiFragmentMessageBytes: 300 });
+const MEASUREMENTS = Object.freeze({ usableBytesPerPacket: 211, multiFragmentMessageBytes: 300 });
 
 test("a threshold above the measured packet ceiling is invalid", () => {
   const result = evaluateCandidate(
-    { fragmentationThresholdBytes: 233, bridgeBatchingIntervalMs: 0 },
+    { fragmentationThresholdBytes: 227, bridgeBatchingIntervalMs: 0 },
     MEASUREMENTS,
   );
   assert.equal(result.valid, false);
 });
 
 test("evaluateCandidate is deterministic for the same inputs", () => {
-  const candidate = { fragmentationThresholdBytes: 217, bridgeBatchingIntervalMs: 250 };
+  const candidate = { fragmentationThresholdBytes: 211, bridgeBatchingIntervalMs: 250 };
   const a = evaluateCandidate(candidate, MEASUREMENTS);
   const b = evaluateCandidate(candidate, MEASUREMENTS);
   assert.deepEqual(a, b);
 });
 
 test("a smaller fragmentation threshold never produces fewer fragments", () => {
-  const wide = evaluateCandidate({ fragmentationThresholdBytes: 217, bridgeBatchingIntervalMs: 0 }, MEASUREMENTS);
+  const wide = evaluateCandidate({ fragmentationThresholdBytes: 211, bridgeBatchingIntervalMs: 0 }, MEASUREMENTS);
   const narrow = evaluateCandidate({ fragmentationThresholdBytes: 140, bridgeBatchingIntervalMs: 0 }, MEASUREMENTS);
   assert.ok(narrow.fragments >= wide.fragments);
 });
@@ -204,6 +204,6 @@ test("the search finds a score at least as good as the baseline", () => {
 
 test("SEARCH_SPACE only contains thresholds at or below a plausible Meshtastic budget", () => {
   for (const value of SEARCH_SPACE.fragmentationThresholdBytes) {
-    assert.ok(value <= 217);
+    assert.ok(value <= 211);
   }
 });
