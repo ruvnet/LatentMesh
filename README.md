@@ -7,7 +7,7 @@
 [![License: MIT OR Apache-2.0](https://img.shields.io/badge/License-MIT_OR_Apache--2.0-yellow?style=for-the-badge)](#license)
 [![rust](https://img.shields.io/badge/rust-1.77%2B-orange?style=for-the-badge)](#workspace)
 [![status](https://img.shields.io/badge/status-research%20prototype-e6b45a?style=for-the-badge)](#honest-status)
-[![ADRs: 18](https://img.shields.io/badge/ADRs-18_decisions-6366f1?style=for-the-badge)](docs/adr/README.md)
+[![ADRs: 22](https://img.shields.io/badge/ADRs-22_decisions-6366f1?style=for-the-badge)](docs/adr/README.md)
 
 **[LatentMesh Air Studio](https://latentmesh-air.ruv.chatgpt.site/) · [ADRs](docs/adr) · [The original story](https://ruvnet.github.io/LatentMesh/)**
 
@@ -21,7 +21,7 @@ Today, when one AI agent needs to hand a problem to another, it has to explain i
 
 The catch is that this can't just be trusted blindly. A connection between two agents earns the right to influence anything only after it passes a test proving it actually made the receiving agent smarter — not just busier. Every claimed connection is checked against five decoys (nothing sent, random noise, the wrong topic, talking to itself, and even the old-fashioned written-out version) before it's allowed to matter. Connections that don't clearly help get cut.
 
-This repository is the research prototype: the message format, the math that translates one agent's internal state into another's, the "does this connection actually help" test, and the safety gate that governs who's allowed to act on what. LatentMesh Air now adds a bounded semantic radio protocol, portable C and Rust transmitters and receivers, ESP32 firmware adapters, and an evidence-labelled optimization harness. Fourteen design records explain what is implemented, what remains simulated, and what still requires real radio hardware.
+This repository is the research prototype: the message format, the math that translates one agent's internal state into another's, the "does this connection actually help" test, and the safety gate that governs who's allowed to act on what. LatentMesh Air now adds a bounded semantic radio protocol, portable C and Rust transmitters and receivers, ESP32 firmware adapters, and an evidence-labelled optimization harness. Twenty-two design records explain what is implemented, what remains simulated, and what still requires real radio hardware — including an integration wave (ADRs 019-022) that carries Air frames over Meshtastic LoRa mesh packets, bridges decoded state into ruvnet/agentbbs bulletin boards, signs cognitum-one fleet-API requests, and proves all three end-to-end in a deterministic loopback harness.
 
 <p align="center">
   <a href="https://ruvnet.github.io/LatentMesh/">

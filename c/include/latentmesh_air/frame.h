@@ -17,7 +17,12 @@ typedef enum lm_air_profile {
     LM_AIR_PROFILE_VHF_CPFSK = 5,
     LM_AIR_PROFILE_AM_AUDIO = 6,
     LM_AIR_PROFILE_FM_AUDIO = 7,
-    LM_AIR_PROFILE_HAM_PACKET = 8
+    LM_AIR_PROFILE_HAM_PACKET = 8,
+    /* Meshtastic device-API transport (ADR-019). Licence-exempt ISM PHY
+     * owned entirely by Meshtastic firmware; carries LMS1/LMAD unmodified
+     * inside a Data.payload. Cross-language ABI value, locked to the shared
+     * golden vector in c/tests/testdata/wire_frame_meshtastic_v1.hex. */
+    LM_AIR_PROFILE_MESHTASTIC = 9
 } lm_air_profile_t;
 
 enum {

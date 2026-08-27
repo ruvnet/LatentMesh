@@ -26,20 +26,29 @@ jobs:
       - run: cargo test --workspace
       - run: cargo check -p latentmesh-air-core --no-default-features
       - run: cargo check -p latentmesh-air-radio --no-default-features
-      # Feature-gated integrations (ADR-015/016): the MidStream QUIC transport
-      # and the RuVector backend live behind features kept off the MSRV path,
-      # so lint and test them explicitly on stable.
-      - run: cargo clippy -p latentmesh-stream -p latentmesh-memory -p latentmesh-bench --all-features --all-targets -- -D warnings
-      - run: cargo test -p latentmesh-stream -p latentmesh-memory --all-features
+      # Feature-gated integrations (ADR-015/016/021): the MidStream QUIC
+      # transport, the RuVector backend, and the cognitum HTTP transport live
+      # behind features kept off the MSRV path, so lint and test them
+      # explicitly on stable.
+      - run: cargo clippy -p latentmesh-stream -p latentmesh-memory -p latentmesh-bench -p latentmesh-cognitum-client --all-features --all-targets -- -D warnings
+      - run: cargo test -p latentmesh-stream -p latentmesh-memory -p latentmesh-cognitum-client --all-features
 
   rust-msrv:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      # Install 1.77 first, then stable (last install wins as default).
       - uses: dtolnay/rust-toolchain@master
         with:
           toolchain: 1.77.0
-      - run: cargo check --workspace --all-targets
+      - uses: dtolnay/rust-toolchain@stable
+      # A fresh resolve on 1.77's own cargo picks transitive releases that
+      # already use edition2024 (e.g. cpufeatures 0.3) and fails at manifest
+      # parse. Resolve the lockfile with stable cargo's MSRV-aware fallback
+      # resolver instead, then check against it with 1.77.
+      - name: Resolve MSRV-compatible lockfile
+        run: CARGO_RESOLVER_INCOMPATIBLE_RUST_VERSIONS=fallback cargo +stable generate-lockfile
+      - run: cargo +1.77.0 check --workspace --all-targets --locked
 
   portable-c:
     runs-on: ubuntu-latest
@@ -49,6 +58,7 @@ jobs:
         run: |
           cmp c/tests/testdata/wire_frame_v1.hex crates/latentmesh-air-core/testdata/wire_frame_v1.hex
           cmp c/tests/testdata/semantic_envelope_v1.hex crates/latentmesh-air-core/testdata/semantic_envelope_v1.hex
+          cmp c/tests/testdata/wire_frame_meshtastic_v1.hex crates/latentmesh-air-core/testdata/wire_frame_meshtastic_v1.hex
       - name: Configure with sanitizers
         run: cmake -S c -B /tmp/latentmesh-air-c -DCMAKE_BUILD_TYPE=RelWithDebInfo -DLM_AIR_ENABLE_SANITIZERS=ON
       - name: Build
@@ -124,6 +134,27 @@ jobs:
         with:
           name: latentmesh-evolve-simulated-evidence
           path: harness/evolve/artifacts/
+          if-no-files-found: error
+
+  metaharness-integration:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: harness/integration
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: Swatinem/rust-cache@v2
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: npm install --ignore-scripts
+      - run: npm audit --audit-level=high
+      - run: npm run validate
+      - uses: actions/upload-artifact@v4
+        with:
+          name: latentmesh-integration-simulated-evidence
+          path: harness/integration/artifacts/
           if-no-files-found: error
 
   dependency-security:

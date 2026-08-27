@@ -34,6 +34,33 @@ fn outer_frame_matches_cross_language_vector() {
 }
 
 #[test]
+fn meshtastic_profile_outer_frame_matches_cross_language_vector() {
+    // Same body as `outer_frame_matches_cross_language_vector`, except
+    // `profile: Meshtastic` (9) and no FEC flag — Meshtastic's own LoRa PHY
+    // owns FEC, so an Air frame bound for it never sets FrameFlags::FEC.
+    // ADR-019: this vector is the C/Rust conformance case for the new
+    // `WireProfile::Meshtastic` ABI value; it must stay byte-identical to
+    // `c/tests/testdata/wire_frame_meshtastic_v1.hex` and the golden array in
+    // `c/tests/test_air.c`.
+    let frame = SparseRadioFrame {
+        profile: WireProfile::Meshtastic,
+        flags: FrameFlags::ACK_REQUEST,
+        stream_id: 0x1234,
+        sequence: 0x0102,
+        fragment_index: 0,
+        fragment_count: 1,
+        class: SemanticClass::StateDelta,
+        priority: 15,
+        state_tag: 0xbeef,
+        payload: vec![0xde, 0xad, 0xbe, 0xef],
+    };
+    assert_eq!(
+        hex(&frame.encode().unwrap()),
+        include_str!("../testdata/wire_frame_meshtastic_v1.hex").trim()
+    );
+}
+
+#[test]
 fn semantic_envelope_matches_golden_vector() {
     let mut before = CriticalState::new();
     before.set(1, SymbolValue::Bool(false)).unwrap();

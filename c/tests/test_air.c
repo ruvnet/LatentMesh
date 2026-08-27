@@ -91,6 +91,45 @@ static int test_crc_and_frame(void) {
     return 0;
 }
 
+/* ADR-019 cross-language conformance case for WireProfile::Meshtastic (9).
+ * Same body as test_crc_and_frame's golden frame, but profile 9 and no FEC
+ * flag (Meshtastic's own LoRa PHY owns FEC). Must stay byte-identical to
+ * crates/latentmesh-air-core/testdata/wire_frame_meshtastic_v1.hex and
+ * c/tests/testdata/wire_frame_meshtastic_v1.hex. */
+static int test_meshtastic_profile_golden(void) {
+    static const uint8_t golden[] = {
+        0xa1u, 0x19u, 0x12u, 0x34u, 0x01u, 0x02u, 0x00u,
+        0x01u, 0x1fu, 0x04u, 0xbeu, 0xefu, 0xdeu, 0xadu,
+        0xbeu, 0xefu, 0x91u, 0xd7u, 0x05u, 0x71u};
+    lm_air_frame_t frame;
+    lm_air_frame_t decoded;
+    uint8_t wire[LM_AIR_MAX_WIRE_BYTES];
+    size_t wire_len = 0u;
+
+    memset(&frame, 0, sizeof(frame));
+    frame.profile = LM_AIR_PROFILE_MESHTASTIC;
+    frame.flags = LM_AIR_FLAG_ACK_REQUEST;
+    frame.stream_id = 0x1234u;
+    frame.sequence = 0x0102u;
+    frame.fragment_index = 0u;
+    frame.fragment_count = 1u;
+    frame.class_id = LM_AIR_CLASS_STATE_DELTA;
+    frame.priority = 15u;
+    frame.state_tag = 0xbeefu;
+    frame.payload_len = 4u;
+    frame.payload[0] = 0xdeu;
+    frame.payload[1] = 0xadu;
+    frame.payload[2] = 0xbeu;
+    frame.payload[3] = 0xefu;
+    CHECK(lm_air_frame_encode(&frame, wire, sizeof(wire), &wire_len) ==
+          LM_AIR_OK);
+    CHECK(wire_len == 20u);
+    CHECK(memcmp(wire, golden, sizeof(golden)) == 0);
+    CHECK(lm_air_frame_decode(wire, wire_len, &decoded) == LM_AIR_OK);
+    CHECK(memcmp(&frame, &decoded, sizeof(frame)) == 0);
+    return 0;
+}
+
 static int test_semantic_envelope_golden(void) {
     static const uint8_t golden[] = {
         0x4cu, 0x4du, 0x53u, 0x31u, 0x01u, 0x00u, 0x01u, 0x0fu,
@@ -491,7 +530,7 @@ static int test_malformed_inputs(void) {
 static int test_profiles(void) {
     lm_air_profile_config_t config;
     unsigned profile;
-    for (profile = LM_AIR_PROFILE_WIFI; profile <= LM_AIR_PROFILE_HAM_PACKET;
+    for (profile = LM_AIR_PROFILE_WIFI; profile <= LM_AIR_PROFILE_MESHTASTIC;
          ++profile) {
         CHECK(lm_air_profile_defaults((uint8_t)profile, &config) == LM_AIR_OK);
         CHECK(config.fragment_payload_bytes > 0u);
@@ -502,6 +541,7 @@ static int test_profiles(void) {
 
 int main(void) {
     CHECK(test_crc_and_frame() == 0);
+    CHECK(test_meshtastic_profile_golden() == 0);
     CHECK(test_semantic_envelope_golden() == 0);
     CHECK(test_fec_and_interleaver() == 0);
     CHECK(test_modems() == 0);
