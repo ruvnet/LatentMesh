@@ -1,0 +1,19 @@
+{
+  "name": "@latentmesh/integration-metaharness",
+  "private": true,
+  "version": "0.1.0",
+  "description": "ADR-022 MetaHarness suite for the meshtastic/agentbbs/cognitum integration wave (ADRs 019-021): three e2e loopback suites, optional MetaHarness gates, and a Darwin-loop-style adapter-parameter optimizer, each emitting an evidence-labelled JSON receipt. Deterministic simulation only — no hardware, no live peers, no credentials.",
+  "type": "module",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "meshtastic": "node scripts/run-meshtastic.mjs",
+    "agentbbs": "node scripts/run-agentbbs.mjs",
+    "cognitum": "node scripts/run-cognitum.mjs",
+    "gates": "node scripts/metaharness-gates.mjs",
+    "optimize": "node scripts/optimize.mjs",
+    "test": "node --test test/*.test.mjs",
+    "validate": "npm test && npm run meshtastic && npm run agentbbs && npm run cognitum && npm run gates && npm run optimize"
+  }
+}

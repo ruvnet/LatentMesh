@@ -41,7 +41,8 @@ mod protobuf;
 
 pub use adapter::{MeshtasticAdapter, OutgoingMessage, StreamingReceiver, MESHTASTIC_FRAME_MTU};
 pub use data::{
-    decode_from_radio, encode_to_radio_data, ReceivedData, BROADCAST_ADDR, PRIVATE_APP_PORTNUM,
+    decode_from_radio, encode_to_radio_data, simulate_node_echo_as_from_radio, ReceivedData,
+    BROADCAST_ADDR, PRIVATE_APP_PORTNUM,
 };
 pub use error::{Error, Result};
 pub use framing::{

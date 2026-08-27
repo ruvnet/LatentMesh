@@ -30,3 +30,11 @@ ed25519-dalek = { workspace = true }
 # public key }`) — not a workspace dependency elsewhere, pinned explicitly.
 base64 = "0.22"
 ureq = { version = "2.12", optional = true }
+
+# ADR-022's cognitum contract-test driver for harness/integration: builds a
+# canonical request, signs it, and replays it against a same-process mock
+# HTTP server (std::net::TcpListener, same technique as this crate's own
+# http.rs tests) — so it needs the `http` feature's CognitumHttpClient.
+[[example]]
+name = "e2e_loopback"
+required-features = ["http"]

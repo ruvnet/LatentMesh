@@ -178,7 +178,7 @@ fn decode_mesh_packet(bytes: &[u8]) -> Result<Option<ReceivedData>> {
     }))
 }
 
-/// Test-only fixture: reshapes an unframed `ToRadio` buffer (as produced by
+/// Reshapes an unframed `ToRadio` buffer (as produced by
 /// [`encode_to_radio_data`]) into an unframed `FromRadio` buffer carrying
 /// the same `MeshPacket`. ToRadio and FromRadio disagree only on the
 /// `packet` field number (1 vs. 2) and FromRadio's own top-level `id`;
@@ -186,8 +186,13 @@ fn decode_mesh_packet(bytes: &[u8]) -> Result<Option<ReceivedData>> {
 /// node echoing our own packet back to us over the local device API would
 /// produce — a loopback simulation, not a live-node claim (ADR-019: no
 /// Meshtastic hardware is present on this host).
-#[cfg(test)]
-pub(crate) fn simulate_node_echo_as_from_radio(to_radio: &[u8]) -> Vec<u8> {
+///
+/// Public (not `#[cfg(test)]`) so both this crate's own tests and the
+/// `examples/e2e_loopback.rs` driver used by `harness/integration` (ADR-022)
+/// can exercise the same ToRadio -> FromRadio echo shape. It remains a
+/// loopback-simulation aid, never a claim about real Meshtastic firmware
+/// behavior.
+pub fn simulate_node_echo_as_from_radio(to_radio: &[u8]) -> Vec<u8> {
     let mut packet_bytes = Vec::new();
     for_each_field(to_radio, |field, value| {
         if field == TO_RADIO_FIELD_PACKET {

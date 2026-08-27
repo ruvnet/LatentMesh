@@ -2,6 +2,7 @@
 Cargo.lock
 
 # Local agent/tooling session state — never part of the source tree
+.claude/
 .claude-flow/
 .swarm/
 agentdb.rvf
