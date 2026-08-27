@@ -1,6 +1,6 @@
 # 022. Self-optimizing MetaHarness e2e loop for the integration wave
 
-- **Status**: Proposed.
+- **Status**: Accepted — implemented this wave (deterministic simulation evidence only). Updated 2026-08-27.
 - **Date**: 2026-08-27.
 - **Related**: [014](014-benchmark-and-acceptance-method.md) (stage-gate/evidence-label discipline this ADR extends), [018](018-metaharness-darwin-topology-loop.md) (the harness pattern and receipt discipline this ADR follows), [019](019-meshtastic-transport-adapter.md), [020](020-agentbbs-store-and-forward-bridge.md), [021](021-cognitum-one-api-integration.md) (the three integrations this ADR's suites exercise)
 
@@ -96,7 +96,12 @@ simulation, not real-agent gains" framing.
 
 ## Implementation status
 
-Not implemented. This ADR is a design contract; `harness/integration/` does
-not yet exist. It depends on ADR-019 through ADR-021 having at least their
-crate skeletons and unit-testable core logic in place before the e2e suites
-have anything real to exercise.
+Implemented 2026-08-27, same branch, after ADR-019 through ADR-021 landed.
+`harness/integration/` exists with the three e2e loopback suites (each
+shelling out to an `e2e_loopback` example in the owning crate), the
+metaharness-gates runner, and the Darwin-loop optimizer (selected
+fragmentation threshold 217 B and bridge batching interval 500 ms —
+simulation-optimal only, per the receipt's own `not_claimed` list). All
+receipts land in `harness/integration/artifacts/` with `"evidence":
+"simulated"` labels and seeded determinism; CI runs the suite as the
+`metaharness-integration` job in `air-ci.yml`.
