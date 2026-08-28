@@ -14,7 +14,7 @@
 //!       crates/latentmesh-runtime/target/latentmesh-runs/s2), fit the 3x3
 //!       depth sweep, gate A6, write the calibration receipt.
 
-use latentmesh_live::{calibrate, gsm8k};
+use latentmesh_live::{calibrate, calibrate_gen, gsm8k};
 use std::path::PathBuf;
 
 fn main() -> anyhow::Result<()> {
@@ -58,9 +58,37 @@ fn main() -> anyhow::Result<()> {
             );
             Ok(())
         }
+        Some("calibrate-generated") => {
+            let mut dump_dir = gsm8k::crate_dir()
+                .join("../../crates/latentmesh-runtime/target/latentmesh-runs/s2c");
+            let mut out: Option<PathBuf> = None;
+            let mut i = 2;
+            while i + 1 < args.len() {
+                match args[i].as_str() {
+                    "--dump-dir" => dump_dir = PathBuf::from(&args[i + 1]),
+                    "--out" => out = Some(PathBuf::from(&args[i + 1])),
+                    other => anyhow::bail!("unknown arg {other}"),
+                }
+                i += 2;
+            }
+            let receipt = calibrate_gen::run(&dump_dir)?;
+            let out = out.unwrap_or_else(|| dump_dir.join("s2c-calibration-receipt.json"));
+            std::fs::write(&out, serde_json::to_string_pretty(&receipt)?)?;
+            println!("generated-pairs calibration receipt: {}", out.display());
+            match receipt["winner"].as_object() {
+                Some(w) => println!(
+                    "winner cell L{}->L{}: held-out residual {} (probe this cell first)",
+                    w["sender_layer"], w["receiver_layer"], w["held_out_relative_residual"]
+                ),
+                None => println!(
+                    "BOTH CELLS FAIL A6 — CONTINGENCY-FAILED without a probe (pre-committed branch)"
+                ),
+            }
+            Ok(())
+        }
         _ => {
             eprintln!(
-                "usage: latentmesh-live <make-splits | calibrate [--dump-dir DIR] [--out FILE]>"
+                "usage: latentmesh-live <make-splits | calibrate [--dump-dir DIR] [--out FILE] | calibrate-generated [--dump-dir DIR] [--out FILE]>"
             );
             std::process::exit(2);
         }

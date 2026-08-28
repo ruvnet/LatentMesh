@@ -7,4 +7,5 @@
 //! ([`gsm8k::eval_items`], [`gsm8k::holdout_items`]).
 
 pub mod calibrate;
+pub mod calibrate_gen;
 pub mod gsm8k;

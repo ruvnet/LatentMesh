@@ -90,26 +90,43 @@ struct ProbeConfig {
     receiver_block: usize,
     expected_hash: String,
     n_items: usize,
+    /// ADR-023 Deviation 7 generated-pairs contingency run: the transform
+    /// hash is the NEW generated-pairs fit (validated against
+    /// `--expected-hash` exactly as always), while every protocol knob —
+    /// items, sign test, alpha, slots, pooling, rescale, decoding — stays
+    /// this file's frozen S1a protocol, untouched by the flag.
+    dev7_contingency: bool,
 }
 
 impl ProbeConfig {
     /// Pre-committed iff the frozen probe shape holds AND the cell is one of
     /// the two ADR-023-registered cells: the S2 winner L18→L14 or the
     /// Deviation 6 fallback anchor L24→L19 (the fallback is itself
-    /// registered, so a fallback run stays pre-committed).
+    /// registered, so a fallback run stays pre-committed). Under
+    /// `--dev7-contingency` (the ADR-023 Deviation 7 pre-registered
+    /// generated-pairs contingency) the same two cell shapes are
+    /// pre-committed with the generated-pairs transform hash — the
+    /// contingency, its outcome rule, and its one-probe-per-cell fallback
+    /// chain are themselves frozen in ADR-023 before this run.
     fn pre_committed(&self) -> bool {
-        let winner_cell = self.sender_block == 18
-            && self.receiver_block == 14
-            && self.expected_hash == WINNER_HASH;
-        let anchor_cell = self.sender_block == 24
-            && self.receiver_block == 19
-            && self.expected_hash == ANCHOR_HASH;
-        self.n_items == 40 && (winner_cell || anchor_cell)
+        let winner_shape = self.sender_block == 18 && self.receiver_block == 14;
+        let anchor_shape = self.sender_block == 24 && self.receiver_block == 19;
+        let winner_cell = winner_shape && self.expected_hash == WINNER_HASH;
+        let anchor_cell = anchor_shape && self.expected_hash == ANCHOR_HASH;
+        let dev7_cell = self.dev7_contingency && (winner_shape || anchor_shape);
+        self.n_items == 40 && (winner_cell || anchor_cell || dev7_cell)
     }
     fn tag(&self) -> String {
         format!(
-            "cellL{}toL{}-slots8-poolfull-rescaletrue-n{}",
-            self.sender_block, self.receiver_block, self.n_items
+            "cellL{}toL{}-slots8-poolfull-rescaletrue-n{}{}",
+            self.sender_block,
+            self.receiver_block,
+            self.n_items,
+            if self.dev7_contingency {
+                "-genpairs"
+            } else {
+                ""
+            }
         )
     }
 }
@@ -126,12 +143,18 @@ fn parse_args() -> ProbeConfig {
         receiver_block: 14,
         expected_hash: WINNER_HASH.to_string(),
         n_items: 40,
+        dev7_contingency: false,
     };
     let args: Vec<String> = std::env::args().collect();
     let mut i = 1;
     while i < args.len() {
         let next = |i: usize| args.get(i + 1).cloned().expect("missing arg value");
         match args[i].as_str() {
+            "--dev7-contingency" => {
+                cfg.dev7_contingency = true;
+                i += 1;
+                continue;
+            }
             "--transform" => cfg.transform = PathBuf::from(next(i)),
             "--golden" => cfg.golden = PathBuf::from(next(i)),
             "--sender-block" => cfg.sender_block = next(i).parse().expect("--sender-block N"),
@@ -388,6 +411,10 @@ fn main() -> anyhow::Result<()> {
         "design": "docs/adr/023-live-four-condition-run1-pre-registration.md (A7 coordinator resolution, Deviation 6); protocol = S1a's frozen protocol (docs/research/024 section 7 S1a) with the S2-fitted cross-model transform",
         "env": common::env_info(&nvcc),
         "pre_committed": cfg.pre_committed(),
+        "contingency": cfg.dev7_contingency.then_some(
+            "ADR-023 Deviation 7: pre-registered generated-pairs recalibration re-probe; \
+             transform fitted on sender-GENERATED reasoning pairs (S2c), protocol knobs frozen \
+             (same 40 items, same sign test, same alpha, same slots/pooling/rescale/decoding)"),
         "config": {
             "sender": SENDER, "receiver": RECEIVER,
             "sender_capture_block": cfg.sender_block, "receiver_inject_block": cfg.receiver_block,
