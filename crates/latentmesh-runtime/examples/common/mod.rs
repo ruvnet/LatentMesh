@@ -3,6 +3,9 @@
 //! sha256 receipts, answer normalization, the exact sign test, and receipt
 //! environment capture.
 
+pub mod m3;
+pub mod mlp;
+
 use sha2::{Digest, Sha256};
 use std::io::Read;
 use std::path::{Path, PathBuf};
@@ -178,6 +181,25 @@ pub fn env_info(nvcc_runtime: &str) -> serde_json::Value {
             .map(|d| d.as_secs())
             .unwrap_or(0),
     })
+}
+
+/// Standard-normal vector via Box–Muller over a seeded ChaCha8 stream —
+/// the exact S1a/S2b random-control generator (those examples carry their
+/// own private copies, predating this shared one; run-2 probes use this).
+pub fn gaussian_vec(rng: &mut rand_chacha::ChaCha8Rng, n: usize) -> Vec<f32> {
+    use rand::Rng;
+    let mut v = Vec::with_capacity(n);
+    while v.len() < n {
+        let u1: f64 = rng.gen_range(f64::MIN_POSITIVE..1.0);
+        let u2: f64 = rng.gen::<f64>();
+        let r = (-2.0 * u1.ln()).sqrt();
+        let t = 2.0 * std::f64::consts::PI * u2;
+        v.push((r * t.cos()) as f32);
+        if v.len() < n {
+            v.push((r * t.sin()) as f32);
+        }
+    }
+    v
 }
 
 /// Write a JSON receipt and echo its path.

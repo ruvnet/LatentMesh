@@ -1,0 +1,57 @@
+# latentmesh-train — run-2 trained thought-adapter training crate (ADR-024
+# § Infrastructure). Standalone package, deliberately EXCLUDED from the root
+# workspace for the identical reason latentmesh-runtime is (coordinator
+# ruling 2026-08-27): candle needs half ^2.5 (MSRV 1.81) which can never
+# unify with latentmesh-core's =2.4.1 MSRV-1.77 pin. Own lockfile, COPIED
+# VERBATIM from latentmesh-runtime's (candle 0.9.2 + cudarc 0.17.8/0.19.9,
+# the exact pin set the M0 training-infra scout proved on this RTX 5080 with
+# nvcc 12.8.93) — never re-resolved from scratch (ADR-024: "not re-resolved
+# from scratch, to avoid pulling an unproven point release against nvcc
+# 12.8/sm_120").
+#
+# The `cuda` feature is OFF by default so CPU-only checkouts keep
+# `cargo test` green from this directory. Training runs MUST enable it:
+#   PATH=/usr/local/cuda-12.8/bin:$PATH cargo run --release --features cuda \
+#       --bin train_m3_mlp
+# build.rs enforces the nvcc 12.8 pin whenever `cuda` is enabled, mirroring
+# latentmesh-runtime's guard.
+[package]
+name = "latentmesh-train"
+version = "0.1.0"
+edition = "2021"
+# Standalone MSRV, decoupled from the workspace's 1.77 (candle dep tree
+# requires half >=2.5, rust-version 1.81) — same ruling as latentmesh-runtime.
+rust-version = "1.81"
+license = "MIT OR Apache-2.0"
+repository = "https://github.com/ruvnet/LatentMesh"
+description = "Run-2 trained thought-adapter training (ADR-024): MLP projector over per-token paired hidden-state dumps, leakage-safe splits, training receipts."
+
+[workspace]
+
+[features]
+default = []
+cuda = ["candle-core/cuda", "candle-nn/cuda", "latentmesh-runtime/cuda"]
+
+[dependencies]
+# ADR-024: latentmesh-train path-depends on latentmesh-runtime directly (both
+# are workspace-excluded candle crates sharing the same half >=2.5 pin — this
+# is the cross-crate build ADR-024 named as M2/M3's first concrete check).
+# Used here for the runtime half of the nvcc build-env guard in receipts.
+latentmesh-runtime = { path = "../latentmesh-runtime" }
+candle-core = { version = "0.9.2" }
+candle-nn = { version = "0.9.2" }
+memmap2 = "0.9"
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+sha2 = "0.10"
+# rand 0.8 + rand_chacha 0.3 EXACTLY: the fit_holdout_split replica must
+# reproduce harness/latentmesh-live's ChaCha8 shuffle bit-for-bit (rand 0.9's
+# stream differs; candle pulls rand 0.9 elsewhere in the graph — the explicit
+# 0.8/0.3 pins here keep our imports on the harness-matching versions).
+rand = "0.8"
+rand_chacha = "0.3"
+anyhow = "1"
+
+[[bin]]
+name = "train_m3_mlp"
+required-features = ["cuda"]
