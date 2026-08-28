@@ -396,6 +396,22 @@ a plan document, not just a results document.
 | M5 | Receiver-side MicroLoRA from ΔV feedback | Not started — least specified, needs its own scouting pass first |
 | M6 | Full four-condition run, A1-A8 computed (or a second negative result) | Not started — gated on M3/M4/M5 producing a passing adapter |
 
+## Registered confound — receiver-scale threshold (added 2026-08-28, while M3 was in flight)
+
+arXiv:2608.05164 ("Cross-Architecture Steering Transfer", surveyed in
+[docs/research/027](../research/027-global-ambient-intelligence-track.md))
+reports cross-model latent-steering transfer works reliably only above a
+~1.7B receiver-parameter threshold. This run's receiver (Qwen2.5-1.5B) sits
+just below it. Consequences, registered before any M3 probe result was
+known: (1) every run-1 and run-2 null result is scoped to "at a sub-threshold
+receiver" until controlled; (2) a **mandatory scale-control arm** follows
+M3/M4 regardless of outcome — repeat the best (or least-bad) adapter with a
+receiver ≥1.7B (Qwen2.5-3B as receiver fits the 16 GB card alongside the
+sender; a fresh calibration/capture and its own pre-registration addendum
+are required, since receiver layers/dims change); (3) M3/M4 probe outcomes
+must not be interpreted as verdicts on linear-vs-trained translation until
+that arm reports. The frozen probe protocol itself is unchanged.
+
 ## Future work / out of scope — registrations, not commitments
 
 Three directions are named here because they bear on run 2's eventual shape, but **none of them
