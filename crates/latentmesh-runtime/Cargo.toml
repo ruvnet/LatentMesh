@@ -72,3 +72,7 @@ required-features = ["cuda"]
 [[example]]
 name = "s2b_bridge_probe"
 required-features = ["cuda"]
+
+[[example]]
+name = "run2_pertoken_dump"
+required-features = ["cuda"]
