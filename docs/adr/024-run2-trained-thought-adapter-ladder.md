@@ -396,6 +396,21 @@ a plan document, not just a results document.
 | M5 | Receiver-side MicroLoRA from ΔV feedback | Not started — least specified, needs its own scouting pass first |
 | M6 | Full four-condition run, A1-A8 computed (or a second negative result) | Not started — gated on M3/M4/M5 producing a passing adapter |
 
+## M3 outcome (2026-08-28, appended per ladder discipline)
+
+**Honest fail, both variants, adversarially confirmed** (commit 14e2af1;
+receipts `run2-m3-receipt-cellL18toL14-mlp-{pertoken,pooled}-*.json`).
+The MLP learned substantial per-token structure (holdout MSE 0.179, relative
+residual 0.461 vs the 0.843 mean-predictor baseline) yet the frozen probe
+found no causal use: per-token p=0.6875 (aligned 21/40 vs random 21/40),
+pooled p=0.5000 (22/40 vs 21/40); zero-vector and NLL secondaries normal;
+all integrity gates (artifact hash, golden pairs at 4.5e-7, item-set
+reproduction) passed. The anchor cell was deliberately NOT probed (an
+unregistered extra draw). Reading: regression fit does not buy causal
+transfer — now shown for a trained nonlinear map, scoped by the registered
+receiver-scale confound above. Ladder proceeds to M4 (sequence translation)
+per this ADR's fail path.
+
 ## Registered confound — receiver-scale threshold (added 2026-08-28, while M3 was in flight)
 
 arXiv:2608.05164 ("Cross-Architecture Steering Transfer", surveyed in
