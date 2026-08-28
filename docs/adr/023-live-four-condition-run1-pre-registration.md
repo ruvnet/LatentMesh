@@ -45,8 +45,35 @@ value; it exists here for provenance, not as an input to any frozen threshold.
 | S0 — runtime mechanics | build green under nvcc 12.8; capture shape 2048; capture logits bit-identical; injected logits finite and different from baseline; zero-slot ≈ baseline; injected norm within 3× natural band | **PASS**, all gates green on 3 GSM8K test items | `receipts/s0-receipt.json`, commit `9a676a5d53f66425e40e3ca6f8c3bf6fb1aa9379` |
 | S1a — self-pair injection probe | real distinguishable from random, p<0.05, one-sided exact sign test | **PASS on the second run** — see Deviation 3 below for the honest run-1 failure | `receipts/s1a-receipt-slots8-block19-poolfull-rescaletrue-n40.json`, `receipts/run-ledger.json` |
 | S1b — crate patches | `cargo test --workspace` green; align affine mean-centering + cached matrix + hash-once; gate configurable dV thresholds | **Landed** — verified in this session against `crates/latentmesh-align/src/lib.rs` (`mu_s`/`mu_r` fields, `content_hash`) and `crates/latentmesh-gate/src/lib.rs` (`CeilingThresholds { action_influencing_dv: 0.15, latent_prefix_dv: 0.05 }`) | current tree |
-| S2 — calibration | held-out relative residual < 0.9 (A6) | **Running concurrently with this ADR** — result and transform `content_hash` pending | — |
+| S2 — calibration | held-out relative residual < 0.9 (A6) | **PASS** — all 9 sweep cells pass; winner **L18→L14** (50%/50% relative depth), held-out relative residual **0.5106**; transform `content_hash` **eb3f42edde853824642a2b811577e2c767f73c2c179fe03a05ac8dac23704457** (artifact `receipts/transform-L18-to-L14.json`, file sha256 == content_hash); registered via `Policy::trust_transform` | `receipts/s2-calibration-receipt.json`, `receipts/s2-dump-receipt.json`, `receipts/s2-splits-receipt.json` |
 | S3-S6 | per design §7 | **Not started** | — |
+
+### S2-completion coordinator rulings (2026-08-28, before any eval item consumed)
+
+- **Deviation 5 — split-seed collision, resolved toward implementation.** This ADR
+  (authored concurrently with S2) registered train/test shuffle seeds derived from
+  `SHA-256("latentmesh-live-run1-<label>")` (`0x970340d0faa39992` / `0xa6109ba8198fbb17`).
+  The S2 implementation, running in parallel, generated the actual committed splits with
+  its own pre-run seeds (`0x24C0DE01` train shuffle, `0x24C0DE02` test shuffle,
+  `0x24C0DE03` 80/20 fit split; `data/splits-receipt.json`). Both seed sets were fixed
+  before any outcome-relevant item was consumed, and eval/holdout access is mechanically
+  refused until a genome-frozen receipt exists (unit-tested). Ruling: the **as-implemented
+  seeds are authoritative**; the SHA-derived train/test-shuffle values are void. The
+  `darwin-genome` and `audit-run-seed` registrations above remain authoritative (unused yet).
+- **Deviation 6 — winning calibration cell is L18→L14, not the design §2 anchor L24→L19.**
+  Selection followed the registered rule (minimum held-out residual, §5.3): L18→L14 = 0.5106
+  vs anchor L24→L19 = 0.5600 (anchor also passes A6). S1a's injection-mechanics evidence is
+  at receiver L19; no mechanics probe has run at L14. Ruling: the mandatory S2→S3 bridge
+  probe (A7 resolution above) runs at the winner (aligned 3B-L18 → transform → 1.5B-L14,
+  plus true zero-vector injection through the real path). **Registered fallback**: if the
+  bridge probe fails at L14, run 1 carries the anchor cell L24→L19 instead — its A6 pass
+  and L19 mechanics evidence are already on record — and the fallback use is disclosed in
+  the results section. Either way the choice closes before S3 opens.
+- **Correction to the earlier workspace ruling**: `harness/latentmesh-live` was built as a
+  root-workspace **member** after all — it crosses to `latentmesh-runtime` exclusively via
+  files and subprocess invocation (never a cargo dependency), so the half/MSRV conflict the
+  earlier ledger entry feared does not arise. The exclusion requirement stands only for
+  crates that link candle.
 
 ### Four conditions (frozen, as design §4)
 

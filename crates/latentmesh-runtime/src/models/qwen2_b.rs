@@ -34,6 +34,16 @@ pub enum LayerEdit<'a> {
         after_block: usize,
         out: &'a mut Option<Tensor>,
     },
+    /// Read-only multi-tap: clone the residual hidden state after EACH listed
+    /// block in one pass (S2 calibration sweeps 3 depths per model; three
+    /// single-tap passes would triple the prefill cost). Like `Capture`, the
+    /// only extra op per tap is a `Tensor::clone` — the S2 dump receipt
+    /// re-measures logits parity against the unpatched forward rather than
+    /// trusting this argument.
+    CaptureMany {
+        after_blocks: &'a [usize],
+        out: &'a mut Vec<(usize, Tensor)>,
+    },
     /// Overwrite the residual rows at `positions` with the rows of `vectors`
     /// (`(positions.len(), hidden)`, any float dtype; cast to model dtype).
     /// An empty `positions` list is a no-op *by construction*: the tensor
@@ -50,6 +60,10 @@ fn apply_edit(xs: Tensor, blocks_run: usize, edit: &mut LayerEdit<'_>) -> Result
     match edit {
         LayerEdit::Capture { after_block, out } if *after_block == blocks_run => {
             **out = Some(xs.clone());
+            Ok(xs)
+        }
+        LayerEdit::CaptureMany { after_blocks, out } if after_blocks.contains(&blocks_run) => {
+            out.push((blocks_run, xs.clone()));
             Ok(xs)
         }
         LayerEdit::Inject {

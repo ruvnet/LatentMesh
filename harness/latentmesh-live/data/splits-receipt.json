@@ -1,0 +1,58 @@
+{
+  "design": "docs/research/024-live-latent-experiment-design.md sections 3, 6",
+  "disjointness": {
+    "calibration_vs_adaptation_overlap": 0,
+    "eval_vs_holdout_overlap": 0,
+    "train_vs_test": "different source files by construction"
+  },
+  "eval_holdout_lock": "receipts/genome-frozen.json absent; eval_items()/holdout_items() refuse",
+  "evidence_label": "deterministic seeded split generation; no model, no simulation",
+  "seeds": {
+    "discipline": "one without-replacement sample per source; contiguous slices form the splits",
+    "test_split_chacha8": 616619522,
+    "train_split_chacha8": 616619521
+  },
+  "sources": {
+    "test": {
+      "design_pin_verified": true,
+      "file": "gsm8k-test.jsonl",
+      "n_items": 1319,
+      "sha256": "3730d312f6e3440559ace48831e51066acaca737f6eabec99bccb9e4b3c39d14",
+      "url": "https://raw.githubusercontent.com/openai/grade-school-math/master/grade_school_math/data/test.jsonl"
+    },
+    "train": {
+      "file": "gsm8k-train.jsonl",
+      "n_items": 7473,
+      "sha256": "17f347dc51477c50d4efb83959dbb7c56297aba886e5544ee2aaed3024813465",
+      "url": "https://raw.githubusercontent.com/openai/grade-school-math/master/grade_school_math/data/train.jsonl"
+    }
+  },
+  "splits": [
+    {
+      "max_index": 7471,
+      "min_index": 1,
+      "n": 4000,
+      "split": "calibration-4000"
+    },
+    {
+      "max_index": 7441,
+      "min_index": 4,
+      "n": 512,
+      "split": "adaptation-512"
+    },
+    {
+      "max_index": 1306,
+      "min_index": 24,
+      "n": 200,
+      "split": "eval-200"
+    },
+    {
+      "max_index": 1290,
+      "min_index": 7,
+      "n": 100,
+      "split": "holdout-100"
+    }
+  ],
+  "stage": "S2-splits",
+  "unix_time": 1787937203
+}

@@ -67,6 +67,16 @@ pub fn assert_cuda_build_env() -> Result<String> {
     ))
 }
 
+/// 1-based block index at a relative depth (design §5.2's {50%, 66%, 80%}
+/// sweep grid). The rule is `ceil(frac × n_layers)` — the only simple rule
+/// reproducing BOTH depth anchors the design names in §2: sender capture
+/// "layer 24/36" (ceil(0.66·36) = 24) and receiver inject "layer 19/28"
+/// (ceil(0.66·28) = 19; plain rounding would give 18 and contradict the
+/// design). Recorded in the S2 receipts so the swept indices are auditable.
+pub fn layer_at_relative_depth(frac: f64, n_layers: usize) -> usize {
+    (frac * n_layers as f64).ceil() as usize
+}
+
 /// The device live runs use. With the `cuda` feature: CUDA:0; otherwise CPU
 /// (for CPU-only unit tests — never for measured runs).
 pub fn device() -> Result<Device> {
@@ -260,6 +270,22 @@ mod tests {
     fn placeholder_scan() {
         let toks = [1u32, 7, 7, 3, 7];
         assert_eq!(QwenRuntime::placeholder_positions(&toks, 7), vec![1, 2, 4]);
+    }
+
+    #[test]
+    fn depth_rule_reproduces_design_anchors() {
+        // §2 named anchors: sender L24/36 and receiver L19/28 at ~2/3 depth.
+        assert_eq!(layer_at_relative_depth(0.66, 36), 24);
+        assert_eq!(layer_at_relative_depth(0.66, 28), 19);
+        // Full S2 sweep grid.
+        assert_eq!(
+            [0.50, 0.66, 0.80].map(|f| layer_at_relative_depth(f, 36)),
+            [18, 24, 29]
+        );
+        assert_eq!(
+            [0.50, 0.66, 0.80].map(|f| layer_at_relative_depth(f, 28)),
+            [14, 19, 23]
+        );
     }
 
     #[test]

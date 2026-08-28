@@ -77,6 +77,65 @@ pub fn forward_capture(
     ))
 }
 
+/// Teacher-forced prefill with taps after EACH of `after_blocks` in a single
+/// pass (S2 calibration: 3 depths per model per item). Returns the pass's
+/// last-position logits plus one [`Capture`] per tapped block, in
+/// `after_blocks` order. Same parity property as [`forward_capture`] — each
+/// tap only clones the residual — and the S2 dump receipt measures it.
+pub fn forward_capture_multi(
+    model: &mut ModelForCausalLM,
+    tokens: &[u32],
+    after_blocks: &[usize],
+    span: Range<usize>,
+    device: &Device,
+) -> Result<(Tensor, Vec<Capture>)> {
+    assert!(
+        span.end <= tokens.len() && span.start < span.end,
+        "capture span {span:?} out of range for {} tokens",
+        tokens.len()
+    );
+    model.clear_kv_cache();
+    let input = Tensor::new(tokens, device)?.unsqueeze(0)?;
+    let mut tapped: Vec<(usize, Tensor)> = Vec::new();
+    let mut edit = LayerEdit::CaptureMany {
+        after_blocks,
+        out: &mut tapped,
+    };
+    let logits = model.forward_with_edit(&input, 0, Some(&mut edit))?;
+    let mut captures = Vec::with_capacity(after_blocks.len());
+    for &block in after_blocks {
+        let t = tapped
+            .iter()
+            .find(|(b, _)| *b == block)
+            .map(|(_, t)| t)
+            .unwrap_or_else(|| panic!("tap after block {block} did not fire (layer count?)"));
+        captures.push(pool_capture(t, block, span.clone())?);
+    }
+    Ok((logits, captures))
+}
+
+/// Pool one tapped `(1, seq, hidden)` residual tensor into a [`Capture`].
+fn pool_capture(tapped: &Tensor, after_block: usize, span: Range<usize>) -> Result<Capture> {
+    let rows = tapped
+        .narrow(1, span.start, span.end - span.start)?
+        .to_dtype(DType::F32)?;
+    let hidden_size = rows.dim(2)?;
+    let pooled = rows.mean(1)?.squeeze(0)?.to_vec1::<f32>()?;
+    let per_position_l2 = rows
+        .sqr()?
+        .sum(D::Minus1)?
+        .sqrt()?
+        .squeeze(0)?
+        .to_vec1::<f32>()?;
+    Ok(Capture {
+        after_block,
+        span,
+        pooled,
+        hidden_size,
+        per_position_l2,
+    })
+}
+
 /// Unpatched reference forward over the same tokens (fresh KV cache),
 /// returning last-position logits via the vendored-original path.
 pub fn forward_unpatched(

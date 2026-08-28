@@ -64,3 +64,7 @@ required-features = ["cuda"]
 [[example]]
 name = "gen_debug"
 required-features = ["cuda"]
+
+[[example]]
+name = "s2_calibrate_dump"
+required-features = ["cuda"]

@@ -1,0 +1,38 @@
+# latentmesh-live — the live-experiment harness (design doc 024 §3).
+#
+# Workspace-side half of the runtime/workspace file boundary: the standalone
+# latentmesh-runtime crate (workspace-excluded, incompatible dep graph) dumps
+# paired hidden-state vectors to disk; this crate reads those dumps and runs
+# the CPU-side stages (splits, calibration fit, later: conditions/audit/stats).
+#
+# S2 scope (this revision): `make-splits` (seeded ChaCha8 GSM8K index lists,
+# committed under data/) and `calibrate` (3x3 depth-sweep affine Procrustes
+# fit over the runtime's S2 dump, held-out residual, A6 gate, receipt).
+[package]
+name = "latentmesh-live"
+version = "0.1.0"
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+repository.workspace = true
+description = "Live latent-exchange experiment harness: dataset splits, calibration fitting over runtime dumps, receipts (design docs/research/024)."
+publish = false
+
+[lib]
+name = "latentmesh_live"
+path = "src/lib.rs"
+
+[[bin]]
+name = "latentmesh-live"
+path = "src/main.rs"
+
+[dependencies]
+latentmesh-align = { path = "../../crates/latentmesh-align" }
+latentmesh-gate = { path = "../../crates/latentmesh-gate" }
+serde = { workspace = true }
+serde_json = { workspace = true }
+sha2 = { workspace = true }
+rand = { workspace = true }
+rand_chacha = "0.3"
+anyhow = "1"
+ureq = "2"

@@ -21,6 +21,7 @@ members = [
   "crates/latentmesh-meshtastic",
   "crates/latentmesh-agentbbs-bridge",
   "crates/latentmesh-cognitum-client",
+  "harness/latentmesh-live",
 ]
 
 [workspace.package]
