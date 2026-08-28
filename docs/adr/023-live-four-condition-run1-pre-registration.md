@@ -1,10 +1,14 @@
 # 023. Pre-registration for the live latent-exchange experiment (run 1)
 
-- **Status**: Proposed. This is a **pre-registration ADR**, not a results ADR: it is the S2-gate
-  freeze required before any eval or holdout item may be consumed (design doc §7, S2 gate). It
-  becomes the results record when S6 appends A1-A8 outcomes to this file — S6 amends this ADR
-  with results, it does not open a new one, and nothing frozen below may change once amended.
-- **Date**: 2026-08-28.
+- **Status**: **Concluded — negative result, pre-registration honored.** Run 1 is finished. The
+  pre-committed Deviation-7 stop rule fired: the A7(b) mechanics-with-alignment gate failed at
+  both registered cells under both calibration distributions (§ S6 — Results, below), so S3-S5
+  were never built and A1-A8's compute/quality/edge-survival criteria were never measured. The
+  frozen registration above was honored unmodified through the point of failure — no threshold,
+  seed, or statistical test was changed after any outcome was observed. See § S6 — Results for
+  the full account, receipt-cited, and `docs/research/025-run1-negative-result.md` for the
+  narrative writeup.
+- **Date**: 2026-08-28 (pre-registration authored and frozen); results appended 2026-08-28.
 - **Related**: [009](009-online-causal-control-loop.md) (the combined acceptance test this run
   partially answers), [003](003-causal-edge-verification.md) (the five-control test this run
   exercises live), [014](014-benchmark-and-acceptance-method.md) (evidence-label discipline this
@@ -349,18 +353,246 @@ during S3-S5. The Deviations ledger being append-only and preserved-not-erased (
 committed, not just the passing one) is itself a load-bearing methodological choice: a
 pre-registration that only shows the run that passed is not a pre-registration.
 
+## S6 — Results (appended 2026-08-28)
+
+S6 per design §7: compute A1-A8 exactly as registered, append results to this ADR, state
+explicitly which ADR-009 clauses were answered statistically vs. descriptively. Run 1 stopped at
+the pre-committed Deviation-7 kill point before A1-A8 could be computed — this section reports
+what *did* run (S0 through S2c) and states plainly that A1-A8 were never reached, per A8's own
+no-rerun/report-honestly discipline. Every number below is cited to a committed receipt in
+`crates/latentmesh-runtime/receipts/`; none is retyped from a prior summary without
+re-verification against the JSON.
+
+### 1. What was established
+
+- **Injection mechanics transmit information.** S1a's self-pair, identity-transform probe (run 2,
+  after the RoPE/scoring fixes in Deviation 3) passed its pre-committed primary test: one-sided
+  exact sign test, real > random, paired accuracy, 5 wins / 0 losses, **p = 0.03125**
+  (`s1a-receipt-slots8-block19-poolfull-rescaletrue-n40.json`, `summary.primary_real_vs_random`).
+  Honest decomposition, stated in the same receipt and repeated here rather than hidden: p=0.03125
+  is the minimum attainable value at 5 discordant pairs (2⁻⁵) on a 40-item probe — a real pass,
+  not an overwhelming one — and the NLL secondary diagnostic showed *no* effect in the same run
+  (19 wins / 21 losses, p=0.68). The honest reading: raw re-injection of a model's own state into
+  itself measurably helps accuracy on this probe, but the signal is thin, not the NLL-scale effect
+  run 1 (buggy) originally over-measured before the RoPE fix.
+- **The affine cross-model alignment fits well by the crate's own held-out metric, at both
+  registered cells, under both calibration distributions:**
+
+  | Cell | Calibration source | Held-out relative residual | A6 (< 0.9) | Receipt |
+  |---|---|---:|---|---|
+  | L18→L14 (S2 winner) | gold, teacher-forced | 0.5106 | PASS | `s2-calibration-receipt.json` |
+  | L24→L19 (Deviation-6 anchor) | gold, teacher-forced | 0.5600 | PASS | `s2b-anchor-recalibration-receipt.json` |
+  | L18→L14 (S2 winner) | generated, sender's own reasoning (S2c) | 0.4451 | PASS, **improved** | `s2c-calibration-receipt.json` |
+  | L24→L19 (Deviation-6 anchor) | generated (S2c) | 0.4682 | PASS, **improved** | `s2c-calibration-receipt.json` |
+
+  Every fit's hand-rolled `apply()` (required because `latentmesh-align` cannot be a path
+  dependency of `latentmesh-runtime` — Deviation 1's half/MSRV conflict) reproduces the crate's
+  own `AlignmentTransform::apply` bit-exactly against 8 golden pairs per cell
+  (`max_relative_l2_error: 0.0`, all four `s2b*golden-affine*`/`s2c*golden-affine*` files),
+  asserted before any model ran.
+
+### 2. The central negative finding
+
+Despite (1), the aligned, calibrated vector is **statistically indistinguishable from
+norm-matched random noise** on A7(b)'s pre-committed primary test (one-sided exact sign test,
+aligned_real > random, α=0.05), at both registered cells, under both calibration distributions:
+
+| Cell | Calibration | wins / losses | p (one-sided exact sign) | A7(b) |
+|---|---|---|---:|---|
+| L18→L14 (winner) | gold | 2 / 1 | 0.5000 | **FAIL** |
+| L24→L19 (anchor) | gold | 1 / 2 | 0.8750 | **FAIL** |
+| L18→L14 (winner) | generated (S2c) | 3 / 1 | 0.3125 | **FAIL** |
+| L24→L19 (anchor) | generated (S2c) | 1 / 2 | 0.8750 | **FAIL** |
+
+(`s2b-receipt-cellL18toL14-slots8-poolfull-rescaletrue-n40.json`,
+`s2b-receipt-cellL24toL19-slots8-poolfull-rescaletrue-n40.json`,
+`s2b-receipt-cellL18toL14-slots8-poolfull-rescaletrue-n40-genpairs.json`,
+`s2b-receipt-cellL24toL19-slots8-poolfull-rescaletrue-n40-genpairs.json`, all
+`gates.A7b_aligned_real_vs_random`.) None reaches α=0.05. The winner cell moves toward
+significance under the generated-pairs recalibration (p: 0.5000 → 0.3125) while the anchor cell
+shows no movement at all (0.8750 both times) — a small, inconsistent shift, not a near-miss.
+A7(c) (true zero-vector injected through the real 8-slot path, required "not catastrophically
+below baseline") **passed in all four combinations** — the injection mechanism itself does not
+harm the receiver; the aligned *content* specifically carries no usable signal.
+
+**Design §8 risk 6 (gold-vs-generated calibration distribution shift as the failure cause) is
+falsified as a full explanation, not confirmed.** The S2c contingency followed the design's own
+pre-committed recipe exactly (Deviation 7), produced a *better*-fitting transform by the crate's
+own residual metric at both cells (0.445 < 0.511 at the winner; 0.468 < 0.560 at the anchor), and
+the causal signal still did not clear the pre-committed bar at either cell. If distribution shift
+contributes at all, it is not the dominant or sole cause of the A7(b) failure.
+
+**Attribution chain** (each link closes off one alternative explanation, receipt-cited):
+
+1. Injection mechanics transmit information (S1a, p=0.03125) — rules out "the injection pathway
+   is broken."
+2. The hand-rolled `apply()` reproduces `latentmesh-align`'s own transform bit-exactly against
+   golden pairs at every cell (`max_relative_l2_error: 0.0`) — rules out "the reimplementation
+   forced by the half/MSRV split is wrong."
+3. Identifiability: the gold-pairs fits use `n_fit=3200 > d_sender=2048` (comfortable margin).
+   The generated-pairs fits use `n_fit=2048`, which **equals** `d_sender=2048` exactly — a
+   boundary case, not comfortably `n>d`, even though the polar-uniqueness floor relative to
+   `d_receiver=1536` clears with margin (`s2c-generated-dump-receipt.json gates.n_over_d`,
+   `s2c-calibration-receipt.json fit.n_over_d_gate`). **Flagged, not silently passed over**: the
+   S2c preplan's own stated goal was strict `n>d` (`s2c-preplan.json budget_ladder.quota_rule`),
+   but the realized quota lands exactly *at* `d`, not above it, because the budget ladder's cost
+   projection capped it there. This does not change the qualitative conclusion — the gold-pairs
+   cells, comfortably `n>d`, show the same A7(b) failure — but it is a genuine residual caveat on
+   the generated-pairs cells specifically, and this ADR states it rather than rounding "n=d" to
+   "n>d."
+4. Reproducibility: every bridge-probe receipt records `s1a_item_set_reproduced: pass=true` and
+   `transform_hash_matches_registered: pass=true` — the exact frozen S1a item set and the exact
+   registered transform were used each time, not a drifted re-implementation.
+
+Given (1)-(4), the most defensible attribution is that a training-free, single global affine
+(mean-centered semi-orthogonal Procrustes) map does not carry recoverable cross-model causal
+information at either registered depth pair for this model pair, under pooled per-message
+injection — not that the experiment's mechanics, hand-rolled apply implementation, or calibration
+distribution were at fault.
+
+### 3. Which ADR-009 clauses this run answers
+
+**None of A1-A8 were computed.** The pre-registered scope declaration (above) named the
+≥20%-cheaper-at-equal-quality clause (statistical) and the >80%-edge-survival clause (descriptive)
+as run 1's intended targets. Both require `DynamicLatent`/`CausalDynamicLatent` to actually run,
+and both conditions require a working aligned-injection channel to mean anything — A7(b)'s
+failure at all four probe combinations fired the pre-committed Deviation-7 stop rule exactly as
+registered ("if the generated-pairs aligned-real gate also fails at both cells, run 1 STOPS — S3-
+S5 are not built"). `StaticText`/`DynamicText`/`DynamicLatent`/`CausalDynamicLatent` were never
+built or run; S3 (pilot), S4 (audit pilot), and S5 (full run) do not exist. **The compute/latency
+clause is NOT answered. The edge-survival clause is NOT answered. The combined ADR-009 §5
+acceptance test remains exactly as open after run 1 as before it** — this run neither confirms
+nor denies it; it establishes that a training-free linear alignment is not a viable vehicle to
+test it with, at these two depth pairs, for this model pair.
+
+What run 1 *does* answer, honestly: a narrower, logically prior question the design's own S1a/S2b
+gate structure was built to ask — whether a training-free linear (Procrustes-family) alignment of
+pooled residual-stream states, fit from either gold-teacher-forced or sender-generated calibration
+pairs, carries causally usable cross-model signal at L18→L14 (50%/50% sender/receiver relative
+depth, of 36/28 layers respectively) or L24→L19 (67%/68% sender/receiver relative depth) for
+Qwen2.5-3B→Qwen2.5-1.5B. At high confidence, given the multi-distribution,
+multi-cell, bit-verified cross-check above: **no.**
+
+### 4. Total GPU accounting
+
+Every wall-clock figure below is read directly from its receipt's `wall_clock_s` field (or, for
+the killed S2c attempt, from the resumed receipt's own disclosure of the prior charge); nothing is
+estimated.
+
+| Stage | Seconds | Receipt |
+|---|---:|---|
+| S0 mechanics | 2.51 | `s0-receipt.json` |
+| S1a run 1 (buggy RoPE/scoring, GPU time spent before diagnosis) | 542.57 | `s1a-receipt-run1-buggy-rope-noncompliant-prompt.json` |
+| S1a run 2 (passing, n=40) | 512.22 | `s1a-receipt-slots8-block19-poolfull-rescaletrue-n40.json` |
+| S1a n=2 smoke | 12.23 | `s1a-receipt-slots8-block19-poolfull-rescaletrue-n2.json` |
+| S2 dump (4,000-item multi-tap capture) | 156.83 | `s2-dump-receipt.json` |
+| S2b bridge probe, gold, L18→L14 | 390.41 | `s2b-receipt-cellL18toL14-...-n40.json` |
+| S2b bridge probe, gold, L24→L19 | 393.06 | `s2b-receipt-cellL24toL19-...-n40.json` |
+| S2c generated-dump: killed attempt (preserved, disclosed, charged) | 3696.03 | `s2c-generated-dump-receipt.json resumed.prior_gpu_s_charged` |
+| S2c generated-dump: resumed process | 5310.37 | `s2c-generated-dump-receipt.json wall_clock_s.total` |
+| S2b bridge probe, generated, L18→L14 | 391.35 | `s2b-receipt-...-n40-genpairs.json` |
+| S2b bridge probe, generated, L24→L19 | 395.26 | `s2b-receipt-...-n40-genpairs.json` |
+| **GPU-model subtotal** | **11,802.84 s ≈ 3.28 GPU-h** | |
+| S2 calibration fit (CPU, 9-cell sweep) | 118.58 | `s2-calibration-receipt.json` |
+| S2b anchor recalibration fit (CPU, 1 cell) | 13.51 | `s2b-anchor-recalibration-receipt.json` |
+| S2c calibration fit (CPU, 2 cells) | 24.53 | `s2c-calibration-receipt.json` |
+| **Grand total (GPU + CPU fit stages)** | **11,959.45 s ≈ 3.32 GPU-h** | |
+
+**Discrepancy flagged, not silently resolved**: the task brief for this S6 write-up cited "~5.7
+GPU-h" as the expected total. Summing every `wall_clock_s` field committed to
+`crates/latentmesh-runtime/receipts/` — including the disclosed 3,696.03 s killed-dump charge —
+gives **≈3.3 GPU-h**, not 5.7. No committed receipt records a standing aggregate total, and no
+additional GPU-consuming stage was found beyond the eleven listed above. Two candidate
+reconciliations were considered and neither is receipt-supported enough to assert: (a) the
+real-world elapsed span from the first S0 receipt timestamp to the last S2c-genpairs receipt
+timestamp is ≈4.6-5.0 hours (file mtimes 13:01→17:39), which includes idle/coordination gaps, not
+GPU compute; (b) no per-stage double-counting convention (e.g., crediting both resident models
+separately) reproduces 5.7 from 3.3 by a documented rule. This ADR reports the receipt-summed
+**≈3.3 GPU-h** as the defensible number and flags the "~5.7" figure as unreconciled — a fact for
+the coordinator to explain or correct, not to paper over with an invented adjustment.
+
+### 5. Will-not-claim list (restated; most items are now vacuously true because S3-S6 never ran)
+
+The design §10 list was frozen as part of this pre-registration. With S3-S6 unbuilt, items about
+`DynamicLatent`/`CausalDynamicLatent` behavior (5, 7-10 below) never had anything to claim in the
+first place — restated for completeness, marked where the item concerns work that did not occur:
+
+1. No claim of ADR-009 §5's combined acceptance test. **Confirmed above (§3): unanswered.**
+2. Not a reproduction of Zhang & Emu — moot; no condition-level decomposition was ever computed.
+3. K=1 mismatched decoy vs. the paper's K=4 — moot; no `EdgeTrial` audit ran.
+4. Pooled per-message vectors, not per-token streaming — **still the live, relevant caveat**: §6
+   below proposes exactly the per-token relaxation this run never tested.
+5. Single host, single GPU, single task domain (GSM8K) — **applies to everything that did run**
+   (S0 through S2c).
+6. Calibration distribution shift is real and disclosed — **directly tested this run** (§2): shown
+   to improve the fit metric without closing the causal gap; not the dominant explanation.
+7. Reduced statistical scale (−7pp/N=200×2) — moot; A3 was never computed.
+8. "Darwin-mutated topology is minimal" — moot; no Darwin loop ran.
+9. Authority-consequence mechanism demonstrated live, not proven necessary — moot; no gate/ceiling
+   mutation ran against live episodes.
+10. A passing A1 with a near-zero decomposition would be a hollow win — moot in the form written
+    (A1 was never computed), but its spirit is exactly what happened one layer earlier: a
+    passing-looking signal (well-fitting alignment, A6 PASS) paired with a null causal result
+    (A7(b) FAIL) is precisely the "good fit, no content" failure mode item 10 warned about, just
+    caught before S3 rather than after.
+
+### 6. Registered future work — run 2 (proposal, not a pre-registration)
+
+Not frozen, not binding, no acceptance criteria yet — a scoped starting point for whoever designs
+run 2, given run 1's finding that a training-free linear map is the wrong tool at these cells:
+
+- **(a) Small trained nonlinear projector (MLP).** The Cache-to-Cache-style baseline
+  (`docs/research/023-beyond-sota-roadmap.md` §1a): replace the closed-form affine fit with a
+  small trained MLP between the same capture/inject points, trained on the same calibration pairs
+  (gold and/or generated). Cheapest way to test whether the ceiling on cross-model transfer here
+  is *linearity* specifically, not alignment in general.
+- **(b) A FastGRNN-class tiny gated-RNN sequence translator over per-token states, not pooled
+  vectors.** This run pooled every capture to a single vector per message; pooling itself is an
+  **untested destruction suspect** — S1a's identity-transform self-pair passed *with* pooling, so
+  mechanics tolerate pooling in the no-alignment case, but cross-model translation of a pooled
+  average was never isolated from translation-per-se. The S2c dumps already hold the raw material
+  for a per-token sequence-translation experiment without new capture work: 2,560 items ×
+  generated spans averaging 280.9 tokens = **719,115 sender-side generated-token positions**
+  (`s2c-generated-dump-receipt.json rows.generated_tokens_mean/generated_tokens_total`; the
+  receiver side is captured over the identical shared span per the S2c pairing rule, so the
+  usable paired-sequence count is of the same order — the ~500K figure in earlier framing was an
+  estimate, this is the receipted number). A tiny gated-RNN's KB-scale footprint also fits
+  LatentMesh Air's edge-device story (ADR-010/013) better than a full trained projector would.
+- **(c) Receiver-side MicroLoRA adaptation trained from causal-gate ΔV feedback.** In-stack prior
+  art confirmed present on this host: `@ruvector/sona` MicroLoRA — rank 1-4 hidden-state adapters,
+  <50 KB each, real-time `adapt()` update from feedback
+  (`~/ruvector-upstream/crates/ruvllm-wasm/docs/MICRO_LORA.md`, verified read); and
+  `AdaptiveEmbedder`'s EWC++ consolidation + memory-augmented retrieval
+  (`~/ruvector-upstream/npm/packages/ruvector/src/core/adaptive-embedder.ts`, verified read,
+  `class AdaptiveEmbedder`, EWC Fisher-information consolidation). Rather than a fixed transform,
+  the receiver would adapt a small rank-1-4 adapter using ADR-003's own ΔV as the feedback signal
+  — closer to the design's causal-gate spirit than a static alignment fit.
+- **(d) HNSW-retrieved local linear maps (sublinear-selection variant).** A single global affine
+  map may be the wrong granularity even before nonlinearity is considered — `latentmesh-memory`
+  already has HNSW indexing (ADR-016); a local-linear-maps approach would retrieve/fit a
+  neighborhood-specific transform per query rather than one global map, testing whether the null
+  result is about global-vs-local structure rather than linear-vs-nonlinear.
+
+None of (a)-(d) is scoped, budgeted, or gated here — that is run 2's own pre-registration to
+write, informed by run 1's specific, receipt-verified failure mode (well-fitting global affine
+map, null causal content, ruled out as a distribution-shift artifact).
+
 ## What is frozen / what is pending
 
 | Item | Status |
 |---|---|
-| Four conditions, injection semantics, sampler settings, dataset pins, split-generation seeds, A1-A8 statistics and thresholds, deviations ledger through this date, scope declaration, will-not-claim list | **Frozen by this ADR** |
-| S2 calibration result (depth pair, held-out residual, transform `content_hash`) | **Pending** — running concurrently; appended verbatim when S2 completes; does not affect any frozen value above |
-| `harness/latentmesh-live` crate (gsm8k.rs, calibrate.rs, conditions/*, darwin.rs, audit.rs, metrics.rs, receipts.rs, stats.rs) | **Not implemented** |
-| Committed split index-list files (`calibration-4000`, `adaptation-512`, `eval-200`, `holdout-100`) | **Not implemented** — generated deterministically from the frozen seeds above once the harness exists; this ADR freezes the generator, not hand-written literal lists |
-| S3 pilot, S4 audit pilot, S5 full run, S6 analysis | **Not started** |
+| Four conditions, injection semantics, sampler settings, dataset pins, split-generation seeds, A1-A8 statistics and thresholds, deviations ledger through S2-completion, scope declaration, will-not-claim list | **Frozen by this ADR, honored through the point of stop** |
+| S2 calibration result (depth pair, held-out residual, transform `content_hash`) | **Resolved** — winner L18→L14, residual 0.5106, hash `eb3f42edde853824642a2b811577e2c767f73c2c179fe03a05ac8dac23704457` |
+| A7(b)/(c) mechanics-with-alignment bridge probe (the ambiguity this ADR originally flagged rather than resolving) | **Resolved — FAILED** at both cells, both calibration distributions (§ S6 — Results) |
+| S3 pilot, S4 audit pilot, S5 full run | **Will not run for run 1** — Deviation-7 stop rule fired |
+| A1-A8 | **Not computed** — see § S6 — Results §3 |
+| `harness/latentmesh-live` crate | Built to the extent needed to reach S2c (per the corrected workspace-membership ruling above); `conditions/*`, `darwin.rs`, `audit.rs` (the S3-S5 machinery) **not implemented**, not needed for a stopped run |
 
 ## Implementation status
 
-Not implemented beyond S0, S1a, and S1b, each already landed and cited by receipt above. This ADR
-is the S2-gate contract those later stages must execute against unmodified; S3-S6 land in
-follow-up work, and S6 amends this same file with A1-A8 outcomes rather than opening a new ADR.
+S0, S1a, S1b, S2, S2b, and S2c are implemented and their receipts are committed, cited throughout
+this ADR. S3 (pilot), S4 (audit pilot), and S5 (full run) are **not implemented and will not be
+built for run 1** — the Deviation-7 pre-committed stop rule fired before they were needed. This
+ADR's frozen registration was honored unmodified from authoring through the point of failure; run
+1 is concluded. Run 2, if pursued, is a new pre-registration informed by § S6 — Results §6, not an
+amendment to this file.
