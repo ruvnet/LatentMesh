@@ -46,7 +46,8 @@ value; it exists here for provenance, not as an input to any frozen threshold.
 | S1a — self-pair injection probe | real distinguishable from random, p<0.05, one-sided exact sign test | **PASS on the second run** — see Deviation 3 below for the honest run-1 failure | `receipts/s1a-receipt-slots8-block19-poolfull-rescaletrue-n40.json`, `receipts/run-ledger.json` |
 | S1b — crate patches | `cargo test --workspace` green; align affine mean-centering + cached matrix + hash-once; gate configurable dV thresholds | **Landed** — verified in this session against `crates/latentmesh-align/src/lib.rs` (`mu_s`/`mu_r` fields, `content_hash`) and `crates/latentmesh-gate/src/lib.rs` (`CeilingThresholds { action_influencing_dv: 0.15, latent_prefix_dv: 0.05 }`) | current tree |
 | S2 — calibration | held-out relative residual < 0.9 (A6) | **PASS** — all 9 sweep cells pass; winner **L18→L14** (50%/50% relative depth), held-out relative residual **0.5106**; transform `content_hash` **eb3f42edde853824642a2b811577e2c767f73c2c179fe03a05ac8dac23704457** (artifact `receipts/transform-L18-to-L14.json`, file sha256 == content_hash); registered via `Policy::trust_transform` | `receipts/s2-calibration-receipt.json`, `receipts/s2-dump-receipt.json`, `receipts/s2-splits-receipt.json` |
-| S3-S6 | per design §7 | **Not started** | — |
+| S2b — bridge probe (A7 resolution) | aligned-real > random, p<0.05, at winner cell, else registered fallback | **FAILED AT BOTH CELLS — kill-path signal** (winner L18→L14 p=0.5000; anchor L24→L19 p=0.8750; exact S1a protocol, knobs untouched). A7(c) true zero-vector gate **PASS** (through the real 8-slot path, at/above baseline both cells). Attribution clean: S1a identity-transform passed and the affine apply verified bit-exact against golden pairs, so injection mechanics transmit but the gold-teacher-forced affine alignment carries no usable signal. Adversarially verified: fresh GPU re-run bit-identical, all statistics independently recomputed. | `receipts/s2b-receipt-cellL18toL14-*.json`, `receipts/s2b-receipt-cellL24toL19-*.json`, `receipts/transform-L24-to-L19.json`, golden-pair files |
+| S3-S6 | per design §7 | **GATED on the Deviation-7 contingency below** | — |
 
 ### S2-completion coordinator rulings (2026-08-28, before any eval item consumed)
 
@@ -74,6 +75,17 @@ value; it exists here for provenance, not as an input to any frozen threshold.
   files and subprocess invocation (never a cargo dependency), so the half/MSRV conflict the
   earlier ledger entry feared does not arise. The exclusion requirement stands only for
   crates that link candle.
+
+- **Deviation 7 — design-named generated-pairs contingency fired (2026-08-28, post-S2b).**
+  Design 024 §5.4/§8 risk 6 pre-names gold-vs-generated calibration distribution shift as
+  the prime suspect for exactly this failure shape and pre-costs a ~1 GPU-h contingency:
+  recalibrate on states captured from each model's OWN generated reasoning (same
+  calibration-4000 items, same sweep/protocol machinery, same A6 gate) and re-run the S2b
+  bridge probe once against the new transform. This is a disclosed pre-registered
+  contingency, not protocol iteration: the S1a/S2b statistical protocol stays frozen.
+  **Pre-committed outcome rule**: if the generated-pairs aligned-real gate also fails at
+  both cells, run 1 STOPS — S3-S5 are not built — and the negative result is written up
+  with full receipts per design §7 S4's kill-switch and §10's honesty contract.
 
 ### Four conditions (frozen, as design §4)
 

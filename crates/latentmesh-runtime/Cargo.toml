@@ -68,3 +68,7 @@ required-features = ["cuda"]
 [[example]]
 name = "s2_calibrate_dump"
 required-features = ["cuda"]
+
+[[example]]
+name = "s2b_bridge_probe"
+required-features = ["cuda"]
