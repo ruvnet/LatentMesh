@@ -2,6 +2,11 @@
 # collectives. Self-contained [workspace]; MIT OR Apache-2.0 per ruvnet norm.
 [workspace]
 resolver = "2"
+# latentmesh-runtime is deliberately OUT of the workspace: its candle dep needs
+# half ^2.5 (MSRV > 1.77) which can never unify with latentmesh-core's =2.4.1
+# MSRV pin. It builds standalone (own lockfile) and is driven as a subprocess,
+# per the harness precedent. See docs/research/024 + ADR-023.
+exclude = ["crates/latentmesh-runtime"]
 members = [
   "crates/latentmesh-core",
   "crates/latentmesh-align",

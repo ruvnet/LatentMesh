@@ -14,7 +14,7 @@ use serde::{Deserialize, Serialize};
 /// task value when it received `A`'s actual latent state on trial `i`; each
 /// control is `B`'s value on the SAME trial `i` with `A`'s state replaced.
 /// All slices must be the same length (paired design — this is what makes the
-/// sign-flip test valid without a distributional assumption). Six controls,
+/// sign-flip test valid without a distributional assumption). Five controls,
 /// not four (ADR-003 rev. 2026-08-18): `text_equivalent` is what makes this a
 /// claim about LATENT communication specifically, not merely about
 /// communication-vs-silence — an edge must beat the text-serialized version

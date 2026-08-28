@@ -10,6 +10,51 @@ pub mod causal;
 use latentmesh_core::{Authority, LatentFrame};
 use std::collections::{HashMap, HashSet};
 
+/// The `delta_v` thresholds that map an admitted edge's measured causal value
+/// to an authority ceiling (see [`ceiling_from_verdict_with`]). Made
+/// policy-configurable 2026-08-28 for the live latent experiment
+/// (docs/research/024 §3, risk #2): on a 0/1 accuracy scale a per-item
+/// `delta_v` above the stock 1.0/0.5 is arithmetically unreachable, so the
+/// authority ladder would be dead — the run-1 values ([`CeilingThresholds::run1`])
+/// are recalibrated to that scale. The stock values remain the [`Default`],
+/// so all pre-existing behavior (and every existing test) is unchanged.
+#[derive(Clone, Copy, Debug, PartialEq)]
+pub struct CeilingThresholds {
+    /// `delta_v` strictly above this ⇒ `ActionInfluencing`.
+    pub action_influencing_dv: f64,
+    /// `delta_v` strictly above this (but not `action_influencing_dv`) ⇒
+    /// `LatentPrefix`; at or below ⇒ `ContextInject`.
+    pub latent_prefix_dv: f64,
+}
+
+impl Default for CeilingThresholds {
+    /// The crate's original hard-coded ladder: `>1.0` ⇒ `ActionInfluencing`,
+    /// `>0.5` ⇒ `LatentPrefix`.
+    fn default() -> Self {
+        CeilingThresholds {
+            action_influencing_dv: 1.0,
+            latent_prefix_dv: 0.5,
+        }
+    }
+}
+
+impl CeilingThresholds {
+    /// Run-1 values, pre-declared in the live-experiment design
+    /// (docs/research/024 §3/§8 risk #2) on the GSM8K accuracy scale:
+    /// `delta_v > 0.05` ⇒ `LatentPrefix`, `> 0.15` ⇒ `ActionInfluencing`
+    /// (paired with `Policy::new(0.8)` for the run-1 risk threshold — that
+    /// knob was already configurable). Experimental parameters, not validated
+    /// constants: the design's honesty section (§10.9) records that run 1
+    /// demonstrates ceilings MOVING with verdicts, not that these values are
+    /// the right ones.
+    pub fn run1() -> Self {
+        CeilingThresholds {
+            action_influencing_dv: 0.15,
+            latent_prefix_dv: 0.05,
+        }
+    }
+}
+
 /// The admission policy an edge/frame is checked against. `authority_ceiling_by_edge`
 /// is keyed by `(sender_model, receiver_space)`; an edge absent from this map
 /// defaults to `ObserveOnly` — **default-deny**, matching AGL's stance that
@@ -19,6 +64,9 @@ pub struct Policy {
     pub authority_ceiling_by_edge: HashMap<(String, String), Authority>,
     pub risk_threshold: f32,
     pub known_transforms: HashSet<String>,
+    /// The `delta_v` → authority-ceiling ladder used by
+    /// [`Policy::set_ceiling_from_verdict`]. Defaults to the stock values.
+    pub ceiling_thresholds: CeilingThresholds,
 }
 
 impl Policy {
@@ -37,31 +85,47 @@ impl Policy {
 
     /// Set an edge's authority ceiling from a causal verification verdict
     /// (ADR-003 → ADR-008's link): unverified/rejected edges are capped at
-    /// `ObserveOnly`; the ceiling rises with measured, significant `delta_v`.
+    /// `ObserveOnly`; the ceiling rises with measured, significant `delta_v`,
+    /// judged against this policy's own [`CeilingThresholds`].
     pub fn set_ceiling_from_verdict(
         &mut self,
         sender_model: impl Into<String>,
         receiver_space: impl Into<String>,
         verdict: &causal::EdgeVerdict,
     ) -> &mut Self {
-        let ceiling = ceiling_from_verdict(verdict);
+        let ceiling = ceiling_from_verdict_with(verdict, &self.ceiling_thresholds);
         self.authority_ceiling_by_edge
             .insert((sender_model.into(), receiver_space.into()), ceiling);
         self
     }
 }
 
-/// Map a causal-verification verdict to an authority ceiling. A rejected (or
-/// never-tested) edge can only ever reach `ObserveOnly` — this is the
-/// enforcement point for ADR-003's "causally unverified edges never reach
-/// `ActionInfluencing`."
+/// Map a causal-verification verdict to an authority ceiling using the stock
+/// (default) thresholds. A rejected (or never-tested) edge can only ever
+/// reach `ObserveOnly` — this is the enforcement point for ADR-003's
+/// "causally unverified edges never reach `ActionInfluencing`."
 pub fn ceiling_from_verdict(verdict: &causal::EdgeVerdict) -> Authority {
+    ceiling_from_verdict_with(verdict, &CeilingThresholds::default())
+}
+
+/// [`ceiling_from_verdict`] with an explicit `delta_v` ladder. Regardless of
+/// thresholds, `Reject` is always capped at `ObserveOnly` — configurability
+/// tunes how far a VERIFIED edge may rise, never whether an unverified one
+/// rises at all.
+pub fn ceiling_from_verdict_with(
+    verdict: &causal::EdgeVerdict,
+    thresholds: &CeilingThresholds,
+) -> Authority {
     match verdict {
         causal::EdgeVerdict::Reject { .. } => Authority::ObserveOnly,
-        causal::EdgeVerdict::Admit { delta_v, .. } if *delta_v > 1.0 => {
+        causal::EdgeVerdict::Admit { delta_v, .. }
+            if *delta_v > thresholds.action_influencing_dv =>
+        {
             Authority::ActionInfluencing
         }
-        causal::EdgeVerdict::Admit { delta_v, .. } if *delta_v > 0.5 => Authority::LatentPrefix,
+        causal::EdgeVerdict::Admit { delta_v, .. } if *delta_v > thresholds.latent_prefix_dv => {
+            Authority::LatentPrefix
+        }
         causal::EdgeVerdict::Admit { .. } => Authority::ContextInject,
     }
 }
@@ -282,5 +346,108 @@ mod tests {
             worst_p_value: 0.04,
         };
         assert_eq!(ceiling_from_verdict(&weak), Authority::ContextInject);
+    }
+
+    // -----------------------------------------------------------------------
+    // 2026-08-28 patch tests: policy-configurable ceiling thresholds
+    // (docs/research/024 §3, risk #2 — the run-1 accuracy-scale ladder).
+    // -----------------------------------------------------------------------
+
+    fn admit(delta_v: f64) -> causal::EdgeVerdict {
+        causal::EdgeVerdict::Admit {
+            delta_v,
+            worst_p_value: 0.01,
+        }
+    }
+
+    #[test]
+    fn default_thresholds_reproduce_the_stock_ladder_exactly() {
+        // Guard against a silent behavior change: the default-thresholds path
+        // must agree with the historical free function at every rung.
+        let defaults = CeilingThresholds::default();
+        for verdict in [
+            admit(1.5),
+            admit(0.7),
+            admit(0.1),
+            causal::EdgeVerdict::Reject { reason: "x".into() },
+        ] {
+            assert_eq!(
+                ceiling_from_verdict(&verdict),
+                ceiling_from_verdict_with(&verdict, &defaults),
+                "default thresholds diverged from the stock ladder on {verdict:?}"
+            );
+        }
+        assert_eq!(defaults.action_influencing_dv, 1.0);
+        assert_eq!(defaults.latent_prefix_dv, 0.5);
+    }
+
+    #[test]
+    fn run1_thresholds_make_the_ladder_reachable_on_the_accuracy_scale() {
+        // On 0/1 accuracy outcomes, per-item delta_v > 1.0 is unreachable —
+        // the run-1 values (0.05 → LatentPrefix, 0.15 → ActionInfluencing)
+        // must let realistic accuracy deltas climb the ladder.
+        let run1 = CeilingThresholds::run1();
+        assert_eq!(
+            ceiling_from_verdict_with(&admit(0.03), &run1),
+            Authority::ContextInject
+        );
+        assert_eq!(
+            ceiling_from_verdict_with(&admit(0.06), &run1),
+            Authority::LatentPrefix
+        );
+        assert_eq!(
+            ceiling_from_verdict_with(&admit(0.16), &run1),
+            Authority::ActionInfluencing
+        );
+        // The same delta_v values are dead under the stock ladder — this IS
+        // the bug the configurability exists to fix.
+        assert_eq!(ceiling_from_verdict(&admit(0.16)), Authority::ContextInject);
+    }
+
+    #[test]
+    fn rejected_edges_stay_observe_only_under_any_thresholds() {
+        let rejected = causal::EdgeVerdict::Reject {
+            reason: "no signal".into(),
+        };
+        for t in [
+            CeilingThresholds::default(),
+            CeilingThresholds::run1(),
+            // Even absurdly permissive thresholds never lift a Reject.
+            CeilingThresholds {
+                action_influencing_dv: -1.0,
+                latent_prefix_dv: -1.0,
+            },
+        ] {
+            assert_eq!(
+                ceiling_from_verdict_with(&rejected, &t),
+                Authority::ObserveOnly
+            );
+        }
+    }
+
+    #[test]
+    fn policy_with_run1_thresholds_raises_the_ceiling_above_context_inject() {
+        // The S4 gate's live mechanism (design §7): with run-1 thresholds a
+        // small-but-real accuracy delta must move an edge's ceiling above
+        // ContextInject, so a LatentPrefix frame is then admitted.
+        let mut p = Policy::new(0.8); // run-1 risk threshold
+        p.ceiling_thresholds = CeilingThresholds::run1();
+        p.trust_transform("t1");
+        p.set_ceiling_from_verdict("sender-7b", "receiver-13b", &admit(0.07));
+        assert_eq!(
+            p.authority_ceiling_by_edge[&("sender-7b".into(), "receiver-13b".into())],
+            Authority::LatentPrefix
+        );
+        let f = frame(Authority::LatentPrefix, 0.95, "t1", "ctx-hash");
+        assert!(Gate::admit(&f, &p).is_ok());
+
+        // A default-thresholds policy given the same verdict stays at
+        // ContextInject (defaults preserved — no silent recalibration).
+        let mut stock = Policy::new(0.8);
+        stock.set_ceiling_from_verdict("sender-7b", "receiver-13b", &admit(0.07));
+        assert_eq!(
+            stock.authority_ceiling_by_edge[&("sender-7b".into(), "receiver-13b".into())],
+            Authority::ContextInject
+        );
     }
 }

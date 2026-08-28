@@ -1,0 +1,160 @@
+{
+  "config": {
+    "capture_block": 19,
+    "decoding": "greedy, batch=1, max_new_tokens=400",
+    "inject_block": 19,
+    "item_seed_chacha8": 20897,
+    "model": "Qwen/Qwen2.5-1.5B-Instruct",
+    "pool_span": "full generated span",
+    "primary_test": "one-sided exact sign test, paired accuracy, real > random, alpha 0.05",
+    "randvec_seed_base": 1369571328,
+    "rescale_to_natural_median": true,
+    "secondary_diagnostic": "one-sided sign test on paired teacher-forced NLL of '#### <gold>', real < random",
+    "self_pair": true,
+    "slots": 8,
+    "transform": "identity"
+  },
+  "dataset": {
+    "indices": [
+      4629,
+      6586
+    ],
+    "sha256": "17f347dc51477c50d4efb83959dbb7c56297aba886e5544ee2aaed3024813465",
+    "source": "https://raw.githubusercontent.com/openai/grade-school-math/master/grade_school_math/data/train.jsonl"
+  },
+  "design": "docs/research/024-live-latent-experiment-design.md section 7 S1a",
+  "env": {
+    "crate": "latentmesh-runtime 0.1.0 (vendored candle-transformers 0.9.2 qwen2)",
+    "evidence_label": "live-model, single-host, simulation-free",
+    "git_commit": "9a676a5d53f66425e40e3ca6f8c3bf6fb1aa9379",
+    "gpu": "NVIDIA GeForce RTX 5080, 580.126.09, 16303 MiB",
+    "nvcc": "nvcc 12.8 (build-time 12.8)",
+    "nvcc_at_build": "12.8",
+    "unix_time": 1787935034
+  },
+  "gate_pass": false,
+  "items": [
+    {
+      "capture": {
+        "hidden_size": 1536,
+        "injected_l2": 66.80656433105469,
+        "natural_l19_norms": {
+          "max": 80.69918823242188,
+          "mean": 66.74595642089844,
+          "median": 66.80650329589844,
+          "min": 57.77586364746094,
+          "n": 195,
+          "p25": 64.56351470947266,
+          "p75": 69.13662719726562
+        },
+        "pooled_l2_raw": 48.600406646728516,
+        "span": [
+          63,
+          258
+        ]
+      },
+      "conditions": {
+        "random": {
+          "correct": false,
+          "nll_gold": 1.6683988571166992
+        },
+        "real": {
+          "correct": false,
+          "nll_gold": 1.7433758974075317
+        },
+        "zero": {
+          "correct": false,
+          "nll_gold": 1.7980695962905884
+        }
+      },
+      "first_pass": {
+        "answer": "2.0",
+        "correct": false,
+        "generated_tokens": 195
+      },
+      "gold": "2",
+      "item": 4629,
+      "real_answer_tail": "ore, the cost of four bottles is bottles is €0.20.\n\n#### 0.2"
+    },
+    {
+      "capture": {
+        "hidden_size": 1536,
+        "injected_l2": 68.91044616699219,
+        "natural_l19_norms": {
+          "max": 81.91732788085938,
+          "mean": 68.3589859008789,
+          "median": 68.91043090820312,
+          "min": 52.952457427978516,
+          "n": 220,
+          "p25": 65.69068145751953,
+          "p75": 71.8531265258789
+        },
+        "pooled_l2_raw": 49.94136047363281,
+        "span": [
+          68,
+          288
+        ]
+      },
+      "conditions": {
+        "random": {
+          "correct": false,
+          "nll_gold": 2.6506967544555664
+        },
+        "real": {
+          "correct": false,
+          "nll_gold": 1.9820529222488403
+        },
+        "zero": {
+          "correct": false,
+          "nll_gold": 2.0510566234588623
+        }
+      },
+      "first_pass": {
+        "answer": null,
+        "correct": false,
+        "generated_tokens": 220
+      },
+      "gold": "22",
+      "item": 6586,
+      "real_answer_tail": " 2 \\times 11 \\]\n\\[ y = 222 \\]\n\nSo, the second number is 222."
+    }
+  ],
+  "pre_committed": false,
+  "stage": "S1a",
+  "summary": {
+    "accuracy": {
+      "random": 0,
+      "real": 0,
+      "zero": 0
+    },
+    "n_evaluated": 2,
+    "nll_mean": {
+      "random": 2.159547805786133,
+      "real": 1.862714409828186,
+      "zero": 1.9245631694793701
+    },
+    "nll_real_vs_random": {
+      "losses": 1,
+      "p_one_sided": 0.75,
+      "wins": 1
+    },
+    "nll_real_vs_zero": {
+      "losses": 0,
+      "p_one_sided": 0.25,
+      "wins": 2
+    },
+    "primary_real_vs_random": {
+      "alpha": 0.05,
+      "losses": 0,
+      "p_one_sided": 1.0,
+      "pass": false,
+      "wins": 0
+    },
+    "real_vs_zero": {
+      "losses": 0,
+      "p_one_sided": 1.0,
+      "wins": 0
+    }
+  },
+  "wall_clock_s": 12.23157787322998
+}

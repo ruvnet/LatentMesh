@@ -1,5 +1,10 @@
 /target
-Cargo.lock
+# Workspace lockfile only. crates/latentmesh-runtime/Cargo.lock IS tracked:
+# that crate is a standalone leaf outside the workspace (see root Cargo.toml
+# exclude rationale) and pins its verified candle 0.9.2 build.
+/Cargo.lock
+# The excluded standalone crate builds into its own target dir.
+/crates/latentmesh-runtime/target
 
 # Local agent/tooling session state — never part of the source tree
 .claude/

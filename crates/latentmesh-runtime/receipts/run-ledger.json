@@ -1,0 +1,28 @@
+{
+  "purpose": "Honest iteration ledger for the S1a self-pair probe (design 024 §7 S1a kill-switch protocol: iterate on mechanics before concluding, report every iteration).",
+  "run1": {
+    "receipt": "s1a-receipt-run1-buggy-rope-noncompliant-prompt.json (duplicate copy: s1a-receipt-slots8-block19-poolfull-rescaletrue-n40.run1-pre-fixes.json)",
+    "result": "GATE FAIL as measured (primary p=0.75, acc real 2/40 zero 1/40 random 2/40)",
+    "diagnosis": [
+      "Accuracy collapse was mechanical, not a channel null: FIRST-PASS (uninjected, plain prompt) accuracy was 5/40 vs the model's expected ~55-65%.",
+      "Root cause 1 (numerics): vendored candle-transformers 0.9.2 qwen2 computes RoPE tables after casting position indices to BF16; integers alias above 256, corrupting positions deep into the sequence. Verified live: same prompt clean at F32, degenerate at BF16 ('48 + 24 = 72' -> '7288', duplicated tokens); KV stepwise-vs-prefill argmax parity was 64/64, ruling out the decode loop.",
+      "Root cause 2 (compliance): 22/40 run-1 generations never emitted '####'; correct answers in prose were scored wrong, measuring format adherence instead of the latent channel."
+    ],
+    "fixes_applied_before_run2": [
+      "RoPE tables computed in F32, only final sin/cos cast to model dtype (src/models/qwen2_a.rs, declared Deviation 4; S0 mechanics gates re-run and all green after the change).",
+      "Answer-format instruction rewritten with an anchored example (examples/common/mod.rs ANSWER_FORMAT, rustdoc records the measured run-1 non-compliance).",
+      "Scoring: flexible extract ('####'-marked answer, else last number) + numeric equality, applied IDENTICALLY to every condition (real/zero/random) and the first pass."
+    ]
+  },
+  "run2": {
+    "receipt": "s1a-receipt-slots8-block19-poolfull-rescaletrue-n40.json",
+    "result": "GATE PASS: primary one-sided exact sign test real>random on paired accuracy, 5 wins / 0 losses, p=0.03125 (< alpha 0.05)",
+    "statistical_test_unchanged": "The primary test, alpha, item set (ChaCha8 0x51A1 over train.jsonl, same 40 indices), decoding, slots, block, pooling and rescale switch are identical to run 1's pre-committed configuration. Only the mechanics fixes above changed.",
+    "honest_caveats": [
+      "p=0.03125 is the minimum attainable with 5 discordant pairs (2^-5); the pass is real but not overwhelming - 40 items is a mechanics probe, not an effect-size estimate.",
+      "The NLL secondary diagnostic shows NO effect in run 2 (real vs random 19W/21L, p=0.68; means flat at ~2.13 nats): the run-1 NLL 'effect' (38W/2L real<zero) vanished with the RoPE fix and is best read as an artifact of degraded numerics.",
+      "Direction decomposition: real helps (+3 accuracy wins vs zero, 0 losses, p=0.125) AND random hurts (zero 22 vs random 20); the primary contrast passes because injected content matters - aligned state is usable where norm-matched noise is disruptive. That is precisely the 'injection mechanism transmits information' claim of the gate, no more."
+    ]
+  },
+  "evidence_label": "live-model, single-host, simulation-free; RTX 5080, nvcc 12.8, deterministic greedy decoding, seeded item selection"
+}
