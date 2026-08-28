@@ -1,0 +1,221 @@
+{
+  "summary": "Run-2 bootstrap: data-shape + training-infra scouts (feed ADR-024)",
+  "agentCount": 2,
+  "logs": [],
+  "result": {
+    "dataShape": {
+      "findings": [
+        "EXISTING DATA IS POOLED-ONLY, ONE VECTOR PER ITEM. S2c bins at crates/latentmesh-runtime/target/latentmesh-runs/s2c/: sender_L18/L24.f32bin = 20,971,520 B = exactly 2560 rows x 2048 dims x 4 B; receiver_L14/L19.f32bin = 15,728,640 B = 2560 x 1536 x 4. The manifest (receipts/s2c-manifest.json) states pooling = 'mean over the sender-GENERATED token span (prompt tokens excluded)'. Code confirms: examples/s2c_generated_dump.rs appends only cap.pooled (lines 385-387, 495-497); forward_capture_multi (src/capture.rs) computes the per-token span rows tensor in-memory (capture.rs:123 rows.mean before pooling) then discards it — per-token dump is a small capture-module change, not a redesign.",
+        "File-name discrepancy in the task: there is no examples/s2c_calibrate_dump.rs; the gold-pairs dump is examples/s2_calibrate_dump.rs (327 lines). It is also pooled (appends cap.pooled, line 143), 4000 rows over gold teacher-forced text — the s2/ bins (32,768,000 = 4000x2048x4; 24,576,000 = 4000x1536x4) match. That gold-text dataset is the one ADR-023's S2b probe proved carries no functional signal; run 2 should train on the S2c GENERATED-pairs distribution.",
+        "HEADLINE: run 2 needs NO regeneration. target/latentmesh-runs/s2c/token-streams.jsonl (2560 lines, 4.75 MB) stores every item's full prompt_tokens + gen_tokens (greedy, batch=1, max_new_tokens=400). Per-token paired capture is therefore pure teacher-forced prefill over saved streams through both models — the same convention the pooled S2c capture already used (phase 2 of s2c_generated_dump.rs re-forwards prefill), and the per-item tokenizer-parity gate (receipt gate token_streams_identical_across_models: pass) guarantees identical token count T_i across sender and receiver per item.",
+        "Measured token counts (computed from token-streams.jsonl): prompt total 311,679 (mean 121.7), generated total 719,115 (mean 280.9 — NOT the task's nominal ~200), full total 1,030,794 tokens across 2560 items.",
+        "DISK ARITHMETIC for per-token capture, f32, generated span only (matches pooling convention + live transmit distribution): sender = 719,115 x 2048 x 4 = 5.89 GB/layer, x2 layers = 11.78 GB; receiver = 719,115 x 1536 x 4 = 4.42 GB/layer, x2 = 8.84 GB; TOTAL ~20.6 GB. Full-sequence variant (prompt+gen) scales by 1,030,794/719,115 = 1.43x -> ~29.5 GB. Disk free on / = 347 GB — fits comfortably. (bf16 would halve it, but the whole pipeline is f32 today.)",
+        "GPU-TIME: the 3.5 s/item anchor is the GENERATION cost and is avoided entirely by stream reuse. Corroboration: S2c receipt realized 3.51 s/row; total realized spend 3696 s (killed attempt) + 5310 s (resume) ~ 9,000 s ~ 2.5 GPU-h for 2560 items. The teacher-forced-only path is measured at 57.3 s for ALL 2560 receiver prefills (receipt wall_clock_s.receiver_phase, both taps in one pass, RTX 5080); sender prefill is ~2x FLOPs (3B vs 1.5B) -> estimate ~2-4 min; whole per-token capture ~5-15 min wall including ~21 GB of writes (use large buffered writes; the existing per-row flush pattern would be I/O-bound). Fresh generation only applies if run 2 wants NEW items beyond the 2560: e.g. the remaining 1440 calibration-4000 items ~ 1440 x 3.51 s ~ 84 min.",
+        "RECOMMENDED FORMAT: keep the repo's raw little-endian f32 row-major convention but ragged — per layer one file sender_L18.tok.f32bin etc. = concatenation of per-item [T_i x dim] blocks in manifest row order, plus ONE shared index (valid for all four files since T_i is identical across models per item): u64 cumulative token offsets per row + item_indices + prompt_len + gen_len + sha256s, JSON or a small binary sidecar. Rust training loop mmaps via memmap2 and reinterprets as &[f32] (byte offset = offset x dim x 4, always 4-aligned) — zero-copy per-item slices, sequential streaming for epochs. Rejected: safetensors with one tensor per item (2560x4 tensors, header bloat, no benefit).",
+        "THE 40 FROZEN PROBE ITEMS ARE FULLY IDENTIFIABLE: explicit dataset.indices in both receipts/s1a-receipt-...-n40.json and receipts/s2b-receipt-cellL18toL14-...-n40.json (ChaCha8 item_seed 20897; s2b gate s1a_item_set_reproduced: pass). Indices: [141, 150, 850, 1153, 1309, 1435, 1573, 1602, 2365, 2418, 2436, 2489, 2540, 2723, 2958, 2973, 3084, 3165, 3741, 3772, 3825, 3844, 3877, 4255, 4305, 4344, 4746, 4888, 5422, 5610, 6031, 6146, 6378, 6452, 6552, 6629, 7293, 7375, 7431, 7462].",
+        "PROBE-TRAINING OVERLAP EXISTS AND IS EXACTLY COMPUTABLE: 13 of the 40 probe items are inside the S2c 2560-row dataset, at (row, item): (69,150) (683,1309) (824,1573) (1258,2365) (1281,2418) (1346,2540) (1577,2958) (1586,2973) (1647,3084) (2052,3825) (2058,3844) (2078,3877) (2529,4746). 22 of 40 sit in the full calibration-4000, so extending capture to the remaining 1440 items would pull in up to 9 more probe items. ADR-023 disclosed this non-disjointness for the linear-fit context (lines 148-158: 'no leakage in the run-1 sense' because the fit consumed no per-item statistic the probe re-estimates); that ruling does NOT transfer to run 2, where a trained adapter evaluated by the same 40-item probe would have memorization-shaped leakage through the 13 shared items.",
+        "Existing internal split discipline to reuse: fit_holdout_split(n_rows, FIT_SPLIT_SEED = 0x24C0_DE03) at harness/latentmesh-live/src/calibrate.rs:34 — deterministic seeded 80/20 shuffle over row indices, already used by both calibrate.rs and calibrate_gen.rs, unit-tested for reproducibility. eval-200/holdout-100 (gsm8k-test) are mechanically locked: eval_items()/holdout_items() refuse until a genome-frozen receipt exists (s2-splits-receipt.json), so run-2 training cannot touch them by construction."
+      ],
+      "recommendation": "Run 2 needs ONE new capture run and it is cheap: teacher-forced per-token paired capture over the EXISTING 2560 saved token streams (target/latentmesh-runs/s2c/token-streams.jsonl) — no regeneration. Spec: for each row, prefill prompt+gen through sender (taps L18, L24) and receiver (taps L14, L19), dump per-token f32 rows for the generated span only (719,115 tokens; ~20.6 GB total across 4 layer files; ~5-15 min wall on the RTX 5080, vs ~2.5 GPU-h if regenerated). Modify src/capture.rs to return the pre-pooling span rows tensor alongside pooled; write ragged concatenated [T_i x dim] blocks per layer plus one shared u64 offsets index (T_i is identical across models per item by the tokenizer-parity gate) so a Rust loop can memmap2 + reinterpret &[f32] zero-copy. Capture ALL 2560 rows — the 13 probe-overlap rows are excluded in the TRAINING loop, not the capture, so the data asset stays complete and the discipline is auditable. Split discipline: (1) apply fit_holdout_split(2560, FIT_SPLIT_SEED=0x24C0_DE03) FIRST to preserve frozen-seed comparability with S2c, THEN drop the 13 probe rows (69, 683, 824, 1258, 1281, 1346, 1577, 1586, 1647, 2052, 2058, 2078, 2529) from whichever side they land in, recording the excluded list in the run-2 receipt; (2) split by ITEM, never by token — tokens within an item are correlated and a token-level split is leakage; (3) disclose that n_fit falls to ~2037-2048, technically below the d_sender=2048 n>d gate, noting that gate was a linear-identifiability constraint that does not carry the same meaning for MLP/GRNN adapters but must be stated; (4) do not draw a fresh probe set — that would contradict ADR-023's 'statistical protocol stays frozen' and is a coordinator/ADR-deviation decision, not a scout call. FIRST ACTION before any run-2 work: copy token-streams.jsonl (and s2c manifest + receipt) out of target/ to a durable location — it is the sole 4.75 MB encoding of ~2.5 GPU-h of generations and 'cargo clean' deletes it.",
+      "risks": [
+        "token-streams.jsonl and all S2c bins live under crates/latentmesh-runtime/target/ — a cargo clean destroys the only encoding of ~2.5 GPU-h of greedy generations (bins are recomputable FROM the streams in minutes; the streams themselves are only recomputable by re-spending the GPU time). Copy them somewhere durable before run 2 starts.",
+        "Teacher-forced prefill states may not be bit-identical to generation-time incremental-decode states in bf16: the repo's parity gates (logits_bit_identical) compare prefill-vs-prefill only. The pooled S2c asset already uses the prefill re-forward convention, so per-token prefill capture is internally consistent — but the live transmit path at run time uses incremental decode, a small distribution gap nobody has measured. (uncertain)",
+        "Excluding the 13 probe rows drops n_fit below the d_sender=2048 n>d gate (~2037-2048 depending on where they land in the 80/20 shuffle). Harmless for nonlinear adapters but a pre-registration-visible deviation from the S2c gate arithmetic; must be disclosed in the run-2 receipt, or the quota extended by ~16 fresh calibration items (at 3.51 s/item generation cost, checking the 9 additional probe overlaps in the remaining calibration-4000 tail).",
+        "If run 2 evaluates the trained adapter with the frozen 40-item S1a/S2b probe protocol (the assumption behind the 13-row exclusion), leakage discipline is as specced; if the coordinator instead changes the probe set, that is an ADR-023 deviation needing its own registration. (uncertain which path the coordinator takes)",
+        "Per-row flush in the existing BinWriter pattern would make a ~21 GB per-token dump I/O-bound; the new writer should buffer in large blocks (the crash-safe row-granularity persistence matters less when the whole capture is minutes)."
+      ],
+      "evidence": [
+        {
+          "claim": "S2c dumps are pooled one-vector-per-item: 20,971,520 B = 2560x2048x4 and 15,728,640 B = 2560x1536x4",
+          "source": "ls -la of crates/latentmesh-runtime/target/latentmesh-runs/s2c/ + exact byte arithmetic + manifest 'pooling' field + s2c_generated_dump.rs appending cap.pooled",
+          "grade": "primary"
+        },
+        {
+          "claim": "The gold-pairs dump example is s2_calibrate_dump.rs (not s2c_calibrate_dump.rs) and is also pooled (4000 rows, gold teacher-forced)",
+          "source": "find + grep of examples/; s2_calibrate_dump.rs line 143 (cap.pooled); s2/ bin sizes 32,768,000 and 24,576,000",
+          "grade": "primary"
+        },
+        {
+          "claim": "token-streams.jsonl holds full prompt+gen token ids for all 2560 items; totals: 311,679 prompt / 719,115 generated / 1,030,794 full; mean gen length 280.9",
+          "source": "wc -l + python pass over target/latentmesh-runs/s2c/token-streams.jsonl; cross-checked against receipt rows.generated_tokens_total=719115",
+          "grade": "primary"
+        },
+        {
+          "claim": "Per-token capture disk cost: 20.6 GB generated-span (11.78 GB sender + 8.84 GB receiver), 29.5 GB full-sequence; 347 GB free",
+          "source": "token totals x dims x 4 B arithmetic; df -h /",
+          "grade": "primary"
+        },
+        {
+          "claim": "Generation cost anchor 3.51 s/row, ~2.5 GPU-h realized for 2560 items; receiver teacher-forced phase 57.3 s for all 2560",
+          "source": "receipts/s2c-generated-dump-receipt.json: budget_ladder_realized.rate_s_per_row, resumed.prior_gpu_s_charged=3696, wall_clock_s{sender_phase:5253, receiver_phase:57.3}",
+          "grade": "primary"
+        },
+        {
+          "claim": "Sender teacher-forced prefill phase for run 2 would take ~2-4 min (whole capture ~5-15 min)",
+          "source": "scaling the measured 57.3 s receiver phase by ~2x model FLOPs (3B vs 1.5B) plus write overhead — not directly measured",
+          "grade": "inferred"
+        },
+        {
+          "claim": "The 40 frozen probe item indices are explicitly recorded and reproducible (seed 20897), listed verbatim",
+          "source": "receipts/s1a-receipt-slots8-block19-poolfull-rescaletrue-n40.json and s2b-receipt-cellL18toL14-...-n40.json dataset.indices; gate s1a_item_set_reproduced: pass",
+          "grade": "primary"
+        },
+        {
+          "claim": "Exactly 13 probe items overlap the S2c 2560 rows (rows 69, 683, 824, 1258, 1281, 1346, 1577, 1586, 1647, 2052, 2058, 2078, 2529); 22 of 40 are in full calibration-4000",
+          "source": "set intersection of receipt dataset.indices vs s2c-manifest item_indices vs harness/latentmesh-live/data/calibration-4000.json, computed in-session",
+          "grade": "primary"
+        },
+        {
+          "claim": "ADR-023 disclosed probe/calibration non-disjointness but ruled it non-leaking only for the linear-fit context; that ruling does not cover a trained adapter evaluated on the same 40 items",
+          "source": "docs/adr/023 lines 148-158 (disclosure and rationale) — the extension to run 2 is my reasoning, not ADR text",
+          "grade": "inferred"
+        },
+        {
+          "claim": "Frozen 80/20 row split is fit_holdout_split with FIT_SPLIT_SEED=0x24C0_DE03; eval/holdout mechanically refuse until genome freeze",
+          "source": "harness/latentmesh-live/src/calibrate.rs:34,222,334-335; receipts/s2-splits-receipt.json eval_holdout_lock",
+          "grade": "primary"
+        },
+        {
+          "claim": "Teacher-forced prefill per-token states match what the sender had during greedy generation",
+          "source": "greedy/batch=1 determinism + same weights; but existing parity gates are prefill-vs-prefill only, incremental-decode numerics unverified in bf16",
+          "grade": "uncertain"
+        },
+        {
+          "claim": "Per-token span states already exist in-memory before pooling, so the capture change is small",
+          "source": "src/capture.rs: rows tensor materialized at lines ~61/~123 before rows.mean(1)",
+          "grade": "primary"
+        }
+      ]
+    },
+    "trainingInfra": {
+      "findings": [
+        "TRAINING VERIFIED ON sm_120: candle 0.9.2 (cuda feature, nvcc 12.8.93 via PATH=/usr/local/cuda-12.8/bin) compiles candle-kernels for the RTX 5080 and runs full backprop + AdamW. Probe crate at /tmp/claude-1000/-home-ruvultra-projects-LatentMesh-1/5e5545f1-6360-406b-b384-6806f2e012c9/scratchpad/train-scout/ (Cargo.lock copied verbatim from crates/latentmesh-runtime — same proven cudarc 0.17.8/0.19.9 pins). The only compile error in the whole exercise was a stray `?` in my own code; kernel compilation and autograd needed zero workarounds.",
+        "MLP RESULT (measured): 2-layer MLP 2048->512->1536 (1,837,056 params), AdamW lr=1e-3, batch 256, MSE vs a fixed random linear teacher + noise: loss 2.817 -> 0.593 over 300 steps, still decreasing; mean step time 0.94 ms / p50 0.92 ms (first 10 steps discarded; per-step host read of the loss forces CUDA sync so timing is honest; first step 73 ms = cuBLAS/kernel init). The 0.59 floor is the 512-hidden bottleneck vs a full-rank linear teacher, not a training failure.",
+        "FASTGRNN CELL TRAINS ON CUDA (measured): a custom low-rank FastGRNN cell written purely over candle ops (matmul, broadcast_add, sigmoid, tanh) backprops through 16-step BPTT with AdamW. r=64 (429,058 params): loss 0.444 -> 0.341 @ 9.5 ms/step, batch 64 x seq 16. r=256 (1,707,010 params): 0.570 -> 0.396, monotonically decreasing with no stall, 9.8 ms/step. Custom-cell-in-Rust-over-candle-ops is FEASIBLE and proven; no candle patches needed. candle-nn 0.9.2 also ships GRU and LSTM in rnn.rs as a fallback (structs GRU/LSTM, fns gru()/lstm(), Rnn trait with step()).",
+        "FASTGRNN PRIMARY SOURCE (Kusupati et al., NeurIPS 2018, arXiv:1901.02358; reference impl microsoft/EdgeML pytorch/edgeml_pytorch/graph/rnn.py FastGRNNCell): pre = Wx_t + Uh_{t-1} (W,U SHARED between gate and candidate — the FastGRNN trick); z = sigma_gate(pre + b_z) [default sigmoid]; h_tilde = sigma_update(pre + b_h) [default tanh]; h_t = z*h_{t-1} + (sigmoid(zeta)*(1-z) + sigmoid(nu))*h_tilde, zeta/nu trainable scalars passed through sigmoid. Low-rank: W = W1@W2 with W1 [D_in, r_W], W2 [r_W, D_h]; U = U1@U2 with U1 [D_h, r_U], U2 [r_U, D_h]. Param count = r_W(D_in + D_h) + 2*r_U*D_h + 2*D_h + 2. Cross-check: formula at D_in=2048, D_h=1536, r=64 predicts 429,058 — my probe printed exactly 429,058 (independent agreement of fetched formula and my Rust implementation).",
+        "CANDLE-NN 0.9.2 OPTIMIZERS (from registry source ~/.cargo/registry/.../candle-nn-0.9.2/src/optim.rs): ships SGD and AdamW only (AdamW::new_lr(vars, lr) and ParamsAdamW for full config). No plain Adam/RMSprop. AdamW used successfully in both probe phases.",
+        "CODEX LANE AVAILABLE — with corrections to the task's guess: codex-cli 0.149.0 headless mode is `codex exec` (alias `e`), NOT `codex -p`. Working invocation verified: `codex exec --sandbox read-only --skip-git-repo-check \"<prompt>\"` — the --skip-git-repo-check flag is REQUIRED outside a trusted/git directory (without it, codex refuses with 'Not inside a trusted directory'). Credentials: authenticated via ChatGPT login (`codex login status` -> 'Logged in using ChatGPT'), not an API key — plan/subscription rate limits apply, not per-token API billing. No-op test returned 'OK' using 7,179 tokens. Lane is USABLE.",
+        "TIMING CAVEATS: synthetic data generation (device randn + teacher matmul) sat inside the timed region, slightly inflating step times; a co-tenant process (ruvultra-embedder, 474 MiB) was resident on the GPU during measurement. Real step times with pre-computed pairs should be equal or better.",
+        "PARAM BUDGETS at our dims (D_in=2048, D_h/D_out=1536): MLP 2048->512->1536 = 1,837,056 (7.0 MB f32). FastGRNN = 3584*r_W + 3072*r_U + 3074: r=64 -> 429,058 (1.6 MB); r=128 -> 855,042 (3.3 MB); r=256 -> 1,707,010 (6.5 MB). All trivially fit the 16 GB card alongside both live Qwen models.",
+        "TRAINING-TIME ENVELOPE for ~500K per-token pairs (from measured step times): MLP at batch 256 = ~1954 steps/epoch x 0.94 ms ~= 1.8 s/epoch compute -> 50 epochs ~= 1.5 min. FastGRNN at batch 64 x seq 16 = 1024 tokens/step at ~9.8 ms -> ~104K tokens/s -> ~4.8 s/epoch -> 50 epochs ~= 4 min. COMPUTE IS NOT THE BOTTLENECK. The dataset is: 500K x (2048+1536) x f32 ~= 7.2 GB — keep pairs host-side (memmap or streamed shards), transfer batches to GPU; do NOT hold the dataset resident on the 16 GB card next to two live models."
+      ],
+      "recommendation": "Build the training crate as a STANDALONE package exactly like latentmesh-runtime: own directory (e.g. crates/latentmesh-train), empty `[workspace]` table, rust-version 1.81, `cuda` feature OFF by default with candle-core/candle-nn 0.9.2, and COPY latentmesh-runtime's Cargo.lock as the starting lockfile — the workspace-exclusion reasoning is already ruled on in latentmesh-runtime/Cargo.toml (candle needs half >=2.5, which can never unify with latentmesh-core's =2.4.1 MSRV-1.77 pin; coordinator ruling 2026-08-27) and applies unchanged. Add a build.rs nvcc-12.8 guard like latentmesh-runtime's, since every cargo invocation needs PATH=/usr/local/cuda-12.8/bin:$PATH. Train both adapters with candle-nn AdamW (the only Adam variant shipped): (a) MLP 2048->512->1536 (~1.84M params) as the baseline, (b) a hand-rolled low-rank FastGRNN cell (start r=128, ~855K params; r is the size/quality dial) — the probe proved custom-cell BPTT works on this GPU at ~9.8 ms per 1024-token step, so no GRU fallback is needed, though candle-nn's GRU exists if wanted. Store the ~500K-pair dataset (~7.2 GB f32) host-side and stream batches to the GPU; total training compute is minutes per run, so plan for many hyperparameter runs rather than one long one. The codex auxiliary lane is available via `codex exec --sandbox read-only --skip-git-repo-check \"<prompt>\"` (ChatGPT-login auth, already configured). Reusable probe with all measured numbers: /tmp/claude-1000/-home-ruvultra-projects-LatentMesh-1/5e5545f1-6360-406b-b384-6806f2e012c9/scratchpad/train-scout/.",
+      "risks": [
+        "Synthetic-data convergence floors (MLP 0.59, FastGRNN 0.34-0.40) are capacity artifacts of the probe's teacher setup, not kernel failures — but real hidden-state pairs have unknown structure; convergence quality on real data is unmeasured.",
+        "Probe timing included on-device data generation and ran with a 474 MiB GPU co-tenant (ruvultra-embedder); numbers are honest upper-ish bounds but real-run timing with two live Qwen models resident (several GB each) plus training could contend for memory bandwidth and VRAM — budget VRAM before co-locating training with live inference.",
+        "Cargo.lock copy is load-bearing: a fresh `cargo update` may pull newer cudarc/candle point releases that are unproven on sm_120 with nvcc 12.8. Pin via the copied lockfile and the build.rs nvcc guard.",
+        "codex lane auth is a ChatGPT subscription login, not an API key — subject to interactive-plan rate limits and possible session expiry; a long batch of codex exec calls may hit limits that per-token API billing would not.",
+        "FP16/BF16 training was not probed (all measurements F32). If mixed precision is wanted later, it needs its own probe — F32 is fully sufficient at these param counts.",
+        "Probe used candle-nn AdamW only; no LR scheduler ships in candle-nn 0.9.2 — implement warmup/decay manually if needed (trivial: opt.set_learning_rate not present; recreate params via set_params/ParamsAdamW)."
+      ],
+      "evidence": [
+        {
+          "claim": "candle 0.9.2 trains on RTX 5080 (sm_120): MLP 2048->512->1536, AdamW, CUDA — loss 2.817->0.593 in 300 steps, mean 0.94 ms/step (p50 0.92 ms) at batch 256",
+          "source": "Measured this session: /tmp/claude-1000/-home-ruvultra-projects-LatentMesh-1/5e5545f1-6360-406b-b384-6806f2e012c9/scratchpad/train-scout/ run output (loss read to host each step forces CUDA sync)",
+          "grade": "primary"
+        },
+        {
+          "claim": "Custom low-rank FastGRNN cell over candle ops backprops through 16-step BPTT on CUDA: r=64 loss 0.444->0.341 @9.5 ms/step; r=256 loss 0.570->0.396 @9.8 ms/step, monotonically decreasing",
+          "source": "Measured this session: train-scout phase 2 run output, both ranks",
+          "grade": "primary"
+        },
+        {
+          "claim": "candle-nn 0.9.2 ships exactly SGD and AdamW optimizers, plus GRU/LSTM cells in rnn.rs",
+          "source": "Registry source inspected: ~/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/candle-nn-0.9.2/src/{optim.rs,rnn.rs}",
+          "grade": "primary"
+        },
+        {
+          "claim": "FastGRNN equations: shared W,U; z=sigmoid(Wx+Uh+b_z); h_tilde=tanh(Wx+Uh+b_h); h_t=z*h_{t-1}+(sigmoid(zeta)(1-z)+sigmoid(nu))*h_tilde; low-rank W=W1[D_in,r_W]@W2[r_W,D_h], U=U1[D_h,r_U]@U2[r_U,D_h]; params=r_W(D_in+D_h)+2 r_U D_h+2 D_h+2",
+          "source": "Fetched this session: https://raw.githubusercontent.com/microsoft/EdgeML/master/pytorch/edgeml_pytorch/graph/rnn.py (FastGRNNCell forward, quoted); paper: Kusupati et al., NeurIPS 2018, https://arxiv.org/pdf/1901.02358 and https://proceedings.neurips.cc/paper_files/paper/2018/hash/ab013ca67cf2d50796b0c11d1b8bc95d-Abstract.html",
+          "grade": "primary"
+        },
+        {
+          "claim": "Param formula independently cross-checked: EdgeML formula at D_in=2048, D_h=1536, r=64 predicts 429,058; probe's Rust implementation counted exactly 429,058 (and 1,707,010 at r=256)",
+          "source": "Fetched formula + measured probe output, this session",
+          "grade": "primary"
+        },
+        {
+          "claim": "codex-cli 0.149.0 headless = `codex exec` (not `-p`); requires --skip-git-repo-check outside trusted dirs; authenticated via ChatGPT login; no-op prompt returned OK using 7,179 tokens",
+          "source": "Executed this session: `codex --help`, `codex exec --help`, `codex login status`, and live `codex exec --sandbox read-only --skip-git-repo-check` test",
+          "grade": "primary"
+        },
+        {
+          "claim": "Workspace-exclusion reasoning: candle requires half >=2.5 (MSRV 1.81), un-unifiable with latentmesh-core's half =2.4.1 MSRV-1.77 pin; standalone crate with own [workspace] and lockfile, coordinator ruling 2026-08-27",
+          "source": "/home/ruvultra/projects/LatentMesh-1/crates/latentmesh-runtime/Cargo.toml comments (read this session)",
+          "grade": "primary"
+        },
+        {
+          "claim": "Proven dep pins: candle-core/candle-nn 0.9.2 with cudarc 0.17.8 + 0.19.9, nvcc 12.8.93 required (host default nvcc 13.0 untested)",
+          "source": "crates/latentmesh-runtime/Cargo.lock + Cargo.toml build.rs comment; probe reused the exact lockfile and built clean",
+          "grade": "primary"
+        },
+        {
+          "claim": "Training envelope for 500K pairs: MLP ~1.8 s/epoch, FastGRNN ~4.8 s/epoch (~104K tokens/s); dataset ~7.2 GB f32 so host-side batching required; compute is not the bottleneck",
+          "source": "Arithmetic from measured step times and dims (500K x (2048+1536) x 4 B)",
+          "grade": "inferred"
+        },
+        {
+          "claim": "GPU had a 474 MiB co-tenant (ruvultra-embedder) during measurement; contention effect on step times assumed small but not isolated",
+          "source": "nvidia-smi --query-compute-apps during the run",
+          "grade": "primary"
+        },
+        {
+          "claim": "ChatGPT-login codex sessions are subject to plan rate limits rather than API billing (implication for heavy batch use)",
+          "source": "Inference from auth mode observed; limits not empirically probed",
+          "grade": "uncertain"
+        }
+      ]
+    }
+  },
+  "workflowProgress": [
+    {
+      "type": "workflow_phase",
+      "index": 1,
+      "title": "Scout"
+    },
+    {
+      "type": "workflow_agent",
+      "index": 1,
+      "label": "scout:data-shape",
+      "phaseIndex": 1,
+      "phaseTitle": "Scout",
+      "agentId": "a0f467e1b30e1da41",
+      "model": "claude-fable-5",
+      "state": "done",
+      "startedAt": 1787954682989,
+      "queuedAt": 1787954682975,
+      "attempt": 1,
+      "lastToolName": "StructuredOutput",
+      "lastToolSummary": "Run 2 needs ONE new capture run and it is cheap: teacher-fo…",
+      "promptPreview": "Repo /home/ruvultra/projects/LatentMesh-1, branch feat/live-latent-experiment (read-only task — write NOTHING in the repo). Mission context: run 2 will train adapters (MLP projector, then a FastGRNN-class tiny gated-RNN sequence translator) to translate Qwen2.5-3B hidden states into Qwen2.5-1.5B-usable states, because run 1 proved linear maps carry no functional signal (docs/adr/023, receipts in c…",
+      "lastProgressAt": 1787955011904,
+      "tokens": 138006,
+      "toolCalls": 18,
+      "durationMs": 328913,
+      "resultPreview": "{\"findings\":[\"EXISTING DATA IS POOLED-ONLY, ONE VECTOR PER ITEM. S2c bins at crates/latentmesh-runtime/target/latentmesh-runs/s2c/: sender_L18/L24.f32bin = 20,971,520 B = exactly 2560 rows x 2048 dims x 4 B; receiver_L14/L19.f32bin = 15,728,640 B = 2560 x 1536 x 4. The manifest (receipts/s2c-manifest.json) states pooling = 'mean over the sender-GENERATED token span (prompt tokens excluded)'. Code …"
+    },
+    {
+      "type": "workflow_agent",
+      "index": 2,
+      "label": "scout:training-infra",
+      "phaseIndex": 1,
+      "phaseTitle": "Scout",
+      "agentId": "a38b6d426efceae30",
+      "model": "claude-fable-5",
+      "state": "done",
+      "startedAt": 1787954682990,
+      "queuedAt": 1787954682975,
+      "attempt": 1,
+      "lastToolName": "StructuredOutput",
+      "lastToolSummary": "Build the training crate as a STANDALONE package exactly li…",
+      "promptPreview": "Repo /home/ruvultra/projects/LatentMesh-1 (read-only in the repo; you MAY write throwaway experiments in /tmp/claude-1000/-home-ruvultra-projects-LatentMesh-1/5e5545f1-6360-406b-b384-6806f2e012c9/scratchpad/train-scout/). Mission context: run 2 trains adapters in Rust (repo rule: Rust only for product code) to translate between two Qwen2.5 models' hidden spaces (2048-dim -> 1536-dim, per-token seq…",
+      "lastProgressAt": 1787955124104,
+      "tokens": 108777,
+      "toolCalls": 25,
+      "durationMs": 439159,
+      "resultPreview": "{\"findings\":[\"TRAINING VERIFIED ON sm_120: candle 0.9.2 (cuda feature, nvcc 12.8.93 via PATH=/usr/local/cuda-12.8/bin) compiles candle-kernels for the RTX 5080 and runs full backprop + AdamW. Probe crate at /tmp/claude-1000/-home-ruvultra-projects-LatentMesh-1/5e5545f1-6360-406b-b384-6806f2e012c9/scratchpad/train-scout/ (Cargo.lock copied verbatim from crates/latentmesh-runtime — same proven cudar…"
+    }
+  ],
+  "totalTokens": 246783,
+  "totalToolCalls": 43
+}
