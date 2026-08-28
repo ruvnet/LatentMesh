@@ -396,6 +396,33 @@ a plan document, not just a results document.
 | M5 | Receiver-side MicroLoRA from ΔV feedback | Not started — least specified, needs its own scouting pass first |
 | M6 | Full four-condition run, A1-A8 computed (or a second negative result) | Not started — gated on M3/M4/M5 producing a passing adapter |
 
+## Future work / out of scope — registrations, not commitments
+
+Three directions are named here because they bear on run 2's eventual shape, but **none of them
+expand run 2's current scope** — nothing below is scheduled, gated, or built in this wave. Each
+now has its own full design-contract ADR (025, 026, 027) rather than staying only a bullet here,
+per a follow-on coordinator request; this section stays as the pointer and the one-line framing
+for why each was worth naming from inside run 2's own context.
+
+1. **Distributed latent-data fabric.** `ruvector-replication` (crates.io 0.1.1, Rust 1.77+ —
+   notably MSRV-*compatible* with this workspace, unlike candle) is the natural replication layer
+   if ADR-016's embedded RuVector backend or run 2's own per-token shards ever need to distribute
+   across more than one host. Formalized in [ADR-025](025-distributed-latent-data-fabric.md).
+2. **Verified-edge federation wire contract.** `agentdb`'s QUIC sync architecture already defines
+   a near-exact wire shape (`CausalEdgeSync`: edge id, uplift, confidence, vector-clock version)
+   for federating gate-verified causal edges between nodes — reference prior art for a future
+   federation ADR, not a run-2 dependency. Formalized in
+   [ADR-026](026-verified-edge-federation-wire-contract.md).
+3. **M4.5 — latent-prefix delivery, registered by name only.** If M3/M4's mid-layer injection
+   gates fail, prefix-level delivery into the receiver's context window is the pre-named next
+   contingency: `latentmesh-gate`'s existing `LatentPrefix` authority tier is already designed for
+   exactly this lower-trust mode, and prefix conditioning is a strictly easier transfer problem
+   than the mid-layer geometry run 1 falsified (usefulness-as-input, not valid mid-layer
+   activation structure). **This is not part of run 2's current ladder** — M3 through M6 above are
+   unchanged by this registration — and activating it requires its own pre-registration addendum,
+   frozen before any probe runs, exactly as ADR-023 required for run 1. Formalized in
+   [ADR-027](027-latent-prefix-context-window-delivery.md).
+
 ## Consequences
 
 The data pipeline decision (per-token capture from existing streams, no regeneration) makes M2 a
