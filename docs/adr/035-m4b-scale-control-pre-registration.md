@@ -1,6 +1,17 @@
 # 035. M4b scale-control arm: pre-registration addendum
 
-- **Status**: Proposed (pre-registration — frozen before any M4b item is consumed, per ADR-023's
+- **Status**: **BLOCKED PERMANENTLY (2026-08-29) — will not execute under this
+  apparatus.** This ADR registered M4b as *mandatory regardless of any other
+  rung's outcome*; **that mandate is now discharged as unsatisfiable, not
+  waived.** PC3 established out of sample that payload content contributes
+  nothing to decisions (p = 0.72, fully powered), and M4b's receiver-scale arm
+  varies the payload's source model — a content factor. Running it could not
+  distinguish "scale does not help" from "the apparatus cannot express any
+  content at the decision level". See
+  [research/048](../research/048-run2-final-synthesis.md). The pre-registration
+  below is preserved unaltered and remains valid under an apparatus shown to
+  steer decisions.
+- **Superseded status**: Proposed (pre-registration — frozen before any M4b item is consumed, per ADR-023's
   own discipline, inherited by every ladder rung since). M4b is the ladder's one contingency
   registered as **mandatory regardless of any other rung's outcome** (ADR-024 §"Registered
   confound — receiver-scale threshold"); this document exists so M4b can execute the moment the

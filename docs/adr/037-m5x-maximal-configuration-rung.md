@@ -1,6 +1,17 @@
 # 037. M5X: the multi-factor "maximal configuration" rung
 
-- **Status**: Proposed (pre-registration — frozen before any M5X item is consumed, per ADR-023's
+- **Status**: **BLOCKED PERMANENTLY (2026-08-29) — will not execute under this
+  apparatus.** PC3 confirmed out of sample that the injection pathway is
+  *non-semantic at the decision level*: payload content changes which answer the
+  receiver gives no more than a norm-matched Gaussian does (36W/32L, n_disc 68,
+  p = 0.72 two-sided, min attainable p 3.4e-21). **M5X varies payload content
+  and configuration — neither is the binding constraint**, so its result would
+  be uninterpretable regardless of outcome. See
+  [research/048](../research/048-run2-final-synthesis.md) and ADR-024
+  §"PC3 — THE DISSOCIATION IS CONFIRMED OUT OF SAMPLE". The pre-registration
+  below is preserved unaltered and remains valid should a *different* apparatus
+  — one shown to steer decisions — become available.
+- **Superseded status**: Proposed (pre-registration — frozen before any M5X item is consumed, per ADR-023's
   own discipline, inherited by every rung since). This ADR deliberately breaks the ladder's own
   one-factor-per-rung discipline (ADR-024's standing rule since M3) — which is exactly why it
   needs a pre-registration as careful as any single-factor rung's, arguably more so, since a

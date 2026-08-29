@@ -1,5 +1,24 @@
 # 024. Run 2: trained thought-adapter ladder
 
+> ## ✅ THE LADDER IS CLOSED (2026-08-29)
+>
+> **Final result, confirmed out of sample by PC3**: activation injection is
+> **semantic at the likelihood level** (a payload moves probability toward the
+> specific answer it encodes — decoy −0.773 nats, p = 7.5e-35; gold −0.320
+> nats, p = 5.8e-12) and **non-semantic at the decision level** (it changes
+> which answer the receiver gives no more than a norm-matched Gaussian:
+> 36W/32L, n_disc = 68, **p = 0.72**, min attainable p 3.4e-21).
+>
+> **The decision layer reads the perturbation, not the meaning.**
+>
+> Every cross-model null in this ladder is explained by the apparatus and
+> **none is evidence about latent transferability**. M5X (ADR-037) and M4b
+> (ADR-035) are **blocked permanently**. Full write-up:
+> **[research/048](../research/048-run2-final-synthesis.md)**.
+>
+> Firewall: these are **apparatus** results. A FAIL may not be cited as
+> evidence against transfer any more than a PASS may be cited for it.
+
 > ## ⛔ STOP — DEFECTIVE PRE-REGISTRATION, READ BEFORE INHERITING ANYTHING (2026-08-29)
 >
 > **PC1b's pre-registered FAIL branch is LOGICALLY INVERTED and must not be
