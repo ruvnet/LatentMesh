@@ -1036,6 +1036,49 @@ Open tension to settle before pre-registering: 8 slots across 2 sites is
 either 16 total or a 4+4 split, and ADR-028's slot-count discipline (already
 self-contradictory and unadjudicated) does not cover it.
 
+## CORRECTION + a critical interaction between M4i and PC1 (2026-08-29)
+
+**My M4i entry below understates the result, and the fuller receipt changes
+what PC1 can be taken to prove.**
+
+**1. The injection-site hypothesis is PARTIALLY SUPPORTED, not unsupported.**
+I wrote that moving to ordinary tokens "did not rescue transfer" and that the
+NLL improvement "must not be read as partial transfer". The first half is
+wrong as stated. Measured over 300 items with the **same artifact and the
+same payload derivation** as M4h Stage 1: aligned mean gold NLL **2.2446 vs
+baseline 2.3928 — 0.148 nats better, 181W/119L**. Every prior on-manifold
+configuration at the `<|fim_pad|>` site sat inside a **~0.004-nat inertness
+band**. This is **two orders of magnitude outside it**. Moving off the
+placeholder site **makes the payload register in the forward pass at all** —
+direct support for [docs/research/043](../research/043-placeholder-token-choice.md)'s
+mechanism. What it does *not* do is convert into accuracy (aligned 128/300 vs
+baseline 140/300). The honest verdict is the implementer's: **the placeholder
+site is a real but non-load-bearing structural difference** — real because it
+changes the forward pass measurably, non-load-bearing because the change does
+not become correctness.
+
+**2. The interaction that matters: PC1 RAN AT THE PLACEHOLDER SITE.** PC1
+used 8 `<|fim_pad|>` slots — precisely the site M4i has now shown is where
+payloads *fail to register*. So PC1's failure is confounded: it may show
+that **the current mechanics cannot carry signal**, or merely that
+**`<|fim_pad|>` cannot carry signal**, which M4i independently demonstrates.
+**PC1's conclusions above are hereby narrowed**: every caveat it triggers
+applies to *the placeholder-site configuration*, and the sweeping claim that
+"current mechanics have never been shown to carry signal" is **not
+established** until a positive control runs at **ordinary tokens**.
+
+**3. Consequent decision, registered now**: **PC1b** — repeat PC1 (receiver's
+own L19 states, identity transform, fuse, de-pooled) at the **question-tail
+ordinary-token site M4i used**, under the e-process. This is now the single
+highest-value experiment available: it separates "our pathway is inert" from
+"the placeholder token was the problem", and both of those readings currently
+have real evidence. It remains **prerequisite to M5X and M4b**, which stay
+blocked.
+
+**4. What survives unchanged from PC1's outcome**: S1a's pass is still scoped
+to retired mechanics, and the mechanical-discordance-suppression rival to my
+"adapters improved" account still stands — PC1 had no adapter and n_disc 3.
+
 ## PC1 OUTCOME (2026-08-29) — THE POSITIVE CONTROL FAILED. This is the consequential branch.
 
 `run2-pc1-receipt-identity-L19lasttoken-goldtf-fuse-slots8-nopool-*.json`.
