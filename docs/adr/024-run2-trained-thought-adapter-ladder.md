@@ -1036,6 +1036,81 @@ Open tension to settle before pre-registering: 8 slots across 2 sites is
 either 16 total or a 4+4 split, and ADR-028's slot-count discipline (already
 self-contradictory and unadjudicated) does not cover it.
 
+## THE RETRACTION IS WITHDRAWN — error #12 was not an error, and my correction was the bigger mistake (2026-08-29)
+
+**Read this before the section below it.** The retraction that follows is
+**wrong** and is preserved only because this record is append-only. The
+original claim — PC1b's stream is identical to M4i's — **is true and is now
+verified from primary artifacts.**
+
+The probe's alarming log line is a **false negative produced by two
+JSON field-name lookup bugs.** Verified in source and receipts:
+
+| probe reads | exists in M4i? | what M4i actually uses | value |
+|---|---|---|---|
+| `m4i["config"]["site"]` (line 375) | **no** | `config.injection_site` | `"question_tail_ordinary_tokens"` |
+| `m4i["dataset"]["indices"]` (line 363) | **no** (no top-level `dataset`) | `items[*].item` | 300 ids |
+
+Both resolve to null, so the tag prints `<unrecorded>` and the stream
+comparison runs against an empty vector. The bug's origin is visible: the
+probe **writes** its own receipt with a top-level `"dataset": {"indices": …}`
+(line 711) and assumed M4i had the same shape. It does not.
+
+**My own independent derivation, not the peer's and not the gate's
+self-report:**
+```
+M4i  ids: n=300 head=[4, 20, 23, 39, 42] tail=[4457, 4464, 4465]
+cap  ids: n=300 head=[4, 20, 23, 39, 42] tail=[4457, 4464, 4465]
+cap_ids == m4i_ids -> True
+```
+And the **capture** binary — a *different* binary from the probe — reads the
+correct key `m4i["items"]` (line 252) behind a **hard gate**,
+`anyhow::ensure!(m4i_stream == stream)` (line 260). It passed; had it failed
+the run would have aborted before writing any payload. Its committed gate:
+`/gates/stream_identical_to_m4i → {"pass": true, "n": 300, "note": "…item for
+item and in order — the site claim is checked, not asserted"}`.
+
+**Restored, and the block I imposed is lifted**: PC1b runs at the same site,
+same tag, same 300 items in the same order as M4i. **The comparison to M4i's
+n_disc = 66 IS available.** There is no missing site tag in M4i's receipt and
+no gap to flag in that rung — I withdraw that too.
+
+### The process lesson, which is the opposite of the one I drew
+
+I got this wrong **twice in one hour, in opposite directions, by the same
+mechanism**:
+
+1. I asserted *"site provenance proven"* on a peer's **prose**, without
+   checking → wrong process, **right** conclusion.
+2. I retracted it on a **single probe log line**, without checking → wrong
+   process, **wrong** conclusion.
+
+The failure was never "trusting a teammate." It is **acting on one
+unverified signal**, and a refutation deserves exactly the scepticism an
+assertion does. My retraction was the more damaging of the two: it would have
+voided a valid comparison and manufactured a nonexistent defect in M4i's
+receipt. **Scepticism applied in only one direction is not rigour.**
+
+### The real finding underneath, which stands
+
+The binary now running (`4cda2ef1…`) is **not built from the source the
+capture author wrote.** Their version asserts stream identity as a *hard
+gate*; the running version replaced it with a **soft, non-gating print**
+carrying both broken lookups. Consequences:
+
+1. **The draw is unaffected** — every pre-registered constant is identical
+   (`SITE`, `INJECT_MODE`, `LAMBDA` 0.30, `E_ALPHA` 0.05, `N_MAX` 300, all
+   three gaming-guard thresholds), verified before the flag was raised.
+2. **The probe's receipt will understate its own provenance**, populating
+   `site_provably_identical_to_m4i` from the two broken lookups. The
+   corrected, independently-derived values are to be written in, with the
+   binary's raw line preserved **verbatim beside them, labelled as a false
+   negative from two field-name errors** — not as a finding.
+3. **Two agents editing one rung's source while its draw is in flight** is the
+   actual process failure, and it is the **same root cause as the duplicate
+   launch**: I created multiple concurrent paths onto one registered rung.
+   That is coordinator error #11's lesson recurring, not a new one.
+
 ## RETRACTION — coordinator error #12: I recorded "site provenance proven" and it is FALSE (2026-08-29)
 
 **The most serious error of this mission, and it is entirely mine.** In
