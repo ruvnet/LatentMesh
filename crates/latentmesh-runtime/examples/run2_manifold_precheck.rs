@@ -519,6 +519,40 @@ fn build_candidates() -> anyhow::Result<(Vec<Candidate>, serde_json::Value)> {
         )?);
     }
 
+    // M4g's TRAINED artifact (ADR-024's overwrite-vs-fuse rung), on the same
+    // present-on-disk rule. Its seeded init is asserted byte-identical to
+    // M4c's/M4d's by its own trainer, so the shared-init candidate above
+    // covers M4g's init too and is not double-counted here. NOTE: this
+    // metric kit measures the EMITTED VECTOR, which is independent of the
+    // injection operator — so M4g's numbers here are directly comparable
+    // with every prior rung's, and the pre-check is DIAGNOSTIC ONLY (ADR-024
+    // M4f framing): it gates nothing about whether M4g's probe is drawn.
+    let m4g_final = crate_path("receipts/run2-m4g-mlp-fuse-cellL18toL14.f32bin");
+    let m4g_receipt_path = crate_path("receipts/run2-m4g-training-receipt-cellL18toL14.json");
+    let m4g = m4g_receipt_path
+        .exists()
+        .then(|| read_json("receipts/run2-m4g-training-receipt-cellL18toL14.json"))
+        .transpose()?;
+    let m4g_h = m4g.as_ref().map(h).transpose()?;
+    if let Some(m4g) = m4g.as_ref() {
+        let m4g_init_h = pinned(m4g, &["artifact", "init_content_hash_sha256"])?;
+        anyhow::ensure!(
+            m4g_init_h == m4c_init_h,
+            "M4c init {m4c_init_h} != M4g init {m4g_init_h} — they are no longer the same artifact; add M4g's init as its own candidate"
+        );
+    }
+    if let (true, Some(want)) = (m4g_final.exists(), m4g_h.as_ref()) {
+        v.push(load_mlp(
+            "m4g-mlp-taskloss-fuse",
+            "mlp-taskloss",
+            "M4c's task loss and M4d's deployment transform UNCHANGED, with the INJECTION OPERATOR changed from overwrite to residual add (h[slot] += c*v; ADR-024's registered M4g rung). The emitted vector this kit measures does not depend on the operator, so these numbers are directly comparable with every rung above",
+            "receipts/run2-m4g-mlp-fuse-cellL18toL14.f32bin",
+            "receipts/run2-m4g-golden-mlp-fuse-cellL18toL14.json",
+            Some(("run2-m4g-training-receipt-cellL18toL14.json", want)),
+            false,
+        )?);
+    }
+
     v.push(Candidate {
         label: "reference-receiver-L14-pooled",
         family: "reference-on-manifold",
@@ -542,7 +576,16 @@ fn build_candidates() -> anyhow::Result<(Vec<Candidate>, serde_json::Value)> {
         emitter: Emitter::NaturalLastRow,
     });
 
-    Ok((v, m4d_status))
+    let status = serde_json::json!({
+        "m4d": m4d_status,
+        "m4g": {
+            "final_artifact_present": m4g_final.exists(),
+            "training_receipt_present": m4g_receipt_path.exists(),
+            "measured_here": m4g_final.exists() && m4g_h.is_some(),
+            "note": "M4g (overwrite -> fuse) is measured when its trainer has written both its artifact and the training receipt that pins the hash. This kit projects the EMITTED VECTOR through the receiver's readout and is operator-independent; ADR-024's M4f framing makes it DIAGNOSTIC ONLY — it is not a gate on M4g's one frozen probe draw.",
+        },
+    });
+    Ok((v, status))
 }
 
 // ---------------------------------------------------------------------------
@@ -573,7 +616,7 @@ fn main() -> anyhow::Result<()> {
     println!("lane gate: CPU-only (cuda feature off, Device::Cpu)");
 
     // ---- Candidates + hash gates -----------------------------------------
-    let (candidates, m4d_status) = build_candidates()?;
+    let (candidates, rung_status) = build_candidates()?;
     println!("candidates: {}", candidates.len());
     for c in &candidates {
         println!(
@@ -1044,7 +1087,7 @@ fn main() -> anyhow::Result<()> {
         },
         "cell": {"sender_block": SENDER_BLOCK, "receiver_block": RECEIVER_BLOCK,
                   "receiver_model": RECEIVER, "vocab": vocab, "hidden": hidden},
-        "m4d_status": m4d_status,
+        "rung_status": rung_status,
         "thresholds_registered": {
             "collapse_mean_pairwise_cosine_at_or_above": COLLAPSE_COSINE,
             "collapse_top10_token_union_at_or_below": COLLAPSE_TOKEN_UNION,
@@ -1064,11 +1107,21 @@ fn main() -> anyhow::Result<()> {
         },
         "wall_clock_s": t0.elapsed().as_secs_f32(),
     });
-    common::write_receipt(
-        &crate_path("receipts"),
-        "run2-manifold-precheck-receipt.json",
-        &receipt,
-    )?;
+    // Receipt name: the default keeps the committed M4f pre-check receipt
+    // (`docs/research/038` cites it by name) reproducible; an optional first
+    // CLI argument writes a differently-named receipt instead, so a later
+    // rung can add its own candidate WITHOUT overwriting an earlier rung's
+    // evidence. Nothing else about the run changes.
+    let receipt_name = std::env::args()
+        .nth(1)
+        .unwrap_or_else(|| "run2-manifold-precheck-receipt.json".to_string());
+    anyhow::ensure!(
+        receipt_name.starts_with("run2-manifold-precheck")
+            && receipt_name.ends_with(".json")
+            && !receipt_name.contains('/'),
+        "receipt name must be a bare run2-manifold-precheck*.json filename, got {receipt_name}"
+    );
+    common::write_receipt(&crate_path("receipts"), &receipt_name, &receipt)?;
     println!("\nVERDICT: {verdict}");
     Ok(())
 }

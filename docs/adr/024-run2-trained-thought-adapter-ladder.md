@@ -688,6 +688,149 @@ loss function, deployment configuration, and injection operator.
 **Honest-fail path unchanged**: full numbers either way, no protocol
 iteration, no retry.
 
+## M4g outcome (2026-08-29) — HONEST FAIL; fuse is not the root cause
+
+Receipts `run2-m4g-training-receipt-cellL18toL14.json`,
+`run2-m4g-transfer-receipt-cellL18toL14.json`,
+`run2-manifold-precheck-m4g-receipt.json`,
+`run2-m4g-receipt-cellL18toL14-mlp-fuse-slots8-poolfull-rescaletrue-n40.json`.
+One changed factor, exactly as registered: `h[slot] = c·v` became
+`h[slot] += c·v`. `LayerEdit::Fuse` is a NEW enum variant beside `Inject`, so
+the overwrite arm's op sequence is untouched and every prior receipt stays
+reproducible; every `InjectionSpec` construction site in the repo now names
+its mode explicitly. The seeded init is **byte-identical to M4c's and M4d's**
+(`c424030e…`, asserted against both training receipts, not assumed from the
+shared seed constant), so M4c → M4d → M4g is a clean three-way ablation of
+loss configuration → deployment configuration → injection operator.
+
+1. **Training was the best of the three rungs.** Holdout task CE
+   **0.2418 (seeded init) → 0.1560** at best epoch 4 (M4c 0.2546→0.1595,
+   M4d 0.2545→0.1583). The lower init CE is itself the operator working as
+   designed: an untrained random adapter does less damage when it is *added*
+   to the receiver's own state than when it *replaces* it.
+2. **The improvement transfers.** Pre-probe transfer check through the
+   vendored fused forward: **0.2276 → 0.1536, 498 wins / 11 losses**
+   (secondary sign p = 8.1e-132). Gate passed before the probe was invoked.
+3. **The frozen probe nulls.** Aligned 23/40, baseline 22/40, zerovec 22/40,
+   random 22/40. Primary aligned > random: **2W/1L, n_disc = 3, exact-sign
+   p = 0.5000, mid-p McNemar 0.3125** — fail on both, and the mid-p value is
+   the one this rung's pre-registration named as primary.
+4. **This draw was structurally incapable of rejecting — say so plainly.**
+   At `n_disc = 3` the minimum attainable one-sided p is 0.125 > α = 0.05.
+   M4g is therefore back in the power-floor dead zone that M3, M4 r64 and
+   M4 r128 sat in, and it is *not* comparable in strength to M4d's null,
+   which at `n_disc = 7` could have rejected and did not. **The
+   accuracy-side M4g null is weak evidence.**
+5. **The NLL side is not power-limited, and it is decisive.** The 0/40
+   inversion — the specific thing this rung was registered to fix —
+   **persists essentially unchanged**: mean NLL of `#### <gold>` is
+   **4.815 aligned vs 2.129 baseline / 2.129 zerovec / 2.170 random**, with
+   **0 wins / 40 losses against both controls** (M4c 5.359, M4d 4.919 —
+   fuse moved the mean by ~0.1 nats and moved the win count not at all).
+   Preserving the receiver's own state at the eight rows did **not** repair
+   the inversion. **Overwrite-vs-fuse is refuted as the root cause of the
+   ladder's central anomaly.**
+6. **Pre-probe manifold check (diagnostic only, not a gate, run before the
+   draw).** M4g's emitted vector is still off-manifold: cosine-to-natural
+   **−0.041** (M4c −0.018, M4d +0.048), item-invariance **0.869** — the
+   lowest, i.e. most item-varying, of the task-loss family (M4c 0.881, M4d
+   0.907) — and gold-answer token percentile **66.8%**, the *worst* of any
+   candidate measured. Being slightly more item-varying bought nothing.
+7. **Operator-correctness, measured twice.** In training, a zero payload
+   under fuse reproduced the un-injected span CE exactly (0.195708 both
+   ways) while the same payload under overwrite cost 0.0055 nats. In the
+   probe, the zerovec condition was **bit-identical to baseline on all 40
+   items** (0 accuracy disagreements, max |ΔNLL| = 0.0). The fuse operator
+   does what the equation says.
+
+**The control-semantics question, resolved and frozen BEFORE the draw**
+(`control_semantics_under_fuse` in the training receipt, echoed into the
+probe receipt). Under fuse a zero vector is a genuine no-op, so the
+registered zero control's *meaning* changes even though its *definition*
+does not. The resolution taken, and the deviation declared rather than
+concealed:
+
+- `aligned_real` and `random` — definitions and meanings both unchanged. The
+  random control is still a per-item seeded Gaussian norm-matched to the
+  effective aligned vector; under fuse it is an information-free
+  *perturbation* of the receiver's own rows, which is exactly the comparator
+  the primary statistic needs. **The primary statistic is unaffected.**
+- `zerovec_injected` — definition unchanged (the true zero vector, `scale:
+  None`, through the real 8-slot path), meaning changed: it collapses onto
+  `baseline_uninjected`. It was still **run on all 40 items** and the
+  collapse **measured** as the operator gate above. Not redefined, not
+  replaced, not dropped.
+- **No substitute control was added.** Keeping a destructive
+  overwrite-with-zero condition inside an M4g draw would put two injection
+  operators in a rung whose whole content is that exactly one operator
+  changed, and would be an unregistered addition to an ADR-028-protected
+  control set.
+- **The registered zerovec gate is DEGENERATE under fuse** (`2 × zerovec ≥
+  baseline` is trivially satisfied when the two are the same computation).
+  It is still computed, still enters `gate_pass` unchanged for cross-rung
+  comparability, and is labelled degenerate in the receipt so no reader
+  mistakes it for evidence.
+- Consequence: under fuse, `baseline_uninjected` is the meaningful "nothing
+  delivered" reference, and `aligned_vs_baseline` (3W/2L, exact p 0.5000,
+  mid-p 0.3438) is the informative "did adding anything help" contrast.
+
+**Cross-rung comparison** (all three: same architecture, same seeded init,
+same splits, same 13 exclusions, same loss, same schedule, one probe draw
+each):
+
+| | M4c (task loss) | M4d (+deploy match) | M4g (+fuse) |
+|---|---|---|---|
+| changed factor | loss → task CE | deployment configuration | **injection operator** |
+| holdout CE init → best | 0.2546 → 0.1595 | 0.2545 → 0.1583 | **0.2418 → 0.1560** |
+| transfer (fused NLL) | 0.2385 → 0.1570, 498W/11L | 0.2385 → 0.1562, 500W/9L | 0.2276 → 0.1536, 498W/11L |
+| accuracy A/B/Z/R | 23/22/24/21 | 24/22/24/21 | 23/22/22/22 |
+| primary W/L, n_disc | 4W/2L, 6 | 5W/2L, 7 | 2W/1L, **3** |
+| exact-sign p | 0.3438 | 0.2266 | 0.5000 |
+| mid-p McNemar | 0.2266 | 0.1445 | 0.3125 |
+| could this draw have rejected? | yes (min p 0.0156) | yes (min p 0.0078) | **no (min p 0.125)** |
+| mean NLL aligned / baseline | 5.359 / 2.129 | 4.919 / 2.129 | 4.815 / 2.129 |
+| NLL vs random | **0W/40L** | **0W/40L** | **0W/40L** |
+| NLL vs zero | **0W/40L** | **0W/40L** | **0W/40L** |
+| cosine-to-natural (emitted) | −0.018 | +0.048 | −0.041 |
+| item-invariance | 0.881 | 0.907 | 0.869 |
+| gold-token percentile | 61.5% | 35.1% | 66.8% |
+| GPU wall (train / probe) | 1603 s / 422 s | 1643 s / 409 s | 1656 s / 412 s |
+
+**Reading, per the registered interpretation.** This is the NULL branch: M4f
+(structural on-manifold constraint) and M4b (receiver scale) remain the live
+hypotheses, and the joint negative now spans **loss function, deployment
+configuration, and injection operator** — three architecturally distinct
+factors, each isolated, each nulling. The registered PASS branch (annotating
+every earlier rung) does not fire.
+
+Two things this rung adds beyond "another null":
+
+- **It refutes a specific, well-motivated, primary-sourced hypothesis.** The
+  C2C-fuses-we-overwrite difference was verified from the paper's own Eq. 3
+  (`docs/research/038` §4) and was the best mechanistic candidate on the
+  board. Making the operator match C2C's, with everything else held, changed
+  the NLL inversion by ~0.1 nats and 0 win/loss counts. That is a real
+  finding about *this* system, not a null result about nothing.
+- **A partially manifold-preserving delivery is still not enough.** Under
+  fuse the row the receiver reads is `h + c·v` rather than `c·v`. Since the
+  rescale forces ‖c·v‖ ≈ the natural per-position median ≈ ‖h‖, and the
+  measured cosine between the emitted vector and the natural state is
+  ≈ −0.04, the fused row retains cosine ≈ **0.69** to the natural state
+  where the overwritten row retained ≈ −0.04. (Derived arithmetic from two
+  measured quantities, **not** a fresh measurement — and the cosine it uses
+  is emitted-vs-natural-*pooled*, a slightly different reference from the
+  per-slot residual rows; treat it as an order-of-magnitude statement.) The
+  gold-token likelihood collapsed anyway. Whatever is wrong is not fixed by
+  making the injected row look more like a real state at the injection
+  site — which is the same lesson M3/M4's on-manifold-and-still-useless
+  nulls taught, now reproduced through a second, independent mechanism, and
+  it sharpens rather than softens M4f's own pre-registered risk.
+
+**Honest-fail path observed**: one training run, one transfer check, one
+manifold pre-check, ONE frozen-probe draw. No retries, no protocol iteration,
+no second variant. Full numbers reported either way (ADR-024 § Numbers rule,
+ADR-032).
+
 ## CLARIFICATION — the permutation-null count (2026-08-29)
 
 I have quoted the A6 permutation null as "0 of **160** permuted fits within
@@ -727,6 +870,45 @@ under overwrite or under fuse — creates pressure to leave it.
   if M4g's fuse path is available — delivered by fuse rather than overwrite).
   That combination is registered here as the preferred successor, before the
   verdict that would motivate it.
+
+## M4g OUTCOME (2026-08-29) — honest fail; fuse REFUTED as the root cause
+
+`run2-m4g-receipt-cellL18toL14-mlp-fuse-*-n40.json`. Aligned 23/40, baseline
+22, zerovec 22, random 22. Primary (aligned > random): **2W/1L, n_disc = 3,
+exact-sign p = 0.5000, mid-p 0.3125 — FAIL**. **Power caveat, stated up
+front**: at n_disc = 3 the minimum attainable one-sided p is 0.125 > α, so
+this draw was **structurally incapable of rejecting** — the accuracy null is
+therefore weak evidence, unlike M4d's (n_disc = 7).
+
+**But the finding that matters is not power-limited.** The **0/40 NLL
+inversion — the specific anomaly this rung was registered to fix — persists
+completely unchanged**: mean NLL 4.815 aligned vs 2.129 baseline / 2.129
+zerovec / 2.170 random, **0W/40L against both controls**. A unanimous 40-item
+effect is not a small-sample artifact. **Fuse is refuted as the explanation
+for the ladder's central anomaly**: the adapter actively harms the receiver
+under a residual *add* exactly as it did under overwrite.
+
+**Control semantics were resolved and frozen BEFORE the draw** (recorded in
+both training and probe receipts), as required: `aligned_real` and `random`
+keep both definition and meaning (random remains a norm-matched Gaussian —
+under fuse an information-free perturbation of the receiver's own rows, which
+is precisely the comparator the primary needs, so **the primary statistic's
+meaning is unaffected**); `zerovec` keeps its definition but changes meaning —
+under fuse it is a **true no-op**, verified empirically at 40/40 bit-identical
+NLL and zero accuracy disagreements. Disclosed, not silently redefined.
+
+**Engineering discipline worth preserving**: `LayerEdit::Fuse` was added
+*beside* `Inject` and all 14 `InjectionSpec` construction sites now declare
+their mode explicitly, so every prior receipt remains reproducible; the
+shared init was asserted byte-identical against both M4c's and M4d's
+committed receipts rather than assumed from a shared seed.
+
+**What this leaves**: the inversion now survives overwrite AND fuse, and all
+three task-loss adapters were off-manifold. The two properties that have
+never been combined in one adapter remain **on-manifold** and **fuse-
+delivered** — which is exactly what M4h Stage 1 tests, at near-zero cost,
+from M3's already-trained on-manifold weights. Registered before this verdict
+(commit 9007b97); proceeding to it now.
 
 ## M4h PRE-REGISTRATION (2026-08-29, before any run) — de-pooling
 
