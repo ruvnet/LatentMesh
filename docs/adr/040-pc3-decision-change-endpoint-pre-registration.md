@@ -44,10 +44,19 @@ prior draws. It will not recur through omission.
 
 **The direction matters and this block originally omitted it** — caught by the
 PC3 owner. On PC2's post-hoc data `steer` changed answers *less* often than the
-norm-matched Gaussian, so the wealth process would have **declined**, not
-merely failed to cross. **A powered FAIL is therefore the strongly-expected
-outcome, not a coin flip.** Stated here so the expectation is on record before
-the draw rather than claimed afterwards.
+norm-matched Gaussian (**33W / 44L on 77 pairs = 42.9% wins**), so under
+λ = 0.30 the wealth process would have **declined to W ≈ 0.0790** — a **12.7×
+loss** from its 1.0 start, not a flat process that merely failed to cross.
+
+*(Arithmetic, since it was misstated once in discussion as ≈ 0.19:
+`1.15^33 × 0.85^44 = 0.0790`, with win factor `1 + λ/2 = 1.15` and loss factor
+`1 − λ/2 = 0.85`. The true value is **more** strongly against `steer`, so it
+strengthens rather than weakens the expectation.)*
+
+**"Failed to cross" and "trended against" are different findings, and only the
+second is a real out-of-sample signal about direction.** A powered FAIL is
+therefore the strongly-expected outcome, not a coin flip. Stated here so the
+expectation is on record **before** the draw rather than claimed afterwards.
 
 **Endpoint comparator — normative.** "The answer differs from baseline" is
 evaluated with **`common::answers_equal` (numeric)**, never string inequality.
