@@ -58,6 +58,7 @@ pub mod budget;
 pub mod compat;
 pub mod context;
 pub mod envelope;
+pub mod routing;
 pub mod workspace;
 
 pub use context::{ContextCapacity, ContextCheckpoint, ContextError, ContextState, ProvenanceRef};

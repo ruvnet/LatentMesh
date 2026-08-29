@@ -34,6 +34,17 @@ Status: Proposed
 > ~0.1pp. But the burden of proof sits higher than this ADR currently assumes,
 > and ADR-040's **mandatory power calculation** applies to every experiment it
 > proposes.
+>
+> **Amended 2026-08-29** against
+> [research/050](../research/050-sota-verdict-vs-measured-data.md), which
+> confronts an external SOTA review with the receipts above. Five amendments
+> follow: a two-plane transport split (§4.6), a transactional state-lifecycle
+> vocabulary (§4.7), a four-tier compatibility ladder (§10.1), confirmation
+> that the causal-admission algorithm (§12) is already implemented and has
+> already run — plus the `UtilityDensity` metric it was missing (§12.2, §19.4)
+> — and mandatory evidence labels (§19.7). The acceptance test (§19.5, §24)
+> now also requires a co-reported likelihood arm and ADR-040's power
+> calculation. **None of this moves the Status line below off Proposed.**
 
 Date: 2026-08-29
 
@@ -218,6 +229,105 @@ execute(A) iff
 ```
 
 Remote latent state never satisfies this predicate by itself.
+
+### 4.6 Two-plane transport model
+
+Sections 2–12 above describe a single transport-agnostic pipeline from
+demonstration to remote merge. In practice the states involved separate into
+two planes with incompatible bandwidth, latency, and trust profiles, and
+conflating them in one design invites exactly the failure mode
+[research/049](../research/049-adjacent-areas-survey.md) found: raw latent
+payloads dead on arrival over a constrained radio link.
+
+**Cognitive state plane.** KV caches, hidden prefixes, recurrent checkpoints
+(S, §4.2), and dense latent workspace state (H, §4.3) belong on fast local
+fabric — same-host memory, NVLink/PCIe, or a GPU/accelerator interconnect.
+This is where Algorithm 1–2 (§5–6) operate, and where the raw-tensor and
+low-rank codecs of Algorithm 5 (§9.2–9.3) are economical.
+
+**Semantic delta plane.** Sparse features, entity anchors, prototypes,
+symbolic facts (W, §4.1), and signed critical state belong on Internet,
+edge, BLE, Meshtastic, or RF links — the domain of ADR 010 Air frames and
+this ADR's §13 envelope. Algorithm 5's learned-bottleneck codec (§9.4) and
+the compatibility ladder (§10.1) are the relevant machinery here, not raw H.
+
+**This split is grounded in measurement, with one citation flagged rather
+than asserted.** A full KV-cache relay is reported at roughly 279 MB per
+example by an external review citing arXiv:2606.28958 —
+**reported-not-verified**: that ID resolves in our own corpus
+([research/023](../research/023-beyond-sota-roadmap.md) line 73, and
+confirmed by a direct abstract fetch) to *"When Latent Agents Lie: KV-Cache
+Integrity in Multi-Agent LLM Collaboration,"* a paper about cache poisoning
+and HMAC integrity, not a size benchmark; no 279 MB figure appears in its
+abstract. The order-of-magnitude claim (hundreds of MB per example for a
+full KV relay) is plausible on general tensor-size grounds, but the arXiv ID
+attached to it does not check out, and it should not be repeated with that
+citation until the correct source is located.
+
+What IS independently measured in this repo: this ADR's own §13 reasoning
+envelope has a **282-byte fixed header before any payload**, of which
+**224 bytes (79%) are seven 32-byte identity digests** (`sender_id`,
+`model_fingerprint`, `checkpoint_digest`, `adapter_digest`,
+`parent_state_hash`, `result_state_hash`, `provenance_root`) — see §13.1.
+Against the Meshtastic usable-MTU budget from
+[research/049](../research/049-adjacent-areas-survey.md) (~106 B unsigned /
+~42 B signed per Air fragment after LMS1/LMAD tax), the header alone needs
+**3 fragments unsigned, 9 signed**, and at SF11 the mesh allows only **~8-9
+packets/hour**. That is a gap of orders of magnitude between "fast local
+fabric" and "duty-cycled RF," independent of whatever the true KV-relay
+figure turns out to be. The two-plane split is therefore load-bearing for
+any Air-constrained deployment of this ADR: §9 and §13 as written are
+correct for the cognitive-state plane on ordinary networks (§21.2 already
+treats full-tensor transmission as an "upper bound baseline on ordinary
+networks"); over Meshtastic/BLE, only the semantic-delta plane is viable at
+all, and only the terse-text and routing-hint tiers of it
+([research/049](../research/049-adjacent-areas-survey.md) lane 3's ranking)
+are economical at SF11 duty cycles.
+
+**Rule**: a `ReasoningDeltaEnvelope` (§13) crossing an Air-class link
+carries semantic-delta-plane content only. Cognitive-state-plane content
+(full H, KV caches) is out of scope for Air and remains, per §21.2, an
+ordinary-network-only baseline.
+
+### 4.7 Transactional state lifecycle
+
+The five states in §4.1–4.5 are not static categories; they are points a
+given piece of state moves through over its lifetime, and the vocabulary for
+that movement should be explicit and shared across implementations:
+
+```text
+materialize   instantiate S or H from stored or retrieved evidence
+transfer      move a DeltaH (§9) across a trust boundary
+fork          branch a workspace H for speculative exploration
+compose       merge two workspaces, or a workspace and a remote delta (§11)
+checkpoint    persist a (state, receipt) pair through RuVector (§14)
+evict         drop non-authoritative state under budget pressure
+zeroize       cryptographically destroy state that must not be recoverable
+rollback      restore canonical world state W to a prior checkpoint
+```
+
+**Application state and model-attended state must never diverge.** A
+rollback of W (§4.1) or a discard of H (§4.3) is only correct if the
+model's own attended context is rebuilt from the post-rollback committed
+state — not merely relabeled at the application layer while the underlying
+KV cache or workspace still contains the discarded content.
+arXiv:2608.15939, *"Aborted but Not Forgotten: KV-Cache Retention Breaks
+Rollback Consistency in Language Agents"* (verified against its abstract),
+demonstrates exactly this failure across seven open-weight model families
+(3.8B–36B parameters): retained KV cache from a logically-rolled-back
+branch flips a typed protected effect in **25 of 63 audited cells**, despite
+the application layer reporting a correct rollback. Rebuilding the cache
+from committed state — the paper's own mitigation — **closed every case**.
+
+This binds Algorithm 1 (§5) and Algorithm 7 (§11) directly: an `evict` or
+`rollback` on S or H must be a real rebuild-from-committed-state operation,
+not a pointer reassignment, and §17 invariant 10 ("a receiver may discard
+any latent state without corrupting canonical world state") should be read
+as requiring the stronger *rebuild*, not merely *relabel*, semantics.
+`zeroize` extends this to the destructive case: §17 invariant 15 already
+requires treating private latent state as potentially reconstructable;
+`zeroize` is the operation that discharges that obligation, and it too must
+actually clear attended state, not just drop a reference to it.
 
 ## 5. Algorithm 1: recurrent context update
 
@@ -580,6 +690,70 @@ else
 
 No heuristic dimension matching is permitted.
 
+### 10.1 Compatibility ladder — four tiers
+
+The receiver policy above ("exact match → adapter → semantic fallback →
+reject") is restated here as an explicit four-tier ladder, because the
+failure mode it guards against is subtle enough that an implementation
+already exists to enforce it: `crates/latentmesh-reasoning/src/compat.rs`
+documents plainly that **"two latent workspaces can share
+`hidden_dimension` and still encode completely different geometries"**, and
+its `equal_hidden_dimension_does_not_imply_compatibility` test asserts
+exactly that — a shared `hidden_dimension` (1536) between differently
+checkpointed models must never be treated as compatible without a verified
+adapter.
+
+```text
+Tier 0 -- exact model + checkpoint
+    Direct transfer, after integrity verification (identity adapter path,
+    above). No alignment. Lowest risk, narrowest applicability -- and, per
+    the warning at the top of this ADR, NOT automatically safe: PC1b/PC2/
+    PC3 (research/048) are exact-checkpoint positive controls and were all
+    decision-inert. Tier 0 removes the cross-model risk, not the
+    causal-admission risk (Section 12).
+
+Tier 1 -- same architecture family, different checkpoint
+    Closed-form alignment. StateBridge (arXiv:2608.13317, verified against
+    its abstract): a training-free closed-form orthogonal transformation
+    aligning a sender's final-layer hidden state to a receiver's input
+    space, plus norm calibration and vocabulary anchoring; best-or-tied on
+    22 of 26 model-task pairs across four models in two families. Its own
+    evaluation already spans two model families, closer to Tier 2 than a
+    strict same-family claim -- the characterization that StateBridge
+    "assumes a shared model" and "lists heterogeneous communication as
+    future work" could NOT be confirmed from its abstract and should be
+    treated as reported-not-verified rather than repeated as StateBridge's
+    own stated scope. What IS safe to state: StateBridge is a same-model-
+    class alignment method, not a demonstrated solution to cross-family
+    transfer, and this ADR's Tier 1 / Tier 2 boundary should not be read
+    off the paper without reading it in full.
+
+Tier 2 -- different architecture families
+    Learned translator with lexical and entity anchors. XBridge
+    (arXiv:2608.11676, verified against its abstract): identifies "entity
+    grounding collapse" -- cross-attention bridges transferring continuous
+    representations across LLM families suffer rare-token compression
+    collapse, entity identity lost in the continuous bottleneck (bridge-
+    only F1 approximately 30%) -- and mitigates it with a Lexical Anchor
+    Mapping plus a Latent Enrichment Bridge. This directly corroborates why
+    Algorithm 5's codec selection (Section 9.5) should weight entity and
+    anchor preservation, not reconstruction error alone.
+
+Tier 3 -- unknown or incompatible receiver
+    Deterministic semantic delta or text fallback (this section's existing
+    "request semantic delta" / "reject" branches; Section 21.3's JSON
+    fallback).
+```
+
+**Rule: uncertainty always moves DOWN the ladder, never toward silent
+interpretation of an incompatible tensor.** A receiver that cannot verify
+which tier applies must treat the delta as Tier 3, not attempt a
+best-effort Tier 1 or Tier 2 alignment. This restates §17 invariant 14
+("failure to decode, align, verify, or merge results in fallback or
+rejection, never silent coercion") as a ladder-specific rule, and is
+enforced today by `compat.rs`'s `evaluate_handshake`, which never infers a
+tier from `hidden_dimension` alone.
+
 ## 11. Algorithm 7: remote latent merge
 
 ### 11.1 Same model merge
@@ -640,15 +814,28 @@ DeltaV_specific = V(B given A_state) minus V(B given mismatched_state)
 DeltaV_zero = V(B given A_state) minus V(B given zero_state)
 DeltaV_random = V(B given A_state) minus V(B given random_state)
 DeltaV_self = V(B given A_state) minus V(B given B_self_generated_state)
+DeltaV_text = V(B given A_state) minus V(B given text_equivalent_state)
 ```
 
-An edge is admitted only when configured statistical tests show positive incremental value against all required controls.
+`DeltaV_text` is not optional and was missing from earlier drafts of this
+section: the implementation (§12.1) treats `text_equivalent` as the fifth
+required control, and it is the specific comparison that turns a null into
+a *causal* claim about this gate rather than a copy-the-answer artefact
+([research/048](../research/048-run2-final-synthesis.md)'s Run 3 finding —
+a wrong-but-real message performed worse than random tokens — depended on
+exactly this control).
+
+An edge is admitted only when configured statistical tests show positive
+incremental value against all required controls, evaluated at the **worst**
+control, not the mean:
 
 Suggested first gate:
 
 ```text
-mean(DeltaV_specific) > delta_min
-p_value < 0.05 after multiple comparison correction
+mean(DeltaV_c) > delta_min, for the control c with the highest p-value
+    across all five controls (worst-control rule, stricter than a
+    mean-of-controls bar)
+p_value < 0.05 (at that worst control) after multiple comparison correction
 confidence_interval_lower_bound > 0
 no material safety regression
 ```
@@ -656,6 +843,52 @@ no material safety regression
 The exact test depends on metric type. Binary task success should use a paired test such as McNemar or a paired bootstrap. Continuous reward should use paired permutation or bootstrap confidence intervals.
 
 Causal value is periodically re measured because model updates, task drift, adapter changes, and compression changes can invalidate an edge.
+
+### 12.1 Implementation status
+
+This algorithm is not aspirational. All five controls — `zero`, `random`,
+`mismatched`, `self_generated`, `text_equivalent` — are implemented today
+at `crates/latentmesh-gate/src/causal.rs`, via `EdgeTrial` /
+`verify_edge` / `sign_flip_permutation_test`, admission gated on the
+**worst** control's p-value, not the mean. **Run 3 stage A used this gate
+and passed**, crossing at item 43 of 300
+([ADR-030](030-run3-causally-gated-text-pre-registration.md),
+[research/048](../research/048-run2-final-synthesis.md)). The remaining
+work identified by
+[research/050](../research/050-sota-verdict-vs-measured-data.md) is not
+building this algorithm — it is (a) adding `DeltaV_text` to this section's
+control list above, which this revision does, so the spec matches the
+implementation, and (b) wiring the gate as a runtime per-message check
+(§13's envelope path) rather than offline topology-fitness tooling, which
+remains open.
+
+### 12.2 ContentGain and UtilityDensity
+
+**ContentGain** for edge A→B is `DeltaV_specific` above — the value a
+receiver gains from the sender's actual content over its best-matched
+control. This is a renaming, not a new instrument: it is what
+`verify_edge` already computes. An analogous **AgentGain** (the value
+gained from having *a* sender at all, versus no message) corresponds to
+`DeltaV_zero`; also already computed, not built.
+
+**`UtilityDensity` is the genuinely missing piece**, and it is a
+per-resource normalization of ContentGain rather than a new causal test:
+
+```text
+UtilityDensity = ContentGain / (bytes times joules times seconds)
+```
+
+§19.4 defines a UtilityDensity formula; this revision aligns its numerator
+to `ContentGain` as defined here, so the metric is explicitly the
+*causally admitted* value rather than raw task success —
+[research/048](../research/048-run2-final-synthesis.md) shows raw task
+success can be non-zero even when content contributes nothing (p = 0.72 on
+decisions, while a norm-matched random control changes decisions about as
+often as the real payload). **The gap
+[research/050](../research/050-sota-verdict-vs-measured-data.md) identifies
+is implementation, not specification**: `causal.rs` computes the controls
+ContentGain needs today but does not yet emit a per-resource-normalized
+UtilityDensity value from a gate decision.
 
 ## 13. ReasoningDeltaEnvelope
 
@@ -688,6 +921,45 @@ struct ReasoningDeltaEnvelope {
 ```
 
 Embedded profiles may use a reduced representation and dictionary coded identifiers, but semantic meaning must remain equivalent.
+
+### 13.1 Measured economics
+
+`latentmesh_reasoning::envelope::FIXED_HEADER_BYTES` = **282 bytes** before
+a single byte of `body` (the schema above): model fingerprint, checkpoint
+digest, adapter digest, parent hash, result hash, and provenance root (six
+32-byte digests) plus `sender_id` (32 bytes) plus the remaining scalar and
+enum fields. **224 of the 282 bytes (79%) are cryptographic identity
+digests.** This is asserted in code as a named, failing-if-wrong test,
+`envelope::tests::fixed_header_overhead_exceeds_a_single_air_fragment`, not
+a comment — see
+[research/049](../research/049-adjacent-areas-survey.md).
+
+Against the Meshtastic usable-MTU budget after LMS1/LMAD tax (~106 B
+unsigned / ~42 B signed per Air fragment):
+
+| | header bytes | Air fragments for the header alone |
+|---|---|---|
+| unsigned | 282 | 3 |
+| signed | 282 + 64 = 346 | 9 |
+
+Combined with the EU868 L/M-band duty-cycle figure (1%, SF11/BW125, ~4.18 s
+airtime per full frame → ~8–9 packets/hour): a **signed** envelope's header
+alone consumes 9 of those 8–9 hourly fragments — essentially the entire
+hourly budget before any payload byte is sent.
+
+**This is not a design defect.** This section's own text already states
+the envelope "can be fragmented by Air or streamed by MidStream" — it never
+claimed single-frame delivery, and the codec path (§9.2's sparse int8
+residual) is independently confirmed healthy, keeping an 8-of-1536 sparse
+residual well under a raw 6 KB f32 tensor. **The floor is set by identity
+and provenance, not by the codec** — a better `DeltaH` encoding shrinks
+`body`, not the 224-byte identity floor. §4.6's two-plane split is the
+direct consequence: this envelope, as specified, is economical over
+ordinary networks and MidStream, and uneconomic as a signed message over
+LoRa at SF11. A session-scoped key negotiated once and referenced by a
+short handle would collapse most of the 224 bytes, but that is a
+security-model change belonging in its own ADR, not an encoding tweak to
+this one.
 
 ## 14. Persistence through RuVector
 
@@ -908,12 +1180,16 @@ For LatentMesh Air and constrained links define:
 
 ```text
 UtilityDensity =
-    successful_task_value
+    ContentGain (see 12.2)
     divided by
-    transmitted_bits times energy_joules times elapsed_seconds
+    transmitted_bytes times energy_joules times elapsed_seconds
 ```
 
-Because units can become numerically unstable near zero, production reports must also publish the raw numerator and denominator metrics.
+The numerator is `ContentGain`, not raw task success: research/048 shows
+task-level outcomes can move on noise alone (a norm-matched random control
+changed decisions about as often as the real payload, p = 0.72), so a
+UtilityDensity numerator that is not already causally admitted (§12) would
+reward that noise. Because units can become numerically unstable near zero, production reports must also publish the raw numerator and denominator metrics.
 
 ### 19.5 Primary acceptance gate
 
@@ -922,9 +1198,11 @@ A first implementation is considered successful only if all of the following hol
 1. Task accuracy is no worse than 2 percentage points below the best matched baseline, or is statistically indistinguishable within a preregistered margin.
 2. At least one of compute cost, latency, emitted reasoning tokens, or transmitted bytes improves by at least 3 times.
 3. Reasoning delta communication uses at least 3 times fewer bytes than text or JSON communication at equivalent downstream task success.
-4. The causal edge passes zero, random, mismatched, and self generated controls.
+4. The causal edge passes zero, random, mismatched, self-generated, and text-equivalent controls (§12), evaluated at the worst control, not the mean (§12.1).
 5. All RVM authorization tests remain unchanged and passing.
 6. No high consequence action can be triggered directly by a ReasoningDeltaEnvelope.
+7. A co-reported likelihood or log-probability effect against a norm-matched random control, on the same items as item 1, is significant in the direction of sender content. This is mandatory, not optional: research/048 (PC3, 212 out-of-sample items, fully powered) found a decision-layer null at p = 0.72 occurring simultaneously with a likelihood effect of −0.773 nats at p = 7.5e-35 toward the encoded content — accuracy alone cannot distinguish an inert channel from a channel that carries content the decision layer ignores, and only a co-reported likelihood arm can.
+8. A pre-registered statistical power calculation (ADR 040) precedes the draw. research/047 found 10 of 14 prior draws in this program could not reach alpha = 0.05 on a perfect run because this step was skipped.
 
 ### 19.6 Stretch gate
 
@@ -936,6 +1214,40 @@ at equivalent task accuracy
 ```
 
 This aligns with ADR 010 and ADR 014 rather than inventing a second incompatible transport target.
+
+### 19.7 Evidence labels
+
+Every reported result in this ADR's benchmark plan, and every result
+produced against it, must carry exactly one of the following labels,
+attached at the point of citation or report — not left implicit:
+
+```text
+synthetic unit test          deterministic fixture, no model in the loop
+model simulation              model runs, no network or transport involved
+single-host model benchmark   real model, one machine, no wire transport
+multi-host model benchmark    real model, real network, controlled hosts
+live network benchmark        real deployment topology, uncontrolled network
+live RF benchmark              real radio hardware (Meshtastic, BLE, LoRa)
+production observation        observed in an actual running deployment
+```
+
+This prevents an analytical estimate from becoming an accidental production
+claim. AAFLOW+ (arXiv:2607.10987, verified against its abstract) is the
+concrete warning case: its own abstract states its reported figures are
+**"based on an analytical cost model parameterized by empirical hardware
+microbenchmarks,"** not measurements of a running production system — those
+numbers are `model simulation` at best, and citing them as `production
+observation` would misrepresent AAFLOW+'s own stated methodology, not just
+this ADR's.
+
+The same discipline applies to this ADR's own numbers. §4.6's and §13.1's
+Meshtastic duty-cycle and fragment-count figures are `single-host model
+benchmark` (measured against
+`latentmesh_reasoning::envelope::FIXED_HEADER_BYTES` and the LMS1/LMAD tax
+model in [research/049](../research/049-adjacent-areas-survey.md)) — real
+code and a real measured constant, but no radio has transmitted an actual
+`ReasoningDeltaEnvelope` yet. Do not cite them as `live RF benchmark` until
+§20 Phase 7 produces one.
 
 ## 20. Implementation phases
 
@@ -1039,7 +1351,31 @@ Each stage has a falsifiable benchmark and does not depend on success at later s
 
 ## 24. Acceptance test
 
-The ADR may move from Proposed to Accepted only when an implementation demonstrates, on at least two non ARC task families, that adaptive recurrent reasoning plus ReasoningDeltaEnvelope transport matches the selected baseline within the preregistered accuracy margin while reducing either end to end latency, compute, emitted reasoning tokens, or transmitted bytes by at least 3 times; the communication edge must also pass ADR 003 causal controls, and RVM authorization behavior must remain unchanged.
+The ADR may move from Proposed to Accepted only when an implementation
+demonstrates, on at least two non ARC task families, that adaptive
+recurrent reasoning plus ReasoningDeltaEnvelope transport matches the
+selected baseline within the preregistered accuracy margin **and,
+co-reported on the same items, shows a statistically significant
+likelihood or log-probability effect against a norm-matched random control
+(§19.5 item 7)** while reducing either end to end latency, compute, emitted
+reasoning tokens, or transmitted bytes by at least 3 times; the
+communication edge must also pass ADR 003 causal controls (§12, all five:
+zero, random, mismatched, self-generated, and text-equivalent), a
+pre-registered power calculation per ADR 040 must precede the draw (§19.5
+item 8), and RVM authorization behavior must remain unchanged.
+
+**This ADR remains Proposed.** These amendments sharpen the bar for
+Accepted; they do not clear it. research/048's own receipts (same-model,
+same-checkpoint, single-layer) are the closest data this program has
+produced against this test, and on that configuration the accuracy margin
+held while no likelihood arm was co-registered at the time — precisely the
+gap the likelihood-arm requirement above closes going forward. Nor does a
+FAIL on that single-layer configuration bind a future multi-layer
+implementation: see the warning box at the top of this ADR and
+[research/050](../research/050-sota-verdict-vs-measured-data.md)'s
+firewall — every run-2 rung injected at a single layer, where
+Cache-to-Cache's own Table 10 ablation also collapses to ~0.1pp, so a null
+there is not evidence against this ADR's design as specified.
 
 ## 25. References
 
@@ -1060,3 +1396,13 @@ The ADR may move from Proposed to Accepted only when an implementation demonstra
 [8] K. Xu, I. Sato. “A Formal Comparison Between Chain of Thought and Latent Thought.” ICML, 2026. Reference listed in BDH-CQ [1].
 
 [9] Ye Yu, Heming Liu, Haibo Jin, Xiaopeng Yuan, Peng Kuang, Haohan Wang. “Learning to Communicate: Toward End-to-End Optimization of Multi-Agent Language Systems.” arXiv:2604.21794, 2026. https://arxiv.org/abs/2604.21794
+
+[10] “StateBridge: Training-free Hidden-state Alignment for Latent Communication in LLM Multi-Agent Systems.” arXiv:2608.13317, 2026. https://arxiv.org/abs/2608.13317 — verified against its abstract 2026-08-29; full author list not confirmed from the abstract fetch and is omitted here rather than guessed. See the caveat at §10.1 Tier 1 about its "assumes a shared model" characterization.
+
+[11] “XBridge: Entity-Grounded Latent Bridge for Heterogeneous LLM Communication.” arXiv:2608.11676, 2026. https://arxiv.org/abs/2608.11676 — verified against its abstract 2026-08-29; full author list not confirmed from the abstract fetch and is omitted here rather than guessed.
+
+[12] “Aborted but Not Forgotten: KV-Cache Retention Breaks Rollback Consistency in Language Agents.” arXiv:2608.15939, 2026. https://arxiv.org/abs/2608.15939 — verified against its abstract 2026-08-29, including the 25-of-63-cells figure cited at §4.7; full author list not confirmed from the abstract fetch and is omitted here rather than guessed.
+
+[13] “AAFLOW+” — distributed KV cache as a first-class object for multi-agent LLM workflow optimization. arXiv:2607.10987, 2026. https://arxiv.org/abs/2607.10987 — verified against its abstract 2026-08-29, including that its reported figures derive from an analytical cost model, not production deployment (§19.7); full title and author list not confirmed from the abstract fetch and are omitted here rather than guessed.
+
+[14] “When Latent Agents Lie: KV-Cache Integrity in Multi-Agent LLM Collaboration.” arXiv:2606.28958, 2026. https://arxiv.org/abs/2606.28958 — verified against its abstract 2026-08-29 to be about KV-cache poisoning and HMAC integrity, NOT a size benchmark. Cited here only to flag a mismatch: an external SOTA review attached this ID to a "~279 MB per example" full-KV-relay figure (§4.6), and that figure does not appear in this paper's abstract. Do not cite this ID for the 279 MB claim.
