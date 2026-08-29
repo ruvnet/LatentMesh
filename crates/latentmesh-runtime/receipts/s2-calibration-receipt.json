@@ -1,0 +1,164 @@
+{
+  "design": "docs/research/024-live-latent-experiment-design.md sections 5, 6 (A6), 7 S2",
+  "dump": {
+    "dir": "/home/ruvultra/projects/LatentMesh-1/harness/latentmesh-live/../../crates/latentmesh-runtime/target/latentmesh-runs/s2",
+    "item_indices_max": 7471,
+    "item_indices_min": 1,
+    "manifest_sha256": "c7908949d6bff34d9568527d005b4b6f61220253cb42b14210c832873496cca3",
+    "n_rows": 4000,
+    "receiver": {
+      "files": {
+        "14": {
+          "file": "receiver_L14.f32bin",
+          "sha256": "f9497f5b9ad79b816c5dec040802429369fb13b070dad02ccf7c3534ffb75ede"
+        },
+        "19": {
+          "file": "receiver_L19.f32bin",
+          "sha256": "09a53a8a35882b9867f0be85cd004ac5477a24bc633d49a0b2cb01644e339782"
+        },
+        "23": {
+          "file": "receiver_L23.f32bin",
+          "sha256": "65b6d85e63f7b5fb17c3e234b045fb322064401d655f0eef0d72cdf3c881006c"
+        }
+      },
+      "hidden_size": 1536,
+      "layers": [
+        14,
+        19,
+        23
+      ],
+      "model": "Qwen/Qwen2.5-1.5B-Instruct"
+    },
+    "sender": {
+      "files": {
+        "18": {
+          "file": "sender_L18.f32bin",
+          "sha256": "9ec2f294ffffdfa74d2ab7d7f8670b65ac010597732be482bd4bc362fed8f253"
+        },
+        "24": {
+          "file": "sender_L24.f32bin",
+          "sha256": "e65aa0400ef1866b60fb100ca1b97eb3c86a3e5ff6d56adba2aa8df5b381f5ea"
+        },
+        "29": {
+          "file": "sender_L29.f32bin",
+          "sha256": "e7fbdda979b72782388c7be3561e11039763b3e87a4a418c6bffddf0c6883b9b"
+        }
+      },
+      "hidden_size": 2048,
+      "layers": [
+        18,
+        24,
+        29
+      ],
+      "model": "Qwen/Qwen2.5-3B-Instruct"
+    }
+  },
+  "evidence_label": "deterministic CPU fit over live-model dumps (dump receipt referenced by sha256 below); the fit itself involves no model and no simulation",
+  "fit": {
+    "held_out_residual_formula": "||apply(X_h) - Y_h||_F / ||Y_h - mu_r||_F, apply(x) = mu_r + alpha*(x - mu_s)*R, mu from the 80% fit set only",
+    "method": "AlignmentTransform::fit_affine (affine mean-centered semi-orthogonal Procrustes, dense rectangular SVD path)",
+    "n_fit_rows": 3200,
+    "n_holdout_rows": 800,
+    "n_over_d_gate": {
+      "fit_rows": 3200,
+      "pass": true,
+      "sender_dim": 2048
+    },
+    "split": "seeded shuffle of row indices; first 80% fit, last 20% held out; SAME split for all nine cells",
+    "split_seed_chacha8": 616619523
+  },
+  "gate_A6": {
+    "measured": 0.5105513334274292,
+    "pass": true,
+    "statistic": "held-out relative residual of the winning cell",
+    "threshold": 0.8999999761581421
+  },
+  "stage": "S2-calibration-fit",
+  "sweep_cells": [
+    {
+      "fit_seconds": 12.194211387,
+      "held_out_relative_residual": 0.5105513334274292,
+      "on_train_confidence_OPTIMISTIC_not_the_quality_number": 0.5804808139801025,
+      "receiver_layer": 14,
+      "sender_layer": 18,
+      "transform_content_hash": "eb3f42edde853824642a2b811577e2c767f73c2c179fe03a05ac8dac23704457"
+    },
+    {
+      "fit_seconds": 12.52036793,
+      "held_out_relative_residual": 0.5899439454078674,
+      "on_train_confidence_OPTIMISTIC_not_the_quality_number": 0.5030109882354736,
+      "receiver_layer": 19,
+      "sender_layer": 18,
+      "transform_content_hash": "04eeb8a0a9eca54799a80aefbfd67ded8a7b415a12190314443486b19c2ceb02"
+    },
+    {
+      "fit_seconds": 12.132339017,
+      "held_out_relative_residual": 0.6052803993225098,
+      "on_train_confidence_OPTIMISTIC_not_the_quality_number": 0.4857862591743469,
+      "receiver_layer": 23,
+      "sender_layer": 18,
+      "transform_content_hash": "ef06b0bfdfc42ba47e67e1d6de681d8b6151bac29a55324b5e39b6477ae58b4f"
+    },
+    {
+      "fit_seconds": 12.154300717,
+      "held_out_relative_residual": 0.5783060789108276,
+      "on_train_confidence_OPTIMISTIC_not_the_quality_number": 0.5204797983169556,
+      "receiver_layer": 14,
+      "sender_layer": 24,
+      "transform_content_hash": "ac8663074d1daa9b115793e62adbba8bb572e2acab850d378f8453812d25e5c1"
+    },
+    {
+      "fit_seconds": 12.333123093,
+      "held_out_relative_residual": 0.559983491897583,
+      "on_train_confidence_OPTIMISTIC_not_the_quality_number": 0.5430101156234741,
+      "receiver_layer": 19,
+      "sender_layer": 24,
+      "transform_content_hash": "e892cfb7034012c3fb3f9fa1979e5a7fedfbb2adfd3e11fe575c40c2835cc801"
+    },
+    {
+      "fit_seconds": 11.840726138,
+      "held_out_relative_residual": 0.6242114901542664,
+      "on_train_confidence_OPTIMISTIC_not_the_quality_number": 0.47350800037384033,
+      "receiver_layer": 23,
+      "sender_layer": 24,
+      "transform_content_hash": "1c062af86f29b56dcf045d4d23dfd326c0e09c946a7d4fb487fd5894fe360d88"
+    },
+    {
+      "fit_seconds": 12.234176074,
+      "held_out_relative_residual": 0.6367608904838562,
+      "on_train_confidence_OPTIMISTIC_not_the_quality_number": 0.45600247383117676,
+      "receiver_layer": 14,
+      "sender_layer": 29,
+      "transform_content_hash": "0689feb5b0218342ebc3d39e770295c7a7bf3ada39e95e89ff7a50e26c3080f2"
+    },
+    {
+      "fit_seconds": 12.361718113,
+      "held_out_relative_residual": 0.6069778800010681,
+      "on_train_confidence_OPTIMISTIC_not_the_quality_number": 0.4895246624946594,
+      "receiver_layer": 19,
+      "sender_layer": 29,
+      "transform_content_hash": "483d597d2d3a5bbfec4b810825218f9cf4483b9fdf38be83015a1472e338bd59"
+    },
+    {
+      "fit_seconds": 11.969690305,
+      "held_out_relative_residual": 0.5605588555335999,
+      "on_train_confidence_OPTIMISTIC_not_the_quality_number": 0.5338146090507507,
+      "receiver_layer": 23,
+      "sender_layer": 29,
+      "transform_content_hash": "2cec9280620cc03bf21f12f969fd7c0d7a4f03f3a61128656807a7827c7679f1"
+    }
+  ],
+  "unix_time": 1787937729,
+  "wall_clock_s": 118.583712698,
+  "winner": {
+    "held_out_relative_residual": 0.5105513334274292,
+    "policy_trust_transform_registered": true,
+    "receiver_layer": 14,
+    "sender_layer": 18,
+    "transform_artifact": {
+      "file": "/home/ruvultra/projects/LatentMesh-1/harness/latentmesh-live/../../crates/latentmesh-runtime/target/latentmesh-runs/s2/transform-L18-to-L14.json",
+      "sha256": "eb3f42edde853824642a2b811577e2c767f73c2c179fe03a05ac8dac23704457"
+    },
+    "transform_content_hash": "eb3f42edde853824642a2b811577e2c767f73c2c179fe03a05ac8dac23704457"
+  }
+}

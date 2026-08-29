@@ -1,0 +1,66 @@
+{
+  "dataset": {
+    "indices_max": 7471,
+    "indices_min": 1,
+    "source": "gsm8k-train.jsonl",
+    "source_sha256": "17f347dc51477c50d4efb83959dbb7c56297aba886e5544ee2aaed3024813465",
+    "split_file": "calibration-4000.json",
+    "split_file_sha256": "7d680615fe4022296f692fab2bf39386b99c5a8940766924e926739aaed41cc4",
+    "split_seed_chacha8": 616619521
+  },
+  "decoding": "none (teacher-forced prefill only; deterministic, no sampling)",
+  "design": "docs/research/024-live-latent-experiment-design.md sections 5.1-5.2, 7 S2",
+  "env": {
+    "crate": "latentmesh-runtime 0.1.0 (vendored candle-transformers 0.9.2 qwen2)",
+    "evidence_label": "live-model, single-host, simulation-free",
+    "git_commit": "2b28dcd3bb2a0b4f35c90edfe6b766290b31e904",
+    "gpu": "NVIDIA GeForce RTX 5080, 580.126.09, 16303 MiB",
+    "nvcc": "nvcc 12.8 (build-time 12.8)",
+    "nvcc_at_build": "12.8",
+    "unix_time": 1787937594
+  },
+  "gates": {
+    "all_4000_rows_present": {
+      "n_rows": 4000,
+      "note": "abort-on-any-failure policy: a missing row would silently break the n>d fit gate",
+      "pass": true
+    },
+    "receiver_capture_dim": {
+      "expect": 1536,
+      "measured": 1536,
+      "pass": true
+    },
+    "receiver_multi_tap_logits_parity_bit_identical": {
+      "pass": true
+    },
+    "sender_capture_dim": {
+      "expect": 2048,
+      "measured": 2048,
+      "pass": true
+    },
+    "sender_multi_tap_logits_parity_bit_identical": {
+      "pass": true
+    },
+    "token_streams_identical_across_models": {
+      "note": "asserted per item during the receiver phase",
+      "pass": true
+    }
+  },
+  "manifest_sha256": "c7908949d6bff34d9568527d005b4b6f61220253cb42b14210c832873496cca3",
+  "stage": "S2-dump",
+  "tokens": {
+    "mean_per_item": 212.17075,
+    "solution_span_total": 361139,
+    "total_teacher_forced": 848683
+  },
+  "train_indices_only": {
+    "n_indices": 4000,
+    "note": "all rows drawn from the committed calibration-4000 GSM8K-TRAIN index list; eval/holdout live in gsm8k-test.jsonl and are mechanically refused by the harness until genome freeze",
+    "source_file": "gsm8k-train.jsonl"
+  },
+  "wall_clock_s": {
+    "receiver_phase": 57.475884118,
+    "sender_phase": 99.059367787,
+    "total": 156.829829574
+  }
+}

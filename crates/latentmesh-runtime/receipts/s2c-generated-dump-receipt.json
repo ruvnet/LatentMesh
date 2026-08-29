@@ -1,0 +1,111 @@
+{
+  "budget_ladder_realized": {
+    "carried_forward_from_killed_attempt": true,
+    "ceiling_s": 12600.0,
+    "chosen_quota": 2560,
+    "n_fit_at_quota_80pct": 2048,
+    "note": "ladder decision realized by the first attempt before it was killed at ~1053 rows (its log: 'ladder: rate 3.51 s/row; T(2560)=9261s T(1920)=6946s ceiling=12600s => quota 2560'); formula pre-committed, not re-evaluated per attempt",
+    "projected_s_2560": 9261.0,
+    "rate_s_per_row": 3.51
+  },
+  "dataset": {
+    "source": "gsm8k-train.jsonl",
+    "source_sha256": "17f347dc51477c50d4efb83959dbb7c56297aba886e5544ee2aaed3024813465",
+    "split_file": "calibration-4000.json",
+    "split_file_sha256": "7d680615fe4022296f692fab2bf39386b99c5a8940766924e926739aaed41cc4",
+    "split_seed_chacha8": 616619521,
+    "subset_rule": "prefix of the committed calibration-4000 index list (stored sorted ascending; NOT a fresh random subsample; train-file order carries no known difficulty ordering)"
+  },
+  "design": "docs/adr/023 Deviation 7; docs/research/024 sections 5.4 (contingency recipe), 5.2 (pairing), 8 risk 6",
+  "env": {
+    "crate": "latentmesh-runtime 0.1.0 (vendored candle-transformers 0.9.2 qwen2)",
+    "evidence_label": "live-model, single-host, simulation-free",
+    "git_commit": "ceb993e9725d14aa3c904b9dc4aa7ca20b05acd7",
+    "gpu": "NVIDIA GeForce RTX 5080, 580.126.09, 16303 MiB",
+    "nvcc": "nvcc 12.8 (build-time 12.8)",
+    "nvcc_at_build": "12.8",
+    "unix_time": 1787951597
+  },
+  "gates": {
+    "n_over_d": {
+      "d_sender": 2048,
+      "n_fit_80pct": 2048,
+      "n_rows": 2560,
+      "pass": true,
+      "polar_unique": true,
+      "polar_uniqueness_floor_d_receiver": 1536
+    },
+    "receiver_capture_dim": {
+      "expect": 1536,
+      "measured": 1536,
+      "pass": true
+    },
+    "receiver_multi_tap_logits_parity_bit_identical": {
+      "pass": true
+    },
+    "sender_capture_dim": {
+      "expect": 2048,
+      "measured": 2048,
+      "pass": true
+    },
+    "sender_multi_tap_logits_parity_bit_identical": {
+      "pass": true
+    },
+    "token_streams_identical_across_models": {
+      "note": "receiver prompt encoding asserted equal to sender's per item; generated span shared as raw token ids (same tokenizer)",
+      "pass": true
+    }
+  },
+  "manifest_sha256": "844bfdbcb048b672658d2e206e8d9320b33a352433ee2999e7ff5a99c4cec6ce",
+  "preplan": {
+    "budget_ladder": {
+      "ceiling_s": 12600.0,
+      "design_estimate_note": "design's ~1 GPU-h contingency estimate is ~4x optimistic for its own recipe (S2b measured ~3.5 s per 3B greedy solve x 4000 items); identifiability (n>d) outranks the cost estimate — a probe against an underdetermined transform would make a null unattributable, the exact confound the S1a kill-switch language forbids",
+      "measure_rows": 25,
+      "quota_rule": "2560 (n_fit=2048=d_sender) if projected <= ceiling; else 1920 (n_fit=1536=d_receiver polar-uniqueness floor, MtM full-rank equivalence per ADR-002 amendment); else max n within ceiling (loud sub-uniqueness disclosure)",
+      "receiver_allowance_factor": 1.03
+    },
+    "cells": {
+      "receiver_layers": [
+        14,
+        19
+      ],
+      "registered_pairs_only": [
+        "L18->L14 (S2 winner)",
+        "L24->L19 (Deviation 6 anchor)"
+      ],
+      "sender_layers": [
+        18,
+        24
+      ]
+    },
+    "decoding": "greedy, batch=1, max_new_tokens=400 (the S1a/S2b live capture budget; section 5.4 silent)",
+    "item_subset": "prefix of the committed calibration-4000 index list (stored sorted ascending; NOT a fresh random subsample; train-file order carries no known difficulty ordering)",
+    "pairing": "one sender-generation pass per item (design 024 section 5.4 verbatim); SAME generated text teacher-forced through both models (section 5.2 pairing); sender pooled over its own generated span (the live S2b capture recipe), receiver pooled over the same span. REJECTED: each-model-generates-its-own (pairs states over different texts).",
+    "resume": true,
+    "skip_policy": "empty sender generation => item skipped on both sides, recorded; quota counts successes",
+    "smoke": null,
+    "stage": "S2c-preplan",
+    "written_before_model_load": true
+  },
+  "resumed": {
+    "prior_gpu_s_charged": 3696.0299999999997,
+    "prior_rows_from_killed_attempt": 1053,
+    "reason": "first attempt's background task was killed by the session harness at ~1053 rows; incremental persistence preserved every completed row (bins + token-streams.jsonl verified consistent: 1053 rows, 0 bytes partial)",
+    "wall_clock_note": "wall_clock_s below covers THIS process only; total GPU spend = prior_gpu_s_charged + this process's phases"
+  },
+  "rows": {
+    "collected": 2560,
+    "generated_tokens_mean": 280.904296875,
+    "generated_tokens_total": 719115,
+    "sender_first_pass_correct": 2222,
+    "skipped_items": []
+  },
+  "smoke_non_evidence": false,
+  "stage": "S2c-generated-dump",
+  "wall_clock_s": {
+    "receiver_phase": 57.304267908,
+    "sender_phase": 5252.815208258,
+    "total": 5310.366372503
+  }
+}

@@ -10,11 +10,36 @@
 //! is an instance of — this crate does not claim to reproduce StateBridge's
 //! specific reported results, which require real heterogeneous LLM hidden
 //! states this repo does not have access to (see ADR-001 §8, ADR-002).
+//!
+//! **Patched 2026-08-28 for the live latent experiment (design doc
+//! `docs/research/024` §3, ADR-002 amendment):**
+//! - [`AlignmentTransform::fit_affine`] adds affine mean-centering:
+//!   `aligned(z) = μ_r + α · (z − μ_s) · R`, with `μ_s`/`μ_r` carried in the
+//!   hashed transform struct so [`content_hash`](AlignmentTransform::content_hash)
+//!   binds the FULL affine map, not just `(R, α)`.
+//! - [`apply`](AlignmentTransform::apply) no longer rebuilds the projection
+//!   `DMatrix` on every call (previously ~25 MB of allocation per apply at
+//!   2048×1536) — the matrix is built once per fit and cached.
+//! - `content_hash` is computed once per fit and cached, not re-serialized
+//!   (~25 MB of JSON at 2048×1536) on every call.
+//! - A named `MᵀM` eigendecomposition fallback for the dense rectangular SVD
+//!   lives behind the same fit API (`procrustes_mtm.rs`) — see the measured
+//!   timing evidence in that module before trusting either path's cost.
+
+mod procrustes_mtm;
 
 use nalgebra::{DMatrix, DVector};
 use serde::{Deserialize, Serialize};
+use std::sync::OnceLock;
 
-/// A fitted alignment: `aligned(z) = α · z · R`.
+/// A fitted alignment: `aligned(z) = μ_r + α · (z − μ_s) · R`.
+///
+/// The plain [`fit`](AlignmentTransform::fit) path stores empty `μ` vectors
+/// (no centering — byte-compatible behavior with the pre-2026-08-28 crate);
+/// [`fit_affine`](AlignmentTransform::fit_affine) stores the real calibration
+/// means. Both `μ` vectors are serialized, so they participate in
+/// [`content_hash`](AlignmentTransform::content_hash) — two transforms that
+/// differ only in centering hash differently, as they must.
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct AlignmentTransform {
     /// `dim_sender × dim_receiver`, orthonormal (rows or columns, whichever is
@@ -23,15 +48,33 @@ pub struct AlignmentTransform {
     alpha: f32,
     dim_sender: usize,
     dim_receiver: usize,
-    /// In `[0,1]`: `1 − relative Frobenius residual` on the calibration set.
-    /// A REAL measured number, not asserted — see [`AlignmentTransform::fit`].
+    /// Sender-side calibration mean `μ_s` (empty ⇒ no centering, plain `fit`).
+    #[serde(default)]
+    mu_s: Vec<f32>,
+    /// Receiver-side calibration mean `μ_r` (empty ⇒ no centering, plain `fit`).
+    #[serde(default)]
+    mu_r: Vec<f32>,
+    /// In `[0,1]`: `1 − relative Frobenius residual` on the calibration set
+    /// (mean-centered residual for `fit_affine`). A REAL measured number, not
+    /// asserted — see [`AlignmentTransform::fit`]. NOTE: this is an ON-TRAIN
+    /// number; the live-experiment design (docs/research/024 §5) reports
+    /// held-out residual instead, precisely because this one is optimistic.
     pub confidence: f32,
+    /// Projection matrix cache — built once per fit (or lazily after
+    /// deserialization), never serialized, never part of the hash.
+    #[serde(skip)]
+    r_cached: OnceLock<DMatrix<f32>>,
+    /// Content-hash cache — computed once per fit (or lazily after
+    /// deserialization), never serialized.
+    #[serde(skip)]
+    hash_cached: OnceLock<String>,
 }
 
 impl AlignmentTransform {
     /// Fit `R`/`α` from calibration pairs via SVD-based orthogonal Procrustes.
     /// Panics on empty input or mismatched pair dimensions (a programmer
-    /// error, not a runtime data condition).
+    /// error, not a runtime data condition). No mean-centering — see
+    /// [`fit_affine`](AlignmentTransform::fit_affine) for the affine variant.
     ///
     /// **Optimized (2026-08-18):** `M = Aᵀ B` has rank ≤ `n` (the calibration
     /// count), which for realistic LLM hidden dims (`d` ~ 1k–4k) with a small
@@ -52,6 +95,48 @@ impl AlignmentTransform {
             !pairs.is_empty(),
             "fit requires at least one calibration pair"
         );
+        Self::fit_inner(pairs, Vec::new(), Vec::new())
+    }
+
+    /// Fit the AFFINE alignment `aligned(z) = μ_r + α · (z − μ_s) · R`:
+    /// mean-center each side on the calibration means `μ_s`/`μ_r`, then run
+    /// the same Procrustes solvers as [`fit`](AlignmentTransform::fit) on the
+    /// centered pairs. This is the live-experiment calibration path
+    /// (docs/research/024 §5.3, ADR-002 amendment 2026-08-28): LLM hidden
+    /// states are far from zero-mean, and orthogonal maps fix the origin, so
+    /// uncentered Procrustes wastes fit capacity reconciling the two offsets.
+    ///
+    /// `μ_s`/`μ_r` are stored in the (serialized, hashed) struct — the
+    /// transform hash a `LatentFrame` carries binds the whole affine map.
+    /// Panics if fewer than 2 pairs (the means consume the only sample) or on
+    /// mismatched dimensions, matching `fit`'s panic-on-programmer-error style.
+    pub fn fit_affine(pairs: &[(Vec<f32>, Vec<f32>)]) -> Self {
+        assert!(
+            pairs.len() >= 2,
+            "fit_affine requires at least two calibration pairs (n=1 centers to all-zeros)"
+        );
+        let dim_sender = pairs[0].0.len();
+        let dim_receiver = pairs[0].1.len();
+        let n = pairs.len() as f32;
+        let mut mu_s = vec![0.0f32; dim_sender];
+        let mut mu_r = vec![0.0f32; dim_receiver];
+        for (a, b) in pairs {
+            assert_eq!(a.len(), dim_sender, "inconsistent sender dimension");
+            assert_eq!(b.len(), dim_receiver, "inconsistent receiver dimension");
+            for (m, v) in mu_s.iter_mut().zip(a) {
+                *m += v / n;
+            }
+            for (m, v) in mu_r.iter_mut().zip(b) {
+                *m += v / n;
+            }
+        }
+        Self::fit_inner(pairs, mu_s, mu_r)
+    }
+
+    /// Shared fit core: validates dimensions, builds (optionally centered)
+    /// `A`/`B`, dispatches to a Procrustes solver, and packs the result.
+    /// Empty `mu` vectors mean "no centering".
+    fn fit_inner(pairs: &[(Vec<f32>, Vec<f32>)], mu_s: Vec<f32>, mu_r: Vec<f32>) -> Self {
         let dim_sender = pairs[0].0.len();
         let dim_receiver = pairs[0].1.len();
         let n = pairs.len();
@@ -64,13 +149,20 @@ impl AlignmentTransform {
             assert_eq!(b.len(), dim_receiver, "inconsistent receiver dimension");
         }
 
+        let center = |row: &[f32], mu: &[f32]| -> Vec<f32> {
+            if mu.is_empty() {
+                row.to_vec()
+            } else {
+                row.iter().zip(mu).map(|(v, m)| v - m).collect()
+            }
+        };
         // A: n × dim_sender, B: n × dim_receiver (row-major samples).
         let a = DMatrix::from_row_slice(
             n,
             dim_sender,
             &pairs
                 .iter()
-                .flat_map(|(x, _)| x.iter().copied())
+                .flat_map(|(x, _)| center(x, &mu_s))
                 .collect::<Vec<f32>>(),
         );
         let b = DMatrix::from_row_slice(
@@ -78,7 +170,7 @@ impl AlignmentTransform {
             dim_receiver,
             &pairs
                 .iter()
-                .flat_map(|(_, y)| y.iter().copied())
+                .flat_map(|(_, y)| center(y, &mu_r))
                 .collect::<Vec<f32>>(),
         );
 
@@ -88,13 +180,16 @@ impl AlignmentTransform {
             Self::orthogonal_procrustes_dense(&a, &b)
         };
 
-        Self::finish(a, b, r, dim_sender, dim_receiver)
+        Self::finish(a, b, r, dim_sender, dim_receiver, mu_s, mu_r)
     }
 
     /// The original direct solver: `M = Aᵀ B`, SVD(M) = `U Σ Vᵀ`, `R = U Vᵀ`.
     /// `O(d³)`-ish (dense SVD of a `dim_sender × dim_receiver` matrix). Used
     /// as the reference implementation and as the fallback when the fast
     /// path's preconditions (`dim_sender == dim_receiver`, `n < dim`) don't hold.
+    /// Measured at the live-experiment shape (2048×1536, release build):
+    /// see `procrustes_mtm.rs`'s ignored timing test for the real number
+    /// against the design's <5 min S1b gate.
     fn orthogonal_procrustes_dense(a: &DMatrix<f32>, b: &DMatrix<f32>) -> DMatrix<f32> {
         let m = a.transpose() * b; // dim_sender × dim_receiver
         let svd = nalgebra::linalg::SVD::new(m, true, true);
@@ -125,12 +220,18 @@ impl AlignmentTransform {
     }
 
     /// Shared tail of `fit`: magnitude calibration + confidence + packing.
+    /// `a`/`b` arrive already centered when `mu_s`/`mu_r` are non-empty, so
+    /// α and the confidence residual are computed in the centered frame.
+    /// Also seeds the projection-matrix and content-hash caches — both are
+    /// computed ONCE here, not per `apply()`/`content_hash()` call.
     fn finish(
         a: DMatrix<f32>,
         b: DMatrix<f32>,
         r: DMatrix<f32>,
         dim_sender: usize,
         dim_receiver: usize,
+        mu_s: Vec<f32>,
+        mu_r: Vec<f32>,
     ) -> Self {
         // α (magnitude calibration): minimizes ||α (A R) − B||_F in closed form.
         let ar = &a * &r; // n × dim_receiver
@@ -147,33 +248,76 @@ impl AlignmentTransform {
         let scale = b.norm().max(1e-6);
         let confidence = (1.0 - residual / scale).clamp(0.0, 1.0);
 
-        AlignmentTransform {
+        let t = AlignmentTransform {
             r: (0..dim_sender)
                 .map(|i| r.row(i).iter().copied().collect())
                 .collect(),
             alpha,
             dim_sender,
             dim_receiver,
+            mu_s,
+            mu_r,
             confidence,
-        }
+            r_cached: OnceLock::new(),
+            hash_cached: OnceLock::new(),
+        };
+        // Seed the caches once per fit (`r` is moved in, not rebuilt).
+        let _ = t.r_cached.set(r);
+        let _ = t.hash_cached.set(t.compute_content_hash());
+        t
     }
 
-    /// Apply the transform: `α · z · R`. Panics if `z.len() != dim_sender`.
+    /// Apply the transform: `μ_r + α · (z − μ_s) · R` (plain-`fit` transforms
+    /// have empty `μ` vectors, reducing this to `α · z · R`). Panics if
+    /// `z.len() != dim_sender`. Uses the cached projection matrix — no
+    /// per-call `DMatrix` rebuild (previously ~25 MB of allocation per call
+    /// at the 2048×1536 live-experiment shape).
     pub fn apply(&self, z: &[f32]) -> Vec<f32> {
         assert_eq!(z.len(), self.dim_sender, "input dimension mismatch");
-        let z = DVector::from_row_slice(z);
-        let r = DMatrix::from_row_slice(
-            self.dim_sender,
-            self.dim_receiver,
-            &self.r.iter().flatten().copied().collect::<Vec<f32>>(),
-        );
-        (self.alpha * (z.transpose() * r)).iter().copied().collect()
+        let r = self.projection();
+        let zv = if self.mu_s.is_empty() {
+            DVector::from_row_slice(z)
+        } else {
+            DVector::from_iterator(z.len(), z.iter().zip(&self.mu_s).map(|(v, m)| v - m))
+        };
+        let mut out: Vec<f32> = (self.alpha * (zv.transpose() * r))
+            .iter()
+            .copied()
+            .collect();
+        if !self.mu_r.is_empty() {
+            for (o, m) in out.iter_mut().zip(&self.mu_r) {
+                *o += m;
+            }
+        }
+        out
     }
 
-    /// A content hash binding this exact `(R, α)` — what `LatentFrame::transform_hash`
-    /// (ADR-002) references, so a receiver can verify which transform produced
-    /// an aligned frame rather than trusting an unhashed matrix.
+    /// The cached `dim_sender × dim_receiver` projection matrix. Built once
+    /// per fit; after deserialization it is rebuilt lazily on first use.
+    fn projection(&self) -> &DMatrix<f32> {
+        self.r_cached.get_or_init(|| {
+            DMatrix::from_row_slice(
+                self.dim_sender,
+                self.dim_receiver,
+                &self.r.iter().flatten().copied().collect::<Vec<f32>>(),
+            )
+        })
+    }
+
+    /// A content hash binding this exact `(R, α, μ_s, μ_r)` — what
+    /// `LatentFrame::transform_hash` (ADR-002) references, so a receiver can
+    /// verify which transform produced an aligned frame rather than trusting
+    /// an unhashed matrix. Computed once per fit and cached (previously
+    /// re-serialized the full matrix on every call).
     pub fn content_hash(&self) -> String {
+        self.hash_cached
+            .get_or_init(|| self.compute_content_hash())
+            .clone()
+    }
+
+    /// The actual hash computation — serialize (cache fields are
+    /// `#[serde(skip)]`, so they never influence the hash) and SHA-256.
+    fn compute_content_hash(&self) -> String {
         let bytes = serde_json::to_vec(self).unwrap_or_default();
         use sha2::{Digest, Sha256};
         let mut hasher = Sha256::new();
@@ -188,267 +332,13 @@ impl AlignmentTransform {
     pub fn dims(&self) -> (usize, usize) {
         (self.dim_sender, self.dim_receiver)
     }
+
+    /// The stored calibration means `(μ_s, μ_r)` — both empty for plain
+    /// [`fit`](AlignmentTransform::fit) transforms.
+    pub fn means(&self) -> (&[f32], &[f32]) {
+        (&self.mu_s, &self.mu_r)
+    }
 }
 
 #[cfg(test)]
-mod tests {
-    use super::*;
-    use rand::rngs::StdRng;
-    use rand::{Rng, SeedableRng};
-
-    /// A random orthogonal d×d matrix via QR decomposition of a random matrix
-    /// (the standard construction — Q from QR is orthogonal by definition).
-    fn random_orthogonal(d: usize, rng: &mut StdRng) -> DMatrix<f32> {
-        let data: Vec<f32> = (0..d * d).map(|_| rng.gen_range(-1.0..1.0)).collect();
-        let m = DMatrix::from_row_slice(d, d, &data);
-        let qr = m.qr();
-        qr.q()
-    }
-
-    #[test]
-    fn recovers_a_known_orthogonal_transform_from_noiseless_pairs() {
-        let mut rng = StdRng::seed_from_u64(42);
-        let d = 16;
-        let q = random_orthogonal(d, &mut rng);
-        let pairs: Vec<(Vec<f32>, Vec<f32>)> = (0..64)
-            .map(|_| {
-                let a: Vec<f32> = (0..d).map(|_| rng.gen_range(-1.0..1.0)).collect();
-                let av = DVector::from_row_slice(&a);
-                let b = (&q.transpose() * &av).iter().copied().collect::<Vec<f32>>();
-                (a, b)
-            })
-            .collect();
-        let t = AlignmentTransform::fit(&pairs);
-        assert!(
-            t.confidence > 0.99,
-            "expected near-perfect fit, got {}",
-            t.confidence
-        );
-        // Held-out check: apply to a fresh vector, compare to the ground-truth transform.
-        let z: Vec<f32> = (0..d).map(|_| rng.gen_range(-1.0..1.0)).collect();
-        let expected = (&q.transpose() * DVector::from_row_slice(&z))
-            .iter()
-            .copied()
-            .collect::<Vec<f32>>();
-        let got = t.apply(&z);
-        for (e, g) in expected.iter().zip(got.iter()) {
-            assert!(
-                (e - g).abs() < 0.05,
-                "alignment diverged: expected {e}, got {g}"
-            );
-        }
-    }
-
-    #[test]
-    fn confidence_degrades_under_injected_noise() {
-        let mut rng = StdRng::seed_from_u64(7);
-        let d = 12;
-        let q = random_orthogonal(d, &mut rng);
-        let mk_pairs = |noise: f32, rng: &mut StdRng| -> Vec<(Vec<f32>, Vec<f32>)> {
-            (0..64)
-                .map(|_| {
-                    let a: Vec<f32> = (0..d).map(|_| rng.gen_range(-1.0..1.0)).collect();
-                    let av = DVector::from_row_slice(&a);
-                    let mut b: Vec<f32> = (&q.transpose() * &av).iter().copied().collect();
-                    if noise > 0.0 {
-                        for v in b.iter_mut() {
-                            *v += rng.gen_range(-noise..noise);
-                        }
-                    }
-                    (a, b)
-                })
-                .collect()
-        };
-        let clean = AlignmentTransform::fit(&mk_pairs(0.0, &mut rng.clone()));
-        let noisy = AlignmentTransform::fit(&mk_pairs(0.8, &mut rng));
-        assert!(
-            noisy.confidence < clean.confidence,
-            "noisy fit ({}) should score below clean fit ({})",
-            noisy.confidence,
-            clean.confidence
-        );
-        assert!(noisy.confidence >= 0.0 && noisy.confidence <= 1.0);
-    }
-
-    #[test]
-    fn square_transform_round_trips_via_its_transpose() {
-        // For a square orthogonal R with α≈1, R's transpose is its inverse —
-        // apply-then-invert should recover the original vector.
-        let mut rng = StdRng::seed_from_u64(99);
-        let d = 8;
-        let q = random_orthogonal(d, &mut rng);
-        let pairs: Vec<(Vec<f32>, Vec<f32>)> = (0..64)
-            .map(|_| {
-                let a: Vec<f32> = (0..d).map(|_| rng.gen_range(-1.0..1.0)).collect();
-                let av = DVector::from_row_slice(&a);
-                let b = (&q.transpose() * &av).iter().copied().collect::<Vec<f32>>();
-                (a, b)
-            })
-            .collect();
-        let t = AlignmentTransform::fit(&pairs);
-        let z: Vec<f32> = vec![1.0, -1.0, 0.5, 0.25, -0.75, 2.0, -2.0, 0.1];
-        let aligned = t.apply(&z);
-        // Manually invert via Rᵀ/α since AlignmentTransform doesn't expose an
-        // `invert()` yet — this proves R is genuinely (semi-)orthogonal.
-        let r = DMatrix::from_row_slice(d, d, &t.r.iter().flatten().copied().collect::<Vec<f32>>());
-        let back: Vec<f32> = ((1.0 / t.alpha)
-            * (DVector::from_row_slice(&aligned).transpose() * r.transpose()))
-        .iter()
-        .copied()
-        .collect();
-        for (orig, recovered) in z.iter().zip(back.iter()) {
-            assert!(
-                (orig - recovered).abs() < 0.05,
-                "round trip diverged: {orig} vs {recovered}"
-            );
-        }
-    }
-
-    #[test]
-    fn fast_path_matches_dense_reference() {
-        // The core correctness claim of the 2026-08-18 optimization: the O(d²n)
-        // fast path (QR + small SVD) must reproduce the O(d³) dense solver's
-        // result on the calibrated subspace, to numerical tolerance.
-        let mut rng = StdRng::seed_from_u64(2026);
-        let d = 48;
-        let n = 12; // n < d, dim_sender == dim_receiver: fast path applies.
-        let q_truth = random_orthogonal(d, &mut rng);
-        let pairs: Vec<(Vec<f32>, Vec<f32>)> = (0..n)
-            .map(|_| {
-                let a: Vec<f32> = (0..d).map(|_| rng.gen_range(-1.0..1.0)).collect();
-                let av = DVector::from_row_slice(&a);
-                let b = (&q_truth.transpose() * &av)
-                    .iter()
-                    .copied()
-                    .collect::<Vec<f32>>();
-                (a, b)
-            })
-            .collect();
-
-        let a = DMatrix::from_row_slice(
-            n,
-            d,
-            &pairs
-                .iter()
-                .flat_map(|(x, _)| x.iter().copied())
-                .collect::<Vec<f32>>(),
-        );
-        let b = DMatrix::from_row_slice(
-            n,
-            d,
-            &pairs
-                .iter()
-                .flat_map(|(_, y)| y.iter().copied())
-                .collect::<Vec<f32>>(),
-        );
-
-        let r_fast = AlignmentTransform::orthogonal_procrustes_low_rank(&a, &b);
-        let r_dense = AlignmentTransform::orthogonal_procrustes_dense(&a, &b);
-
-        // Compare their action on the CALIBRATED subspace (where both are
-        // uniquely determined) rather than raw matrix equality (the null-space
-        // completion legitimately differs — dense uses an algorithm-arbitrary
-        // completion, fast uses identity, by design; see `fit`'s doc comment).
-        for (ai, _) in &pairs {
-            let via_fast = (DVector::from_row_slice(ai).transpose() * &r_fast)
-                .iter()
-                .copied()
-                .collect::<Vec<f32>>();
-            let via_dense = (DVector::from_row_slice(ai).transpose() * &r_dense)
-                .iter()
-                .copied()
-                .collect::<Vec<f32>>();
-            for (f, s) in via_fast.iter().zip(via_dense.iter()) {
-                assert!(
-                    (f - s).abs() < 1e-3,
-                    "fast vs dense diverged on calibration data: {f} vs {s}"
-                );
-            }
-        }
-
-        // And the full `fit()` entry point (which dispatches to the fast path
-        // here) should report the same near-perfect confidence as the dense one.
-        let t_fast = AlignmentTransform::fit(&pairs);
-        assert!(
-            t_fast.confidence > 0.99,
-            "fast-path fit confidence too low: {}",
-            t_fast.confidence
-        );
-    }
-
-    #[test]
-    fn fast_path_is_identity_on_the_orthogonal_complement() {
-        // A vector orthogonal to every calibration input should pass through
-        // the fast-path transform (α≈1 aside) essentially unchanged — the
-        // deliberate null-space policy `fit`'s doc comment commits to.
-        let mut rng = StdRng::seed_from_u64(11);
-        let d = 32;
-        let n = 8;
-        let q_truth = random_orthogonal(d, &mut rng);
-        let pairs: Vec<(Vec<f32>, Vec<f32>)> = (0..n)
-            .map(|_| {
-                let a: Vec<f32> = (0..d).map(|_| rng.gen_range(-1.0..1.0)).collect();
-                let av = DVector::from_row_slice(&a);
-                let b = (&q_truth.transpose() * &av)
-                    .iter()
-                    .copied()
-                    .collect::<Vec<f32>>();
-                (a, b)
-            })
-            .collect();
-        let a = DMatrix::from_row_slice(
-            n,
-            d,
-            &pairs
-                .iter()
-                .flat_map(|(x, _)| x.iter().copied())
-                .collect::<Vec<f32>>(),
-        );
-        let b = DMatrix::from_row_slice(
-            n,
-            d,
-            &pairs
-                .iter()
-                .flat_map(|(_, y)| y.iter().copied())
-                .collect::<Vec<f32>>(),
-        );
-        let r_fast = AlignmentTransform::orthogonal_procrustes_low_rank(&a, &b);
-
-        // Build a vector orthogonal to every calibration row via Gram-Schmidt
-        // against the row space (project out the span, keep the remainder).
-        let qr = a.transpose().qr();
-        let q = qr.q(); // d × n spanning row-space(a)
-        let mut z: Vec<f32> = (0..d).map(|_| rng.gen_range(-1.0..1.0)).collect();
-        let zv = DVector::from_row_slice(&z);
-        let z_perp = &zv - &q * (q.transpose() * &zv);
-        z = z_perp.iter().copied().collect();
-
-        let out = (DVector::from_row_slice(&z).transpose() * &r_fast)
-            .iter()
-            .copied()
-            .collect::<Vec<f32>>();
-        for (orig, transformed) in z.iter().zip(out.iter()) {
-            assert!(
-                (orig - transformed).abs() < 1e-2,
-                "not identity on complement: {orig} vs {transformed}"
-            );
-        }
-    }
-
-    #[test]
-    fn content_hash_is_deterministic_for_the_same_transform() {
-        let mut rng = StdRng::seed_from_u64(1);
-        let d = 4;
-        let q = random_orthogonal(d, &mut rng);
-        let pairs: Vec<(Vec<f32>, Vec<f32>)> = (0..16)
-            .map(|_| {
-                let a: Vec<f32> = (0..d).map(|_| rng.gen_range(-1.0..1.0)).collect();
-                let av = DVector::from_row_slice(&a);
-                let b = (&q.transpose() * &av).iter().copied().collect::<Vec<f32>>();
-                (a, b)
-            })
-            .collect();
-        let t = AlignmentTransform::fit(&pairs);
-        assert_eq!(t.content_hash(), t.content_hash());
-    }
-}
+mod tests;

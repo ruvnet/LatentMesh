@@ -1,0 +1,74 @@
+# latentmesh-runtime — live-model runtime for the latent-exchange experiment
+# (design doc 024 §3). Vendored candle-transformers 0.9.2 qwen2 model with
+# residual-stream capture (forward_capture) and placeholder-slot injection
+# (forward_inject), plus the sampler and norm instrumentation the S0–S5 stages
+# need.
+#
+# The `cuda` feature is OFF by default so that CPU-only checkouts (CI, other
+# agents) keep `cargo test --workspace` green. Live-GPU runs MUST enable it:
+#   PATH=/usr/local/cuda-12.8/bin:$PATH cargo build -p latentmesh-runtime --features cuda
+# build.rs enforces the nvcc 12.8 pin whenever `cuda` is enabled (design §2:
+# candle 0.9.2 cuda is verified on this RTX 5080 ONLY with nvcc 12.8.93; host
+# default nvcc 13.0 is untested).
+[package]
+name = "latentmesh-runtime"
+version = "0.1.0"
+edition = "2021"
+# Standalone MSRV, decoupled from the workspace's 1.77: candle-core 0.9.2's
+# dependency tree requires half >=2.5 (rust-version 1.81).
+rust-version = "1.81"
+license = "MIT OR Apache-2.0"
+repository = "https://github.com/ruvnet/LatentMesh"
+description = "Live Qwen2 runtime (vendored candle-transformers 0.9.2) with residual capture and placeholder-slot latent injection for the LatentMesh live experiment."
+
+# Standalone package, deliberately excluded from the root workspace
+# (coordinator ruling 2026-08-27): candle needs half ^2.5 which can never
+# unify with latentmesh-core's =2.4.1 MSRV-1.77 pin. Own lockfile, driven as
+# a subprocess by the harness. Build/test from this directory.
+[workspace]
+
+[features]
+default = []
+cuda = ["candle-core/cuda", "candle-nn/cuda"]
+
+[dependencies]
+candle-core = { version = "0.9.2" }
+candle-nn = { version = "0.9.2" }
+hf-hub = "0.4.3"
+tokenizers = "0.21"
+rand = "0.8"
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+sha2 = "0.10"
+
+[dev-dependencies]
+anyhow = "1"
+rand_chacha = "0.3"
+ureq = "2"
+
+# Probe binaries (design §7 S0 / S1a). They require live CUDA; gating them on
+# the `cuda` feature keeps `cargo clippy --workspace --all-targets` green on
+# CPU-only hosts.
+[[example]]
+name = "download"
+required-features = []
+
+[[example]]
+name = "s0_smoke"
+required-features = ["cuda"]
+
+[[example]]
+name = "s1a_probe"
+required-features = ["cuda"]
+
+[[example]]
+name = "gen_debug"
+required-features = ["cuda"]
+
+[[example]]
+name = "s2_calibrate_dump"
+required-features = ["cuda"]
+
+[[example]]
+name = "s2b_bridge_probe"
+required-features = ["cuda"]

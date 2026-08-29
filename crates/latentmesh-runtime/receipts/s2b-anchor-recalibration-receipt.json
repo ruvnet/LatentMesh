@@ -1,0 +1,80 @@
+{
+  "design": "docs/research/024-live-latent-experiment-design.md sections 5, 6 (A6), 7 S2",
+  "dump": {
+    "dir": "/tmp/claude-1000/-home-ruvultra-projects-LatentMesh-1/5e5545f1-6360-406b-b384-6806f2e012c9/scratchpad/s2-anchor-cell",
+    "item_indices_max": 7471,
+    "item_indices_min": 1,
+    "manifest_sha256": "55d6889b50ded743d986eedaa07e40a7af08288f56e5c3d76f36ce248422807b",
+    "n_rows": 4000,
+    "receiver": {
+      "files": {
+        "19": {
+          "file": "receiver_L19.f32bin",
+          "sha256": "09a53a8a35882b9867f0be85cd004ac5477a24bc633d49a0b2cb01644e339782"
+        }
+      },
+      "hidden_size": 1536,
+      "layers": [
+        19
+      ],
+      "model": "Qwen/Qwen2.5-1.5B-Instruct"
+    },
+    "sender": {
+      "files": {
+        "24": {
+          "file": "sender_L24.f32bin",
+          "sha256": "e65aa0400ef1866b60fb100ca1b97eb3c86a3e5ff6d56adba2aa8df5b381f5ea"
+        }
+      },
+      "hidden_size": 2048,
+      "layers": [
+        24
+      ],
+      "model": "Qwen/Qwen2.5-3B-Instruct"
+    }
+  },
+  "evidence_label": "deterministic CPU fit over live-model dumps (dump receipt referenced by sha256 below); the fit itself involves no model and no simulation",
+  "fit": {
+    "held_out_residual_formula": "||apply(X_h) - Y_h||_F / ||Y_h - mu_r||_F, apply(x) = mu_r + alpha*(x - mu_s)*R, mu from the 80% fit set only",
+    "method": "AlignmentTransform::fit_affine (affine mean-centered semi-orthogonal Procrustes, dense rectangular SVD path)",
+    "n_fit_rows": 3200,
+    "n_holdout_rows": 800,
+    "n_over_d_gate": {
+      "fit_rows": 3200,
+      "pass": true,
+      "sender_dim": 2048
+    },
+    "split": "seeded shuffle of row indices; first 80% fit, last 20% held out; SAME split for all nine cells",
+    "split_seed_chacha8": 616619523
+  },
+  "gate_A6": {
+    "measured": 0.559983491897583,
+    "pass": true,
+    "statistic": "held-out relative residual of the winning cell",
+    "threshold": 0.8999999761581421
+  },
+  "stage": "S2-calibration-fit",
+  "sweep_cells": [
+    {
+      "fit_seconds": 12.381360547,
+      "held_out_relative_residual": 0.559983491897583,
+      "on_train_confidence_OPTIMISTIC_not_the_quality_number": 0.5430101156234741,
+      "receiver_layer": 19,
+      "sender_layer": 24,
+      "transform_content_hash": "e892cfb7034012c3fb3f9fa1979e5a7fedfbb2adfd3e11fe575c40c2835cc801"
+    }
+  ],
+  "unix_time": 1787939780,
+  "wall_clock_s": 13.506703379,
+  "winner": {
+    "held_out_relative_residual": 0.559983491897583,
+    "policy_trust_transform_registered": true,
+    "receiver_layer": 19,
+    "sender_layer": 24,
+    "transform_artifact": {
+      "file": "/tmp/claude-1000/-home-ruvultra-projects-LatentMesh-1/5e5545f1-6360-406b-b384-6806f2e012c9/scratchpad/s2-anchor-cell/transform-L24-to-L19.json",
+      "sha256": "e892cfb7034012c3fb3f9fa1979e5a7fedfbb2adfd3e11fe575c40c2835cc801"
+    },
+    "transform_content_hash": "e892cfb7034012c3fb3f9fa1979e5a7fedfbb2adfd3e11fe575c40c2835cc801"
+  }
+}

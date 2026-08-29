@@ -1,0 +1,1794 @@
+{
+  "config": {
+    "capture_block": 19,
+    "decoding": "greedy, batch=1, max_new_tokens=400",
+    "inject_block": 19,
+    "item_seed_chacha8": 20897,
+    "model": "Qwen/Qwen2.5-1.5B-Instruct",
+    "pool_span": "full generated span",
+    "primary_test": "one-sided exact sign test, paired accuracy, real > random, alpha 0.05",
+    "randvec_seed_base": 1369571328,
+    "rescale_to_natural_median": true,
+    "secondary_diagnostic": "one-sided sign test on paired teacher-forced NLL of '#### <gold>', real < random",
+    "self_pair": true,
+    "slots": 8,
+    "transform": "identity"
+  },
+  "dataset": {
+    "indices": [
+      141,
+      150,
+      850,
+      1153,
+      1309,
+      1435,
+      1573,
+      1602,
+      2365,
+      2418,
+      2436,
+      2489,
+      2540,
+      2723,
+      2958,
+      2973,
+      3084,
+      3165,
+      3741,
+      3772,
+      3825,
+      3844,
+      3877,
+      4255,
+      4305,
+      4344,
+      4746,
+      4888,
+      5422,
+      5610,
+      6031,
+      6146,
+      6378,
+      6452,
+      6552,
+      6629,
+      7293,
+      7375,
+      7431,
+      7462
+    ],
+    "sha256": "17f347dc51477c50d4efb83959dbb7c56297aba886e5544ee2aaed3024813465",
+    "source": "https://raw.githubusercontent.com/openai/grade-school-math/master/grade_school_math/data/train.jsonl"
+  },
+  "design": "docs/research/024-live-latent-experiment-design.md section 7 S1a",
+  "env": {
+    "crate": "latentmesh-runtime 0.1.0 (vendored candle-transformers 0.9.2 qwen2)",
+    "evidence_label": "live-model, single-host, simulation-free",
+    "git_commit": "9a676a5d53f66425e40e3ca6f8c3bf6fb1aa9379",
+    "gpu": "NVIDIA GeForce RTX 5080, 580.126.09, 16303 MiB",
+    "nvcc": "nvcc 12.8 (build-time 12.8)",
+    "nvcc_at_build": "12.8",
+    "unix_time": 1787934942
+  },
+  "gate_pass": false,
+  "items": [
+    {
+      "capture": {
+        "hidden_size": 1536,
+        "injected_l2": 67.08087158203125,
+        "natural_l19_norms": {
+          "max": 76.66962432861328,
+          "mean": 66.8162612915039,
+          "median": 67.08089447021484,
+          "min": 54.256935119628906,
+          "n": 183,
+          "p25": 64.43558502197266,
+          "p75": 69.30883026123047
+        },
+        "pooled_l2_raw": 47.86027908325195,
+        "span": [
+          81,
+          264
+        ]
+      },
+      "conditions": {
+        "random": {
+          "correct": false,
+          "nll_gold": 1.2550591230392456
+        },
+        "real": {
+          "correct": false,
+          "nll_gold": 1.4978519678115845
+        },
+        "zero": {
+          "correct": false,
+          "nll_gold": 1.5546079874038696
+        }
+      },
+      "first_pass": {
+        "answer": "62",
+        "correct": false,
+        "generated_tokens": 183
+      },
+      "gold": "72",
+      "item": 141,
+      "real_answer_tail": "2 minutes = 62 minutes on his dog each day. Answer: #### 62."
+    },
+    {
+      "capture": {
+        "hidden_size": 1536,
+        "injected_l2": 68.18539428710938,
+        "natural_l19_norms": {
+          "max": 83.18641662597656,
+          "mean": 68.34503173828125,
+          "median": 68.18541717529297,
+          "min": 58.42039108276367,
+          "n": 156,
+          "p25": 65.47859954833984,
+          "p75": 71.0355224609375
+        },
+        "pooled_l2_raw": 49.5438117980957,
+        "span": [
+          83,
+          239
+        ]
+      },
+      "conditions": {
+        "random": {
+          "correct": true,
+          "nll_gold": 2.019345998764038
+        },
+        "real": {
+          "correct": false,
+          "nll_gold": 1.9478135108947754
+        },
+        "zero": {
+          "correct": false,
+          "nll_gold": 2.0649492740631104
+        }
+      },
+      "first_pass": {
+        "answer": null,
+        "correct": false,
+        "generated_tokens": 156
+      },
+      "gold": "3",
+      "item": 150,
+      "real_answer_tail": "7 \\]\n\\[ 9M = 27 \\]\n\\[ M = 3 \\]\n\nSo, Angela delivers 3 meals."
+    },
+    {
+      "capture": {
+        "hidden_size": 1536,
+        "injected_l2": 62.218849182128906,
+        "natural_l19_norms": {
+          "max": 82.56779479980469,
+          "mean": 62.548954010009766,
+          "median": 62.21885681152344,
+          "min": 49.61117935180664,
+          "n": 356,
+          "p25": 58.32634353637695,
+          "p75": 66.44932556152344
+        },
+        "pooled_l2_raw": 45.303550720214844,
+        "span": [
+          96,
+          452
+        ]
+      },
+      "conditions": {
+        "random": {
+          "correct": false,
+          "nll_gold": 3.416541814804077
+        },
+        "real": {
+          "correct": false,
+          "nll_gold": 3.2529549598693848
+        },
+        "zero": {
+          "correct": false,
+          "nll_gold": 3.3746063709259033
+        }
+      },
+      "first_pass": {
+        "answer": "222",
+        "correct": false,
+        "generated_tokens": 356
+      },
+      "gold": "90",
+      "item": 850,
+      "real_answer_tail": "\n**Final Answer:**\n- Total number of chips: 5555\n\n#### 55555"
+    },
+    {
+      "capture": {
+        "hidden_size": 1536,
+        "injected_l2": 60.85262680053711,
+        "natural_l19_norms": {
+          "max": 76.68952178955078,
+          "mean": 61.751075744628906,
+          "median": 60.852622985839844,
+          "min": 50.279659271240234,
+          "n": 400,
+          "p25": 57.31805419921875,
+          "p75": 66.0206298828125
+        },
+        "pooled_l2_raw": 43.774356842041016,
+        "span": [
+          103,
+          503
+        ]
+      },
+      "conditions": {
+        "random": {
+          "correct": false,
+          "nll_gold": 2.164872407913208
+        },
+        "real": {
+          "correct": false,
+          "nll_gold": 2.165508270263672
+        },
+        "zero": {
+          "correct": false,
+          "nll_gold": 2.1843202114105225
+        }
+      },
+      "first_pass": {
+        "answer": null,
+        "correct": false,
+        "generated_tokens": 400
+      },
+      "gold": "2050",
+      "item": 1153,
+      "real_answer_tail": "= 95000) dollars.\n\nTherefore, the the final answer is 95000."
+    },
+    {
+      "capture": {
+        "hidden_size": 1536,
+        "injected_l2": 67.45105743408203,
+        "natural_l19_norms": {
+          "max": 79.12664794921875,
+          "mean": 66.65733337402344,
+          "median": 67.4510498046875,
+          "min": 51.080718994140625,
+          "n": 242,
+          "p25": 63.31003952026367,
+          "p75": 70.04401397705078
+        },
+        "pooled_l2_raw": 48.48772048950195,
+        "span": [
+          78,
+          320
+        ]
+      },
+      "conditions": {
+        "random": {
+          "correct": false,
+          "nll_gold": 3.3536574840545654
+        },
+        "real": {
+          "correct": false,
+          "nll_gold": 2.928480863571167
+        },
+        "zero": {
+          "correct": false,
+          "nll_gold": 2.9461510181427
+        }
+      },
+      "first_pass": {
+        "answer": null,
+        "correct": false,
+        "generated_tokens": 242
+      },
+      "gold": "4",
+      "item": 1309,
+      "real_answer_tail": "14\\)\n\nTherefore, Martin will have 4 goldfishfish in 7 weeks."
+    },
+    {
+      "capture": {
+        "hidden_size": 1536,
+        "injected_l2": 63.556068420410156,
+        "natural_l19_norms": {
+          "max": 77.73860168457031,
+          "mean": 63.786983489990234,
+          "median": 63.556060791015625,
+          "min": 49.75511169433594,
+          "n": 281,
+          "p25": 60.259212493896484,
+          "p75": 67.30060577392578
+        },
+        "pooled_l2_raw": 45.49147033691406,
+        "span": [
+          83,
+          364
+        ]
+      },
+      "conditions": {
+        "random": {
+          "correct": false,
+          "nll_gold": 2.3657052516937256
+        },
+        "real": {
+          "correct": false,
+          "nll_gold": 2.2421789169311523
+        },
+        "zero": {
+          "correct": false,
+          "nll_gold": 2.2596256732940674
+        }
+      },
+      "first_pass": {
+        "answer": "28.8",
+        "correct": false,
+        "generated_tokens": 281
+      },
+      "gold": "3",
+      "item": 1435,
+      "real_answer_tail": "000000000000000000000000000000000000000000000000000000000000"
+    },
+    {
+      "capture": {
+        "hidden_size": 1536,
+        "injected_l2": 64.91366577148438,
+        "natural_l19_norms": {
+          "max": 78.00187683105469,
+          "mean": 64.87001037597656,
+          "median": 64.91371154785156,
+          "min": 50.93729019165039,
+          "n": 214,
+          "p25": 61.29486846923828,
+          "p75": 68.28273010253906
+        },
+        "pooled_l2_raw": 47.3443489074707,
+        "span": [
+          121,
+          335
+        ]
+      },
+      "conditions": {
+        "random": {
+          "correct": false,
+          "nll_gold": 2.2619214057922363
+        },
+        "real": {
+          "correct": false,
+          "nll_gold": 2.3858494758605957
+        },
+        "zero": {
+          "correct": false,
+          "nll_gold": 2.431936025619507
+        }
+      },
+      "first_pass": {
+        "answer": "10",
+        "correct": false,
+        "generated_tokens": 214
+      },
+      "gold": "18",
+      "item": 1573,
+      "real_answer_tail": "total hours Oliver worked out during these four days is 111."
+    },
+    {
+      "capture": {
+        "hidden_size": 1536,
+        "injected_l2": 67.62734985351562,
+        "natural_l19_norms": {
+          "max": 79.80670928955078,
+          "mean": 67.55880737304688,
+          "median": 67.62735748291016,
+          "min": 54.31450653076172,
+          "n": 180,
+          "p25": 64.76727294921875,
+          "p75": 70.22466278076172
+        },
+        "pooled_l2_raw": 49.45771408081055,
+        "span": [
+          92,
+          272
+        ]
+      },
+      "conditions": {
+        "random": {
+          "correct": false,
+          "nll_gold": 3.843759536743164
+        },
+        "real": {
+          "correct": false,
+          "nll_gold": 3.7802722454071045
+        },
+        "zero": {
+          "correct": false,
+          "nll_gold": 3.837712526321411
+        }
+      },
+      "first_pass": {
+        "answer": null,
+        "correct": false,
+        "generated_tokens": 180
+      },
+      "gold": "6716",
+      "item": 1602,
+      "real_answer_tail": " 67 kilometers to to make it across the country.\n\n#### 67 km"
+    },
+    {
+      "capture": {
+        "hidden_size": 1536,
+        "injected_l2": 60.968143463134766,
+        "natural_l19_norms": {
+          "max": 76.3084945678711,
+          "mean": 61.30000305175781,
+          "median": 60.968143463134766,
+          "min": 49.0982780456543,
+          "n": 254,
+          "p25": 56.99261474609375,
+          "p75": 65.3575668334961
+        },
+        "pooled_l2_raw": 44.18313980102539,
+        "span": [
+          145,
+          399
+        ]
+      },
+      "conditions": {
+        "random": {
+          "correct": false,
+          "nll_gold": 2.491455078125
+        },
+        "real": {
+          "correct": false,
+          "nll_gold": 2.718926191329956
+        },
+        "zero": {
+          "correct": false,
+          "nll_gold": 2.767134189605713
+        }
+      },
+      "first_pass": {
+        "answer": "8440",
+        "correct": false,
+        "generated_tokens": 254
+      },
+      "gold": "852",
+      "item": 2365,
+      "real_answer_tail": "444444444444444444444444444444444444444444444444444444444444"
+    },
+    {
+      "capture": {
+        "hidden_size": 1536,
+        "injected_l2": 66.08341217041016,
+        "natural_l19_norms": {
+          "max": 77.44387817382812,
+          "mean": 65.51738739013672,
+          "median": 66.08338928222656,
+          "min": 50.12820816040039,
+          "n": 262,
+          "p25": 62.047218322753906,
+          "p75": 69.71399688720703
+        },
+        "pooled_l2_raw": 48.10947036743164,
+        "span": [
+          92,
+          354
+        ]
+      },
+      "conditions": {
+        "random": {
+          "correct": false,
+          "nll_gold": 3.23359751701355
+        },
+        "real": {
+          "correct": false,
+          "nll_gold": 3.6911749839782715
+        },
+        "zero": {
+          "correct": false,
+          "nll_gold": 3.707840919494629
+        }
+      },
+      "first_pass": {
+        "answer": null,
+        "correct": false,
+        "generated_tokens": 262
+      },
+      "gold": "53",
+      "item": 2418,
+      "real_answer_tail": "t = $880 - $7 = $73\n\nTherefore, the final answer is: #### 33"
+    },
+    {
+      "capture": {
+        "hidden_size": 1536,
+        "injected_l2": 63.66483688354492,
+        "natural_l19_norms": {
+          "max": 77.81690216064453,
+          "mean": 64.74465942382812,
+          "median": 63.66483688354492,
+          "min": 58.522335052490234,
+          "n": 400,
+          "p25": 62.027587890625,
+          "p75": 67.48175811767578
+        },
+        "pooled_l2_raw": 46.227928161621094,
+        "span": [
+          85,
+          485
+        ]
+      },
+      "conditions": {
+        "random": {
+          "correct": false,
+          "nll_gold": 2.29656982421875
+        },
+        "real": {
+          "correct": false,
+          "nll_gold": 2.500488758087158
+        },
+        "zero": {
+          "correct": false,
+          "nll_gold": 2.5994646549224854
+        }
+      },
+      "first_pass": {
+        "answer": null,
+        "correct": false,
+        "generated_tokens": 400
+      },
+      "gold": "5",
+      "item": 2436,
+      "real_answer_tail": "ext{Boxes}\n\n3\n\nTherefore, the final answer is is: #### 10000"
+    },
+    {
+      "capture": {
+        "hidden_size": 1536,
+        "injected_l2": 64.19760131835938,
+        "natural_l19_norms": {
+          "max": 77.1507797241211,
+          "mean": 64.12214660644531,
+          "median": 64.1976089477539,
+          "min": 51.539886474609375,
+          "n": 216,
+          "p25": 60.54564666748047,
+          "p75": 67.4291763305664
+        },
+        "pooled_l2_raw": 45.921051025390625,
+        "span": [
+          115,
+          331
+        ]
+      },
+      "conditions": {
+        "random": {
+          "correct": false,
+          "nll_gold": 2.662018299102783
+        },
+        "real": {
+          "correct": false,
+          "nll_gold": 2.4492974281311035
+        },
+        "zero": {
+          "correct": false,
+          "nll_gold": 2.58909010887146
+        }
+      },
+      "first_pass": {
+        "answer": "500",
+        "correct": false,
+        "generated_tokens": 216
+      },
+      "gold": "50",
+      "item": 2489,
+      "real_answer_tail": "friends is:\n\\[ 400\n\nTherefore, the final answer is: #### 400"
+    },
+    {
+      "capture": {
+        "hidden_size": 1536,
+        "injected_l2": 62.58214569091797,
+        "natural_l19_norms": {
+          "max": 78.1656265258789,
+          "mean": 63.591373443603516,
+          "median": 62.58213806152344,
+          "min": 54.631309509277344,
+          "n": 400,
+          "p25": 60.48161315917969,
+          "p75": 66.0589599609375
+        },
+        "pooled_l2_raw": 45.74574279785156,
+        "span": [
+          82,
+          482
+        ]
+      },
+      "conditions": {
+        "random": {
+          "correct": false,
+          "nll_gold": 1.6862398386001587
+        },
+        "real": {
+          "correct": false,
+          "nll_gold": 1.9296540021896362
+        },
+        "zero": {
+          "correct": false,
+          "nll_gold": 1.9399493932724
+        }
+      },
+      "first_pass": {
+        "answer": null,
+        "correct": false,
+        "generated_tokens": 400
+      },
+      "gold": "8000",
+      "item": 2540,
+      "real_answer_tail": "swer:**\n   The art piece piece will have increased by $8000."
+    },
+    {
+      "capture": {
+        "hidden_size": 1536,
+        "injected_l2": 67.5994644165039,
+        "natural_l19_norms": {
+          "max": 77.67213439941406,
+          "mean": 67.30690002441406,
+          "median": 67.5994644165039,
+          "min": 57.11824035644531,
+          "n": 186,
+          "p25": 64.28599548339844,
+          "p75": 70.73863983154297
+        },
+        "pooled_l2_raw": 49.4132080078125,
+        "span": [
+          79,
+          265
+        ]
+      },
+      "conditions": {
+        "random": {
+          "correct": false,
+          "nll_gold": 1.3990886211395264
+        },
+        "real": {
+          "correct": false,
+          "nll_gold": 1.3869739770889282
+        },
+        "zero": {
+          "correct": false,
+          "nll_gold": 1.4592779874801636
+        }
+      },
+      "first_pass": {
+        "answer": null,
+        "correct": false,
+        "generated_tokens": 186
+      },
+      "gold": "20",
+      "item": 2723,
+      "real_answer_tail": "ngth of of the straight part part of the river is 600 miles."
+    },
+    {
+      "capture": {
+        "hidden_size": 1536,
+        "injected_l2": 64.47742462158203,
+        "natural_l19_norms": {
+          "max": 78.44374084472656,
+          "mean": 64.45932006835938,
+          "median": 64.4774398803711,
+          "min": 49.042091369628906,
+          "n": 259,
+          "p25": 60.75922775268555,
+          "p75": 68.66787719726562
+        },
+        "pooled_l2_raw": 46.9605712890625,
+        "span": [
+          85,
+          344
+        ]
+      },
+      "conditions": {
+        "random": {
+          "correct": false,
+          "nll_gold": 1.6795793771743774
+        },
+        "real": {
+          "correct": false,
+          "nll_gold": 1.588529348373413
+        },
+        "zero": {
+          "correct": false,
+          "nll_gold": 1.598463773727417
+        }
+      },
+      "first_pass": {
+        "answer": null,
+        "correct": false,
+        "generated_tokens": 259
+      },
+      "gold": "240",
+      "item": 2958,
+      "real_answer_tail": "60 = 240\n \n\n   }\n\nTherefore, the final answer is is: #### 40"
+    },
+    {
+      "capture": {
+        "hidden_size": 1536,
+        "injected_l2": 64.92010498046875,
+        "natural_l19_norms": {
+          "max": 76.58442687988281,
+          "mean": 64.79630279541016,
+          "median": 64.92012023925781,
+          "min": 56.76304626464844,
+          "n": 89,
+          "p25": 62.86001205444336,
+          "p75": 66.59090423583984
+        },
+        "pooled_l2_raw": 47.53130340576172,
+        "span": [
+          90,
+          179
+        ]
+      },
+      "conditions": {
+        "random": {
+          "correct": true,
+          "nll_gold": 1.3880442380905151
+        },
+        "real": {
+          "correct": true,
+          "nll_gold": 1.2887516021728516
+        },
+        "zero": {
+          "correct": true,
+          "nll_gold": 1.4161269664764404
+        }
+      },
+      "first_pass": {
+        "answer": "10",
+        "correct": true,
+        "generated_tokens": 89
+      },
+      "gold": "10",
+      "item": 2973,
+      "real_answer_tail": " her sister Janet, which is 40 * 1/4 = 10 stuffies.\n\n#### 10"
+    },
+    {
+      "capture": {
+        "hidden_size": 1536,
+        "injected_l2": 63.672603607177734,
+        "natural_l19_norms": {
+          "max": 79.35414123535156,
+          "mean": 63.47463607788086,
+          "median": 63.6725959777832,
+          "min": 47.86167907714844,
+          "n": 246,
+          "p25": 60.38612365722656,
+          "p75": 67.36284637451172
+        },
+        "pooled_l2_raw": 44.726776123046875,
+        "span": [
+          94,
+          340
+        ]
+      },
+      "conditions": {
+        "random": {
+          "correct": false,
+          "nll_gold": 1.5381046533584595
+        },
+        "real": {
+          "correct": false,
+          "nll_gold": 1.9941622018814087
+        },
+        "zero": {
+          "correct": false,
+          "nll_gold": 2.05800461769104
+        }
+      },
+      "first_pass": {
+        "answer": "60",
+        "correct": false,
+        "generated_tokens": 246
+      },
+      "gold": "75",
+      "item": 3084,
+      "real_answer_tail": "[\n   600 + 12 = 621\n\\   \\]\n\nSo, the final answer is: #### 21"
+    },
+    {
+      "capture": {
+        "hidden_size": 1536,
+        "injected_l2": 65.45567321777344,
+        "natural_l19_norms": {
+          "max": 77.57466125488281,
+          "mean": 64.97987365722656,
+          "median": 65.45568084716797,
+          "min": 49.1164665222168,
+          "n": 227,
+          "p25": 61.4676513671875,
+          "p75": 69.17620086669922
+        },
+        "pooled_l2_raw": 46.95522689819336,
+        "span": [
+          106,
+          333
+        ]
+      },
+      "conditions": {
+        "random": {
+          "correct": false,
+          "nll_gold": 2.9752326011657715
+        },
+        "real": {
+          "correct": false,
+          "nll_gold": 3.3971238136291504
+        },
+        "zero": {
+          "correct": false,
+          "nll_gold": 3.439664840698242
+        }
+      },
+      "first_pass": {
+        "answer": "0",
+        "correct": false,
+        "generated_tokens": 227
+      },
+      "gold": "36",
+      "item": 3165,
+      "real_answer_tail": "fore, the Talia's father current current age is 6 years old."
+    },
+    {
+      "capture": {
+        "hidden_size": 1536,
+        "injected_l2": 60.54123306274414,
+        "natural_l19_norms": {
+          "max": 77.467529296875,
+          "mean": 62.650638580322266,
+          "median": 60.541259765625,
+          "min": 52.92481231689453,
+          "n": 400,
+          "p25": 58.79723358154297,
+          "p75": 66.3482437133789
+        },
+        "pooled_l2_raw": 43.72272872924805,
+        "span": [
+          98,
+          498
+        ]
+      },
+      "conditions": {
+        "random": {
+          "correct": false,
+          "nll_gold": 2.561598300933838
+        },
+        "real": {
+          "correct": false,
+          "nll_gold": 2.2723388671875
+        },
+        "zero": {
+          "correct": false,
+          "nll_gold": 2.338890552520752
+        }
+      },
+      "first_pass": {
+        "answer": null,
+        "correct": false,
+        "generated_tokens": 400
+      },
+      "gold": "150",
+      "item": 3741,
+      "real_answer_tail": "ext{minutes}\n   ]\n   \n   Therefore, the final answer is 555."
+    },
+    {
+      "capture": {
+        "hidden_size": 1536,
+        "injected_l2": 64.72438049316406,
+        "natural_l19_norms": {
+          "max": 76.32108306884766,
+          "mean": 64.90594482421875,
+          "median": 64.72437286376953,
+          "min": 50.48982620239258,
+          "n": 244,
+          "p25": 60.48541259765625,
+          "p75": 69.23513793945312
+        },
+        "pooled_l2_raw": 46.294342041015625,
+        "span": [
+          100,
+          344
+        ]
+      },
+      "conditions": {
+        "random": {
+          "correct": false,
+          "nll_gold": 2.011385202407837
+        },
+        "real": {
+          "correct": false,
+          "nll_gold": 1.8167333602905273
+        },
+        "zero": {
+          "correct": false,
+          "nll_gold": 1.8847408294677734
+        }
+      },
+      "first_pass": {
+        "answer": "101",
+        "correct": false,
+        "generated_tokens": 244
+      },
+      "gold": "100",
+      "item": 3772,
+      "real_answer_tail": "running time of of Beast of War: Arm Command is 100 minutes."
+    },
+    {
+      "capture": {
+        "hidden_size": 1536,
+        "injected_l2": 66.19921875,
+        "natural_l19_norms": {
+          "max": 81.83698272705078,
+          "mean": 66.7797622680664,
+          "median": 66.1992416381836,
+          "min": 57.56210708618164,
+          "n": 114,
+          "p25": 63.88508224487305,
+          "p75": 69.38619232177734
+        },
+        "pooled_l2_raw": 49.780189514160156,
+        "span": [
+          89,
+          203
+        ]
+      },
+      "conditions": {
+        "random": {
+          "correct": false,
+          "nll_gold": 2.7823855876922607
+        },
+        "real": {
+          "correct": false,
+          "nll_gold": 2.7996058464050293
+        },
+        "zero": {
+          "correct": false,
+          "nll_gold": 2.902564525604248
+        }
+      },
+      "first_pass": {
+        "answer": null,
+        "correct": false,
+        "generated_tokens": 114
+      },
+      "gold": "23",
+      "item": 3825,
+      "real_answer_tail": "= 23 jellybeans\n\nSo, there are now 23 jellybeans in the jar."
+    },
+    {
+      "capture": {
+        "hidden_size": 1536,
+        "injected_l2": 63.9291877746582,
+        "natural_l19_norms": {
+          "max": 79.05809783935547,
+          "mean": 64.04737854003906,
+          "median": 63.92919158935547,
+          "min": 51.48409652709961,
+          "n": 258,
+          "p25": 59.60104751586914,
+          "p75": 68.22001647949219
+        },
+        "pooled_l2_raw": 45.51459884643555,
+        "span": [
+          102,
+          360
+        ]
+      },
+      "conditions": {
+        "random": {
+          "correct": false,
+          "nll_gold": 1.7378405332565308
+        },
+        "real": {
+          "correct": false,
+          "nll_gold": 1.6260067224502563
+        },
+        "zero": {
+          "correct": false,
+          "nll_gold": 1.6533056497573853
+        }
+      },
+      "first_pass": {
+        "answer": null,
+        "correct": false,
+        "generated_tokens": 258
+      },
+      "gold": "20",
+      "item": 3844,
+      "real_answer_tail": "fe} \\]\n\nTherefore, the final answer is 0.125cents per knife."
+    },
+    {
+      "capture": {
+        "hidden_size": 1536,
+        "injected_l2": 66.23118591308594,
+        "natural_l19_norms": {
+          "max": 76.87828063964844,
+          "mean": 65.46587371826172,
+          "median": 66.231201171875,
+          "min": 51.451595306396484,
+          "n": 233,
+          "p25": 61.40340042114258,
+          "p75": 69.42642974853516
+        },
+        "pooled_l2_raw": 45.97476577758789,
+        "span": [
+          92,
+          325
+        ]
+      },
+      "conditions": {
+        "random": {
+          "correct": false,
+          "nll_gold": 2.453613042831421
+        },
+        "real": {
+          "correct": false,
+          "nll_gold": 2.6613121032714844
+        },
+        "zero": {
+          "correct": false,
+          "nll_gold": 2.70322585105896
+        }
+      },
+      "first_pass": {
+        "answer": "5",
+        "correct": true,
+        "generated_tokens": 233
+      },
+      "gold": "5",
+      "item": 3877,
+      "real_answer_tail": "le integer.\n\n   - Therefore, Marissa tied 4 boxes.\n\n#### 4.5"
+    },
+    {
+      "capture": {
+        "hidden_size": 1536,
+        "injected_l2": 65.57373046875,
+        "natural_l19_norms": {
+          "max": 79.06732177734375,
+          "mean": 65.30542755126953,
+          "median": 65.57376861572266,
+          "min": 51.56123733520508,
+          "n": 232,
+          "p25": 61.60755920410156,
+          "p75": 68.90940856933594
+        },
+        "pooled_l2_raw": 47.13498306274414,
+        "span": [
+          85,
+          317
+        ]
+      },
+      "conditions": {
+        "random": {
+          "correct": false,
+          "nll_gold": 2.650301694869995
+        },
+        "real": {
+          "correct": false,
+          "nll_gold": 3.468097448348999
+        },
+        "zero": {
+          "correct": false,
+          "nll_gold": 3.549856185913086
+        }
+      },
+      "first_pass": {
+        "answer": null,
+        "correct": false,
+        "generated_tokens": 232
+      },
+      "gold": "5",
+      "item": 4255,
+      "real_answer_tail": "333333333333333333333333333333333333333333333333333333333333"
+    },
+    {
+      "capture": {
+        "hidden_size": 1536,
+        "injected_l2": 65.26614379882812,
+        "natural_l19_norms": {
+          "max": 82.17579650878906,
+          "mean": 65.06201171875,
+          "median": 65.26612091064453,
+          "min": 51.76198959350586,
+          "n": 210,
+          "p25": 61.39501953125,
+          "p75": 68.5525131225586
+        },
+        "pooled_l2_raw": 47.3787956237793,
+        "span": [
+          113,
+          323
+        ]
+      },
+      "conditions": {
+        "random": {
+          "correct": false,
+          "nll_gold": 2.5897057056427
+        },
+        "real": {
+          "correct": false,
+          "nll_gold": 2.7365472316741943
+        },
+        "zero": {
+          "correct": false,
+          "nll_gold": 2.78080677986145
+        }
+      },
+      "first_pass": {
+        "answer": "25",
+        "correct": false,
+        "generated_tokens": 210
+      },
+      "gold": "28",
+      "item": 4305,
+      "real_answer_tail": " of eggs Gabrielle sells over the the the four days is 2000."
+    },
+    {
+      "capture": {
+        "hidden_size": 1536,
+        "injected_l2": 65.8172836303711,
+        "natural_l19_norms": {
+          "max": 79.1239013671875,
+          "mean": 65.2802505493164,
+          "median": 65.81729125976562,
+          "min": 51.58873748779297,
+          "n": 214,
+          "p25": 61.26019287109375,
+          "p75": 69.15894317626953
+        },
+        "pooled_l2_raw": 47.19049835205078,
+        "span": [
+          88,
+          302
+        ]
+      },
+      "conditions": {
+        "random": {
+          "correct": false,
+          "nll_gold": 3.497126340866089
+        },
+        "real": {
+          "correct": false,
+          "nll_gold": 3.487215995788574
+        },
+        "zero": {
+          "correct": false,
+          "nll_gold": 3.635791063308716
+        }
+      },
+      "first_pass": {
+        "answer": null,
+        "correct": false,
+        "generated_tokens": 214
+      },
+      "gold": "5",
+      "item": 4344,
+      "real_answer_tail": ".5\n \n   \\]\n\nTherefore, one one of the other toys costs $0.5."
+    },
+    {
+      "capture": {
+        "hidden_size": 1536,
+        "injected_l2": 65.21833801269531,
+        "natural_l19_norms": {
+          "max": 77.90904235839844,
+          "mean": 65.22623443603516,
+          "median": 65.21836853027344,
+          "min": 51.95458221435547,
+          "n": 190,
+          "p25": 62.400962829589844,
+          "p75": 67.84375
+        },
+        "pooled_l2_raw": 47.269874572753906,
+        "span": [
+          110,
+          300
+        ]
+      },
+      "conditions": {
+        "random": {
+          "correct": false,
+          "nll_gold": 2.4203248023986816
+        },
+        "real": {
+          "correct": false,
+          "nll_gold": 2.713954448699951
+        },
+        "zero": {
+          "correct": false,
+          "nll_gold": 2.7943756580352783
+        }
+      },
+      "first_pass": {
+        "answer": "7",
+        "correct": false,
+        "generated_tokens": 190
+      },
+      "gold": "17",
+      "item": 4746,
+      "real_answer_tail": "marbles\n\nTherefore, the total number of broken marbles is 7."
+    },
+    {
+      "capture": {
+        "hidden_size": 1536,
+        "injected_l2": 67.43131256103516,
+        "natural_l19_norms": {
+          "max": 78.19123840332031,
+          "mean": 67.4898452758789,
+          "median": 67.43130493164062,
+          "min": 58.219764709472656,
+          "n": 145,
+          "p25": 64.66525268554688,
+          "p75": 69.96995544433594
+        },
+        "pooled_l2_raw": 49.11391067504883,
+        "span": [
+          80,
+          225
+        ]
+      },
+      "conditions": {
+        "random": {
+          "correct": false,
+          "nll_gold": 1.8359922170639038
+        },
+        "real": {
+          "correct": false,
+          "nll_gold": 1.8440749645233154
+        },
+        "zero": {
+          "correct": false,
+          "nll_gold": 1.8495959043502808
+        }
+      },
+      "first_pass": {
+        "answer": null,
+        "correct": false,
+        "generated_tokens": 145
+      },
+      "gold": "25",
+      "item": 4888,
+      "real_answer_tail": "negative amount of money, this means he owes his friend $35."
+    },
+    {
+      "capture": {
+        "hidden_size": 1536,
+        "injected_l2": 67.11231994628906,
+        "natural_l19_norms": {
+          "max": 77.85015106201172,
+          "mean": 66.8011703491211,
+          "median": 67.11228942871094,
+          "min": 50.691078186035156,
+          "n": 248,
+          "p25": 63.50202178955078,
+          "p75": 70.46598815917969
+        },
+        "pooled_l2_raw": 46.96539306640625,
+        "span": [
+          70,
+          318
+        ]
+      },
+      "conditions": {
+        "random": {
+          "correct": false,
+          "nll_gold": 3.061067581176758
+        },
+        "real": {
+          "correct": false,
+          "nll_gold": 2.7301254272460938
+        },
+        "zero": {
+          "correct": false,
+          "nll_gold": 2.7758686542510986
+        }
+      },
+      "first_pass": {
+        "answer": null,
+        "correct": false,
+        "generated_tokens": 248
+      },
+      "gold": "7",
+      "item": 5422,
+      "real_answer_tail": "ac{111}{3} \\). But \n\nSo, the the final answer is is: #### 11"
+    },
+    {
+      "capture": {
+        "hidden_size": 1536,
+        "injected_l2": 64.86829376220703,
+        "natural_l19_norms": {
+          "max": 76.99382019042969,
+          "mean": 64.96917724609375,
+          "median": 64.8683090209961,
+          "min": 53.9244270324707,
+          "n": 232,
+          "p25": 61.102630615234375,
+          "p75": 68.45784759521484
+        },
+        "pooled_l2_raw": 47.79153060913086,
+        "span": [
+          109,
+          341
+        ]
+      },
+      "conditions": {
+        "random": {
+          "correct": false,
+          "nll_gold": 3.1840133666992188
+        },
+        "real": {
+          "correct": false,
+          "nll_gold": 3.2863495349884033
+        },
+        "zero": {
+          "correct": false,
+          "nll_gold": 3.386108160018921
+        }
+      },
+      "first_pass": {
+        "answer": "3",
+        "correct": true,
+        "generated_tokens": 232
+      },
+      "gold": "3",
+      "item": 5610,
+      "real_answer_tail": "other is 5 - 2 = 3 years.\n\nTherefore, the final answer is 3."
+    },
+    {
+      "capture": {
+        "hidden_size": 1536,
+        "injected_l2": 67.47513580322266,
+        "natural_l19_norms": {
+          "max": 81.38458251953125,
+          "mean": 66.80353546142578,
+          "median": 67.47515869140625,
+          "min": 49.48309326171875,
+          "n": 254,
+          "p25": 63.259857177734375,
+          "p75": 70.5677719116211
+        },
+        "pooled_l2_raw": 47.51648712158203,
+        "span": [
+          65,
+          319
+        ]
+      },
+      "conditions": {
+        "random": {
+          "correct": false,
+          "nll_gold": 1.7629863023757935
+        },
+        "real": {
+          "correct": false,
+          "nll_gold": 2.263218879699707
+        },
+        "zero": {
+          "correct": false,
+          "nll_gold": 2.328519582748413
+        }
+      },
+      "first_pass": {
+        "answer": null,
+        "correct": false,
+        "generated_tokens": 254
+      },
+      "gold": "18",
+      "item": 6031,
+      "real_answer_tail": "{1}{2} \\times 48 \\)\n\n\\( S = 2 \\)\n\nSo, Sam is is 2 years old."
+    },
+    {
+      "capture": {
+        "hidden_size": 1536,
+        "injected_l2": 64.7682876586914,
+        "natural_l19_norms": {
+          "max": 77.6131820678711,
+          "mean": 64.20344543457031,
+          "median": 64.76829528808594,
+          "min": 47.81517028808594,
+          "n": 224,
+          "p25": 60.50358581542969,
+          "p75": 68.6677017211914
+        },
+        "pooled_l2_raw": 46.30097961425781,
+        "span": [
+          120,
+          344
+        ]
+      },
+      "conditions": {
+        "random": {
+          "correct": false,
+          "nll_gold": 2.4804983139038086
+        },
+        "real": {
+          "correct": false,
+          "nll_gold": 2.5718014240264893
+        },
+        "zero": {
+          "correct": false,
+          "nll_gold": 2.6229147911071777
+        }
+      },
+      "first_pass": {
+        "answer": null,
+        "correct": false,
+        "generated_tokens": 224
+      },
+      "gold": "5",
+      "item": 6146,
+      "real_answer_tail": "t = Total savings - Total cost = $270 - $2770 = $433\n\n####43"
+    },
+    {
+      "capture": {
+        "hidden_size": 1536,
+        "injected_l2": 61.32874298095703,
+        "natural_l19_norms": {
+          "max": 79.56614685058594,
+          "mean": 61.783897399902344,
+          "median": 61.32875061035156,
+          "min": 48.28157424926758,
+          "n": 292,
+          "p25": 57.530303955078125,
+          "p75": 65.4251708984375
+        },
+        "pooled_l2_raw": 44.20988845825195,
+        "span": [
+          141,
+          433
+        ]
+      },
+      "conditions": {
+        "random": {
+          "correct": false,
+          "nll_gold": 2.409766912460327
+        },
+        "real": {
+          "correct": false,
+          "nll_gold": 2.8876912593841553
+        },
+        "zero": {
+          "correct": false,
+          "nll_gold": 2.957590103149414
+        }
+      },
+      "first_pass": {
+        "answer": "1.20",
+        "correct": false,
+        "generated_tokens": 292
+      },
+      "gold": "2",
+      "item": 6378,
+      "real_answer_tail": "eft per per tooth after the the first tooth is $4. \n\n#### 4."
+    },
+    {
+      "capture": {
+        "hidden_size": 1536,
+        "injected_l2": 66.50093841552734,
+        "natural_l19_norms": {
+          "max": 82.73792266845703,
+          "mean": 66.68746185302734,
+          "median": 66.50090026855469,
+          "min": 59.043853759765625,
+          "n": 145,
+          "p25": 63.295536041259766,
+          "p75": 69.1751480102539
+        },
+        "pooled_l2_raw": 48.71497344970703,
+        "span": [
+          106,
+          251
+        ]
+      },
+      "conditions": {
+        "random": {
+          "correct": false,
+          "nll_gold": 2.7744967937469482
+        },
+        "real": {
+          "correct": false,
+          "nll_gold": 2.5133183002471924
+        },
+        "zero": {
+          "correct": false,
+          "nll_gold": 2.493544101715088
+        }
+      },
+      "first_pass": {
+        "answer": "21",
+        "correct": true,
+        "generated_tokens": 145
+      },
+      "gold": "21",
+      "item": 6452,
+      "real_answer_tail": "stickers in total on her water bottles.\n\nFinal answer: ####2"
+    },
+    {
+      "capture": {
+        "hidden_size": 1536,
+        "injected_l2": 60.70307159423828,
+        "natural_l19_norms": {
+          "max": 76.7877197265625,
+          "mean": 61.81600570678711,
+          "median": 60.703067779541016,
+          "min": 47.215389251708984,
+          "n": 400,
+          "p25": 57.52108383178711,
+          "p75": 66.56645965576172
+        },
+        "pooled_l2_raw": 43.9036750793457,
+        "span": [
+          105,
+          505
+        ]
+      },
+      "conditions": {
+        "random": {
+          "correct": false,
+          "nll_gold": 3.160308837890625
+        },
+        "real": {
+          "correct": false,
+          "nll_gold": 3.4123647212982178
+        },
+        "zero": {
+          "correct": false,
+          "nll_gold": 3.5269784927368164
+        }
+      },
+      "first_pass": {
+        "answer": null,
+        "correct": false,
+        "generated_tokens": 400
+      },
+      "gold": "18",
+      "item": 6552,
+      "real_answer_tail": "   - 1 = S\n\n   (S = 1)\n\nThereforeThe final answer is: #### 1"
+    },
+    {
+      "capture": {
+        "hidden_size": 1536,
+        "injected_l2": 61.98175811767578,
+        "natural_l19_norms": {
+          "max": 76.74060821533203,
+          "mean": 61.874916076660156,
+          "median": 61.98176574707031,
+          "min": 48.13164520263672,
+          "n": 237,
+          "p25": 57.20600509643555,
+          "p75": 66.19612121582031
+        },
+        "pooled_l2_raw": 44.98472595214844,
+        "span": [
+          132,
+          369
+        ]
+      },
+      "conditions": {
+        "random": {
+          "correct": false,
+          "nll_gold": 3.04909610748291
+        },
+        "real": {
+          "correct": false,
+          "nll_gold": 3.0608649253845215
+        },
+        "zero": {
+          "correct": false,
+          "nll_gold": 2.986612558364868
+        }
+      },
+      "first_pass": {
+        "answer": null,
+        "correct": false,
+        "generated_tokens": 237
+      },
+      "gold": "68",
+      "item": 6629,
+      "real_answer_tail": "]\n\nTherefore, Cameron answered a total of 6 questions today."
+    },
+    {
+      "capture": {
+        "hidden_size": 1536,
+        "injected_l2": 68.34024810791016,
+        "natural_l19_norms": {
+          "max": 78.73526000976562,
+          "mean": 68.37139129638672,
+          "median": 68.34027099609375,
+          "min": 59.11061477661133,
+          "n": 174,
+          "p25": 65.3028564453125,
+          "p75": 71.25505828857422
+        },
+        "pooled_l2_raw": 48.81895446777344,
+        "span": [
+          82,
+          256
+        ]
+      },
+      "conditions": {
+        "random": {
+          "correct": false,
+          "nll_gold": 3.3009471893310547
+        },
+        "real": {
+          "correct": true,
+          "nll_gold": 3.253466844558716
+        },
+        "zero": {
+          "correct": false,
+          "nll_gold": 3.3520052433013916
+        }
+      },
+      "first_pass": {
+        "answer": "7",
+        "correct": true,
+        "generated_tokens": 174
+      },
+      "gold": "7",
+      "item": 7293,
+      "real_answer_tail": "Therefore, Brenda needs to spayay 7 cats.\n\n#### 7. Answer: 7"
+    },
+    {
+      "capture": {
+        "hidden_size": 1536,
+        "injected_l2": 66.31566619873047,
+        "natural_l19_norms": {
+          "max": 77.05943298339844,
+          "mean": 66.10491180419922,
+          "median": 66.31565856933594,
+          "min": 51.70486068725586,
+          "n": 225,
+          "p25": 62.74271774291992,
+          "p75": 70.27169799804688
+        },
+        "pooled_l2_raw": 47.296180725097656,
+        "span": [
+          88,
+          313
+        ]
+      },
+      "conditions": {
+        "random": {
+          "correct": false,
+          "nll_gold": 2.8322534561157227
+        },
+        "real": {
+          "correct": false,
+          "nll_gold": 3.1222355365753174
+        },
+        "zero": {
+          "correct": false,
+          "nll_gold": 3.161139488220215
+        }
+      },
+      "first_pass": {
+        "answer": null,
+        "correct": false,
+        "generated_tokens": 225
+      },
+      "gold": "165",
+      "item": 7375,
+      "real_answer_tail": "s laundry is 90 + 75 = 165 minutes. Thus, the answer is 165."
+    },
+    {
+      "capture": {
+        "hidden_size": 1536,
+        "injected_l2": 66.93273162841797,
+        "natural_l19_norms": {
+          "max": 77.549560546875,
+          "mean": 66.59800720214844,
+          "median": 66.9327621459961,
+          "min": 56.50160598754883,
+          "n": 178,
+          "p25": 63.345664978027344,
+          "p75": 69.78868103027344
+        },
+        "pooled_l2_raw": 48.410457611083984,
+        "span": [
+          90,
+          268
+        ]
+      },
+      "conditions": {
+        "random": {
+          "correct": false,
+          "nll_gold": 2.95005464553833
+        },
+        "real": {
+          "correct": false,
+          "nll_gold": 2.756294012069702
+        },
+        "zero": {
+          "correct": false,
+          "nll_gold": 2.777550220489502
+        }
+      },
+      "first_pass": {
+        "answer": null,
+        "correct": false,
+        "generated_tokens": 178
+      },
+      "gold": "22",
+      "item": 7431,
+      "real_answer_tail": " 178 campersers\n\nTherefore, the the final answer is: #### 18"
+    },
+    {
+      "capture": {
+        "hidden_size": 1536,
+        "injected_l2": 66.43399047851562,
+        "natural_l19_norms": {
+          "max": 79.68724060058594,
+          "mean": 66.3422622680664,
+          "median": 66.43397521972656,
+          "min": 52.807395935058594,
+          "n": 213,
+          "p25": 63.64564514160156,
+          "p75": 69.7359848022461
+        },
+        "pooled_l2_raw": 48.31524658203125,
+        "span": [
+          98,
+          311
+        ]
+      },
+      "conditions": {
+        "random": {
+          "correct": false,
+          "nll_gold": 1.2789597511291504
+        },
+        "real": {
+          "correct": false,
+          "nll_gold": 1.125354290008545
+        },
+        "zero": {
+          "correct": false,
+          "nll_gold": 1.1830451488494873
+        }
+      },
+      "first_pass": {
+        "answer": "255",
+        "correct": false,
+        "generated_tokens": 213
+      },
+      "gold": "20",
+      "item": 7462,
+      "real_answer_tail": "h of Steve's 4 friends will will get 20 gold bars.\n\n#### 200"
+    }
+  ],
+  "pre_committed": true,
+  "stage": "S1a",
+  "summary": {
+    "accuracy": {
+      "random": 2,
+      "real": 2,
+      "zero": 1
+    },
+    "n_evaluated": 40,
+    "nll_mean": {
+      "random": 2.4703879356384277,
+      "real": 2.5388739109039307,
+      "zero": 2.596848964691162
+    },
+    "nll_real_vs_random": {
+      "losses": 22,
+      "p_one_sided": 0.7852047460783107,
+      "wins": 18
+    },
+    "nll_real_vs_zero": {
+      "losses": 2,
+      "p_one_sided": 7.46695150155574e-10,
+      "wins": 38
+    },
+    "primary_real_vs_random": {
+      "alpha": 0.05,
+      "losses": 1,
+      "p_one_sided": 0.75,
+      "pass": false,
+      "wins": 1
+    },
+    "real_vs_zero": {
+      "losses": 0,
+      "p_one_sided": 0.5,
+      "wins": 1
+    }
+  },
+  "wall_clock_s": 542.5687866210938
+}

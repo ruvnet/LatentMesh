@@ -1,0 +1,243 @@
+{
+  "config": {
+    "conditions": {
+      "aligned_real": "sender pooled capture -> frozen affine transform -> 8-slot injection, rescaled to natural median",
+      "baseline_uninjected": "no injection (spec=None), same prompt",
+      "random": "per-item seeded gaussian, norm-matched to the effective aligned_real vector, real path",
+      "zerovec_injected": "TRUE ZERO VECTOR through the real 8-slot injection path (scale: None — rescale undefined at norm 0); closes ADR-023 A7(c): distinct from S0 G5's empty-position branch and from S1a's uninjected 'zero'"
+    },
+    "decoding": "greedy, batch=1, max_new_tokens=400",
+    "item_seed_chacha8": 20897,
+    "natural_norm_source": "receiver forward_capture over the slotted injection prompt at the inject block, per item (S0 cross-model precedent, s0-receipt.json config.injection_vector)",
+    "placeholder_id": 151662,
+    "placeholder_token": "<|fim_pad|>",
+    "pool_span": "full generated span",
+    "primary_test": "one-sided exact sign test, paired accuracy, aligned_real > random, alpha 0.05 (A7(b))",
+    "randvec_seed_base": 1369571328,
+    "receiver": "Qwen/Qwen2.5-1.5B-Instruct",
+    "receiver_inject_block": 14,
+    "rescale_to_natural_median": true,
+    "secondary_diagnostic": "one-sided sign tests on paired teacher-forced NLL of '#### <gold>'",
+    "sender": "Qwen/Qwen2.5-3B-Instruct",
+    "sender_capture_block": 18,
+    "slots": 8,
+    "transform": {
+      "alpha": 0.7264142036437988,
+      "apply": "hand-rolled affine y = mu_r + alpha*(z - mu_s)*R (latentmesh-align cannot be a path dep: align -> latentmesh-core pins half =2.4.1 vs candle's half ^2.5)",
+      "content_hash": "eb3f42edde853824642a2b811577e2c767f73c2c179fe03a05ac8dac23704457",
+      "dims": [
+        2048,
+        1536
+      ],
+      "expected_hash": "eb3f42edde853824642a2b811577e2c767f73c2c179fe03a05ac8dac23704457",
+      "file": "/home/ruvultra/projects/LatentMesh-1/crates/latentmesh-runtime/receipts/transform-L18-to-L14.json",
+      "hand_rolled_apply_verification": {
+        "golden_file": "/home/ruvultra/projects/LatentMesh-1/crates/latentmesh-runtime/receipts/s2b-golden-affine-L18-to-L14.json",
+        "golden_input_seed_chacha8": 20899,
+        "golden_pairs": 8,
+        "max_relative_l2_error": 0.0,
+        "note": "golden outputs produced by latentmesh-align::AlignmentTransform::apply on the same artifact; asserted before any model ran",
+        "pass": true,
+        "tolerance": 9.999999747378752e-6
+      },
+      "on_train_confidence_OPTIMISTIC_not_the_quality_number": 0.5804808139801025
+    },
+    "zerovec_gate": "pre-committed: pass iff 2 x zerovec accuracy >= baseline accuracy ('not catastrophically below baseline'); numbers reported either way (A7(c))"
+  },
+  "dataset": {
+    "indices": [
+      4629,
+      6586
+    ],
+    "s1a_indices_match": false,
+    "sha256": "17f347dc51477c50d4efb83959dbb7c56297aba886e5544ee2aaed3024813465",
+    "source": "https://raw.githubusercontent.com/openai/grade-school-math/master/grade_school_math/data/train.jsonl"
+  },
+  "design": "docs/adr/023-live-four-condition-run1-pre-registration.md (A7 coordinator resolution, Deviation 6); protocol = S1a's frozen protocol (docs/research/024 section 7 S1a) with the S2-fitted cross-model transform",
+  "env": {
+    "crate": "latentmesh-runtime 0.1.0 (vendored candle-transformers 0.9.2 qwen2)",
+    "evidence_label": "live-model, single-host, simulation-free",
+    "git_commit": "c7125620504f7f6e72a945e3168284074b6fca41",
+    "gpu": "NVIDIA GeForce RTX 5080, 580.126.09, 16303 MiB",
+    "nvcc": "nvcc 12.8 (build-time 12.8)",
+    "nvcc_at_build": "12.8",
+    "unix_time": 1787939158
+  },
+  "gate_pass": false,
+  "gates": {
+    "A7b_aligned_real_vs_random": {
+      "p": 1.0,
+      "pass": false
+    },
+    "A7c_zerovec_not_catastrophic": {
+      "baseline_correct": 2,
+      "pass": true,
+      "zerovec_correct": 2
+    },
+    "hand_rolled_apply_matches_align_crate": {
+      "max_relative_l2_error": 0.0,
+      "pass": true
+    },
+    "s1a_item_set_reproduced": {
+      "pass": false
+    },
+    "transform_hash_matches_registered": {
+      "hash": "eb3f42edde853824642a2b811577e2c767f73c2c179fe03a05ac8dac23704457",
+      "pass": true
+    }
+  },
+  "items": [
+    {
+      "aligned_answer_tail": " bottles} = 0.50 \\times 4 = 2.00 \\text{ euros}\n\\]\n\n#### 2.00",
+      "capture": {
+        "aligned_l2_raw": 34.52446365356445,
+        "hidden_size": 2048,
+        "injected_l2": 52.41145324707031,
+        "natural_inject_block_norms": {
+          "max": 11056.98046875,
+          "mean": 153.7476043701172,
+          "median": 52.41145706176758,
+          "min": 41.778480529785156,
+          "n": 109,
+          "p25": 49.47260284423828,
+          "p75": 55.418235778808594
+        },
+        "pooled_l2_raw": 39.16852951049805,
+        "span": [
+          85,
+          284
+        ]
+      },
+      "conditions": {
+        "aligned_real": {
+          "correct": true,
+          "nll_gold": 1.892389178276062
+        },
+        "baseline_uninjected": {
+          "correct": true,
+          "nll_gold": 2.1378448009490967
+        },
+        "random": {
+          "correct": true,
+          "nll_gold": 2.4353339672088623
+        },
+        "zerovec_injected": {
+          "correct": true,
+          "nll_gold": 2.2448434829711914
+        }
+      },
+      "gold": "2",
+      "item": 4629,
+      "sender_first_pass": {
+        "answer": "2.00",
+        "correct": true,
+        "generated_tokens": 199
+      }
+    },
+    {
+      "aligned_answer_tail": " \\]\n\\[ y = 22 \\]\n\nSo, the second number is \\( \\boxed{22} \\).",
+      "capture": {
+        "aligned_l2_raw": 36.27069854736328,
+        "hidden_size": 2048,
+        "injected_l2": 52.81170654296875,
+        "natural_inject_block_norms": {
+          "max": 11056.98046875,
+          "mean": 149.59756469726562,
+          "median": 52.81171417236328,
+          "min": 40.95768737792969,
+          "n": 114,
+          "p25": 49.925148010253906,
+          "p75": 55.827125549316406
+        },
+        "pooled_l2_raw": 41.347740173339844,
+        "span": [
+          90,
+          285
+        ]
+      },
+      "conditions": {
+        "aligned_real": {
+          "correct": true,
+          "nll_gold": 2.3586275577545166
+        },
+        "baseline_uninjected": {
+          "correct": true,
+          "nll_gold": 2.4281601905822754
+        },
+        "random": {
+          "correct": true,
+          "nll_gold": 3.4651637077331543
+        },
+        "zerovec_injected": {
+          "correct": true,
+          "nll_gold": 2.640911817550659
+        }
+      },
+      "gold": "22",
+      "item": 6586,
+      "sender_first_pass": {
+        "answer": "22",
+        "correct": true,
+        "generated_tokens": 195
+      }
+    }
+  ],
+  "pre_committed": false,
+  "stage": "S2b-bridge-probe",
+  "summary": {
+    "accuracy": {
+      "aligned_real": 2,
+      "baseline_uninjected": 2,
+      "random": 2,
+      "zerovec_injected": 2
+    },
+    "aligned_vs_baseline": {
+      "losses": 0,
+      "p_one_sided": 1.0,
+      "wins": 0
+    },
+    "aligned_vs_zerovec": {
+      "losses": 0,
+      "p_one_sided": 1.0,
+      "wins": 0
+    },
+    "n_evaluated": 2,
+    "nll_aligned_vs_random": {
+      "losses": 0,
+      "p_one_sided": 0.25,
+      "wins": 2
+    },
+    "nll_aligned_vs_zerovec": {
+      "losses": 0,
+      "p_one_sided": 0.25,
+      "wins": 2
+    },
+    "nll_mean": {
+      "aligned_real": 2.1255083084106445,
+      "baseline_uninjected": 2.2830023765563965,
+      "random": 2.9502487182617188,
+      "zerovec_injected": 2.442877769470215
+    },
+    "nll_zerovec_vs_baseline": {
+      "losses": 2,
+      "p_one_sided": 1.0,
+      "wins": 0
+    },
+    "primary_aligned_vs_random": {
+      "alpha": 0.05,
+      "losses": 0,
+      "p_one_sided": 1.0,
+      "pass": false,
+      "wins": 0
+    },
+    "zerovec_vs_baseline": {
+      "baseline_wins": 0,
+      "criterion": "2 x zerovec_correct >= baseline_correct",
+      "p_baseline_gt_zerovec": 1.0,
+      "p_zerovec_gt_baseline": 1.0,
+      "pass": true,
+      "zerovec_wins": 0
+    }
+  },
+  "wall_clock_s": 18.570266723632812
+}

@@ -1,0 +1,95 @@
+{
+  "artifacts": [
+    {
+      "cell": "L18->L14",
+      "golden_pairs": {
+        "file": "s2c-golden-affine-L18-to-L14.json",
+        "input_seed_chacha8": 738732039,
+        "n_pairs": 8,
+        "sha256": "2119fcecd6c69f92ada803720c5092b931614b95ba252942db5b5ec9f5c4d9e6"
+      },
+      "transform_artifact": {
+        "file": "transform-gen-L18-to-L14.json",
+        "sha256_equals_content_hash": "a5a3f54987571a6a76dbd774dd4c77703b6fc2918da81bbf3d0111a0314210d7"
+      }
+    },
+    {
+      "cell": "L24->L19",
+      "golden_pairs": {
+        "file": "s2c-golden-affine-L24-to-L19.json",
+        "input_seed_chacha8": 738732039,
+        "n_pairs": 8,
+        "sha256": "15558e093e2efd91e2a9ec62d0db72a20f99e807f877f0f344fa0d592ad21ccc"
+      },
+      "transform_artifact": {
+        "file": "transform-gen-L24-to-L19.json",
+        "sha256_equals_content_hash": "9ef787d90659b86015176d23f2e8bedb02e49b2e34a5dc163c5f1e3cb1d0e9f1"
+      }
+    }
+  ],
+  "both_cells_fail_A6": false,
+  "cells": [
+    {
+      "fit_seconds": 11.427160012,
+      "gate_A6": {
+        "pass": true,
+        "threshold": 0.8999999761581421
+      },
+      "held_out_relative_residual": 0.44510403275489807,
+      "on_train_confidence_OPTIMISTIC_not_the_quality_number": 0.659308671951294,
+      "receiver_layer": 14,
+      "sender_layer": 18,
+      "transform_content_hash": "a5a3f54987571a6a76dbd774dd4c77703b6fc2918da81bbf3d0111a0314210d7"
+    },
+    {
+      "fit_seconds": 11.593503787,
+      "gate_A6": {
+        "pass": true,
+        "threshold": 0.8999999761581421
+      },
+      "held_out_relative_residual": 0.46817222237586975,
+      "on_train_confidence_OPTIMISTIC_not_the_quality_number": 0.6425585746765137,
+      "receiver_layer": 19,
+      "sender_layer": 24,
+      "transform_content_hash": "9ef787d90659b86015176d23f2e8bedb02e49b2e34a5dc163c5f1e3cb1d0e9f1"
+    }
+  ],
+  "cells_registered_only": "L18->L14 (S2 winner) and L24->L19 (Deviation 6 anchor); no 3x3 sweep re-opening",
+  "design": "docs/adr/023 Deviation 7 (generated-pairs contingency); docs/research/024 sections 5.4, 8 risk 6, 6 (A6)",
+  "dump": {
+    "dir": "/home/ruvultra/projects/LatentMesh-1/harness/latentmesh-live/../../crates/latentmesh-runtime/target/latentmesh-runs/s2c",
+    "manifest_sha256": "844bfdbcb048b672658d2e206e8d9320b33a352433ee2999e7ff5a99c4cec6ce",
+    "n_rows": 2560
+  },
+  "evidence_label": "deterministic CPU fit over live-model GENERATED-pairs dumps (dump receipt referenced by manifest sha256 below); the fit itself involves no model and no simulation",
+  "fit": {
+    "held_out_residual_formula": "||apply(X_h) - Y_h||_F / ||Y_h - mu_r||_F, apply(x) = mu_r + alpha*(x - mu_s)*R, mu from the 80% fit set only",
+    "method": "AlignmentTransform::fit_affine (affine mean-centered semi-orthogonal Procrustes, dense rectangular SVD path) — identical to S2",
+    "n_fit_rows": 2048,
+    "n_holdout_rows": 512,
+    "n_over_d_gate": {
+      "d_sender": 2048,
+      "fit_rows": 2048,
+      "pass": true,
+      "polar_uniqueness_floor": {
+        "d_receiver": 1536,
+        "note": "below n_fit = d_receiver the Procrustes polar factor is non-unique (rank(A'B) < d_receiver => zero singular values => arbitrary completion); ADR-002's MtM-fallback equivalence holds only on full-rank problems",
+        "pass": true
+      },
+      "recorded_not_fatal": "n is budget-laddered by the dump (see its receipt); the S2 abort exists where n was freely controllable"
+    },
+    "split": "seeded shuffle of row indices; first 80% fit, last 20% held out; SAME split for both cells — identical machinery to S2",
+    "split_seed_chacha8": 616619523
+  },
+  "stage": "S2c-generated-calibration-fit",
+  "unix_time": 1787951767,
+  "wall_clock_s": 24.527237438,
+  "winner": {
+    "held_out_relative_residual": 0.44510403275489807,
+    "policy_trust_transform_registered": true,
+    "receiver_layer": 14,
+    "sender_layer": 18,
+    "transform_content_hash": "a5a3f54987571a6a76dbd774dd4c77703b6fc2918da81bbf3d0111a0314210d7"
+  },
+  "winner_rule": "min held-out residual on generated pairs among A6-passing cells; probe order = winner first, other cell once on failure (ADR-023 Deviation 6 fallback mirror); A6-failing cells are not probed; both failing => CONTINGENCY-FAILED without a probe"
+}

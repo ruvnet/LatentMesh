@@ -1,0 +1,248 @@
+{
+  "all_gates_pass": true,
+  "config": {
+    "injection_vector": "receiver-native pooled own-L19 state, rescaled to natural median norm (no cross-model transform exists at S0; alignment is S2 scope)",
+    "n_slots": 8,
+    "norm_band_factor": 3.0,
+    "placeholder_id": 151662,
+    "placeholder_token": "<|fim_pad|>",
+    "receiver": "Qwen/Qwen2.5-1.5B-Instruct",
+    "receiver_inject_block": 19,
+    "sender": "Qwen/Qwen2.5-3B-Instruct",
+    "sender_capture_block": 24
+  },
+  "dataset": {
+    "items": [
+      0,
+      1,
+      2
+    ],
+    "sha256": "3730d312f6e3440559ace48831e51066acaca737f6eabec99bccb9e4b3c39d14",
+    "source": "https://raw.githubusercontent.com/openai/grade-school-math/master/grade_school_math/data/test.jsonl"
+  },
+  "decoding": "none (S0 is prefill-only mechanics; deterministic, no sampling)",
+  "design": "docs/research/024-live-latent-experiment-design.md section 7 S0",
+  "env": {
+    "crate": "latentmesh-runtime 0.1.0 (vendored candle-transformers 0.9.2 qwen2)",
+    "evidence_label": "live-model, single-host, simulation-free",
+    "git_commit": "9a676a5d53f66425e40e3ca6f8c3bf6fb1aa9379",
+    "gpu": "NVIDIA GeForce RTX 5080, 580.126.09, 16303 MiB",
+    "nvcc": "nvcc 12.8 (build-time 12.8)",
+    "nvcc_at_build": "12.8",
+    "unix_time": 1787935245
+  },
+  "items": [
+    {
+      "gates": {
+        "G2_capture_shape_2048": {
+          "measured": 2048,
+          "pass": true
+        },
+        "G3_receiver_logits_parity_bit_identical": {
+          "pass": true
+        },
+        "G3_sender_logits_parity_bit_identical": {
+          "pass": true
+        },
+        "G4_injected_logits_differ_from_baseline": {
+          "pass": true
+        },
+        "G4_injected_logits_finite": {
+          "pass": true
+        },
+        "G5_zero_slot_equals_baseline": {
+          "note": "bit-identical BY CONSTRUCTION (empty position list is a no-op branch); measured equality confirms it",
+          "pass": true
+        },
+        "G6_injected_norm_within_band": {
+          "factor": 3.0,
+          "injected_l2": 63.47190856933594,
+          "natural_median": 63.47190856933594,
+          "pass": true
+        }
+      },
+      "item": 0,
+      "receiver": {
+        "injected_vector_l2": 63.47190856933594,
+        "natural_l19_norms": {
+          "max": 11042.4130859375,
+          "mean": 136.9745635986328,
+          "median": 63.47190856933594,
+          "min": 54.714168548583984,
+          "n": 150,
+          "p25": 60.59368133544922,
+          "p75": 65.77946472167969
+        },
+        "pooled_own_l19_l2_raw": 85.7677230834961,
+        "prompt_tokens": 150,
+        "slot_positions": [
+          94,
+          95,
+          96,
+          97,
+          98,
+          99,
+          100,
+          101
+        ]
+      },
+      "sender_capture": {
+        "after_block": 24,
+        "hidden_size": 2048,
+        "natural_norms": {
+          "max": 3936.4775390625,
+          "mean": 105.137451171875,
+          "median": 74.19758605957031,
+          "min": 65.41241455078125,
+          "n": 127,
+          "p25": 70.38237762451172,
+          "p75": 77.13959503173828
+        },
+        "pooled_l2": 62.02069091796875,
+        "span_tokens": 127
+      }
+    },
+    {
+      "gates": {
+        "G2_capture_shape_2048": {
+          "measured": 2048,
+          "pass": true
+        },
+        "G3_receiver_logits_parity_bit_identical": {
+          "pass": true
+        },
+        "G3_sender_logits_parity_bit_identical": {
+          "pass": true
+        },
+        "G4_injected_logits_differ_from_baseline": {
+          "pass": true
+        },
+        "G4_injected_logits_finite": {
+          "pass": true
+        },
+        "G5_zero_slot_equals_baseline": {
+          "note": "bit-identical BY CONSTRUCTION (empty position list is a no-op branch); measured equality confirms it",
+          "pass": true
+        },
+        "G6_injected_norm_within_band": {
+          "factor": 3.0,
+          "injected_l2": 65.60692596435547,
+          "natural_median": 65.60691833496094,
+          "pass": true
+        }
+      },
+      "item": 1,
+      "receiver": {
+        "injected_vector_l2": 65.60692596435547,
+        "natural_l19_norms": {
+          "max": 11052.4921875,
+          "mean": 164.97268676757812,
+          "median": 65.60691833496094,
+          "min": 56.26693344116211,
+          "n": 111,
+          "p25": 62.31129837036133,
+          "p75": 68.8946762084961
+        },
+        "pooled_own_l19_l2_raw": 111.63435363769531,
+        "prompt_tokens": 111,
+        "slot_positions": [
+          55,
+          56,
+          57,
+          58,
+          59,
+          60,
+          61,
+          62
+        ]
+      },
+      "sender_capture": {
+        "after_block": 24,
+        "hidden_size": 2048,
+        "natural_norms": {
+          "max": 3917.406494140625,
+          "mean": 118.83454895019531,
+          "median": 74.07886505126953,
+          "min": 63.11314010620117,
+          "n": 88,
+          "p25": 70.56376647949219,
+          "p75": 78.25440979003906
+        },
+        "pooled_l2": 73.85002136230469,
+        "span_tokens": 88
+      }
+    },
+    {
+      "gates": {
+        "G2_capture_shape_2048": {
+          "measured": 2048,
+          "pass": true
+        },
+        "G3_receiver_logits_parity_bit_identical": {
+          "pass": true
+        },
+        "G3_sender_logits_parity_bit_identical": {
+          "pass": true
+        },
+        "G4_injected_logits_differ_from_baseline": {
+          "pass": true
+        },
+        "G4_injected_logits_finite": {
+          "pass": true
+        },
+        "G5_zero_slot_equals_baseline": {
+          "note": "bit-identical BY CONSTRUCTION (empty position list is a no-op branch); measured equality confirms it",
+          "pass": true
+        },
+        "G6_injected_norm_within_band": {
+          "factor": 3.0,
+          "injected_l2": 63.47189712524414,
+          "natural_median": 63.47190856933594,
+          "pass": true
+        }
+      },
+      "item": 2,
+      "receiver": {
+        "injected_vector_l2": 63.47189712524414,
+        "natural_l19_norms": {
+          "max": 11042.4130859375,
+          "mean": 141.12351989746094,
+          "median": 63.47190856933594,
+          "min": 52.54724884033203,
+          "n": 142,
+          "p25": 60.48863220214844,
+          "p75": 66.3888168334961
+        },
+        "pooled_own_l19_l2_raw": 90.17066955566406,
+        "prompt_tokens": 142,
+        "slot_positions": [
+          86,
+          87,
+          88,
+          89,
+          90,
+          91,
+          92,
+          93
+        ]
+      },
+      "sender_capture": {
+        "after_block": 24,
+        "hidden_size": 2048,
+        "natural_norms": {
+          "max": 3890.838623046875,
+          "mean": 105.89083099365234,
+          "median": 73.26219940185547,
+          "min": 61.598114013671875,
+          "n": 119,
+          "p25": 69.96219635009766,
+          "p75": 76.39070129394531
+        },
+        "pooled_l2": 63.186866760253906,
+        "span_tokens": 119
+      }
+    }
+  ],
+  "stage": "S0",
+  "wall_clock_s": 2.5101540088653564
+}

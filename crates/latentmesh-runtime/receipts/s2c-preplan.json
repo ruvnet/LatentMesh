@@ -1,0 +1,31 @@
+{
+  "budget_ladder": {
+    "ceiling_s": 12600.0,
+    "design_estimate_note": "design's ~1 GPU-h contingency estimate is ~4x optimistic for its own recipe (S2b measured ~3.5 s per 3B greedy solve x 4000 items); identifiability (n>d) outranks the cost estimate — a probe against an underdetermined transform would make a null unattributable, the exact confound the S1a kill-switch language forbids",
+    "measure_rows": 25,
+    "quota_rule": "2560 (n_fit=2048=d_sender) if projected <= ceiling; else 1920 (n_fit=1536=d_receiver polar-uniqueness floor, MtM full-rank equivalence per ADR-002 amendment); else max n within ceiling (loud sub-uniqueness disclosure)",
+    "receiver_allowance_factor": 1.03
+  },
+  "cells": {
+    "receiver_layers": [
+      14,
+      19
+    ],
+    "registered_pairs_only": [
+      "L18->L14 (S2 winner)",
+      "L24->L19 (Deviation 6 anchor)"
+    ],
+    "sender_layers": [
+      18,
+      24
+    ]
+  },
+  "decoding": "greedy, batch=1, max_new_tokens=400 (the S1a/S2b live capture budget; section 5.4 silent)",
+  "item_subset": "prefix of the committed calibration-4000 index list (stored sorted ascending; NOT a fresh random subsample; train-file order carries no known difficulty ordering)",
+  "pairing": "one sender-generation pass per item (design 024 section 5.4 verbatim); SAME generated text teacher-forced through both models (section 5.2 pairing); sender pooled over its own generated span (the live S2b capture recipe), receiver pooled over the same span. REJECTED: each-model-generates-its-own (pairs states over different texts).",
+  "resume": true,
+  "skip_policy": "empty sender generation => item skipped on both sides, recorded; quota counts successes",
+  "smoke": null,
+  "stage": "S2c-preplan",
+  "written_before_model_load": true
+}
