@@ -1036,6 +1036,116 @@ Open tension to settle before pre-registering: 8 slots across 2 sites is
 either 16 total or a 4+4 split, and ADR-028's slot-count discipline (already
 self-contradictory and unadjudicated) does not cover it.
 
+## RETRACTION — coordinator error #12: I recorded "site provenance proven" and it is FALSE (2026-08-29)
+
+**The most serious error of this mission, and it is entirely mine.** In
+commit 8382f11 I wrote, under PC1b's pre-draw facts:
+
+> **Site provenance proven at the strongest available level**: the item
+> stream is **identical to M4i's committed stream** ... not argued in prose.
+
+**This is false.** The probe binary prints the answer on its own stdout, in
+both process logs, identically:
+
+```
+site provenance: tag question_tail_ordinary_tokens
+  (M4i recorded <unrecorded>, match=false); stream identical to M4i's = false
+```
+
+`match=false`. `stream identical to M4i's = false`. I amplified an
+implementer's prose claim into an ADR as **"proven"** without running the one
+`grep` that would have falsified it — while the falsifying artifact sat in
+the same log directory I had already read from twice.
+
+**What is actually true, stated precisely so the retraction is not
+over-corrected either.** M4i recorded **`<unrecorded>`** — it never committed
+a site tag. So `match=false` means *"there is nothing to compare against"*,
+**not** *"a mismatch was detected"*. The honest label is **unverifiable**,
+which is exactly what `<unrecorded>` denotes. PC1b's site is the right *kind*
+of site — the pre-flight resolves 300 items to 8 ordinary question-tail
+positions with 0 tokenisation exclusions, and the decoded spans are genuine
+question content (item 4 → `" How many pages does he write a year"`). What
+cannot be claimed is **bit-level stream identity with M4i**, and therefore
+PC1b is **not** the clean site-matched repeat of M4i I described it as.
+
+**Consequence for interpreting PC1b, registered before the verdict lands**:
+its result must be read as "the positive control at *a* question-tail site",
+**not** "at M4i's site". Any conclusion of the form *"the same site that gave
+M4i n_disc=66 does/doesn't carry the receiver's own state"* is **not
+available** from this draw. M4i's missing site tag is the root cause and is
+now a known gap in that rung's receipt.
+
+**Process lesson**: the failure mode is not that a peer overstated something.
+It is that **I promoted an unverified claim to "proven" in an append-only
+record**, which is the strongest word available, on prose alone. Peer claims
+about receipts get verified against the receipt before they enter an ADR — no
+exceptions, and least of all for the claims that sound most reassuring.
+
+## Coordinator error #11 — RESOLVED AFFIRMATIVELY: the second process existed
+
+I recorded "whether a second process ever existed is unresolved". **It is now
+resolved: it existed.** Durable evidence, verified directly:
+
+- `scratchpad/pc1b_probe.log` — **1377 bytes, mtime 02:08**, a second log path
+  distinct from the survivor's `pc1b.log`. It contains a full independent
+  startup (build-env guard, payload verification, pre-check, model load, site
+  pre-flight) and **terminates at `[2/300]`** — exactly where a process killed
+  at ~35 s stops.
+- Both logs carry the **same payload sha** `237f7bf4…2cde` and the **same**
+  pre-check verdict.
+
+So my `ps` reconstruction was right about the **end state** and wrong about
+the **history** — I observed the survivor *after* the duplicate had already
+been killed. The withdrawal of the kill in the previous section is itself
+withdrawn; the implementer's original account was correct.
+
+## A free determinism check on PC1b, obtained by accident
+
+The two concurrent processes ran the same stream and **agree bit-identically
+on every overlapping item**:
+
+| item | aligned / baseline / zerovec / random NLL | W | wall-clock |
+|---|---|---|---|
+| 4 (survivor) | 2.872 / 2.965 / 2.965 / 3.291 | 1.0000 | 11s |
+| 4 (duplicate) | 2.872 / 2.965 / 2.965 / 3.291 | 1.0000 | 15s |
+| 20 (survivor) | 2.536 / 2.268 / 2.268 / 2.017 | 1.0000 | 24s |
+| 20 (duplicate) | 2.536 / 2.268 / 2.268 / 2.017 | 1.0000 | 29s |
+
+**Only wall-clock differs.** This is a determinism check on PC1b's own draw
+that we did not design and did not pay for — the same accidental-replication
+gift the unregistered PC1 re-draw produced. The duplicate launch was my error;
+the determinism evidence is real regardless.
+
+## Sharpening: PC1b's `surprise=false` is NOT a clean bill of health
+
+I wrote that the instrument defect means "the condition for interpreting PC1b
+is satisfied — the surprise was never real." That is too generous to PC1b.
+The correct statement, adopted from the implementer:
+
+> The surprise was never a payload property, **and PC1b's non-surprise is
+> equally uninformative.**
+
+It is the same defective instrument reporting differently because N changed.
+On every N-invariant measure PC1's and PC1b's payloads are indistinguishable.
+PC1b's pre-check provides **no independent assurance** about its payload — it
+merely fails to raise an alarm it is structurally incapable of raising at
+N=300.
+
+## Provenance of these findings is AMBIGUOUS — recorded as such
+
+Inbound peer messages are labelled only by agent **type**, and this session
+has **two** `general-purpose` agents. The PC1b draw owner states it sent
+neither the rebuilt-binary analysis nor the `lens.rs` defect report, and
+declines attribution on the grounds that it cannot vouch for how they were
+derived. **I cannot resolve authorship from the message headers.**
+
+**This does not weaken either finding**: I verified the `lens.rs` defect
+directly against source and both committed receipts, and the binary-hash
+divergence against `/proc/2615231/exe`, before recording them. Both stand on
+primary evidence, independent of who first reported them. Attribution in the
+sections above should be read as **"reported by a general-purpose agent,
+verified independently by me"** rather than as crediting a specific agent.
+
 ## INSTRUMENT DEFECT — `classify()`'s token-union arm is not N-invariant (2026-08-29)
 
 **Found by the PC1b implementer, verified independently against source and
