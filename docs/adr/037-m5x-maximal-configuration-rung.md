@@ -240,6 +240,77 @@ already-scoped-multi-factor rung —
 its e-process adoption, restated here: a pre-registration buys attribution clarity, it does not
 create or predict an effect.
 
+## RULING 2 — reconstruction at BOTH sites; factor 4 (task loss) DEFERRED to a follow-on (2026-08-29)
+
+**The rung owner found ADR-037 internally inconsistent about the loss, and it is
+right.** Factor 2 says L18→L14 reuses M4h Stage 1's weights (M3's
+**reconstruction** training) and that L24→L19 uses *"M3's recipe, not
+M4c/M4d/M4g's"* — while factor 4 lists **task-loss training** among the combined
+factors, and the cost table budgets **both** a reconstruction pass and a
+task-loss pass at the new site.
+
+**Read literally that is an asymmetric rung** — reconstruction at site 1,
+task-loss at site 2 — which confounds layer count with loss inside a single
+draw.
+
+**And it cannot be papered over.** Verified in source:
+`crates/latentmesh-train/src/bin/train_m4c_taskloss.rs:6` — *"FRESH seeded init
+(not warm-started from M3's reconstruction-trained weights)"*, and line 433:
+*"the ablation isolates exactly one factor, the loss function."* **The two
+passes produce two different artifacts from two different inits.** A probe must
+load one adapter per site, so "do both at a site" is not a configuration that
+exists. The cost table budgeting both does not describe a coherent rung.
+
+### Ruling: option (a) — reconstruction at BOTH sites
+
+**Three reasons, the first decisive.**
+
+**1. Only (a) preserves the head-to-head that justifies the rung.** M4i runs
+M3's **on-manifold reconstruction** weights. If M5X used task loss, layer count
+would no longer be the only difference from M4i — the **loss** would change
+too — and the comparison this whole rung was unblocked to make evaporates.
+
+**2. Our own receipts say task loss is destructive at this cell.** M4c (task
+loss, `fim_pad`) moved NLL **+3.230 nats** — the off-manifold family. Combining
+multi-layer with a factor we have receipts showing is harmful would very likely
+null **for the wrong reason**, teaching us nothing about layer count.
+
+**3. Factor 1 is the reason this rung exists.** M5X was unblocked on the C2C
+Table 10 argument, which is about **layer count**, not loss. Testing the
+unblocking variable first is the cheap decisive experiment; bundling a known-bad
+factor with it is not.
+
+### What this changes in the registered configuration
+
+- **Factor 4 (task-loss training) is DEFERRED**, not deleted. If M5X-a shows
+  signal, task loss becomes **M5X-b**, a registered follow-on with its own
+  pre-registration and its own ADR-040 power calculation. If M5X-a nulls, M5X-b
+  is pointless and must not be run to "rescue" it.
+- **Factors 1, 2, 3 stand**: multi-layer L18/L24→L14/L19, de-pooling, fuse
+  delivery, 4+4=8 slots.
+- **This narrows M5X from a four-factor conjunction to a three-factor one.**
+  Stated plainly because it weakens what a PASS would license: a PASS now says
+  *multi-layer + de-pooling + fuse* moved decisions, **not** that the full
+  registered conjunction did.
+
+### Ruling 3 — build the second-site manifold pre-check
+
+ADR-037's own publishability check requires the pre-check *"before the
+e-process's first draw, **not assumed satisfied by analogy**."*
+`run2_manifold_precheck.rs` is hardcoded to L18→L14, so the L24→L19 pre-check is
+a **new binary — real work the cost table does not budget.** Build it. The
+alternative is assuming by analogy, which that check exists to forbid.
+
+### Registration precedent, confirmed
+
+M3's training receipt noted that an anchor-cell L24→L19 run *"has no ADR-024
+registration and would be an extra unregistered draw … (coordinator decision if
+ever wanted)."* **ADR-037 factor 1 is that registration**, and the rung owner's
+reading is correct. The new adapter is trained on a **byte-identical recipe** to
+`train_m3_mlp` (same `TRAIN_SEED 0x4D330001`, same golden seed, lr, batch,
+epochs, split and stopping rule) with the **only** difference being which two
+dump files are read — which is what makes the two sites comparable.
+
 ## RULING — §5's ordinary-token exclusion is SUPERSEDED; M5X draws at the question-tail site (2026-08-29)
 
 **Coordinator error #18: my Amendment 1 asserted a fact I did not check.** It
