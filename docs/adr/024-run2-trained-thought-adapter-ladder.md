@@ -1036,6 +1036,29 @@ Open tension to settle before pre-registering: 8 slots across 2 sites is
 either 16 total or a 4+4 split, and ADR-028's slot-count discipline (already
 self-contradictory and unadjudicated) does not cover it.
 
+## UNRESOLVED DISCREPANCY — how many draws were power-incapable? (flagged 2026-08-29)
+
+[docs/research/046](../research/046-run2-synthesis-v2.md) found an internal
+arithmetic inconsistency in
+[docs/research/041](../research/041-run2-synthesis-skeleton.md) §2.5, which
+states both *"10 draws, 6 at n_disc ∈ {3,4}"* and *"12 draws, 8 capable /
+4 incapable"* — those cannot both be right. Recomputing directly from this
+ADR's own per-rung values (S2b 3, 3, 4, 3; M3 4, 3; M4 4, 4, 5) gives **9
+pre-M4c draws of which 8 were incapable of rejecting**, and **11 draws total
+after M4c/M4d** — not the "6 of 9" figure **I have repeated throughout this
+ADR and in every summary**.
+
+**Flagged, not adjudicated.** If the recomputation is right, the instrument
+was blinder than the record says: nearly every pre-M4c draw could not have
+rejected at any effect size, which would *strengthen* the
+already-recorded instrument finding rather than weaken any conclusion — but
+it changes a number that appears in several places, so it must be resolved
+against the receipts before any write-up quotes either figure. **Whoever
+resolves it should recompute n_disc from the per-item tables in the receipts
+themselves, not from any prose in 031, 041 or this ADR** — all three restate
+the number, and restated numbers have drifted from receipted ones twice
+already tonight (the GPU-hour figure and the permutation count).
+
 ## PC1 PRE-REGISTRATION (2026-08-29) — the positive control this harness never had
 
 [docs/research/045](../research/045-positive-control-design.md) identifies the
