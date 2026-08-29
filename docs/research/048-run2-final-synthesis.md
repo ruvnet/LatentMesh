@@ -194,6 +194,42 @@ run — repeating the failure
 
 ---
 
+## POST-HOC — the cross-model channel is NOT dead at the likelihood level
+
+**Found after the ladder closed, from committed receipts, at zero compute cost.**
+Every cross-model rung was adjudicated on **accuracy** — the endpoint we now
+know is deaf. Re-reading the same receipts on the **likelihood** endpoint gives
+a different picture.
+
+| rung (cross-model, 3B → 1.5B) | site | Δ NLL vs baseline | vs **norm-matched random** |
+|---|---|---|---|
+| M3 (pooled / per-token) | `fim_pad` | +0.001 to +0.004 | — |
+| M4 FastGRNN r64/r128/r256 | `fim_pad` | −0.021 to +0.001 | — |
+| M4c (task loss) | `fim_pad` | **+3.230** (destructive) | — |
+| **M4i (MLP, on-manifold)** | **question-tail** | **−0.148**, 181W/119L, p = 1.7e-4 | **−0.103, 166W/134L, p = 0.032** |
+
+**M4i clears the ITI floor control.** Its advantage over a *norm-matched
+Gaussian through the same operator at the same positions* is **−0.103 nats at
+p = 0.032** — content-attributable, not perturbation. **This is the first
+evidence in the project that a cross-model, learned-alignment payload carries
+any content-specific signal into the receiver at all.**
+
+**Stated with its limits, which are real:**
+- **p = 0.032 is marginal.** Single uncorrected test; it would not survive
+  multiplicity correction across the ladder's many comparisons.
+- **One rung, unreplicated.** No out-of-sample confirmation exists.
+- **~1/6 the same-model effect** (PC3's identity payload: −0.638 nats vs random,
+  p = 1.2e-23).
+- **Post-hoc on a non-registered endpoint** — under ADR-031/032 this is a
+  hypothesis, **not** a result, and may not be cited as established.
+
+**What it changes.** The ladder's conclusion stands unaltered: the channel does
+not move **decisions**, cross-model or same-model. But *"cross-model latent
+transfer carries nothing"* was never tested — **accuracy was, and accuracy is
+deaf.** The right successor experiment is a **pre-registered cross-model draw
+with the likelihood endpoint as primary and the norm-matched random arm as the
+control**, which the existing harness already supports.
+
 ## Completeness of the package
 
 **What is publishable now**, on receipts, with no further compute:
