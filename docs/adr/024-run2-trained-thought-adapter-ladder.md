@@ -533,6 +533,38 @@ from the NLL dissociation above (a delivery path that cannot fight the answer
 format is a different failure surface), but activating it still requires its own
 addendum frozen before any probe.
 
+## Registered contingency — M4d, train/deploy configuration match (added 2026-08-29, BEFORE any M4d run)
+
+M4c's receipt shows a pattern no earlier rung produced: task-loss training
+worked *as training* (train CE 0.193→0.133; pre-probe transfer check: mean
+fused NLL 0.2385→0.1570, a 34% reduction on held-out data — the adapter
+demonstrably improves the receiver's own next-token loss), yet at probe time
+the aligned condition loses on NLL to random **0W/40L** and to the zero
+vector **0W/40L** (p=1.0 both). A systematic all-40-item reversal of the
+exact quantity training improved is not noise and is not explained by "task
+loss is insufficient"; it is the signature of a **train/deploy configuration
+mismatch**.
+
+Named candidate: the probe applies `rescale_to_natural_median` to the
+injected vector, and no training rung has ever had that operator in its
+loop — training optimizes a raw vector that deployment then rescales.
+Secondary candidates: the 8-slot placement and the greedy-decode context
+differing from the teacher-forced training context.
+
+**M4d (registered now, before any run)**: repeat M4c's task-loss training
+with the probe's exact deployment transform inside the training loop (slot
+placement + rescale applied to the adapter output before the receiver
+forward), so the trained object is the object actually deployed. Single
+seeded run, training receipt frozen before the probe, ONE registered probe
+draw under the unchanged frozen protocol. **This changes training only — the
+probe protocol, controls, items, and statistics are untouched** (see
+ADR-028's protected list; the deployment transform is an *evolvable* surface,
+the probe is not). Honest-fail path unchanged. Interpretation rule, also
+registered now: an M4d pass would mean prior nulls were configuration
+artifacts rather than evidence about latent transfer, and every earlier rung
+would need that caveat attached; an M4d null strengthens the joint negative
+across loss functions AND configuration matching.
+
 ## Registered contingency — task-loss training rung (added 2026-08-28, M4 verdict NOT yet known)
 
 SOTA sweep [docs/research/028](../research/028-sota-continuous-sweep-1.md)
