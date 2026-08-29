@@ -1099,6 +1099,99 @@ verified before entering this record, so nothing rests on the attribution; but
 rung. Everything downstream — the duplicate process, the concurrent source
 edits, the merged message identity — follows from that single mistake.
 
+## PC3 — THE DISSOCIATION IS CONFIRMED OUT OF SAMPLE. The ladder closes. (2026-08-29)
+
+**Receipt**: `run2-pc3-receipt-identity-L19lasttoken-decoytf-fuse-questiontail-slots8-eprocess-answerchange-oos.json`.
+**All 15 structural gates PASS**, including the one that matters most:
+`OUT_OF_SAMPLE_intersection_with_pc2_m4i_is_empty = true`. N = 212 (the entire
+remaining pool), items 4485+, zero overlap with any prior rung.
+
+### The registered primary — a POWERED null
+
+| | |
+|---|---|
+| `steer` changes its answer | **108 / 212 = 50.9%** |
+| `random` changes its answer | **104 / 212 = 49.1%** |
+| `restore` | 97 / 212 = 45.8% |
+| `zerovec` | **0 / 212 = 0.0%** |
+| e-process | **36W / 32L, n_disc = 68**, W = **0.8444** (max 1.0130, min 0.2797) |
+| power | min attainable p = **3.4e-21**; floor of 30 cleared |
+| exact sign test | **p = 0.358 one-sided, 0.716 two-sided** |
+
+**`steer` and `random` are statistically indistinguishable.** Not "steer is
+worse" — *indistinguishable*, at a discordant-pair count that could have
+detected an effect twenty orders of magnitude smaller.
+
+### The likelihood arm REPLICATES, decisively
+
+| comparison | PC3 (out-of-sample) | PC2 (in-sample) |
+|---|---|---|
+| `steer` → decoy NLL vs baseline | **−0.773 nats**, 190W/22L, **p = 7.5e-35** | −0.721, p = 2.6e-44 |
+| `steer` → decoy NLL vs *random* | **−0.638 nats**, 176W/36L, **p = 1.2e-23** | −0.237, p = 1.6e-8 |
+| `restore` → gold NLL vs random | **−0.320 nats**, 155W/57L, **p = 5.8e-12** | −0.282, p = 1.6e-8 |
+| `steer` → gold NLL vs baseline | −0.028, 110W/102L, p = 0.32 | +0.052 |
+
+`zerovec` is bit-identical to `baseline` — **212/212 identical generated
+texts, max |Δ NLL| = 0.0 on both targets**. The operator is proven for a third
+time. Gaming guard clean (length ratio 1.015, 0/212 degenerate).
+
+### THE RESULT, now registered and out-of-sample
+
+> **The channel is SEMANTIC at the likelihood level and NON-SEMANTIC at the
+> decision level.**
+>
+> A payload moves the receiver's distribution toward *whichever specific answer
+> it encodes* — a deliberately false one by **−0.773 nats (p = 7.5e-35)**, the
+> true one by **−0.320 nats (p = 5.8e-12)** — and contributes **nothing
+> whatsoever** to which answer the receiver actually gives (**p = 0.72**, fully
+> powered).
+
+Injection perturbs ~half of all answers; a norm-matched Gaussian does the same.
+**The decision layer reads the perturbation and not the meaning.**
+
+### COORDINATOR ERROR #15 — I predicted the direction, and I was wrong
+
+**Recorded prominently because I pre-registered the prediction and it failed.**
+
+| | predicted (ADR-040, pre-draw) | observed |
+|---|---|---|
+| win rate | 43% | **52.9%** |
+| final wealth | **0.0790** (12.7× decline) | **0.8444** |
+| direction | steer *behind* random | steer marginally *ahead* |
+
+**The sign flipped and the magnitude was off by an order of magnitude.**
+
+The cause is diagnosable and it is my own over-reading: PC2's 33W/44L is a
+43%/57% split on 77 pairs — **p = 0.13, comfortably inside sampling noise of
+parity.** I treated a non-significant in-sample point estimate as a directional
+signal, wrote a 12.7× decline into a pre-registration, and told the
+implementer it made a FAIL "strongly expected rather than a coin flip." **It
+was always a coin flip.** This is coordinator error #13's failure mode
+(over-reading a directional lean at p = 0.27) repeated one level up, in a
+document whose whole purpose is to bind me in advance.
+
+**The correction strengthens the finding rather than weakening it.** Near-parity
+is the *cleaner* null: "payload content contributes nothing" is exactly what
+p = 0.72 says. My predicted decline would have been harder to explain — why
+would real content be *worse* than noise? **The result I got is better evidence
+for the claim than the result I predicted.** Recording that I was wrong in the
+direction that helped me is the point of writing the prediction down first.
+
+### Consequences, accepted in advance and now binding
+
+- **M5X ([ADR-037](037-m5x-maximal-configuration-rung.md)) and M4b
+  ([ADR-035](035-m4b-scale-control-pre-registration.md)) are BLOCKED
+  PERMANENTLY under this apparatus.** Both vary payload *content*, which is now
+  demonstrably not what moves decisions — confirmed out of sample.
+- **The ladder closes.** Every cross-model null it produced is explained by the
+  apparatus, and **none of them is evidence about latent transferability.**
+- **This dissociation is the publishable result**, under
+  [ADR-032](032-negative-result-publication-contract.md), reported without
+  softening.
+- **Firewall, unchanged**: PC3 is same-model, same-item, identity-transform. It
+  tests the apparatus, **never transfer**, and this FAIL may not be cited as
+  transfer evidence in either direction.
+
 ## ERROR CLASS — cross-rung number transposition (identified 2026-08-29)
 
 Recorded as a **class**, not an incident, because it is the one that defeats a
