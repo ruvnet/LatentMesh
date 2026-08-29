@@ -533,6 +533,53 @@ from the NLL dissociation above (a delivery path that cannot fight the answer
 format is a different failure surface), but activating it still requires its own
 addendum frozen before any probe.
 
+## M5 SUPERSEDED AND REDESIGNED (2026-08-29) — the original sketch is infeasible
+
+A dedicated scout ([docs/research/034](../research/034-m5-receiver-side-adaptation-scout.md))
+found this ADR's own M5 paragraph describes something that cannot be built as
+written. Recording the correction rather than quietly working around it:
+
+- **ΔV cannot be an online training signal.** One properly-powered
+  `verify_edge` draw (the ~25-30 discordant pairs research-031's power
+  analysis requires) costs roughly **3 GPU-h — more than run 1's entire
+  budget — for a single feedback point**, and repeated probe-style draws as
+  a training fitness function are explicitly forbidden by
+  [ADR-028](028-evolutionary-adapter-search-anti-gaming.md)'s protected list,
+  which postdates this paragraph. **Corrected design**: task-loss training
+  (cheap, per-step) with ΔV computed **once, post-training, as gate and
+  diagnostic only** — never in the loop.
+- **The cited in-stack prior art does not do what this ADR assumed.**
+  `@ruvector/sona`'s MicroLoRA `adapt()` was read in full (736 lines of Rust,
+  not the JS wrapper): it is a hand-rolled Hebbian/REINFORCE delta rule keyed
+  on a scalar quality score, self-described as working "without full
+  backprop", with no connection to any loss or to the receiver's forward
+  pass. Architecturally right shape, unusable as training machinery. M5 needs
+  a real candle LoRA module in `latentmesh-train` (small lift — M4c proved
+  backprop through the full 1.5B receiver works).
+- **M5 breaks an invariant every earlier rung relied on.** M3/M4/M4c/M4d all
+  held the receiver's weights identical, so only injected content varied.
+  M5 changes the receiver itself, so a LoRA trained on task loss could simply
+  become a general GSM8K fine-tune that helps regardless of what is injected
+  — ADR-001 §5's confound, one layer up. **Mandatory**: baseline, zero-vector
+  and random conditions must be **re-measured fresh under the same adapted
+  receiver** inside M5's own receipt; comparison against earlier rungs'
+  frozen-receiver baselines is invalid for causal-gate purposes (cross-rung
+  *reporting* comparisons remain fine, per the existing M3-vs-M4 convention).
+- **Corrected spec**: rank-{1,2,4} sub-rungs, LoRA at the L14 injection site,
+  frozen upstream translator (M4d's artifact if it reports, else M4c's),
+  training target changed from sender-span CE to **gold-answer CE**, the
+  deploy-transform-in-loop inherited from M4d, mid-p McNemar primary.
+  ~1.2-2.0 GPU-h per rank, ~3.6-6.0 GPU-h for all three.
+- **Prior-art status**: a purpose-built survey (arXiv:2606.05711) states
+  receiver-side parameter adaptation is outside the design space of every
+  latent-communication method it taxonomizes — raising M5's novelty *and* its
+  risk, since there is no training recipe to borrow.
+- **Sequencing**: after M4d reports. If M4d passes, M5 is optional
+  comparative work; if M4d nulls, M5 is the most mechanistically distinct
+  remaining hypothesis in the mid-layer family. M4b stays mandatory and
+  independent either way. M5 requires its own pre-registration addendum
+  before any probe draw.
+
 ## M4c engineering findings (recorded 2026-08-29 from the feasibility+implementation receipts)
 
 Three facts worth preserving for anyone reproducing this work, and one that
