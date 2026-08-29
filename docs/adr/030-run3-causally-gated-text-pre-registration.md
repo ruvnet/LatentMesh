@@ -423,3 +423,84 @@ criteria, dataset/split/sampler discipline, and the genome-freeze handling are s
 sufficient to execute the experiment directly from this document. Execution, receipts, and a
 results section (appended here, mirroring ADR-023's own S6 pattern, not opened as a new ADR) are
 the next concrete step.
+
+---
+
+# RESULTS — Run 3 stage A (appended 2026-08-29, per ADR-023's S6 pattern)
+
+**Status**: **PASS on the registered primary.** The e-process crossed at
+**item 43 of 300**, `min_k W_k = 21.158 ≥ 20`, and stopped per the registered
+rule. Receipt:
+`crates/latentmesh-runtime/receipts/run3-stageA-receipt-statictext-gate-eprocess.json`.
+
+## The numbers
+
+| condition | correct /43 | accuracy | W | text W/L | n_disc | mid-p |
+|---|---|---|---|---|---|---|
+| **gated_text** | **39** | **90.7%** | — | — | — | — |
+| `zero` *(best control)* | 17 | 39.5% | **21.158** | 23W/1L | 24 | 7.7e-7 |
+| `self_generated` | 17 | 39.5% | 21.158 | 23W/1L | 24 | 7.7e-7 |
+| `random` | 15 | 34.9% | 27.981 | 25W/1L | 26 | 2.1e-7 |
+| `mismatched` | **13** | **30.2%** | 37.005 | 27W/1L | 28 | 5.6e-8 |
+
+**Δ vs the best (hardest) control = +0.512**, against a pre-registered
+structural threshold of Δ ≥ 0.089 and the owner's pre-draw projection of 0.32.
+Every control was beaten decisively; the intersection–union test required all
+four, and all four crossed.
+
+## The caveat, stated before the magnitude — as registered
+
+**The message contains the sender's final answer, so `gated_text` at 90.7% is
+close to trivial on its own.** It is not the finding. **The finding is the
+ordering of the controls:**
+
+> **`mismatched` (30.2%) < `random` (34.9%) < `zero` = `self_generated` (39.5%)**
+
+**A wrong-but-real message is worse than random tokens, which are worse than no
+message at all.** The receiver is demonstrably *reading the content* — and
+reading a misleading message actively harms it, below the floor set by noise.
+That ordering, not the headline accuracy, is what makes this a **causal** claim
+about [ADR-003](003-causal-edge-verification.md)'s gate rather than a
+copy-the-answer artefact. `mismatched` — another episode's *real* message,
+carrying its own number — is the load-bearing control, and it is the one the
+text condition beat hardest (27W/1L).
+
+## THE CROSS-CHANNEL COMPARISON — the most valuable result of the mission
+
+Same receiver (Qwen2.5-1.5B-Instruct), same item population
+(`adaptation-512`, ascending index order), same task, same accuracy endpoint:
+
+| channel | Δ on **decisions** | evidence |
+|---|---|---|
+| **Text** (this run) | **+0.512** | crossed at 43 items, 27W/1L vs `mismatched` |
+| **Latent injection** (PC3) | **≈ 0** | 36W/32L, n_disc 68, **p = 0.72**, fully powered |
+
+**The text channel moves decisions. The latent channel does not** — even though
+the latent channel demonstrably carries semantic content into the receiver's
+*likelihood* (−0.773 nats toward the specific answer it encodes,
+p = 7.5e-35). The two channels were measured on the same receiver and the same
+population, and the `zero` control here is anchored to the identical population
+as M4i's `baseline_uninjected` 140/300.
+
+**This is a controlled comparison of channels, not two unrelated results.** It
+localises the latent failure precisely: not in *what the payload carries*, but
+in the receiver's ability to *act* on anything delivered that way.
+
+## Protocol notes
+
+- **Early stopping at 43 items is the registered rule**, not a choice made
+  after seeing data. The e-process is valid under optional stopping; the
+  reported outcome is the crossing point, with no p-value translation of the
+  sequential result (ADR-036 Decision 3). The fixed-sample mid-p and exact
+  statistics are reported per-control alongside, on the accumulated pairs.
+- **Structural capability was stated before the draw** (ADR-040's mandatory
+  rule, first rung to comply): Δ ≥ 0.089 needed to cross within N_max = 300;
+  observed Δ = 0.512. `min_attainable_mid_p` is recorded per control and
+  `structurally_capable_at_alpha_0_05 = true` for all four.
+- **Both pre-draw corrections applied**: ADR-036's item supply over this ADR's
+  false subset premise, and the intersection–union test for "best control".
+- **eval-200 / holdout-100 remain LOCKED.** No genome-frozen receipt exists and
+  this stage does not write one. Stage B was not run.
+- The smoke-mechanics check is recorded in the receipt under
+  `smoke_mechanics_check`, drawn from the pool tail and disjoint from the
+  registered stream by construction.
