@@ -322,15 +322,44 @@ allows **~8–9 packets/hour**. A *signed* reasoning delta needs **9 fragments f
 its header alone**, so one message consumes an entire hour's transmission
 budget and still has not carried any payload.
 
-**Conclusion**: ADR-041's envelope is viable over IP/tailnet and **not viable
-over LoRa/Meshtastic as specified.** The mesh path needs either a drastically
-stripped profile — dropping to a short session-scoped key instead of six
-32-byte digests would be the obvious lever — or an acknowledgement that latent
-reasoning deltas are an IP-transport feature and the mesh carries terse text
-and scores, which is what lane 3 recommended on independent grounds.
+### CORRECTION — I overstated this (coordinator error #17)
 
-**This is exactly the kind of finding that only appears if you measure.** The
-envelope's field list is individually reasonable; every digest earns its place
-in the threat model. It is the *sum* that does not fit, and no amount of
-reading the ADR would have surfaced it.
+I first wrote that the envelope is *"not viable over LoRa/Meshtastic **as
+specified**."* **That is wrong, and I asserted it without reading the spec's own
+transport section.** ADR-041 line 662 states plainly:
+
+> *"The transport level object is deliberately separate from ADR 010 Air frames.
+> … This envelope is an **upper layer payload that can be fragmented by Air** or
+> streamed by MidStream."*
+
+**The ADR never claimed single-frame delivery.** There is no contradiction
+between the design and the measurement — the envelope fragments exactly as
+intended. Caught by the implementing agent, who cited the section I had not
+read. This is the same failure mode as coordinator errors #12 and #16: asserting
+a conflict from a number without checking the document the number is being
+judged against.
+
+### What the measurement actually establishes
+
+Not a design defect — an **economic** one, and it is still decisive:
+
+- The header floor is **79% cryptographic identity**: 7 × 32-byte digests
+  (`sender_id`, `model_fingerprint`, `checkpoint_digest`, `adapter_digest`,
+  `parent_state_hash`, `result_state_hash`, `provenance_root`) = **224 of 282
+  bytes.**
+- **Therefore the codec cannot fix this.** A better delta encoding shrinks the
+  *body*; the floor is set by identity and provenance requirements. The
+  implementer's second measurement confirms the codec path is already healthy —
+  an 8-of-1536 sparse int8 residual keeps the total well under a raw 6 KB f32
+  tensor.
+- **The binding constraint is slots, not bytes** (lane 3): at SF11 the mesh
+  allows ~8–9 packets/hour, so a *signed* delta spends **9 fragments — roughly
+  an hour's entire budget — on header alone.**
+
+**So the honest conclusion is narrower and more useful**: ADR-041's envelope is
+sound and fragments as designed; it is simply **uneconomic over LoRa at SF11**,
+and the lever is the identity payload, not the codec. A short session-scoped key
+negotiated once and referenced by a 4-byte handle would collapse most of the 224
+bytes — but that is a security-model change, not an encoding tweak, and belongs
+in its own ADR. Over IP/tailnet none of this binds.
 

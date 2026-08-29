@@ -39,6 +39,10 @@
 //! tax), the header **alone** needs **3 fragments unsigned and 9 signed**.
 //! Asserted, not assumed, by
 //! `envelope::tests::fixed_header_overhead_exceeds_a_single_air_fragment`.
+//! ADR-041 §13 already frames this envelope as an upper-layer object that Air
+//! *fragments*, so this is an economic finding (slots at SF11), not a design
+//! contradiction — and 79% of the floor is 7 x 32-byte identity digests, so
+//! the codec cannot fix it.
 //! See `docs/research/049-adjacent-areas-survey.md` for the duty-cycle
 //! consequence.
 //!
