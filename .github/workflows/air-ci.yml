@@ -50,6 +50,25 @@ jobs:
         run: CARGO_RESOLVER_INCOMPATIBLE_RUST_VERSIONS=fallback cargo +stable generate-lockfile
       - run: cargo +1.77.0 check --workspace --all-targets --locked
 
+  activation-channel-contract:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: crates/latentmesh-runtime
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@master
+        with:
+          toolchain: 1.81.0
+          components: rustfmt, clippy
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: crates/latentmesh-runtime -> target
+      - run: cargo fmt -- --check
+      - run: cargo test --locked
+      - run: cargo check --locked --example run2_channel_qualification
+      - run: cargo clippy --locked --all-targets -- -D warnings
+
   portable-c:
     runs-on: ubuntu-latest
     steps:

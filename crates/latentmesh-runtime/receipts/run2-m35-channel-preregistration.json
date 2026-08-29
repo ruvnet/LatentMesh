@@ -1,0 +1,160 @@
+{
+  "schema_version": 1,
+  "protocol_id": "latentmesh.run2.m3.5.channel-qualification.v1",
+  "registered_at_utc": "2026-08-29T00:02:56Z",
+  "registration_status": "frozen-before-probe",
+  "base_commit": "78adcf01627e0e1d11b5d180239726dea538ca4c",
+  "decision": "Pause M4 until the receiver delivery channel is qualified at the exact failed injection depth and the receiver-scale oracle reports.",
+  "frozen_source": {
+    "adr_024": {
+      "path": "docs/adr/024-run2-trained-thought-adapter-ladder.md",
+      "sha256_at_registration": "d79039d8625639a8bb23298f07c4b6c36c01368868d2119130776408ea5f0292"
+    },
+    "s1a_receipt": {
+      "path": "crates/latentmesh-runtime/receipts/s1a-receipt-slots8-block19-poolfull-rescaletrue-n40.json",
+      "sha256": "4cc7c17521a46d23104185a0a7710e6c788f1a30973010a086374ee1baf05c36"
+    },
+    "dataset": {
+      "source": "https://raw.githubusercontent.com/openai/grade-school-math/master/grade_school_math/data/train.jsonl",
+      "sha256": "17f347dc51477c50d4efb83959dbb7c56297aba886e5544ee2aaed3024813465",
+      "indices": [
+        141,
+        150,
+        850,
+        1153,
+        1309,
+        1435,
+        1573,
+        1602,
+        2365,
+        2418,
+        2436,
+        2489,
+        2540,
+        2723,
+        2958,
+        2973,
+        3084,
+        3165,
+        3741,
+        3772,
+        3825,
+        3844,
+        3877,
+        4255,
+        4305,
+        4344,
+        4746,
+        4888,
+        5422,
+        5610,
+        6031,
+        6146,
+        6378,
+        6452,
+        6552,
+        6629,
+        7293,
+        7375,
+        7431,
+        7462
+      ]
+    }
+  },
+  "profiles": [
+    {
+      "tag": "qwen2.5-1.5b-exact-channel",
+      "model_id": "Qwen/Qwen2.5-1.5B-Instruct",
+      "expected_layers": 28,
+      "hidden_size": 1536,
+      "capture_block": 14,
+      "inject_block": 14,
+      "purpose": "Qualify the exact receiver block used by the failed L18 to L14 cross-model path."
+    },
+    {
+      "tag": "qwen2.5-3b-scale-oracle",
+      "model_id": "Qwen/Qwen2.5-3B-Instruct",
+      "expected_layers": 36,
+      "hidden_size": 2048,
+      "capture_block": 18,
+      "inject_block": 18,
+      "purpose": "Measure self-pair channel capacity at the matched half-depth above the registered receiver-scale threshold."
+    }
+  ],
+  "protocol": {
+    "n_items": 40,
+    "n_slots": 8,
+    "pool_span": "full generated span",
+    "pool_operation": "arithmetic mean over captured generated-token residual rows",
+    "placeholder_token": "<|fim_pad|>",
+    "item_seed_chacha8": 20897,
+    "random_vector_seed_base": 1369571328,
+    "decoding": {
+      "sampling": "greedy",
+      "batch_size": 1,
+      "max_new_tokens": 400
+    },
+    "base_normalization": "rescale identity vector to the receiver natural median per-position L2 norm at the registered injection block",
+    "gain_application": "multiply after natural-median normalization",
+    "gains": [0.25, 0.5, 1.0, 2.0, 4.0],
+    "execution_order": [
+      "baseline-uninjected",
+      "zero-vector",
+      "identity-gain-0.25",
+      "matched-random-gain-0.25",
+      "identity-gain-0.5",
+      "matched-random-gain-0.5",
+      "identity-gain-1.0",
+      "matched-random-gain-1.0",
+      "identity-gain-2.0",
+      "matched-random-gain-2.0",
+      "identity-gain-4.0",
+      "matched-random-gain-4.0"
+    ],
+    "conditions": {
+      "baseline_uninjected": "No residual edit, same slotted prompt.",
+      "zero_vector": "True zero vector through all eight real overwrite positions.",
+      "identity": "The model's own mean-pooled residual captured at the profile capture block and injected at the same profile block.",
+      "matched_random": "Per-item seeded Gaussian direction with the exact effective L2 norm of the corresponding identity condition."
+    },
+    "secondary_diagnostic": "Paired teacher-forced mean NLL of the gold numeric answer under every condition.",
+    "forbidden": [
+      "Changing the item set, seed, gain list, execution order, profile depth, slot count, normalization, threshold, or control after any profile starts.",
+      "Probing the ADR-024 anchor cell as an unregistered extra draw.",
+      "Selecting the best gain post hoc as the primary result.",
+      "Proceeding when registration, source receipt, dataset, model identity, layer count, hidden size, or item-set validation fails."
+    ]
+  },
+  "statistics": {
+    "primary_gain": 1.0,
+    "primary_test": "one-sided exact paired sign test on discordant accuracy outcomes, identity greater than matched random",
+    "primary_alpha": 0.01,
+    "primary_min_accuracy_delta": 0.15,
+    "stability_adjacent_gains": [0.5, 2.0],
+    "stability_test": "one-sided exact paired sign test on each adjacent gain, Holm corrected as a two-hypothesis family",
+    "stability_family_alpha": 0.05,
+    "stability_min_accuracy_delta": 0.1,
+    "zero_vector_gate": "zero-vector correct count must be at least half the baseline-uninjected correct count",
+    "nll_role": "diagnostic only, never substitutes for the accuracy gate",
+    "effect_reporting": "Report raw correct counts, paired wins and losses, exact p values, Holm adjusted p values, and accuracy deltas for every gain and both profiles."
+  },
+  "gates": {
+    "profile_pass": [
+      "The primary gain meets both primary_alpha and primary_min_accuracy_delta.",
+      "At least one registered adjacent gain meets both the Holm-corrected stability threshold and stability_min_accuracy_delta.",
+      "The zero-vector gate passes.",
+      "Every integrity check passes."
+    ],
+    "ladder_decision": {
+      "both_profiles_fail": "Stop the mid-layer adapter ladder and move to the separately registered latent-prefix delivery contingency.",
+      "one_point_five_fails_three_passes": "Keep M4 blocked on the 1.5B receiver and preregister a genuinely cross-model receiver-scale arm before training another adapter.",
+      "one_point_five_passes": "The exact 1.5B delivery path is qualified; M4 may resume under ADR-024, with the 3B result retained as a scale diagnostic.",
+      "one_point_five_passes_three_fails": "Do not generalize across scale; investigate model or layer-specific channel instability before claiming a receiver-scale law."
+    }
+  },
+  "scope_limits": [
+    "The 3B self-pair profile is an oracle capacity diagnostic, not the mandatory cross-model scale-control arm already registered by ADR-024.",
+    "A 3B oracle pass authorizes design of a fresh cross-model scale arm; it does not make the existing 3B to 1.5B MLP result positive.",
+    "This protocol tests channel capacity and gain sensitivity, not semantic universality or production safety."
+  ]
+}
