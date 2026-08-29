@@ -1,5 +1,38 @@
 # 024. Run 2: trained thought-adapter ladder
 
+> ## ⛔ STOP — DEFECTIVE PRE-REGISTRATION, READ BEFORE INHERITING ANYTHING (2026-08-29)
+>
+> **PC1b's pre-registered FAIL branch is LOGICALLY INVERTED and must not be
+> copied into any successor rung.** It reads:
+>
+> > *"the ladder nulls would stand as evidence about **TRANSFER** rather than
+> > about plumbing."*
+>
+> **This is backwards.** A positive control exists to show the apparatus
+> converts a **known-present** signal into **the measured outcome**. PC1b
+> **failed**. A failed positive control makes the **method** the *leading*
+> explanation for every null; it cannot simultaneously explain the nulls and
+> be ruled out so the nulls can be read as being about transfer. **Ruling out
+> plumbing requires a PASS on the endpoint being measured.**
+>
+> The defective text appears in **three** places — this ADR's
+> pre-registration block, the draw receipt's
+> `pre_registered_interpretation_recorded_before_the_draw`, and the PC1b
+> **workflow report's** outcome text. All three are preserved (append-only)
+> and **all three are wrong on this point.**
+>
+> **The correct reading, by endpoint:**
+> - **Likelihood endpoint — VALIDATED**: aligned beats a *norm-matched*
+>   Gaussian through the same operator at the same positions by 0.237 nats,
+>   198W/102L, p ≈ 2e-8.
+> - **Accuracy endpoint — UNVALIDATED**: no control here has moved accuracy at
+>   all. **Every rung's verdict rests on this endpoint.**
+>
+> **Consequences**: M5X (ADR-037) and M4b (ADR-035) **stay BLOCKED**;
+> **a FAIL may not be cited as transfer evidence, just as a PASS may not**;
+> and the headline is **"we have still not run a passing positive control."**
+> See §"THE INVERSION IS REINSTATED" and §"PC1b FINAL".
+
 > ## READING GUIDE (added 2026-08-29) — this document is append-only and out of order
 >
 > This ADR is the run-2 ladder's living ledger. Sections were appended by
@@ -1035,6 +1068,36 @@ L18/L24 and receiver L14/L19, and **no rung has ever used the L24→L19 pair**.
 Open tension to settle before pre-registering: 8 slots across 2 sites is
 either 16 total or a 4+4 split, and ADR-028's slot-count discipline (already
 self-contradictory and unadjudicated) does not cover it.
+
+## ATTRIBUTION RESOLVED — there were two agents, both truthful, and I conflated them (2026-08-29)
+
+I recorded peer attribution as "not determinable". **It is now determinable.**
+The workflow journal for `wf_82867994-eef` lists **two** implementation agents:
+
+- **`adf964e8b373cc990`** — the draw owner. Sent messages 1, 3, 4 and 5.
+- **`a526911380dbf744a`** — the second agent. Sent message 2.
+
+Both are type `general-purpose`; inbound messages carry **only the type**, so
+both arrived as `from=general-purpose` and I treated five messages as coming
+from one agent.
+
+**Every apparent contradiction dissolves.** Message 2's *"I never killed any
+process"* was **true of its author** — the workflow report confirms
+`a526911380dbf744a` issued *"no kill, pkill or TaskStop at any point"*. Message
+1's *"I killed MY duplicate"* was **true of its author**. **Neither agent was
+inconsistent; I manufactured the inconsistency by merging them**, then
+recorded a real agent's account as self-contradictory and briefly withdrew a
+process kill that had actually happened.
+
+`a526911380dbf744a` is also the author of the **rebuilt-binary/hash analysis**
+and the **`lens.rs` N-invariance defect report** — the two findings
+`adf964e8b373cc990` correctly refused credit for. Both were independently
+verified before entering this record, so nothing rests on the attribution; but
+**the refusal of unearned credit is what made the resolution findable.**
+
+**Root cause is mine**: coordinator error #11 put two agents on one registered
+rung. Everything downstream — the duplicate process, the concurrent source
+edits, the merged message identity — follows from that single mistake.
 
 ## COORDINATOR ERROR #13 — "worse than noise, reproducibly" is RETRACTED (2026-08-29)
 
