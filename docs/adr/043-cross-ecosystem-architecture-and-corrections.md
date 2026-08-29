@@ -9,6 +9,15 @@
 
 A plausible, well-structured narrative arrived proposing LatentMesh as "the connective tissue of the ruvnet ecosystem" — cognitive-state routing between RuFlo (coordination) and RuVector (memory), with RVM as a hard trust boundary, RVF as portable evidence, MidStream as a cross-agent streaming layer, and RuView/Air as the physical-world bridge. It read as an accurate description of an already-working system. The research pass behind this ADR found the underlying components are real and mostly actively developed — but the narrative describes an **intended** architecture, not a **current** one, and gets several specific mechanisms wrong by attributing one component's real capability to a different component's name. Both errors matter: understating maturity would waste effort re-deriving what's already decided (this repo's own ADR-009 already assigns a role to every component the narrative names, dated 2026-08-18); overstating it would build on load-bearing claims that aren't true yet.
 
+> **Verification status of the ADR-305 claim (added during integration review):**
+> the reviewer attempted to confirm `ruvector` ADR-305 and `autogenous` ADR-401
+> against the RuvNet knowledge base (25 repos indexed, including `ruvector`).
+> **Neither document was surfaced**, and `autogenous` is not in that corpus at
+> all. This is **not** evidence the claim is false — the search is not a
+> substitute for reading the repos directly, which §6.5 already requires — but
+> the claim remains **unverified from this side**, and the test-plan item asking
+> for direct confirmation stays open.
+
 **The single most important correction**: this repo's own ADR-305 equivalent already exists one repo over. `ruvnet/ruvector`'s ADR-305 (dated within the last ~10 days of this ADR) performed almost exactly this reconciliation already — it read ADR-009, found the same "components have named roles but the loop isn't wired" gap, corrected stale citations in its own inputs, and made a binding scope decision (§2). Writing a competing top-level spec here instead of deferring to it would repeat the exact mistake ADR-305 itself was written to fix.
 
 ## 2. Scope: what this ADR is (and isn't) claiming
@@ -57,6 +66,33 @@ Autogenous — a real, separate repo (`ruvnet/autogenous`, MIT, alpha/research-p
 ADR-009 already says the loop isn't wired. The 2026-08-29 pass adds:
 
 - **Size**: LatentMesh is ~1,407 LOC across 4 crates (`latentmesh-core`, `latentmesh-align`, `latentmesh-gate`, `latentmesh-bench`), 23 tests, no network transport crate in the workspace at all. This is a small research prototype, not a substantial system, and should be described as such in any document that names it alongside RuVector (published crates.io crates, 300+ ADRs) or RuView (254 ADRs, three package registries) as a peer.
+- **CORRECTION (2026-08-29, later same day — added during integration review).**
+  Three of §5's claims about *this repo* were stale or wrong when checked
+  against `main` at integration time. They are corrected here rather than left,
+  because an ADR whose thesis is "stale citations mislead" cannot itself carry
+  stale citations about its own repository:
+  - **"ADR-035 and ADR-037 are BLOCKED PERMANENTLY"** — half right. ADR-035 is
+    blocked. **ADR-037 was UNBLOCKED earlier the same day** and its rung (M5X)
+    was drawing at the time this PR was reviewed. The unblocking is recorded in
+    ADR-037 itself: C2C's Table 10 ablation collapses to ~0.1pp at a single
+    layer, reproducing this repo's own null signature, so layer count — the one
+    variable every rung held fixed — became worth testing.
+  - **"ADR-039/040 are still-pending pre-registrations"** — both have **run**.
+    PC2 and PC3 draw receipts are committed. PC3 is the out-of-sample
+    confirmation the whole negative result rests on.
+  - **"~1,407 LOC across 4 crates … no network transport crate in the workspace
+    at all"** — **`main` carries 15 crates**, including `latentmesh-meshtastic`
+    (merged 2026-08-27, two days before this PR), `latentmesh-air-radio`,
+    `latentmesh-stream` and `latentmesh-federation`. There is network transport,
+    validated against real `meshtasticd` firmware over TCP. The 4-crate figure
+    describes a subset, not the workspace.
+
+  **This does not weaken §5's argument — it sharpens it.** Two of the three
+  errors *understated* the repo, and the corrected picture still supports the
+  section's actual point: LatentMesh is a research prototype whose core
+  hypothesis is trending negative, and a cross-ecosystem spec should not assert
+  "LatentMesh owns cognitive state movement" as settled.
+
 - **The core hypothesis is trending negative, not confirmed.** Only ADRs 010–018 are marked Accepted-and-implemented, and every one is caveated (deterministic simulation, no over-the-air claim, no live-agent claim, remote deployment external). ADRs 019–041 are a separate research thread testing whether cross-model latent transfer beats text at all: ADR-023 is a clean negative result; ADR-035 and ADR-037 are **BLOCKED PERMANENTLY**; ADR-038 is a measurement-methodology fix, not a positive transfer result; ADR-039/040 are still-pending pre-registrations. A cross-ecosystem spec asserting "LatentMesh owns cognitive state movement" as settled fact would overstate what this repo's own most recent evidence supports. State the intended role (§2's bounded context) as intended, not as validated.
 - **RuFlo is the least-integrated named component in ADR-009's own table** — it appears only as a table row (`ROI_edge` scoring), with no design ADR and no implementation ADR, unlike every other row. If future work gives RuFlo real teeth as the coordination plane, that's new work, not a restatement of an existing decision.
 
