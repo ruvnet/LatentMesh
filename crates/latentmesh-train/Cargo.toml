@@ -51,6 +51,11 @@ sha2 = "0.10"
 rand = "0.8"
 rand_chacha = "0.3"
 anyhow = "1"
+# M4c additions (ADR-024 task-loss rung): hf-hub + tokenizers at EXACTLY the
+# versions already present in the copied lockfile (pulled transitively via
+# latentmesh-runtime) — no re-resolution, same pin-set discipline as above.
+hf-hub = "0.4.3"
+tokenizers = "0.21"
 
 [[bin]]
 name = "train_m3_mlp"
@@ -58,4 +63,8 @@ required-features = ["cuda"]
 
 [[bin]]
 name = "train_m4_fastgrnn"
+required-features = ["cuda"]
+
+[[bin]]
+name = "train_m4c_taskloss"
 required-features = ["cuda"]

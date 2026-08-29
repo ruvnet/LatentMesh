@@ -1390,6 +1390,7 @@ dependencies = [
  "anyhow",
  "candle-core",
  "candle-nn",
+ "hf-hub",
  "latentmesh-runtime",
  "memmap2",
  "rand 0.8.8",
@@ -1397,6 +1398,7 @@ dependencies = [
  "serde",
  "serde_json",
  "sha2",
+ "tokenizers",
 ]
 
 [[package]]

@@ -11,6 +11,14 @@
 //! same per-token dump consumed as within-item windows — same splits, same
 //! 13 exclusions, same receipts discipline.
 //!
+//! M4c scope (ADR-024 § Registered contingency, mandatory after M4's null):
+//! the task-loss ablation rung — the M3 MLP architecture trained through the
+//! FROZEN receiver's next-token CE on each item's own generated span
+//! (C2C-style), via the composed differentiable BF16 receiver forward in
+//! `qwen2_c` (the vendored inference forward silently cuts the graph —
+//! measured; see that module's docs) and the task-data assembly in
+//! `taskdata` — same splits, same 13 exclusions, same receipts discipline.
+//!
 //! Evidence honesty: training itself is seeded and deterministic given the
 //! captured dump; the dump was produced by live single-host GPU inference
 //! (see `run2-pertoken-dump-receipt.json`). Training receipts are labelled
@@ -20,4 +28,6 @@
 pub mod dataset;
 pub mod fastgrnn;
 pub mod mlp;
+pub mod qwen2_c;
 pub mod split;
+pub mod taskdata;
