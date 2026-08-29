@@ -533,6 +533,47 @@ from the NLL dissociation above (a delivery path that cannot fight the answer
 format is a different failure surface), but activating it still requires its own
 addendum frozen before any probe.
 
+## Registered hypothesis — M4e, continuous per-step injection (added 2026-08-29, BEFORE M4d's verdict)
+
+Injection-configuration research ([docs/research/032](../research/032-injection-configuration-science.md))
+surfaced a configuration difference no earlier rung, and not M4d either,
+controls for: **every externally successful cross-model method injects
+continuously, at every generation step, "in lockstep"** (Cache-to-Cache; the
+Bicameral Model). LatentMesh injects **one-shot into 8 placeholder slots and
+then free-runs up to 400 tokens unassisted**. No positive cross-model result
+was found anywhere in the literature using one-shot-then-free-run. This is
+independent of both the loss-function axis (M3/M4 vs M4c) and the
+norm/rescale axis (M4d), and it is therefore a THIRD live explanation for
+the ladder's nulls.
+
+The same research also names the specific mechanism M4d tests: M4c's adapter
+was gradient-trained to a raw output norm of roughly 90-200 and then
+deployed through a rescale to the natural-median target of roughly 40-56 —
+a 2-4x change the training loss never saw. Precedent check: **no source was
+found that trains a raw activation vector and then applies a post-hoc
+rescale to a statistic the loss never saw**; CAA, RepE and ActAdd all fix
+norm *before* training or extraction and never touch it after. Norm and
+direction are causally distinct levers (arXiv:2606.06735), and post-hoc
+renormalising an additive vector converts it into a different, separately
+named method (Spherical Steering) — so our deployment path was an
+unvalidated compound, not a calibration detail.
+
+**M4e (registered now, unscheduled)**: continuous per-step injection —
+the translated payload is applied at each generation step rather than once
+upfront. Requires new engineering and its OWN pre-registration addendum
+before any probe draw; it is named here so that a later decision to run it
+is on record as pre-planned rather than post-hoc. Ordering: after M4d and
+M4b report, and only if the cheaper diagnostics (below) do not already
+explain the ladder.
+
+**Registered zero-GPU diagnostic (protocol-safe, no probe draw)**: project
+M4c's raw and rescaled vectors through the receiver's unembedding matrix and
+compare output-token alignment against sender-span and gold-answer tokens
+(one matmul over committed artifacts; the LAP A_lin-style check the research
+ranks first by expected value per cost). It resolves *today*, off existing
+receipts, whether the rescale destroys output alignment. Annotates; never
+changes a recorded outcome.
+
 ## Registered contingency — M4d, train/deploy configuration match (added 2026-08-29, BEFORE any M4d run)
 
 M4c's receipt shows a pattern no earlier rung produced: task-loss training
