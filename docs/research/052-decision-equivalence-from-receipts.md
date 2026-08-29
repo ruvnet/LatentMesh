@@ -67,10 +67,42 @@ Receipt: `run3-stageA-receipt-statictext-gate-eprocess.json`
 The text e-process **crossed**, at item 43 of a 300-item budget. The latent
 e-processes did not cross at all.
 
-**The control ordering is the causal part**: `mismatched` (13) < `random` (15) <
-`zero` = `self_generated` (17). A *wrong but real* message performs worse than
-random tokens, which perform worse than no message. The receiver is reading
-content.
+### ⚠️ CORRECTION — the control *ordering* is NOT a result (coordinator error #21)
+
+I previously wrote that `mismatched` (13) < `random` (15) < `zero` (17) shows a
+wrong-but-real message is worse than random tokens. **That ordering has no
+statistical support**, and the receipt never tested it: every registered
+comparison is `gated_text` vs *one* control, never control vs control.
+
+**The paired tests, computed from the receipt's per-item flags:**
+
+| comparison | split | two-sided p |
+|---|---|---|
+| `zero` vs `random` | 5W/3L | **0.73** |
+| `random` vs `mismatched` | 8W/6L | **0.79** |
+| `zero` vs `mismatched` | 9W/5L | **0.42** |
+| `zero` vs `self_generated` | 0W/0L | identical on every item |
+
+**The four controls are statistically indistinguishable from each other at
+n = 43.** The rank ordering is noise.
+
+### What IS supported, and it is the causal claim
+
+| comparison | split | two-sided p |
+|---|---|---|
+| `gated_text` vs `zero` | 23W/1L | 3.0e-6 |
+| `gated_text` vs `random` | 25W/1L | 8.1e-7 |
+| `gated_text` vs `self_generated` | 23W/1L | 3.0e-6 |
+| **`gated_text` vs `mismatched`** | **27W/1L** | **2.2e-7** |
+
+**Text beats every control decisively, and beats `mismatched` hardest.** That is
+the load-bearing result: `mismatched` is *another episode's genuine message*,
+carrying its own number and its own fluent reasoning. Beating it at 27W/1L means
+the effect is **not** "any message helps" — the receiver is responding to
+*this* message's content.
+
+**The causal claim survives intact.** What does not survive is the decorative
+ordering I mistook for part of it.
 
 ## What follows, and only this
 

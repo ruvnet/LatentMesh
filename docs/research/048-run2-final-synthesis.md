@@ -29,9 +29,14 @@ candidate representation
 
 **Text and deterministic semantic deltas are first-class reference channels,
 not fallbacks.** Text is the only channel in this repository with a *positive*
-causal result on decisions (Run 3: crossed at item 43, with a control ordering
-proving content is read). Treating it as the thing you resort to when latent
-fails inverts the evidence.
+causal result on decisions: Run 3 crossed at item 43, beating **every** control,
+and beating `mismatched` — another episode's genuine message — **hardest**
+(27W/1L, p = 2.2e-7). That is what shows the receiver responds to *this*
+message's content rather than to any message at all. (The *ordering among the
+controls* is **not** supported — see
+[research/052](052-decision-equivalence-from-receipts.md); they are
+statistically indistinguishable at n = 43.) Treating text as the thing you
+resort to when latent fails inverts the evidence.
 
 **`UtilityDensity` is the selection objective**, not a diagnostic — implemented
 in `crates/latentmesh-reasoning/src/routing.rs`, where `None` is a first-class
