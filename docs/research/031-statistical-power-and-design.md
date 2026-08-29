@@ -1,5 +1,19 @@
 # 031. Statistical power and design for the probe ladder (run 1/run 2/run 3)
 
+> **STALENESS POINTER (2026-08-29) — read before using this document's tables.**
+> This document's canonical draw-history table covers the ladder through the
+> 10 draws that existed when it was written. It has **not** been updated with
+> M4c, M4d, M4g or M4h Stage 1. Their discordant-pair counts — the numbers
+> that matter most for the power argument — are M4d **7** (the only
+> non-power-limited draw in the ladder), M4g **3** (min attainable p 0.125),
+> M4h Stage 1 **2** (min attainable p 0.25). See ADR-024's "M4h Stage 1
+> OUTCOME" section and ADR-036 for the current picture: discordance *falls*
+> as adapters improve, which is why the frozen 40-item protocol was retired
+> for successor rungs. The methodology in this document (mid-p McNemar, the
+> e-process design, the multiplicity framing, the NLL rejection) all stands.
+
+
+
 **Purpose**: answer four questions the run-3 (ADR-030) authoring window asked, using the actual
 receipted numbers from runs 1-2 rather than textbook defaults. Every number below is either read
 directly from a committed receipt (`crates/latentmesh-runtime/receipts/*.json`) or computed from
