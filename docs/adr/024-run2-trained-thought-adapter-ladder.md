@@ -1036,6 +1036,70 @@ Open tension to settle before pre-registering: 8 slots across 2 sites is
 either 16 total or a 4+4 split, and ADR-028's slot-count discipline (already
 self-contradictory and unadjudicated) does not cover it.
 
+## PC1 OUTCOME (2026-08-29) — THE POSITIVE CONTROL FAILED. This is the consequential branch.
+
+`run2-pc1-receipt-identity-L19lasttoken-goldtf-fuse-slots8-nopool-*.json`.
+The receiver was injected with **its own** gold teacher-forced block-19
+states, via **identity transform** (gate confirms *no* adapter weights are
+constructed anywhere in the binary), under **current mechanics** (fuse,
+de-pooled, 8 `<|fim_pad|>` slots, rescale-to-median), scored with S1a's
+original 40-item test.
+
+**Result: aligned 22/40, baseline 22/40, random 23/40, zerovec 22/40.
+`aligned_vs_baseline` = 0 wins, 0 losses — the model's own state, returned to
+it, changed nothing at all. Primary vs random: 0.875 (n_disc 3, itself
+power-limited).** NLL slightly worse than baseline (2.1539 vs 2.1288, 15W/25L).
+Anti-gaming gates clean (no degenerate-output or NLL-collapse signature).
+
+**Per the outcome rule registered before the run, and not softened:**
+1. **Every null since S1a is now caveated.** S2b ×4, M3 ×2, M4 ×3, M4c, M4d,
+   M4g, M4h S1 and M4i were all drawn under mechanics that have **never been
+   shown capable of carrying signal — even from the model to itself**. They
+   cannot be read as evidence about *transfer*; they are consistent with a
+   delivery pathway that is simply inert.
+2. **S1a's pass is scoped to retired mechanics.** It used overwrite + pooled
+   + the 40-item test; nothing since M4c uses that configuration. Its p =
+   0.031 remains valid *for those mechanics* and does not license any claim
+   about the current ones.
+3. **The rival explanation I owe the record**: my account that "discordance
+   fell (7→3→2) because adapters improved" now has an unruled-out
+   competitor — **fuse + de-pooling + the fim_pad site may suppress
+   discordance mechanically**, independent of adapter quality. PC1 is exactly
+   the case where adapter quality is not a variable (there is no adapter),
+   and discordance was 3. That is evidence *for* the rival.
+4. **Firewall unchanged**: PC1 was designed so a pass would prove liveness
+   only. A *fail* proves the converse and is strictly more informative.
+
+**What PC1 does NOT establish**: that latent transfer is impossible; that the
+models lack shared structure (the permutation null already refuted that); or
+which mechanic is responsible — fuse, de-pooling, the `<|fim_pad|>` site, or
+the rescale. Isolating that is the necessary next work, and it is now
+**prerequisite to every remaining rung**, including M5X (ADR-037) and M4b
+(ADR-035). **Neither should run until a positive control passes.**
+
+## M4i OUTCOME (2026-08-29) — the first properly-powered cross-model null
+
+`run2-m4i-receipt-...-questiontail-slots8-eprocess.json`, the first rung under
+ADR-036's e-process. It drew the **full N_max = 300** items and reached
+**n_discordant = 66** — an order of magnitude more discordance than any
+40-item draw, exactly as ADR-036 intended. Wins 31, losses 35. **Final wealth
+0.258 against a threshold of 20.0; max wealth ever reached 1.0; never crossed.
+FAIL.**
+
+**This is the ladder's first cross-model null with genuine statistical
+power** — the instrument could have detected a real effect and did not.
+Under the pre-registered interpretation, the injection-site hypothesis
+(`<|fim_pad|>` being near-vacant) is **not supported**: moving to ordinary
+question-tail tokens did not rescue transfer.
+
+**One observation recorded but not over-read**: aligned NLL **2.2446** beat
+baseline **2.3928**, random 2.3474 and zerovec 2.3928 — the only rung where
+the aligned payload improved likelihood over every control. Accuracy went the
+other way (128 vs 140 over the drawn items). Given PC1's failure, **this must
+not be read as partial transfer** — a pathway not shown capable of carrying
+signal cannot be credited with carrying some. Recorded for the write-up as an
+anomaly deserving explanation, not as evidence.
+
 ## RESOLVED — the authoritative power table (2026-08-29)
 
 [docs/research/047](../research/047-authoritative-power-table.md) settled the
@@ -1913,3 +1977,126 @@ session.
 Not implemented beyond M0 (the two bootstrap scouts, cited throughout). This ADR is the plan
 milestone M1; M2 (data pipeline) is the natural next concrete step, since it is cheap, well-scoped,
 and every downstream milestone depends on its output.
+
+## M4i OUTCOME (2026-08-29) — HONEST FAIL on the registered primary; but the site change is NOT inert, and the instrument is no longer blind
+
+Receipts `run2-m4i-receipt-cellL18toL14-mlp-pertokenlast-fuse-questiontail-slots8-eprocess.json`
+and `run2-m4i-manifold-precheck-receipt.json`. **First rung evaluated under
+[ADR-036](036-successor-rung-evaluation-protocol.md)'s successor protocol.** Every number below is
+an e-process/`adaptation-512` number and is **not comparable** to any frozen-40-item-protocol
+result; no p-value translation is offered for the primary, per ADR-036 Decision 3.
+
+**The single changed factor, and its comparator.** Injection **SITE only**, measured against
+**M4h Stage 1** (`run2-m4h-s1-receipt-...-pertokenlast-fuse-slots8-nopool-rescaletrue-n40.json`,
+asserted at run time to carry the same artifact hash, the same `pertokenlast` derivation, the same
+`fuse` operator and the placeholder site). Held fixed: M3's artifact byte-for-byte
+(`a864e518…d73c91`, hash-gated against M3's training receipt, 8 golden pairs, max relative L2 error
+4.53e-7), the de-pooled `apply_last_row` payload derivation, `InjectionMode::Fuse`, 8 slots, L14,
+rescale-to-natural-median, greedy/400, and M4g's frozen control semantics. Changed: 8 `<|fim_pad|>`
+copies → **the last 8 tokens of the item's own question**, with the slot sentence and its bracket
+removed entirely (`docs/research/043` §4 — keeping the bracket would reintroduce a textual
+placeholder cue). Site chosen over 043's ANSWER_FORMAT variant because those tokens are
+item-invariant boilerplate; fusing an item-varying payload onto positions carrying no item
+information would partially reproduce the very confound this rung removes. Recorded before the draw.
+
+**Positions were resolved from the tokeniser's own offset map, after the obvious method failed.**
+Re-encoding `header + question` and requiring it to be a prefix of the canonical tokenisation
+**rejected every item**: Qwen2.5's pre-tokeniser groups trailing punctuation with the newlines that
+follow it, so a GSM8K question ending in `?` produces a final token spanning `"?\n\n"` that straddles
+the question/answer-format boundary. The 8 positions are therefore the last 8 tokens lying *wholly
+inside* `item.question`; gated per item as contiguous, ending at the last such token, and decoding
+back to question text. 300/300 items resolved, 0 tokenisation exclusions. Every per-item row carries
+`injection_site.positions`, `.position_token_ids` and `.positions_decoded` (e.g. item 4 →
+positions 32-39 → `" How many pages does he write a year"`).
+
+**PRIMARY (ADR-036 e-process): FAIL.** `λ=0.30`, PASS at `W ≥ 1/α = 20`, `N_max=300`, items drawn
+from `adaptation-512` in fixed index order with ADR-024's 13-item leakage exclusion applied (**0 of
+the 13 are present in `adaptation-512`** — computed, not assumed; that split is also fully disjoint
+from the S2c training pool, so the exclusion is a measured no-op here). The stream ran the **full
+300 items**; `W` **never crossed**, and never even rose above its starting value: `W_max = 1.0000`,
+`W_min = 0.1474`, `W_final = 0.2578`. The first discordant pair (item order 3) was a loss and the
+process was under 1.0 from then on. **`n_disc = 66` (31W/35L).**
+
+**THE INSTRUMENT FIX WORKED.** 66 discordant pairs, against the frozen protocol's M4d 7 / M4g 3 /
+M4h-S1 **2**. This draw *could* have rejected; it did not. That is a materially different epistemic
+object from M4h Stage 1's `power_limited: true`, and it is the first rung in this ladder where a
+null on the primary means "no effect was detected by an instrument capable of detecting one" rather
+than "the instrument could not have spoken." Cost: **3,397 s ≈ 0.94 GPU-h**, against ADR-036's
+pre-registered ≈0.88 GPU-h full-budget estimate — inside the stated band, no training, no capture.
+
+**But the site change is NOT inert, and that is the rung's real finding.** Every prior on-manifold
+configuration sat within ~0.004 nats of baseline. Here, at ordinary question tokens:
+
+| | aligned | baseline | zerovec | random |
+|---|---|---|---|---|
+| accuracy (of 300) | **128** | 140 | 140 | 132 |
+| mean gold NLL | **2.2446** | 2.3928 | 2.3928 | 2.3474 |
+
+Aligned NLL is **0.148 nats below baseline** and wins **181/300** items against it — two orders of
+magnitude outside the inertness band, on the same artifact and the same payload derivation that were
+inert at the placeholder site. `docs/research/043`'s mechanistic claim therefore gets **partial
+support**: moving off `<|fim_pad|>` makes the payload *register* in the forward pass.
+
+**It registers, and it does not help — a dissociation that must be stated as such.** Accuracy moves
+the *wrong* way: aligned 128 vs baseline 140 (24W/36L), and aligned loses the e-process to random
+(31W/35L). Two honest qualifications on the NLL number, both from the same receipt: (i) `random`
+*also* beats baseline on NLL (2.3474 vs 2.3928), so part of the gain is a generic consequence of
+fusing *any* norm-matched vector onto real content positions, not payload-specific — aligned's
+margin over random is the smaller 0.103 nats at 166W/134L; and (ii) accuracy at this site is mildly
+*damaged* by the operation itself (random 132 and aligned 128, both below baseline's 140), while
+`zerovec` is bit-identical to baseline on **300/300** items (max |ΔNLL| exactly 0.0), confirming the
+fuse operator is a true no-op and that the damage is content-driven, not operator-driven. NLL was
+explicitly rejected as a co-primary by ADR-030 §3.2 because it was blind to the one real accuracy
+effect this ladder produced; M4i is the exact mirror — NLL showing a large effect where accuracy
+shows none. Both directions of that dissociation are now on record, and neither licenses reading
+the other's number as transfer.
+
+**Manifold pre-check (diagnostic, ordering gate only, run before the draw).** Payload derivation is
+byte-identical to M4h Stage 1's, so the pre-check row is the same object re-measured into this
+rung's own receipt: **`on-manifold-item-varying`**, cosine-to-natural 0.6814 against the un-pooled
+reference row's own 0.6670, entropy 3.32 against the reference's 3.36. The payload is a well-formed,
+item-varying, on-manifold receiver-like state. It still does not transfer.
+
+**Registered interpretation, applied as written.** ADR-024's own M4i pre-registration said a NULL
+"demotes this to a real-but-non-load-bearing structural difference and points back to pooling and
+receiver scale as the dominant candidates," and `docs/research/043` §5(4) said the same. That is the
+verdict — with one sharpening this rung earns: **pooling is already excluded for this payload** (it
+is M4h Stage 1's de-pooled derivation), so the live candidates are now **receiver scale** (M4b),
+**one-shot vs. continuous delivery**, and **the single-vector-broadcast-to-8-positions structure**
+(M4h Stage 2's 8 distinct per-slot vectors). The placeholder site is real — it demonstrably
+suppressed the payload's effect on the forward pass — but removing it is not sufficient.
+
+**Scope of the null, stated narrowly (ADR-032 criterion 1).** M3's reconstruction-trained MLP at
+L18→L14, de-pooled to its last translated token, broadcast to 8 positions and residual-added onto
+the last 8 ordinary tokens of the receiver's own question, rescaled to the per-item natural median,
+does **not** carry causally usable signal for Qwen2.5-3B-Instruct → Qwen2.5-1.5B-**Instruct** on
+GSM8K accuracy, over 300 `adaptation-512` items under ADR-036's e-process. Every noun is
+load-bearing. It says nothing about a different receiver scale, a per-slot payload, continuous
+delivery, or a different task.
+
+**Declared confounds, from the pre-registration, not invented now.** (1) Removing the slot sentence
+changes the baseline prompt, so **accuracy levels are not comparable to any prior rung** — the
+primary is paired within this rung, where all four conditions share one prompt, and is unaffected.
+(2) `random` is a **stronger** comparator here than at the placeholder site because it perturbs
+genuine question content; that was declared before the draw and the primary's loss is therefore more
+informative, not less. (3) The FIM-exposure claim underpinning the hypothesis remains inferred from
+*absence of mention* in the base Qwen2.5 report, not from a stated negative.
+
+**Honest-fail path honoured.** ONE draw, no retry, no restart, no re-parametrisation. The complete
+300-step `W_t` trajectory is committed in the receipt regardless of outcome, and `adaptation-512`'s
+items 4…4465 were consumed in the file's own fixed index order. `eval-200`/`holdout-100` remain
+mechanically locked and untouched. `adaptation-512` shares exactly **one** index (1153) with the
+historical frozen-40 probe set — disclosed rather than silently kept; it is not training leakage,
+and ADR-036's registered exclusion rule names only the 13-item list, so removing it would itself
+have been an unregistered protocol change.
+
+**One unreconciled wording discrepancy inside the committed receipt, disclosed rather than rounded
+away (ADR-032 criterion 4).** The receipt's
+`gates.site_change_recorded_with_exact_token_positions.note` says the 8 positions were "gated to
+decode to a **suffix** of the item's own question." The operative rule — correctly stated in the
+same receipt's `site_choice_justification.position_resolution` and enforced in code — is
+**containment**: contiguous, ending at the last token *wholly inside* the question, decoding back to
+text contained in it. The two differ only because the straddling `"?\n\n"` boundary token is
+excluded, so the window is a suffix of the question's *token-aligned* span rather than of its raw
+text. The gate note in the probe source is corrected for future runs; the committed receipt is left
+byte-for-byte as drawn, and this note is the reconciliation.

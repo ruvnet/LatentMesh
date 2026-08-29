@@ -53,8 +53,9 @@ use std::path::{Path, PathBuf};
 use common::affine::AffineTransform;
 use common::fastgrnn::FastGrnnTransform;
 use common::lens::{
-    cosine, entropy_nats, logsumexp, mean, mean_pairwise_cosine, mean_resultant_length, minmax,
-    project_batch, rms_norm, token_set_stats, top_k,
+    classify, cosine, entropy_nats, logsumexp, mean, mean_pairwise_cosine, mean_resultant_length,
+    minmax, project_batch, rms_norm, token_set_stats, top_k, COLLAPSE_COSINE, COLLAPSE_TOKEN_UNION,
+    OFF_MANIFOLD_COSINE,
 };
 use common::m3::{GOLDEN_REL_TOL, RECEIVER, RECEIVER_BLOCK, SENDER_BLOCK};
 use common::mlp::MlpTransform;
@@ -82,19 +83,10 @@ const EVIDENCE_LABEL: &str =
     "deterministic CPU analysis over committed artifacts — no probe draw, annotates only";
 
 // --- Registered classification thresholds ---------------------------------
-// Chosen to reproduce `docs/research/033` §4's own characterisation of M4c
-// ("nearly item-invariant", "77 distinct tokens across 40 items", "off the
-// receiver's residual-stream manifold") and applied identically to every
-// candidate, including the references.
-/// Mean pairwise cosine between emitted vectors at or above which the
-/// emitter is called item-invariant.
-const COLLAPSE_COSINE: f64 = 0.95;
-/// Distinct tokens in the union of the 40 top-10 sets at or below which the
-/// emitter's output-token support is called collapsed (max possible 400).
-const COLLAPSE_TOKEN_UNION: usize = 120;
-/// Mean cosine to the receiver's OWN pooled L14 state for the same item,
-/// below which the emitted direction is called off-manifold.
-const OFF_MANIFOLD_COSINE: f64 = 0.20;
+// The thresholds and the verdict function now live in `common/lens.rs`,
+// beside the metric kit that feeds them, so ADR-024's PC1 pre-check reuses
+// ONE definition rather than copying a second that could drift. Their values
+// and rationale are unchanged; see `common::lens`.
 
 fn crate_path(rel: &str) -> PathBuf {
     Path::new(env!("CARGO_MANIFEST_DIR")).join(rel)
@@ -619,17 +611,6 @@ fn build_candidates() -> anyhow::Result<(Vec<Candidate>, serde_json::Value)> {
 // ---------------------------------------------------------------------------
 
 /// The verdict label for one candidate, from the registered thresholds.
-fn classify(invariance: f64, token_union: usize, manifold_cos: f64) -> &'static str {
-    let invariant = invariance >= COLLAPSE_COSINE || token_union <= COLLAPSE_TOKEN_UNION;
-    let off = manifold_cos < OFF_MANIFOLD_COSINE;
-    match (invariant, off) {
-        (true, true) => "COLLAPSED-OFF-MANIFOLD",
-        (true, false) => "item-invariant-but-on-manifold",
-        (false, true) => "off-manifold-but-item-varying",
-        (false, false) => "on-manifold-item-varying",
-    }
-}
-
 #[allow(clippy::too_many_lines)]
 fn main() -> anyhow::Result<()> {
     let t0 = std::time::Instant::now();
@@ -1145,11 +1126,13 @@ fn main() -> anyhow::Result<()> {
         .unwrap_or_else(|| "run2-manifold-precheck-receipt.json".to_string());
     anyhow::ensure!(
         (receipt_name.starts_with("run2-manifold-precheck")
-            || receipt_name.starts_with("run2-m4h-s1-manifold-precheck"))
+            || receipt_name.starts_with("run2-m4h-s1-manifold-precheck")
+            || receipt_name.starts_with("run2-m4i-manifold-precheck"))
             && receipt_name.ends_with(".json")
             && !receipt_name.contains('/'),
-        "receipt name must be a bare run2-manifold-precheck*.json or \
-         run2-m4h-s1-manifold-precheck*.json filename, got {receipt_name}"
+        "receipt name must be a bare run2-manifold-precheck*.json, \
+         run2-m4h-s1-manifold-precheck*.json or run2-m4i-manifold-precheck*.json \
+         filename, got {receipt_name}"
     );
     common::write_receipt(&crate_path("receipts"), &receipt_name, &receipt)?;
     println!("\nVERDICT: {verdict}");

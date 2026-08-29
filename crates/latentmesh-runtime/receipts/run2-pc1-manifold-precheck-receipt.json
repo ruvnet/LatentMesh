@@ -1,0 +1,317 @@
+{
+  "candidates": [
+    {
+      "classification": "item-invariant-but-on-manifold",
+      "entropy_nats": {
+        "plain_lens_mean": 8.679642449084438,
+        "rmsnorm_lens_mean": 4.241291275801191,
+        "uniform": 11.931214658529285
+      },
+      "family": "pc1-identity-no-adapter",
+      "gold_answer_tokens": {
+        "mean_best_rank_rmsnorm": 18382.65,
+        "mean_rank_rmsnorm": 84223.73000000001,
+        "vocab_percentile_rmsnorm": 0.5543368918491998
+      },
+      "item_invariance": {
+        "max": 0.9702067571707698,
+        "mean_pairwise_cosine_between_emitted_vectors": 0.8564937118156659,
+        "mean_resultant_length_of_unit_vectors": 0.927405719747443,
+        "min": 0.7328149665945032
+      },
+      "label": "pc1-payload-receiver-L19-lasttoken-goldteacherforced",
+      "manifold": {
+        "emitted_l2": {
+          "max": 69.38677978515625,
+          "mean": 66.59450826644897,
+          "min": 61.9234733581543
+        },
+        "mean_cosine_to_same_item_natural_receiver_L14_pooled": 0.6868619808689835
+      },
+      "output_token_support_rmsnorm_lens": {
+        "distinct_tokens_in_union_of_40_top10_sets": 98,
+        "dominant_tokens": [
+          {
+            "decoded": "️",
+            "in_top10_of_n_items": 40,
+            "token_id": 30543
+          },
+          {
+            "decoded": "返回搜狐",
+            "in_top10_of_n_items": 39,
+            "token_id": 109073
+          },
+          {
+            "decoded": "<|endoftext|>",
+            "in_top10_of_n_items": 38,
+            "token_id": 151643
+          },
+          {
+            "decoded": "逯",
+            "in_top10_of_n_items": 33,
+            "token_id": 120812
+          },
+          {
+            "decoded": "″",
+            "in_top10_of_n_items": 19,
+            "token_id": 21580
+          },
+          {
+            "decoded": " ​​",
+            "in_top10_of_n_items": 15,
+            "token_id": 72363
+          },
+          {
+            "decoded": "@stop",
+            "in_top10_of_n_items": 12,
+            "token_id": 47079
+          },
+          {
+            "decoded": " Mitar",
+            "in_top10_of_n_items": 10,
+            "token_id": 78722
+          }
+        ],
+        "max_possible": 400
+      },
+      "training": "NONE — identity; this vector IS a captured receiver state"
+    },
+    {
+      "classification": "item-invariant-but-on-manifold",
+      "entropy_nats": {
+        "plain_lens_mean": 11.251489317232144,
+        "rmsnorm_lens_mean": 9.124436561238998,
+        "uniform": 11.931214658529285
+      },
+      "family": "reference-natural-receiver-state",
+      "gold_answer_tokens": {
+        "mean_best_rank_rmsnorm": 12761.8,
+        "mean_rank_rmsnorm": 61743.10791666666,
+        "vocab_percentile_rmsnorm": 0.4063757629308831
+      },
+      "item_invariance": {
+        "max": 0.9949029256097102,
+        "mean_pairwise_cosine_between_emitted_vectors": 0.9306733787624627,
+        "mean_resultant_length_of_unit_vectors": 0.9656120050483008,
+        "min": 0.8724766008582805
+      },
+      "label": "reference-receiver-L14-pooled",
+      "manifold": {
+        "emitted_l2": {
+          "max": 37.73312759399414,
+          "mean": 34.865119552612306,
+          "min": 32.78910446166992
+        },
+        "mean_cosine_to_same_item_natural_receiver_L14_pooled": 1.0
+      },
+      "output_token_support_rmsnorm_lens": {
+        "distinct_tokens_in_union_of_40_top10_sets": 118,
+        "dominant_tokens": [
+          {
+            "decoded": "纪委监",
+            "in_top10_of_n_items": 35,
+            "token_id": 118614
+          },
+          {
+            "decoded": "_IList",
+            "in_top10_of_n_items": 24,
+            "token_id": 88431
+          },
+          {
+            "decoded": "啷",
+            "in_top10_of_n_items": 22,
+            "token_id": 120675
+          },
+          {
+            "decoded": " totaling",
+            "in_top10_of_n_items": 19,
+            "token_id": 81123
+          },
+          {
+            "decoded": " (\\",
+            "in_top10_of_n_items": 15,
+            "token_id": 19788
+          },
+          {
+            "decoded": "//--------------------------------------------------------------\n",
+            "in_top10_of_n_items": 14,
+            "token_id": 81042
+          },
+          {
+            "decoded": ".toFixed",
+            "in_top10_of_n_items": 12,
+            "token_id": 43182
+          },
+          {
+            "decoded": "返回搜狐",
+            "in_top10_of_n_items": 12,
+            "token_id": 109073
+          }
+        ],
+        "max_possible": 400
+      },
+      "training": "NONE — identity; this vector IS a captured receiver state"
+    },
+    {
+      "classification": "on-manifold-item-varying",
+      "entropy_nats": {
+        "plain_lens_mean": 11.06734042924496,
+        "rmsnorm_lens_mean": 6.984850900910706,
+        "uniform": 11.931214658529285
+      },
+      "family": "reference-natural-receiver-state",
+      "gold_answer_tokens": {
+        "mean_best_rank_rmsnorm": 36871.2,
+        "mean_rank_rmsnorm": 91789.01458333332,
+        "vocab_percentile_rmsnorm": 0.604129466244559
+      },
+      "item_invariance": {
+        "max": 0.9575931564868693,
+        "mean_pairwise_cosine_between_emitted_vectors": 0.741179563400003,
+        "mean_resultant_length_of_unit_vectors": 0.8646676091510557,
+        "min": 0.514165792222118
+      },
+      "label": "reference-receiver-L14-single-row",
+      "manifold": {
+        "emitted_l2": {
+          "max": 51.1126708984375,
+          "mean": 45.406123352050784,
+          "min": 42.714752197265625
+        },
+        "mean_cosine_to_same_item_natural_receiver_L14_pooled": 0.7270555107091337
+      },
+      "output_token_support_rmsnorm_lens": {
+        "distinct_tokens_in_union_of_40_top10_sets": 196,
+        "dominant_tokens": [
+          {
+            "decoded": "返回搜狐",
+            "in_top10_of_n_items": 14,
+            "token_id": 109073
+          },
+          {
+            "decoded": "″",
+            "in_top10_of_n_items": 13,
+            "token_id": 21580
+          },
+          {
+            "decoded": "acious",
+            "in_top10_of_n_items": 10,
+            "token_id": 19430
+          },
+          {
+            "decoded": "TargetException",
+            "in_top10_of_n_items": 10,
+            "token_id": 72152
+          },
+          {
+            "decoded": "AllWindows",
+            "in_top10_of_n_items": 10,
+            "token_id": 82270
+          },
+          {
+            "decoded": "HTTPRequestOperation",
+            "in_top10_of_n_items": 10,
+            "token_id": 93787
+          },
+          {
+            "decoded": " cents",
+            "in_top10_of_n_items": 9,
+            "token_id": 30191
+          },
+          {
+            "decoded": "NES",
+            "in_top10_of_n_items": 9,
+            "token_id": 71758
+          }
+        ],
+        "max_possible": 400
+      },
+      "training": "NONE — identity; this vector IS a captured receiver state"
+    }
+  ],
+  "dataset": {
+    "indices": [
+      141,
+      150,
+      850,
+      1153,
+      1309,
+      1435,
+      1573,
+      1602,
+      2365,
+      2418,
+      2436,
+      2489,
+      2540,
+      2723,
+      2958,
+      2973,
+      3084,
+      3165,
+      3741,
+      3772,
+      3825,
+      3844,
+      3877,
+      4255,
+      4305,
+      4344,
+      4746,
+      4888,
+      5422,
+      5610,
+      6031,
+      6146,
+      6378,
+      6452,
+      6552,
+      6629,
+      7293,
+      7375,
+      7431,
+      7462
+    ]
+  },
+  "design": "docs/adr/024-run2-trained-thought-adapter-ladder.md § 'PC1 PRE-REGISTRATION (2026-08-29)'; docs/research/045 §5's mandatory item-invariance/entropy gate (docs/research/036's triple)",
+  "env": {
+    "evidence_label": "deterministic CPU analysis over the sha-pinned PC1 payload — no probe draw, annotates only",
+    "hidden": 1536,
+    "rms_norm_eps": 1e-6,
+    "unembedding": "Qwen/Qwen2.5-1.5B-Instruct model.embed_tokens.weight (tied), f32 on CPU",
+    "vocab": 151936
+  },
+  "firewall_verbatim_research_045_section_3": "This control used a same-model, same-item, identity-transform injection with gold-adjacent content. It tests whether this repository's injection mechanics (delivery operator, payload shape, injection site, norm-rescale) are capable of carrying signal at all. It does not test, and must not be cited as evidence for or against, whether a cross-model-derived, learned-alignment payload can transfer reasoning content — that is exactly the separate question M3 through M5X exist to answer.",
+  "gating": "NONE — ORDERING ONLY, per ADR-024's M4f framing. This receipt must EXIST and must have measured this exact payload sha before the PC1 draw; its classification decides nothing about the verdict.",
+  "liveness_not_transfer": "A PASS on PC1 proves LIVENESS ONLY, NEVER TRANSFER, and may never be cited as evidence for the transfer claim.",
+  "payload_source": {
+    "capture_receipt": "receipts/run2-pc1-capture-receipt.json",
+    "derivation": "receiver's OWN block-19 state, gold-teacher-forced, LAST token of the span — identity transform, no adapter",
+    "payload_file": "/home/ruvultra/projects/LatentMesh-1/crates/latentmesh-runtime/target/latentmesh-runs/run2-pc1/run2-pc1-payloads.f32bin",
+    "sha256": "ab250350163b0739a1beec6d50264bd6e792965bc6116b1ea33178e23430d8ab"
+  },
+  "registered_expectation_stated_before_the_numbers": {
+    "expected": "on-manifold-item-varying — trivially, because the payload IS a real receiver residual-stream state rather than an adapter's output",
+    "if_it_is_not": "a finding about the PIPELINE, not about PC1: either the registered manifold metric's reference is mis-specified for un-pooled/other-depth states, or the pre-check has been mis-reading the adapters it has classified. Reported, not waved through.",
+    "matches_expectation": false,
+    "observed": "item-invariant-but-on-manifold",
+    "surprise_flag": true
+  },
+  "registered_metric_caveat": {
+    "like_for_like_comparators_from_the_same_capture": {
+      "mean_cosine_L14_last_to_same_item_L14_pooled": 0.7270555107091337,
+      "mean_cosine_payload_L19_last_to_same_item_L14_last": 0.7821364954630334,
+      "reading": "the second number isolates the POOLING half of the mismatch using two states the receiver genuinely produced, so the first can be read against it rather than against 1.0"
+    },
+    "metric": "mean_cosine_to_same_item_natural_receiver_L14_pooled",
+    "why_it_understates_here": "PC1's payload is an UN-POOLED L19 state; the metric's reference is a POOLED L14 state. BOTH depth (19 vs 14) and pooling (single row vs span mean) differ. ADR-024 already records that a pooled natural state sits only ~0.667 cosine from a real un-pooled one, so this number is not a clean on/off-manifold reading for this payload."
+  },
+  "stage": "run2-PC1-manifold-precheck",
+  "thresholds_registered": {
+    "collapse_mean_pairwise_cosine_at_or_above": 0.95,
+    "collapse_top10_token_union_at_or_below": 120,
+    "off_manifold_mean_cosine_to_natural_below": 0.2,
+    "source": "common/lens.rs — the same constants and the same classify() every prior pre-check used, reused rather than copied"
+  },
+  "wall_clock_s": 2.144357681274414
+}

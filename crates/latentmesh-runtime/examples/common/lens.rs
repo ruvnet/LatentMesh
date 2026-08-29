@@ -15,6 +15,37 @@
 use candle_core::{Device, Tensor};
 use std::collections::BTreeSet;
 
+// --- Registered manifold-classification thresholds -------------------------
+// Chosen for `run2_manifold_precheck` (ADR-024's M4f pre-check) to reproduce
+// `docs/research/033` §4's own characterisation of M4c ("nearly
+// item-invariant", "77 distinct tokens across 40 items", "off the receiver's
+// residual-stream manifold"), and applied identically to every candidate in
+// every pre-check since. They live HERE, beside the metric kit that feeds
+// them, so a later pre-check (ADR-024's PC1) reuses one definition instead of
+// copying a second one that can silently drift.
+
+/// Mean pairwise cosine between emitted vectors at or above which the
+/// emitter is called item-invariant.
+pub const COLLAPSE_COSINE: f64 = 0.95;
+/// Distinct tokens in the union of the 40 top-10 sets at or below which the
+/// emitter's output-token support is called collapsed (max possible 400).
+pub const COLLAPSE_TOKEN_UNION: usize = 120;
+/// Mean cosine to the receiver's OWN pooled L14 state for the same item,
+/// below which the emitted direction is called off-manifold.
+pub const OFF_MANIFOLD_COSINE: f64 = 0.20;
+
+/// The registered two-axis verdict: item-invariance (either arm) × manifold.
+pub fn classify(invariance: f64, token_union: usize, manifold_cos: f64) -> &'static str {
+    let invariant = invariance >= COLLAPSE_COSINE || token_union <= COLLAPSE_TOKEN_UNION;
+    let off = manifold_cos < OFF_MANIFOLD_COSINE;
+    match (invariant, off) {
+        (true, true) => "COLLAPSED-OFF-MANIFOLD",
+        (true, false) => "item-invariant-but-on-manifold",
+        (false, true) => "off-manifold-but-item-varying",
+        (false, false) => "on-manifold-item-varying",
+    }
+}
+
 /// Indices of the `k` largest entries, descending by value.
 pub fn top_k(z: &[f32], k: usize) -> Vec<u32> {
     let k = k.min(z.len());
