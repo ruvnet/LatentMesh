@@ -1,5 +1,38 @@
 # 030. Run 3 pre-registration: causally-gated TEXT communication
 
+> ## ⛔ TWO CORRECTIONS APPLIED BEFORE THE DRAW (2026-08-29)
+>
+> **(a) This ADR's item-supply rule rests on a premise verified FALSE.** It
+> states the frozen 40-item probe is *"a subset of adaptation-512 by
+> construction"*. It is not:
+> [ADR-036](036-successor-rung-evaluation-protocol.md) §Decision 2 checked the
+> set intersection directly and found **exactly 1 item (index 1153), not 40** —
+> 22 of the 40 sit in `calibration-4000` and 17 in neither. The Run 3 owner
+> re-derived the intersection independently and confirmed 1. **Run 3 therefore
+> follows ADR-036's corrected rule** — the stream is drawn entirely from
+> `adaptation-512` in ascending index order. Side benefit: the `zero` control
+> then runs on the population identical to M4i's `baseline_uninjected` 140/300,
+> making it an **exact** comparator rather than an approximate one. Disclosed in
+> the receipt as `item_supply.adr030_rule_superseded`.
+>
+> **(b) "Best of the four controls, selected post-hoc" is not implementable by a
+> sequential procedure**, which cannot know post-hoc which control is best while
+> still running. Implemented instead as an **intersection–union test**: four
+> wealth processes run in parallel, one per control, and PASS requires
+> **min_k W_k ≥ 20**. This is literally "beats the best control", and it is
+> **valid at α with no multiplicity correction** — under the null that text is
+> no better than the true best control `k*`, Ville's inequality bounds
+> `P(sup_t W_{k*,t} ≥ 20) ≤ 1/20 = α`, and PASS ⊆ {W_{k*} crosses}. It is
+> conservative in the same direction §5 already discloses post-hoc selection to
+> be. The control ending on the lowest wealth is reported as the realised best
+> control, and the fixed-N post-hoc reading is reported **alongside** from the
+> same per-control committed pairs. Registered as
+> `e_process.best_control_requirement_implemented_as`.
+>
+> Neither correction alters a registered parameter: λ, α, the wealth threshold,
+> N_max, the four controls and the endpoint are all unchanged.
+
+
 - **Status**: Proposed (pre-registration — frozen before any item is consumed, per ADR-023's own
   discipline). This is the results record once run 3 executes; a results section is appended here,
   not opened as a new ADR, mirroring ADR-023's own S6 pattern.
