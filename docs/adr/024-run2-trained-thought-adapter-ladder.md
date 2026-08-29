@@ -411,6 +411,22 @@ transfer — now shown for a trained nonlinear map, scoped by the registered
 receiver-scale confound above. Ladder proceeds to M4 (sequence translation)
 per this ADR's fail path.
 
+> **ANNOTATION (2026-08-29, appended post-hoc against `docs/research/031-statistical-power-and-design.md`
+> — does NOT change the recorded verdict above).** Both M3 draws landed in the exact sign
+> test's power-floor dead zone: per-token variant had `n_disc=4` (the minimum attainable p at
+> `n_disc=4` is 0.0625, above α=0.05 — the test could not have rejected the null regardless of the
+> true effect size); pooled variant had `n_disc=3` (minimum attainable p 0.125, likewise above
+> α=0.05 unconditionally). **This means both M3 "FAIL" verdicts are more precisely described as
+> "the test could not have detected an effect at this discordant-pair count" than as "no effect
+> exists"** — a distinction this repo's own subsequent power analysis surfaced, not one apparent at
+> the time M3's outcome was first reported. Secondary, non-authoritative re-analysis: recomputed
+> mid-p McNemar statistic (Fagerland, Lydersen & Laake 2013) on the same collected pairs —
+> per-token 0.6875 → **0.5000** mid-p; pooled 0.5000 → **0.3125** mid-p. Both remain clean fails
+> under the mid-p statistic too; this recomputation does not flip either verdict and is reported as
+> a post-hoc secondary annotation, not a re-test, not a changed verdict, and not grounds to re-probe
+> M3. See ADR-030's amended Acceptance criteria section for how this structural floor is handled
+> prospectively in run 3's own design.
+
 ## M4 outcome (2026-08-29, appended per ladder discipline)
 
 **Honest fail, all three sub-rungs, adversarially confirmed** (receipts
@@ -424,10 +440,98 @@ window-zero-init scheme, caught by the holdout metric before any probe
 invocation, preserved with -superseded suffix, disclosed in receipt).
 **Per the pre-verdict interpretive rule above, this is NOT evidence against
 sequence structure — the reconstruction-loss confound applies identically.
-The registered M4c (task-loss ablation) is now MANDATORY.** Execution
+The registered M4c (task-loss ablation) is now MANDATORY.**
+
+> **ANNOTATION (2026-08-29, appended post-hoc against `docs/research/031-statistical-power-and-design.md`
+> — does NOT change the recorded verdicts above).** r=64 and r=128 both landed at `n_disc=4` — the
+> same power-floor dead zone as M3's per-token draw (minimum attainable exact-sign p at `n_disc=4`
+> is 0.0625, above α=0.05: the test could not have rejected the null at either rank regardless of
+> the true effect size). r=256's `n_disc=5` sits just above that floor (minimum attainable p 0.0312,
+> reachable only at 5/5 wins) but the observed 4/1 fell short of it. **Three of the ladder's ten
+> valid probe draws to date are now known to have been structurally incapable of reaching
+> significance (M3's per-token variant, M4 r=64, M4 r=128) — these "FAIL" verdicts are more
+> precisely "the test could not have detected an effect at this discordant-pair count" than "no
+> effect exists."** Secondary, non-authoritative re-analysis: recomputed mid-p McNemar statistic
+> (Fagerland, Lydersen & Laake 2013) on the same collected pairs — r=64 0.3125 → **0.1875** mid-p;
+> r=128 0.3125 → **0.1875** mid-p; r=256 0.1875 → **0.1094** mid-p. All three remain clean fails
+> under the mid-p statistic too; none of these recomputations flip a verdict, and this is reported
+> as a post-hoc secondary annotation, not a re-test, not a changed verdict, and not grounds to
+> re-probe any M4 rank. The parallel discordant-pair floor across S2b's own four draws (`n_disc`
+> 3, 3, 4, 3 — every one in the dead zone) is documented in full, alongside all 10 valid draws, in
+> `docs/research/031` §1's table; that same document's §2.3 headline finding — that the ladder's
+> own observed ~10% discordance rate implies roughly 25-30 discordant pairs are needed for real
+> power at a plausible effect size, five to six times what any draw here has produced — is the
+> honest scale context for reading every FAIL verdict in this ADR, past and future, and is why
+> ADR-030 (run 3) adopts an anytime-valid sequential test rather than repeating this fixed-N
+> 40-item design as its own primary statistic.
+
+Execution
 order decision: M4c runs before M4b (it reuses all existing capture and
 machinery; M4b needs fresh 3B-receiver calibration + its own
 pre-registration addendum; both remain mandatory).
+
+## M4c outcome (2026-08-29, appended per ladder discipline)
+
+**Honest fail on the frozen probe — but a POSITIVE training/transfer result, and
+the sharpest dissociation this ladder has produced** (receipts
+`run2-m4c-training-receipt-cellL18toL14.json`,
+`run2-m4c-transfer-receipt-cellL18toL14.json`,
+`run2-m4c-receipt-cellL18toL14-mlp-taskloss-slots8-poolfull-rescaletrue-n40.json`).
+
+Architecture per this ADR's "same or best-so-far" rule: the M3 MLP
+(2048→512→1536 ReLU), chosen as best-so-far by holdout fit (rel residual 0.461
+vs FastGRNN's 0.633/0.663/0.704), from a FRESH seeded init so the ablation
+isolates exactly one factor — the loss. Single seeded run, 10 epochs, batch 1,
+AdamW lr 1e-3, 2,035 fit / 509 holdout items after the same frozen leakage rule
+and the same 13 exclusions; 1,604 s GPU, 10,322 MiB process peak.
+
+1. **The task loss trained, well.** Holdout task CE 0.2546 (seeded init) →
+   **0.1595** at best epoch 4 (later epochs overfit: train 0.0884 / holdout
+   0.1846 by epoch 9 — the best-holdout rule selected 4).
+2. **The improvement TRANSFERS across the registered composed↔fused BF16 gap.**
+   The pre-registered transfer check (inference-only, vendored fused forward,
+   holdout items, no probe draw) measured mean fused NLL **0.1570 trained vs
+   0.2385 init, 498 wins / 11 losses** (secondary sign p=8.1e-132). The
+   registered caveat is therefore RETIRED, not merely disclosed: the numeric gap
+   does not confound what follows.
+3. **The frozen probe still nulls.** Aligned 23/40, baseline 22/40, zerovec
+   24/40, random 21/40; primary aligned>random **p=0.3438** (4W/2L), α=0.05 —
+   fail. Zerovec gate passed; all integrity gates (artifact hash, golden pairs,
+   S1a item-set reproduction, transfer-gate-before-probe) passed.
+4. **NOT the M3 power-floor artifact.** M4c drew `n_disc=6`, whose minimum
+   attainable p is 2⁻⁶ = 0.0156 < α — unlike both M3 draws, this test *could*
+   have rejected. The null is a real non-detection, not a structural dead zone.
+5. **The dissociation, stated plainly.** The adapter's aligned injection made
+   the receiver's gold-answer continuation dramatically *less* likely: mean NLL
+   of `#### <gold>` was **5.359 aligned vs 2.129 baseline / 2.117 random /
+   2.154 zerovec — 0 wins, 40 losses vs random (p=1.0)**. The adapter learned,
+   verifiably and transferably, to steer the receiver toward reproducing the
+   *sender's generated token span* — which is exactly what C2C-style task loss
+   on that span optimizes — and that objective is not the answer-format
+   objective the probe scores. Accuracy was untouched (23 vs 21) while the
+   answer-token likelihood collapsed.
+
+**Reading.** The registered hypothesis was "reconstruction loss was the wrong
+loss." M4c shows that swapping in the task loss produces a genuinely, strongly
+optimized channel (0.2546→0.1595 holdout CE, transferring at 498/11) that still
+buys no probe-measured causal benefit — so the parsimonious reading is no longer
+"still the loss function." The candidate that replaces it is a **target
+mismatch**: next-token CE on the sender's span rewards mimicking the sender's
+chain-of-thought surface, and the resulting steer actively fights the answer
+format. This is a new, mechanistically specific finding, and it is the first
+rung where the adapter demonstrably learned something causal about the
+receiver's behaviour at all. It does not overturn either registered confound —
+the receiver-scale threshold (M4b, still mandatory) and the epiphenomenal-
+correctness framing both stand, and the sub-1.7B receiver scoping applies here
+identically.
+
+**Ladder position.** M4c is discharged (it was mandatory; it ran once, honestly,
+with its transfer gate passing first). M4b — the ≥1.7B receiver scale-control
+arm — remains mandatory and is the next rung; it needs fresh calibration and its
+own pre-registration addendum. ADR-027's prefix-level delivery gains support
+from the NLL dissociation above (a delivery path that cannot fight the answer
+format is a different failure surface), but activating it still requires its own
+addendum frozen before any probe.
 
 ## Registered contingency — task-loss training rung (added 2026-08-28, M4 verdict NOT yet known)
 

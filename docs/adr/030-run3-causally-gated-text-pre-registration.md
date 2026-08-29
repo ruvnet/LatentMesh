@@ -14,8 +14,12 @@
   independent of — run 3 does not require, wait for, or depend on any run-2 rung's outcome)
 - **Evidence base**: [docs/research/030-economics-and-gate-standalone.md](../research/030-economics-and-gate-standalone.md)
   (the full basis for this ADR — Q1's compute economics and Q2's literature-verified novelty claim,
-  read in full and cited by section below), ADR-023's own receipts and split-discipline code
-  (`harness/latentmesh-live/src/gsm8k.rs`, `crates/latentmesh-runtime/receipts/s1a-receipt-*.json`)
+  read in full and cited by section below), [docs/research/031-statistical-power-and-design.md](../research/031-statistical-power-and-design.md)
+  (a dedicated power/multiplicity/test-choice analysis of the ladder's own 10 valid probe draws,
+  committed before this ADR froze and incorporated into the Acceptance criteria and Multiplicity
+  sections below as an amendment, not a post-hoc correction), ADR-023's own receipts and
+  split-discipline code (`harness/latentmesh-live/src/gsm8k.rs`,
+  `crates/latentmesh-runtime/receipts/s1a-receipt-*.json`)
 
 ## Context
 
@@ -112,12 +116,72 @@ of those 40 items is new, not because the item-budget discipline is being relaxe
 
 ### Acceptance criteria (frozen, testable exactly as stated, whatever the outcome)
 
-- **Primary gate**: one-sided exact sign test, α=0.05, paired accuracy, `StaticText+Gate`'s
-  gated-text condition (`CausalDynamicText`'s frozen-genome evaluation, or `StaticText+Gate`'s
-  fixed-pipeline evaluation — both are scored against this same test) **greater than the best
-  (most favorable to the null) of the four controls** — mirroring ADR-003's own "significance
-  against the worst control, not just the mean" discipline (`verify_edge`'s documented
-  stricter-than-mean bar), applied here at the condition level.
+**Amended 2026-08-29** against `docs/research/031-statistical-power-and-design.md` (a dedicated
+power/design analysis of the ladder's own 10 valid probe draws to date, committed before this run
+executes and therefore incorporated here as part of the freeze, not as a post-hoc correction).
+Every change below is cited to that document by section.
+
+- **Primary gate — statistic switched to mid-p McNemar** (`docs/research/031` §2.4, Fagerland,
+  Lydersen & Laake 2013, *BMC Medical Research Methodology* 13:91): the primary test is the
+  one-sided **mid-p McNemar** statistic on paired accuracy, α=0.05 — `StaticText+Gate`'s gated-text
+  condition (`CausalDynamicText`'s frozen-genome evaluation, or `StaticText+Gate`'s fixed-pipeline
+  evaluation — both are scored against this same test) **greater than the best (most favorable to
+  the null) of the four controls**, mirroring ADR-003's own "significance against the worst
+  control, not just the mean" discipline applied here at the condition level. The classic exact
+  sign-test p is reported alongside every mid-p value, never in its place — this is strictly more
+  powerful at identical data and identical practical Type-I error control (per `docs/research/031`
+  §2.4's own citation of Fagerland et al.'s finding that mid-p tracks nominal α better than the
+  conservative exact conditional test), at zero additional cost: both statistics are computed from
+  the same collected pairs, no new items, no new receipts.
+- **Power note — replaced with the structural fact, not a generic caveat** (`docs/research/031`
+  §1, §2.1): a one-sided exact sign test's null distribution is `Binomial(n_disc, 0.5)`, and its
+  minimum attainable p-value at a given discordant-pair count `n_disc` sets a hard floor on whether
+  the test can reject at all — **at `n_disc=3`, the minimum attainable p is 0.125; at `n_disc=4`,
+  it is 0.0625; both are above α=0.05, meaning the test is mathematically incapable of rejecting
+  the null regardless of the true effect size.** This is not a modeling assumption; it is exact
+  binomial arithmetic on the observed discordant-pair count. **Across the 9 cross-model draws in
+  the ladder to date (S2b×4, M3×2, M4×3), discordant-pair counts were {3,3,3,4,4,4,4,5,5}
+  (`docs/research/031` §1's table) — 6 of 9 landed at `n_disc∈{3,4}`, the dead zone where the exact
+  test could not have passed no matter what the data showed.** Run 3's own 40-item arm inherits
+  this exact structural risk: if its discordant-pair count also lands at 3 or 4, a "FAIL" verdict
+  from the exact-sign statistic alone would be uninterpretable as evidence about the true effect —
+  which is precisely why the primary statistic is mid-p McNemar (above, roughly halving the
+  attainable p at the same `n_disc`) and why the confirmatory scale below is powered explicitly
+  against this floor, not just described qualitatively as "detects only large effects."
+- **Confirmatory scale — replaced with an anytime-valid e-process, not a second fixed-N look**
+  (`docs/research/031` §3, Waudby-Smith & Ramdas 2023, *JRSS-B* 85(1), arXiv:2010.09686; Ramdas,
+  Grünwald, Vovk & Shafer 2023, *Statistical Science* 38(4):576-601, arXiv:2210.01948). In place of
+  the originally-proposed "40-item and eval-200 scales pre-registered together," the primary
+  `CausalDynamicText`-vs-best-control comparison is evaluated as a **one-sided Bernoulli e-process**
+  over the stream of discordant items drawn, in order, from `adaptation-512` (never
+  `eval-200`/`holdout-100` — the existing split-discipline lock is unchanged). Verbatim registration
+  text, from `docs/research/031` §3.2:
+
+  > Wealth initializes at `W_0 = 1`. For each new item `i`: if concordant, `W_i = W_{i-1}` (no
+  > update); if discordant, `W_i = W_{i-1} · (1 + λ(X_i − 0.5))`, `X_i = 1` if the gated-text
+  > condition wins the pair, else 0, with betting fraction `λ` fixed in advance (`λ = 2θ−1 = 0.30`,
+  > tuned to the smallest interesting effect `θ=0.65`; a mixture/universal betting strategy that
+  > does not commit to one θ is a documented alternative if a single target is judged too
+  > restrictive to freeze). **PASS** the instant `W_i ≥ 1/α = 20` (α=0.05). If `W_i` never crosses
+  > 20 by a pre-registered budget `N_max ≈ 300` items (chosen so the ladder's own observed ~10%
+  > discordance rate yields ≈30 discordant pairs — the count `docs/research/031` §2.2 shows is
+  > needed for real power at a plausible effect size), the rung is a registered FAIL, its full
+  > `W_t` trajectory is committed to the receipt regardless of outcome, and the ladder proceeds
+  > exactly as today's no-rerun discipline requires. **The e-process is never restarted,
+  > re-parametrized, or re-run against the same rung after seeing `W_t`.**
+
+  This supersedes the original two-fixed-scales design specifically because it gets the
+  peeking-safety property natively (Ville's inequality on nonnegative martingales — a real
+  guarantee, not a heuristic) instead of by committing in advance to exactly two look-points, and
+  it can stop early on an unambiguous win (a real θ near 1, like S1a's own signal, would very
+  likely cross the boundary well before the full budget) or extend to the full `N_max≈300` on
+  ambiguity rather than being declared FAIL at whatever fixed N the design happened to freeze at.
+  **Cost accounting, both bounds pre-registered**: the minimum-item-cost bound is the same
+  ≈0.26 GPU-hours as a 40-item draw (`docs/research/030`'s own receipted per-item rates: sender
+  generation ≈2.05 s/item, 5 receiver generations ≈4.27 s each), if `W_t` crosses 20 early; the
+  maximum-budget bound at `N_max≈300` is ≈1.3×(300/200)≈**≈1.95 GPU-hours**, scaled from
+  `docs/research/030`'s own eval-200 estimate by item count, using `adaptation-512` items
+  throughout (never `eval-200` — the e-process runs entirely within the existing train-pool split).
 - **Secondary — uplift magnitude**: report the raw accuracy delta (gated-text minus best control)
   with its exact binomial confidence interval, regardless of whether the primary gate passes —
   matching ADR-023's A2-style "no threshold, reported to pre-empt an accounting-artifact objection"
@@ -126,16 +190,32 @@ of those 40 items is new, not because the item-budget discipline is being relaxe
   as `docs/research/030`'s own Q1 cost estimate methodology (sender generation once per item,
   receiver generation once per condition-control combination) — not re-derived from scratch, since
   the methodology and its receipted per-token rates already exist.
-- **Power note, pre-registered**: a 40-item sign test detects only large effects (per ADR-023's own
-  S6 discussion of S1a's p=0.03125 minimum-attainable-value at 5 discordant pairs on 40 items) —
-  this is disclosed here as a limitation of the frozen-probe scale, not discovered after a null
-  result. **Both scales are pre-registered together, not sequentially**:
-  1. **The 40-item frozen-probe run** — `docs/research/030`'s own receipted cost estimate: 40 items
-     × one sender generation (≈2.05 s at 281 mean tokens × 7.3 ms/token) + 40 items × 5 receiver
-     generations (real + 4 controls, ≈4.27 s each) ≈ 936 s ≈ **≈0.26 GPU-hours**.
-  2. **The `eval-200`-scale run** — the same per-item cost scaled by 200/40 ≈ **≈1.3 GPU-hours**.
-  Both figures are receipted arithmetic from `docs/research/030` §"The minimum experiment," not
-  fresh estimates made for this ADR.
+- **Secondary — continuous-outcome (NLL) statistic explicitly rejected as co-primary**
+  (`docs/research/031` §2.4): a paired Wilcoxon signed-rank test on per-item gold-token NLL was
+  checked against the ladder's own receipted data, not assumed to be more sensitive on textbook
+  grounds. The result is a negative finding, stated here rather than silently omitted: on the one
+  draw with a real signal (S1a run 2, exact sign p=0.0312), the Wilcoxon-on-NLL statistic gives
+  p=0.6834 — **the continuous outcome is blind to the one real effect the ladder has produced.**
+  ADR-023 already flagged this for S1a specifically; `docs/research/031` confirmed it holds across
+  every other draw checked (S2b gold L18→L14, M3 per-token, M4 r=256 — all show the same pattern:
+  NLL tracks nothing the accuracy statistic tracks). The likely mechanism: gold-token NLL measures
+  confidence in a single teacher-forced final-answer token, a different construct from whether the
+  actual greedy generation reached the correct final answer through its own chain. **NLL is
+  therefore not pre-registered as a co-primary or replacement statistic for run 3.** If a
+  continuous outcome is wanted in a future run, `docs/research/031` names log-probability of the
+  correct numeric answer marginalized over the sampled generation as a better candidate — it would
+  need new instrumentation, not a re-read of existing receipts, and is named as follow-up work, not
+  built here.
+- **The "best control" selection — timing pinned down** (`docs/research/031` §5): the primary
+  gate's comparison against "the best (most favorable to the null) of the four controls" is
+  evaluated **post-hoc from the same draw**, chosen as whichever of `zero`/`random`/`mismatched`/
+  `self_generated` scores highest on that draw's own data, not pre-ranked in advance from ADR-003's
+  prior characterization of the controls. **This is stated explicitly because it makes the
+  composite test slightly conservative in the useful direction** — comparing the gated-text
+  condition against whichever control looks strongest in this specific draw is a harder bar to
+  clear than comparing against a fixed a priori control would be, the opposite of the usual
+  post-hoc-selection multiple-comparisons risk, and is disclosed here so a reviewer does not have
+  to work this out independently.
 
 ### The eval-200 lock — handled explicitly, not glossed over
 
@@ -176,20 +256,57 @@ experimental work, not just for run 3 itself.
 
 No new dataset pins, no new split-generation seeds. `calibration-4000`/`adaptation-512` supply
 `CausalDynamicText`'s Darwin fitness batches (train-derived only, same rule as ADR-023's
-adaptation-pool-from-train-only discipline); the frozen 40-item probe (a subset of `adaptation-512`
-by construction, per ADR-023's own dataset-pin table) is the fixed evaluation population for both
-scales above; `eval-200` is touched only by `CausalDynamicText`'s frozen-genome evaluation, after
-its own genome freeze, per the lock discipline above. Sampler: same paper-mirrored arm
-(T=0.6/top-p 0.95/1024-token cap) and greedy witness arm as ADR-023, unless a receiver-generation
-step specifically requires deterministic greedy decoding for a control condition (`self_generated`
-needs the receiver's own prior deterministic output to be well-defined) — that exception is stated
-here, not discovered mid-run.
+adaptation-pool-from-train-only discipline) **and, per the amendment above, the entire e-process
+item stream for the primary statistical test** — the frozen 40-item probe (a subset of
+`adaptation-512` by construction, per ADR-023's own dataset-pin table) remains the fixed starting
+population the e-process draws its first items from, extending further into `adaptation-512` up to
+`N_max≈300` only if `W_t` has not crossed the significance boundary. **`eval-200` is not part of
+the primary hypothesis test in any form after this amendment.** Its remaining role, unchanged from
+before the amendment, is a single confirmatory scoring pass of the frozen genome after
+`CausalDynamicText`'s Darwin loop converges and writes `receipts/genome-frozen.json` — reported as
+descriptive evidence (accuracy, cost, per ADR-023's own A8-style "any eval-vs-adaptation-pool
+discrepancy is reported, never grounds for a rerun" discipline), not as a second statistical test
+subject to its own pass/fail threshold. Sampler: same paper-mirrored arm (T=0.6/top-p 0.95/1024-token
+cap) and greedy witness arm as ADR-023, unless a receiver-generation step specifically requires
+deterministic greedy decoding for a control condition (`self_generated` needs the receiver's own
+prior deterministic output to be well-defined) — that exception is stated here, not discovered
+mid-run.
 
 **Darwin loop seed**: `latentmesh-run3-audit-run-seed` = `11796393239420137246`
 (`0xa3b53526ba74ef1e`), derived by the identical `SHA-256(label)` → big-endian `u64` formula ADR-023
 registered for its own (unused) audit-run seed — a fresh, explicitly-labeled derivation for run 3,
 not a reuse of ADR-023's `darwin-genome`/`audit-run-seed` constants, which remain scoped to any
 future latent-channel Darwin loop that might still use them.
+
+### Multiplicity — the ladder's family, stated before this run's result exists
+
+**Amended 2026-08-29, per `docs/research/031` §4** (a dedicated multiplicity audit of every valid
+probe draw run so far). The frozen 40-item S1a/S2b protocol has produced **10 valid probe draws to
+date** across ADR-023/024 (1 same-model mechanics check that passed, 9 cross-model transfer tests
+that all failed) — this run's `CausalDynamicText` primary test is draw #11 in that lineage,
+whatever channel it tests. Two facts govern how it must be reported:
+
+- **The ladder's own between-architecture ordering (M3 → M4 → M5, run 1 → run 2 → run 3) is
+  already a valid fixed-sequence/gatekeeping procedure and needs no multiple-comparisons
+  correction between its steps** (`docs/research/031` §4.3, citing Maurer, Hothorn & Lehmacher
+  1995 and Westfall & Krishen 2001 on fixed-sequence gatekeeping; §4.4 additionally frames the
+  whole ladder as structurally closest to a multi-arm multi-stage platform-trial design with a
+  shared control and arms added/dropped for futility). This holds specifically because each rung
+  is evaluated only after its predecessor's result is reported, never in parallel with it — run 3
+  satisfies this by construction, since it is authored and would execute after M3/M4's outcomes
+  are already on record.
+- **Within-rung parallel variants need Holm-Bonferroni**, not the gatekeeping exemption above. This
+  run has no internal parallel variants comparable to S2b's two-cell or M3's two-variant structure
+  — `StaticText+Gate` and `CausalDynamicText` are sequential stages of one condition set, not
+  parallel candidates competing for the same probe draw — so no within-rung correction is needed
+  here. If a future amendment adds a parallel variant to this run (e.g. testing two different
+  `mismatched`-control constructions side by side), Holm-Bonferroni at that family's own α applies,
+  per the same rule `docs/research/031` states for the rest of the ladder.
+- **Whatever this run's outcome, it must be reported as "draw #11 in a family of N architecture/
+  channel tests," not as if it were the only test ever run** — the same discipline
+  `docs/research/031` §4.2 requires of any future run-2 rung that eventually passes. A pass here
+  does not exempt this run from that family-size disclosure merely because it tests a different
+  channel than the 10 prior draws.
 
 ## Positioning — independent of whether latent transfer works
 
@@ -234,9 +351,13 @@ and a paper doing exactly this could exist and not have surfaced.
    preempting claim.** `radio-moe` verifies source provenance/independence, never applies a decoy
    condition to any expert's message content — a different, complementary question. This run is not
    redundant with it.
-4. **A passing primary gate at 40-item scale is weaker evidence than a passing eval-200-scale
-   result** — both are pre-registered together specifically so a 40-item pass is never
-   over-interpreted as the final word; the eval-200 run is the confirmatory scale.
+4. **A PASS reached quickly by the e-process (few discordant items, early wealth crossing) is not
+   thereby weaker evidence than a PASS reached near the `N_max≈300` budget** — anytime-valid
+   inference's whole guarantee (Ville's inequality on the wealth process) is that a crossing is
+   equally valid whenever it happens; conversely, a FAIL at `N_max` does not mean "no effect
+   exists," only that no effect large enough to cross the pre-registered betting boundary within
+   budget was found — restating `docs/research/031` §2.1's "could not have passed" caveat for run
+   1/run 2 in this run's own sequential terms, before any result exists to motivate hedging it.
 5. **This run does not claim to have resolved which of the four remaining controls (having dropped
    `text_equivalent`) is doing the most work** — that decomposition, if wanted, is named as future
    analysis, not computed here as part of the primary/secondary criteria above.
@@ -245,10 +366,10 @@ and a paper doing exactly this could exist and not have surfaced.
 
 | Item | Status |
 |---|---|
-| Three conditions, dropped `text_equivalent` (justified), primary/secondary acceptance criteria, both pre-registered scales, sampler/dataset/split reuse, the Darwin-loop seed, the genome-freeze provenance requirement, positioning, hedged novelty claim, will-not-claim list | **Frozen by this ADR** |
-| The frozen 40-item probe's item set and seed | **Reused verbatim from ADR-023** — not redrawn |
+| Three conditions, dropped `text_equivalent` (justified), primary statistic (mid-p McNemar) and its structural power floor, the e-process sequential test with its betting rule/λ/N_max, secondary criteria (uplift, compute cost), NLL explicitly rejected as co-primary, the "best control" selection-timing disclosure, multiplicity framing (gatekeeping between rungs, this run as draw #11), sampler/dataset/split reuse, the Darwin-loop seed, the genome-freeze provenance requirement, positioning, hedged novelty claim, will-not-claim list | **Frozen by this ADR (amended 2026-08-29 against `docs/research/031`)** |
+| The frozen 40-item probe's item set and seed | **Reused verbatim from ADR-023** — not redrawn; now the e-process's starting population, extending into `adaptation-512` up to `N_max≈300` only if needed |
 | `receipts/genome-frozen.json` | **Not yet written** — will be produced by `CausalDynamicText`'s Darwin loop converging, per the lock-handling discipline above |
-| Run execution (both scales) | **Not started** |
+| Run execution | **Not started** |
 
 ## Implementation status
 

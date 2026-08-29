@@ -415,6 +415,32 @@ A7(c) (true zero-vector injected through the real 8-slot path, required "not cat
 below baseline") **passed in all four combinations** — the injection mechanism itself does not
 harm the receiver; the aligned *content* specifically carries no usable signal.
 
+> **ANNOTATION (2026-08-29, appended post-hoc against `docs/research/031-statistical-power-and-design.md`
+> — does NOT change the recorded verdicts above).** All four S2b draws land in the exact sign
+> test's power-floor dead zone: the three draws with wins/losses of 2/1 or 1/2 have `n_disc=3`
+> (minimum attainable one-sided exact-sign p at `n_disc=3` is 0.125, above α=0.05 — the test could
+> not have rejected the null regardless of the true effect size), and the one draw with wins/losses
+> 3/1 has `n_disc=4` (minimum attainable p 0.0625, likewise above α=0.05 unconditionally). **All
+> four A7(b) "FAIL" verdicts are therefore more precisely described as "the test could not have
+> detected an effect at this discordant-pair count" than as "no effect exists"** — a distinction
+> this repo's own subsequent power analysis surfaced, not one apparent when S6 was first written.
+> This does not weaken the attribution chain below (mechanics proven, apply verified bit-exact,
+> reproducibility confirmed) — it sharpens exactly which claim the null result supports: not "the
+> aligned vector was shown to carry no signal" but "no probe run so far, at this item scale, could
+> have detected a signal even if present." Secondary, non-authoritative re-analysis: recomputed
+> mid-p McNemar statistic (Fagerland, Lydersen & Laake 2013, *BMC Medical Research Methodology*
+> 13:91) on the same collected pairs — gold L18→L14 (winner) 0.5000 → **0.3125** mid-p; gold
+> L24→L19 (anchor) 0.8750 → **0.6875** mid-p; generated L18→L14 0.3125 → **0.1875** mid-p;
+> generated L24→L19 0.8750 → **0.6875** mid-p. All four remain clean fails under the mid-p
+> statistic too; none of these recomputations flip a verdict, and this is reported as a post-hoc
+> secondary annotation, not a re-test, not a changed verdict, and not grounds to re-probe run 1.
+> A continuous-outcome (NLL) alternative was separately checked against these same receipts and
+> found to be blind to the ladder's one real signal (S1a: sign p=0.03 vs. Wilcoxon-on-NLL p=0.68)
+> — NLL was considered and rejected as a more-sensitive co-primary statistic, not adopted. Full
+> analysis, the complete 10-draw table, and the design's forward-looking response (an anytime-valid
+> sequential test replacing fixed-N scales) are in `docs/research/031` and ADR-030's amended
+> Acceptance criteria section respectively.
+
 **Design §8 risk 6 (gold-vs-generated calibration distribution shift as the failure cause) is
 falsified as a full explanation, not confirmed.** The S2c contingency followed the design's own
 pre-committed recipe exactly (Deviation 7), produced a *better*-fitting transform by the crate's
