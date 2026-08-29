@@ -14,6 +14,41 @@
   other half); ADR-023 Deviations 1 and 2 (the workspace-exclusion ruling and the RoPE fix's
   discovery, diagnosis, and uniform-application argument)
 
+
+> **VERIFIED AND RESOLVED (2026-08-29, [docs/research/037](../research/037-candle-rope-upstream-verification.md)).**
+> This ADR recorded the upstream persistence of the BF16 RoPE aliasing bug as
+> UNVERIFIED. It is now verified, and the contribution obligation resolves
+> differently than this ADR anticipated:
+> - **The bug persists on candle main** (commit 81f247a, candle-transformers
+>   0.11.0, 2026-08-23) — `qwen2.rs:55/57/61-62` still casts `inv_freq`/`t` to
+>   the model dtype before the matmul. Our deviation 4 is still required.
+> - **It is generic, not qwen2-specific**: the same pattern is present in
+>   `qwen2_moe`, `gemma`/`gemma2`/`gemma3`, `stable_lm`, `yi`, `starcoder2`,
+>   `mixtral`, `falcon` and `phi3` (10+ files), while `llama.rs`, `mistral.rs`
+>   and `qwen3.rs` already use the correct F32-table pattern — candle's own
+>   codebase is internally inconsistent, with newer files getting it right.
+> - **It is unambiguously a bug, not a perf tradeoff**: HF `transformers`'
+>   `Qwen2RotaryEmbedding.forward` disables autocast and force-casts both
+>   operands to float32 (with an explicit `# Force float32` comment), casting
+>   back only at the end. No source anywhere argues the other way.
+> - **A fix is already open upstream**: huggingface/candle **#3520**
+>   ("qwen2: build RoPE cos/sin tables in fp32"), opened 2026-05-07, still
+>   OPEN with zero maintainer reviews. It is line-for-line the fix we derived
+>   independently, found via a completely different route (embedding-cosine
+>   regression at 16k context, P95 cosine 0.9996 → 0.7705 → 0.9999 after fix)
+>   — two independent bug hunts converging on the same five lines.
+> - **Reproducer** (standalone Rust, `half` only, no candle, CPU, ~6 s):
+>   first collision at position **256/257** exactly; the rotation-vector
+>   cosine collapses from 1.0 to as low as **−0.99** past 256 — some aliased
+>   positions receive a near-*opposite* rotation, not merely a wrong one.
+> **Decision: do NOT open a duplicate PR.** #3520 already covers this file
+> with stronger evidence than we would add, and a second PR would fragment
+> reviewer attention. Track #3520; if it merges, drop deviation 4 only after
+> re-running S0's bit-parity golden-vector gates, per this ADR's own
+> maintenance rule. An isolated 5-line patch against current main is kept in
+> docs/research/037 (verified to compile) in case #3520 stalls and a human
+> decides to act.
+
 ## Context
 
 `crates/latentmesh-runtime` vendors `candle-transformers` 0.9.2's `qwen2.rs` model file, split
