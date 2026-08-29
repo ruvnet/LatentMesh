@@ -1,7 +1,23 @@
 # 037. M5X: the multi-factor "maximal configuration" rung
 
-- **Status**: **BLOCKED PERMANENTLY (2026-08-29) — will not execute under this
-  apparatus.** PC3 confirmed out of sample that the injection pathway is
+- **Status**: **UNBLOCKED (2026-08-29, same day) — the permanent block below was
+  my error and is withdrawn.** I blocked this rung on the ground that it
+  *"varies payload content, which is demonstrably not what moves decisions."*
+  **Factor 1 of this ADR is not content — it is multi-layer injection**, which
+  this document itself calls *"the single largest evidence gap this ladder has
+  left untested"* (the L24→L19 pair has never been used by any rung).
+  PC3 held delivery architecture **fixed** at a single site and varied content,
+  so its null is **conditional on single-layer delivery**; I generalised it
+  beyond what it supports. **Cache-to-Cache's own Table 10 (arXiv:2510.03215)
+  is direct external evidence against that generalisation**: reduced to a
+  *single* layer, C2C yields ~0.1pp — our exact null signature — while its
+  6.4–14.2pp effect requires gated fusion across ~top-5-of-28 layers.
+  **Our null may be a fact about single-layer injection, not about injection.**
+  Recorded as coordinator error #16 in
+  [research/049](../research/049-adjacent-areas-survey.md). M4b (ADR-035)
+  stays blocked on its own separate rationale.
+  **Before drawing, this rung must state ADR-040's mandatory power calculation.**
+- **Superseded status**: BLOCKED PERMANENTLY (2026-08-29) — withdrawn same day. PC3 confirmed out of sample that the injection pathway is
   *non-semantic at the decision level*: payload content changes which answer the
   receiver gives no more than a norm-matched Gaussian does (36W/32L, n_disc 68,
   p = 0.72 two-sided, min attainable p 3.4e-21). **M5X varies payload content

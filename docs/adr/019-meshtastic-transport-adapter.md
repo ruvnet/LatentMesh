@@ -142,8 +142,13 @@ both sides together (`crates/latentmesh-air-core/src/wire.rs` +
 `wire_frame_meshtastic_v1.hex` byte-identical in both testdata trees and
 wired into the C test main. `crates/latentmesh-meshtastic` exists with a
 single path dependency on `latentmesh-air-core`, a hand-rolled minimal
-protobuf codec (no protoc), `frame_mtu = 233` / 217 usable payload bytes as
-executable assertions, and 31 crate tests passing.
+protobuf codec (no protoc), and 31 crate tests passing. *(This paragraph
+originally read `frame_mtu = 233` / 217 usable payload bytes "as executable
+assertions"; the interop addendum immediately below corrected those figures to
+227/211, and the code now asserts the corrected values —
+`MESHTASTIC_FRAME_MTU: usize = 227` at `crates/latentmesh-meshtastic/src/adapter.rs:38`,
+with a `message_over_211_usable_bytes_...` test. The stale present-tense claim
+is removed here rather than left to contradict the code.)*
 
 **Interop addendum (2026-08-27, same day)**: the adapter was additionally
 validated against real Meshtastic firmware — the official
@@ -158,3 +163,23 @@ stage-gate table (protocol correctness → simulated link → hardware transport
 follows the same discipline as every other adapter row: simulation results do
 not become an over-the-air claim, and the hardware-pending rows in the table
 above remain open.
+
+## Duty-cycle open row — RESOLVED (2026-08-29)
+
+This ADR flagged EU868 duty-cycle as unresolved with conflicting 1%/10% claims.
+**It is sub-band dependent, which is why the sources conflicted**: per ETSI
+EN 300.220-2 V3.2.1 §4.3.3, K-band (863–865 MHz) 0.1%, **L/M-band
+(865–868.6 MHz) 1% — this is where LoRaWAN/Meshtastic EU868 operates**, N-band
+0.1%, P-band (869.4–869.65 MHz) 10%, Q-band 1%. The Things Network layers a
+stricter 30 s/day fair-use cap above the regulatory limit.
+
+**Computed consequence** (CR4/5, explicit header, CRC on, 8-symbol preamble),
+for a full 211-byte payload: SF7/BW125 ≈ 333 ms airtime → **~108 packets/hour**;
+**SF11/BW125 ≈ 4.18 s → ~8–9 packets/hour, i.e. one packet every ~7 minutes.**
+
+**The slot, not the byte, is the scarce resource.** A 2-byte field and a 100-byte
+message cost the same slot, so pack every affordable field into each
+transmission rather than optimising one field's compression. A 1.5–6 KB
+activation payload needs 8–30 fragments — 33–125 s of airtime, **93–100% of the
+entire hourly budget in a single message**. See
+[research/049](../research/049-adjacent-areas-survey.md) lane 3.
