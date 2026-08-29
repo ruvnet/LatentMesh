@@ -183,3 +183,77 @@ so it cannot be chosen to suit the result: the rung is void **only if
 random integer of similar magnitude, not an arithmetic perturbation of `g`) to
 recover a genuine chance floor. Registered as a design note for PC3, not as a
 change to this rung.
+
+## COORDINATOR ERROR #14 — PC2's decision endpoint is STRUCTURALLY UNDERPOWERED, and I should have computed that before registering it (written mid-draw at item 198, outcome unknown)
+
+**I repeated the ladder's single most-documented mistake.**
+[`docs/research/047`](../research/047-authoritative-power-table.md) established
+that **10 of 14** prior draws were *structurally incapable* of detecting the
+effect they were built to test. I then registered PC2 with a **rare-event
+endpoint** and never computed its expected discordant count. The calculation is
+one line and would have taken a minute.
+
+**Measured at item 198**, with the primary undecided:
+
+| condition | decoy-emission |
+|---|---|
+| steer | 5 / 198 = **2.53%** |
+| restore | 6 / 198 = 3.03% |
+| baseline | 3 / 198 = **1.52%** |
+| zerovec | 3 / 198 = 1.52% |
+| random | 2 / 198 = **1.01%** |
+
+The e-process counts only pairs where `steer` and `random` **disagree**. At
+these rates the discordance rate is **1.52%**:
+
+- **n_disc projected at N=300: ~4.5** (observed 3 at 198).
+- **Minimum attainable p ≈ 0.043.** Even a *perfect* run — every discordant
+  pair favouring `steer` — barely clears α = 0.05.
+- **N required for PC1b-level power (n_disc = 64): ~4,224 items** — **14×**
+  this draw.
+
+**The decision-level endpoint cannot answer the steering question at N=300.**
+That is a design defect, not a result, and it is mine.
+
+### The registered 2% gate will likely NOT trip — my amendment's alarm was unfounded
+
+Baseline decoy-emission is **1.52%**, below the 2% threshold. The 5.7% I saw at
+n=35 was small-sample noise (2 hits). **The methodological point in the
+amendment above still stands** — decoys drawn from natural-slip space do not
+give a literal chance floor, and `baseline` (1.52%) does sit above `random`
+(1.01%) — but the empirical concern that prompted it was not borne out. **Not
+acting on the n=9 reading was correct**; acting on it would have been coordinator
+error #13 repeated.
+
+### What the rung DOES still deliver, at full power
+
+The decision endpoint is sparse. **The likelihood endpoint is dense** — the
+probe computes the teacher-forced NLL of the **decoy string** for every
+condition on every item, 300 paired observations with no rarity problem.
+
+That yields a direct, fully-powered test of the question one level down:
+**does the payload steer the receiver's distribution toward the decoy, even
+when it cannot steer the decision?** It is the exact analogue of PC1b's
+0.237-nat result, and combined with it would establish the
+**likelihood-live / decision-inert** dissociation on *both* a restoration and a
+steering payload.
+
+**This is a salvage, and it is labelled as one.** It is *not* the registered
+primary, and a result on it **may not be reported as PC2 passing or failing**.
+The registered primary is the decision endpoint, and if it lands underpowered
+it is reported as **uninformative**, per the branch already registered above
+and ADR-036 Decision 3.
+
+### Also replicating at item 198: injection costs accuracy
+
+`baseline` **94** = `zerovec` **94** (operator no-op confirmed), `random` 86,
+`restore` 86, `steer` **84**. The same ordering as PC1b — injecting a non-zero
+vector at this site costs correct answers, and this is now the **second**
+independent stream showing it.
+
+### Registered for the successor, before this outcome is known
+
+PC3 must fix **both** defects: draw decoys away from natural-slip space *and*
+either use a **dense endpoint** or budget ~4,000 items. **A power calculation
+is now mandatory at pre-registration time for every future rung** — expected
+discordant count and minimum attainable p, stated before the draw.
