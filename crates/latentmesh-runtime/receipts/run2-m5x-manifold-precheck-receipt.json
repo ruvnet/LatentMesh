@@ -1,0 +1,924 @@
+{
+  "candidates": [
+    {
+      "artifact": "receipts/run2-m3-mlp-cellL18toL14.f32bin",
+      "cell": "L18->L14",
+      "classification": "on-manifold-item-varying",
+      "entropy_nats": {
+        "plain_lens_mean": 10.110251807460777,
+        "rmsnorm_lens_mean": 3.3199199027473307,
+        "uniform": 11.931214658529285
+      },
+      "family": "mlp-reconstruction",
+      "gate": {
+        "content_hash_sha256": "a864e518cdfb09429988862775278bd7734e4342f8c6445fc6081f5ed9d73c91",
+        "golden_check": {
+          "input_seed_chacha8": 1295212573,
+          "max_relative_l2_error": 4.5287788452696986e-7,
+          "pairs": 8,
+          "pass": true,
+          "tolerance": 9.999999747378752e-6
+        },
+        "golden_file": "receipts/run2-m3-golden-mlp-cellL18toL14.json",
+        "pinned_by_receipt": "receipts/run2-m3-training-receipt-cellL18toL14.json",
+        "verified_against_training_receipt": true
+      },
+      "gold_answer_tokens": {
+        "mean_best_rank_rmsnorm": 17346.4,
+        "mean_rank_plain": 6329.620357142858,
+        "mean_rank_rmsnorm": 34870.06011904762,
+        "vocab_percentile_rmsnorm": 0.2295049239090645
+      },
+      "item_invariance": {
+        "max": 0.9991243549242297,
+        "mean_pairwise_cosine_between_emitted_vectors": 0.66695660009359,
+        "mean_resultant_length_of_unit_vectors": 0.8217558549175357,
+        "min": 0.29495678694826966
+      },
+      "label": "m5x-site1-m3-mlp-lasttoken-depooled",
+      "manifold": {
+        "emitted_l2": {
+          "max": 51.836448669433594,
+          "mean": 44.59770126342774,
+          "min": 40.8844108581543
+        },
+        "mean_cosine_to_same_item_natural_receiver_pooled_AT_ITS_OWN_BLOCK": 0.6813573445460819
+      },
+      "output_token_support_rmsnorm_lens": {
+        "distinct_tokens_in_union_of_40_top10_sets": 133,
+        "dominant_token_share": 0.55,
+        "dominant_tokens": [
+          {
+            "decoded": ".\n\n",
+            "in_top10_of_n_items": 22,
+            "token_id": 382
+          },
+          {
+            "decoded": "<|endoftext|>",
+            "in_top10_of_n_items": 22,
+            "token_id": 151643
+          },
+          {
+            "decoded": "!\n\n",
+            "in_top10_of_n_items": 20,
+            "token_id": 2219
+          },
+          {
+            "decoded": "0",
+            "in_top10_of_n_items": 15,
+            "token_id": 15
+          },
+          {
+            "decoded": " ",
+            "in_top10_of_n_items": 12,
+            "token_id": 220
+          },
+          {
+            "decoded": " \n",
+            "in_top10_of_n_items": 12,
+            "token_id": 715
+          },
+          {
+            "decoded": " This",
+            "in_top10_of_n_items": 12,
+            "token_id": 1096
+          },
+          {
+            "decoded": " \n\n",
+            "in_top10_of_n_items": 12,
+            "token_id": 4710
+          }
+        ],
+        "max_possible": 400
+      },
+      "receiver_block": 14,
+      "role": "M5X SITE 1 payload, exactly as delivered: M3's already-trained on-manifold reconstruction MLP, byte-identical weights, per-token translate then LAST token (de-pooled). Reused unchanged from M4h Stage 1 / M4i — not retrained for this rung.",
+      "sender_block": 18,
+      "sender_span_tokens": {
+        "mean_rank_plain": 21140.582759555204,
+        "mean_rank_rmsnorm": 38182.392383790226,
+        "vocab_percentile_rmsnorm": 0.2513057628461341
+      }
+    },
+    {
+      "artifact": "receipts/run2-m5x-mlp-cellL24toL19.f32bin",
+      "cell": "L24->L19",
+      "classification": "on-manifold-item-varying",
+      "entropy_nats": {
+        "plain_lens_mean": 3.4943606247398797,
+        "rmsnorm_lens_mean": 0.956151358298723,
+        "uniform": 11.931214658529285
+      },
+      "family": "mlp-reconstruction",
+      "gate": {
+        "content_hash_sha256": "facd5c6f1f94c83c8eff6f948009502af7cf98ac4bf851718e355a5ec6fba638",
+        "golden_check": {
+          "input_seed_chacha8": 1295212573,
+          "max_relative_l2_error": 4.828713713322941e-7,
+          "pairs": 8,
+          "pass": true,
+          "tolerance": 9.999999747378752e-6
+        },
+        "golden_file": "receipts/run2-m5x-golden-mlp-cellL24toL19.json",
+        "pinned_by_receipt": "receipts/run2-m5x-training-receipt-cellL24toL19.json",
+        "verified_against_training_receipt": true
+      },
+      "gold_answer_tokens": {
+        "mean_best_rank_rmsnorm": 5308.4,
+        "mean_rank_plain": 2554.0570833333336,
+        "mean_rank_rmsnorm": 34538.628095238084,
+        "vocab_percentile_rmsnorm": 0.22732353158723465
+      },
+      "item_invariance": {
+        "max": 0.9990529378168344,
+        "mean_pairwise_cosine_between_emitted_vectors": 0.7610788973834365,
+        "mean_resultant_length_of_unit_vectors": 0.8758150061222129,
+        "min": 0.3304862563145409
+      },
+      "label": "m5x-site2-mlp-lasttoken-depooled",
+      "manifold": {
+        "emitted_l2": {
+          "max": 67.83876037597656,
+          "mean": 63.48704996109009,
+          "min": 53.73125457763672
+        },
+        "mean_cosine_to_same_item_natural_receiver_pooled_AT_ITS_OWN_BLOCK": 0.692944847650053
+      },
+      "output_token_support_rmsnorm_lens": {
+        "distinct_tokens_in_union_of_40_top10_sets": 90,
+        "dominant_token_share": 0.875,
+        "dominant_tokens": [
+          {
+            "decoded": "<|endoftext|>",
+            "in_top10_of_n_items": 35,
+            "token_id": 151643
+          },
+          {
+            "decoded": "  \n",
+            "in_top10_of_n_items": 22,
+            "token_id": 2303
+          },
+          {
+            "decoded": " \n\n",
+            "in_top10_of_n_items": 22,
+            "token_id": 4710
+          },
+          {
+            "decoded": "    \n\n",
+            "in_top10_of_n_items": 22,
+            "token_id": 14808
+          },
+          {
+            "decoded": "  \n\n",
+            "in_top10_of_n_items": 22,
+            "token_id": 18611
+          },
+          {
+            "decoded": "​\n\n",
+            "in_top10_of_n_items": 22,
+            "token_id": 33621
+          },
+          {
+            "decoded": "返回搜狐",
+            "in_top10_of_n_items": 22,
+            "token_id": 109073
+          },
+          {
+            "decoded": ".\n\n",
+            "in_top10_of_n_items": 16,
+            "token_id": 382
+          }
+        ],
+        "max_possible": 400
+      },
+      "receiver_block": 19,
+      "role": "M5X SITE 2 payload, exactly as delivered — THE NEW MEASUREMENT this binary exists for. The freshly trained L24->L19 adapter (ADR-037 factor 1; M3's byte-identical recipe, only the two dump files differ), same per-token translate then LAST token derivation as site 1.",
+      "sender_block": 24,
+      "sender_span_tokens": {
+        "mean_rank_plain": 19726.143172303717,
+        "mean_rank_rmsnorm": 42342.53675283618,
+        "vocab_percentile_rmsnorm": 0.27868666249497276
+      }
+    },
+    {
+      "artifact": "receipts/run2-m5x-mlp-cellL24toL19.f32bin",
+      "cell": "L24->L19",
+      "classification": "item-invariant-but-on-manifold",
+      "entropy_nats": {
+        "plain_lens_mean": 7.521646434266849,
+        "rmsnorm_lens_mean": 9.415123819886919,
+        "uniform": 11.931214658529285
+      },
+      "family": "mlp-reconstruction",
+      "gate": {
+        "content_hash_sha256": "facd5c6f1f94c83c8eff6f948009502af7cf98ac4bf851718e355a5ec6fba638",
+        "golden_check": {
+          "input_seed_chacha8": 1295212573,
+          "max_relative_l2_error": 4.828713713322941e-7,
+          "pairs": 8,
+          "pass": true,
+          "tolerance": 9.999999747378752e-6
+        },
+        "golden_file": "receipts/run2-m5x-golden-mlp-cellL24toL19.json",
+        "pinned_by_receipt": "receipts/run2-m5x-training-receipt-cellL24toL19.json",
+        "verified_against_training_receipt": true
+      },
+      "gold_answer_tokens": {
+        "mean_best_rank_rmsnorm": 1746.325,
+        "mean_rank_plain": 7187.931636904762,
+        "mean_rank_rmsnorm": 35237.91863095238,
+        "vocab_percentile_rmsnorm": 0.2319260651257923
+      },
+      "item_invariance": {
+        "max": 0.9921203714669447,
+        "mean_pairwise_cosine_between_emitted_vectors": 0.9724571391371305,
+        "mean_resultant_length_of_unit_vectors": 0.9864814801397463,
+        "min": 0.9341641133184752
+      },
+      "label": "m5x-site2-mlp-pertoken-pooled-CONTRAST",
+      "manifold": {
+        "emitted_l2": {
+          "max": 49.37527084350586,
+          "mean": 47.00468864440918,
+          "min": 45.75548553466797
+        },
+        "mean_cosine_to_same_item_natural_receiver_pooled_AT_ITS_OWN_BLOCK": 0.9889352932856188
+      },
+      "output_token_support_rmsnorm_lens": {
+        "distinct_tokens_in_union_of_40_top10_sets": 64,
+        "dominant_token_share": 0.85,
+        "dominant_tokens": [
+          {
+            "decoded": "�",
+            "in_top10_of_n_items": 34,
+            "token_id": 99158
+          },
+          {
+            "decoded": " multiplied",
+            "in_top10_of_n_items": 28,
+            "token_id": 54916
+          },
+          {
+            "decoded": "澴",
+            "in_top10_of_n_items": 25,
+            "token_id": 123584
+          },
+          {
+            "decoded": " \\",
+            "in_top10_of_n_items": 22,
+            "token_id": 1124
+          },
+          {
+            "decoded": " multiplication",
+            "in_top10_of_n_items": 19,
+            "token_id": 46444
+          },
+          {
+            "decoded": " totaling",
+            "in_top10_of_n_items": 19,
+            "token_id": 81123
+          },
+          {
+            "decoded": "UIAlert",
+            "in_top10_of_n_items": 16,
+            "token_id": 37182
+          },
+          {
+            "decoded": "/////////////////////////////////////////////////////////////////////////////\n",
+            "in_top10_of_n_items": 16,
+            "token_id": 83894
+          }
+        ],
+        "max_possible": 400
+      },
+      "receiver_block": 19,
+      "role": "NOT M5X's derivation. The SAME site-2 artifact under the POOLED derivation (translate per token, then mean over the span), carried so ADR-037's de-pooling factor can be read at the new cell within this one receipt instead of across two.",
+      "sender_block": 24,
+      "sender_span_tokens": {
+        "mean_rank_plain": 15351.9953244095,
+        "mean_rank_rmsnorm": 23574.845354675206,
+        "vocab_percentile_rmsnorm": 0.15516299859595623
+      }
+    },
+    {
+      "artifact": "receiver_L14.tok.f32bin",
+      "cell": "L18->L14",
+      "classification": "item-invariant-but-on-manifold",
+      "entropy_nats": {
+        "plain_lens_mean": 11.237106750533414,
+        "rmsnorm_lens_mean": 9.303802427447724,
+        "uniform": 11.931214658529285
+      },
+      "family": "reference-on-manifold",
+      "gate": {
+        "content_hash_sha256": "e528e37ec0e3aa766989cc80f2feffeee71eb73c7b84a8c9a15dab6a2795e263",
+        "golden_check": null,
+        "golden_file": null,
+        "pinned_by_receipt": "receipts/run2-pertoken-dump-receipt.json",
+        "verified_against_training_receipt": true
+      },
+      "gold_answer_tokens": {
+        "mean_best_rank_rmsnorm": 9077.075,
+        "mean_rank_plain": 12930.020922619045,
+        "mean_rank_rmsnorm": 58270.38208333333,
+        "vocab_percentile_rmsnorm": 0.38351925865715386
+      },
+      "item_invariance": {
+        "max": 0.9876450361500545,
+        "mean_pairwise_cosine_between_emitted_vectors": 0.9617436322837736,
+        "mean_resultant_length_of_unit_vectors": 0.9811727887975079,
+        "min": 0.9156680957896659
+      },
+      "label": "reference-receiver-L14-pooled",
+      "manifold": {
+        "emitted_l2": {
+          "max": 36.12517166137695,
+          "mean": 34.50830125808716,
+          "min": 33.35699462890625
+        },
+        "mean_cosine_to_same_item_natural_receiver_pooled_AT_ITS_OWN_BLOCK": 1.0
+      },
+      "output_token_support_rmsnorm_lens": {
+        "distinct_tokens_in_union_of_40_top10_sets": 78,
+        "dominant_token_share": 0.775,
+        "dominant_tokens": [
+          {
+            "decoded": "纪委监",
+            "in_top10_of_n_items": 31,
+            "token_id": 118614
+          },
+          {
+            "decoded": "どんど",
+            "in_top10_of_n_items": 30,
+            "token_id": 140951
+          },
+          {
+            "decoded": "괌",
+            "in_top10_of_n_items": 24,
+            "token_id": 145979
+          },
+          {
+            "decoded": "responseObject",
+            "in_top10_of_n_items": 16,
+            "token_id": 86006
+          },
+          {
+            "decoded": " totaling",
+            "in_top10_of_n_items": 15,
+            "token_id": 81123
+          },
+          {
+            "decoded": " multiplied",
+            "in_top10_of_n_items": 13,
+            "token_id": 54916
+          },
+          {
+            "decoded": "getOption",
+            "in_top10_of_n_items": 13,
+            "token_id": 69023
+          },
+          {
+            "decoded": "(initial",
+            "in_top10_of_n_items": 12,
+            "token_id": 34331
+          }
+        ],
+        "max_possible": 400
+      },
+      "receiver_block": 14,
+      "role": "NO ADAPTER — the receiver's own block-14 states over the same span, mean-pooled the way the adapters' outputs were before de-pooling. Calibrates site 1's thresholds.",
+      "sender_block": 18,
+      "sender_span_tokens": {
+        "mean_rank_plain": 17534.20493245463,
+        "mean_rank_rmsnorm": 33168.116522084296,
+        "vocab_percentile_rmsnorm": 0.2183032100495228
+      }
+    },
+    {
+      "artifact": "receiver_L14.tok.f32bin",
+      "cell": "L18->L14",
+      "classification": "on-manifold-item-varying",
+      "entropy_nats": {
+        "plain_lens_mean": 9.887220559665947,
+        "rmsnorm_lens_mean": 3.3590166487090647,
+        "uniform": 11.931214658529285
+      },
+      "family": "reference-on-manifold",
+      "gate": {
+        "content_hash_sha256": "e528e37ec0e3aa766989cc80f2feffeee71eb73c7b84a8c9a15dab6a2795e263",
+        "golden_check": null,
+        "golden_file": null,
+        "pinned_by_receipt": "receipts/run2-pertoken-dump-receipt.json",
+        "verified_against_training_receipt": true
+      },
+      "gold_answer_tokens": {
+        "mean_best_rank_rmsnorm": 19914.55,
+        "mean_rank_plain": 7573.1225,
+        "mean_rank_rmsnorm": 34237.559375,
+        "vocab_percentile_rmsnorm": 0.22534198198583613
+      },
+      "item_invariance": {
+        "max": 0.9944949916726393,
+        "mean_pairwise_cosine_between_emitted_vectors": 0.6350441826732641,
+        "mean_resultant_length_of_unit_vectors": 0.8026008211473699,
+        "min": 0.19862607707387078
+      },
+      "label": "reference-receiver-L14-single-row",
+      "manifold": {
+        "emitted_l2": {
+          "max": 52.671268463134766,
+          "mean": 46.56459369659424,
+          "min": 42.106109619140625
+        },
+        "mean_cosine_to_same_item_natural_receiver_pooled_AT_ITS_OWN_BLOCK": 0.6670369083383958
+      },
+      "output_token_support_rmsnorm_lens": {
+        "distinct_tokens_in_union_of_40_top10_sets": 153,
+        "dominant_token_share": 0.575,
+        "dominant_tokens": [
+          {
+            "decoded": "<|endoftext|>",
+            "in_top10_of_n_items": 23,
+            "token_id": 151643
+          },
+          {
+            "decoded": ".\n\n",
+            "in_top10_of_n_items": 22,
+            "token_id": 382
+          },
+          {
+            "decoded": "!\n\n",
+            "in_top10_of_n_items": 19,
+            "token_id": 2219
+          },
+          {
+            "decoded": "0",
+            "in_top10_of_n_items": 15,
+            "token_id": 15
+          },
+          {
+            "decoded": " \n\n",
+            "in_top10_of_n_items": 14,
+            "token_id": 4710
+          },
+          {
+            "decoded": "″",
+            "in_top10_of_n_items": 13,
+            "token_id": 21580
+          },
+          {
+            "decoded": " \n",
+            "in_top10_of_n_items": 12,
+            "token_id": 715
+          },
+          {
+            "decoded": "​\n\n",
+            "in_top10_of_n_items": 10,
+            "token_id": 33621
+          }
+        ],
+        "max_possible": 400
+      },
+      "receiver_block": 14,
+      "role": "NO ADAPTER and NO POOLING — one genuine receiver block-14 state (the span's last row). The like-for-like comparator for site 1's DE-POOLED payload.",
+      "sender_block": 18,
+      "sender_span_tokens": {
+        "mean_rank_plain": 21675.554686079202,
+        "mean_rank_rmsnorm": 38057.324409324574,
+        "vocab_percentile_rmsnorm": 0.2504826006300322
+      }
+    },
+    {
+      "artifact": "receiver_L19.tok.f32bin",
+      "cell": "L24->L19",
+      "classification": "item-invariant-but-on-manifold",
+      "entropy_nats": {
+        "plain_lens_mean": 6.489715571286091,
+        "rmsnorm_lens_mean": 9.471855817985725,
+        "uniform": 11.931214658529285
+      },
+      "family": "reference-on-manifold",
+      "gate": {
+        "content_hash_sha256": "ba656d81f3774279b1faf1fa3503245cf63771a41bfe1d6add8cd9862110c452",
+        "golden_check": null,
+        "golden_file": null,
+        "pinned_by_receipt": "receipts/run2-pertoken-dump-receipt.json",
+        "verified_against_training_receipt": true
+      },
+      "gold_answer_tokens": {
+        "mean_best_rank_rmsnorm": 1066.775,
+        "mean_rank_plain": 7590.998988095236,
+        "mean_rank_rmsnorm": 28441.492857142854,
+        "vocab_percentile_rmsnorm": 0.18719390307197012
+      },
+      "item_invariance": {
+        "max": 0.9856668314284706,
+        "mean_pairwise_cosine_between_emitted_vectors": 0.9642297095883219,
+        "mean_resultant_length_of_unit_vectors": 0.9824072306577424,
+        "min": 0.9246119605871057
+      },
+      "label": "reference-receiver-L19-pooled",
+      "manifold": {
+        "emitted_l2": {
+          "max": 50.39278030395508,
+          "mean": 47.94778938293457,
+          "min": 46.25136947631836
+        },
+        "mean_cosine_to_same_item_natural_receiver_pooled_AT_ITS_OWN_BLOCK": 1.0
+      },
+      "output_token_support_rmsnorm_lens": {
+        "distinct_tokens_in_union_of_40_top10_sets": 78,
+        "dominant_token_share": 0.9,
+        "dominant_tokens": [
+          {
+            "decoded": " \\",
+            "in_top10_of_n_items": 36,
+            "token_id": 1124
+          },
+          {
+            "decoded": " multiplication",
+            "in_top10_of_n_items": 28,
+            "token_id": 46444
+          },
+          {
+            "decoded": " \\(",
+            "in_top10_of_n_items": 24,
+            "token_id": 17767
+          },
+          {
+            "decoded": " multiplied",
+            "in_top10_of_n_items": 19,
+            "token_id": 54916
+          },
+          {
+            "decoded": "/////////////////////////////////////////////////////////////////////////////\n",
+            "in_top10_of_n_items": 19,
+            "token_id": 83894
+          },
+          {
+            "decoded": "responseObject",
+            "in_top10_of_n_items": 19,
+            "token_id": 86006
+          },
+          {
+            "decoded": "澴",
+            "in_top10_of_n_items": 19,
+            "token_id": 123584
+          },
+          {
+            "decoded": " totaling",
+            "in_top10_of_n_items": 14,
+            "token_id": 81123
+          }
+        ],
+        "max_possible": 400
+      },
+      "receiver_block": 19,
+      "role": "NO ADAPTER — the receiver's own block-19 states, mean-pooled. Calibrates site 2's thresholds AT ITS OWN DEPTH, which is the only way site 2's numbers can be read: a deeper residual state projects differently through the final readout than a mid-stack one, so site 2's absolute lens statistics are NOT comparable to site 1's.",
+      "sender_block": 24,
+      "sender_span_tokens": {
+        "mean_rank_plain": 14568.927976712246,
+        "mean_rank_rmsnorm": 19985.95680990885,
+        "vocab_percentile_rmsnorm": 0.1315419440416284
+      }
+    },
+    {
+      "artifact": "receiver_L19.tok.f32bin",
+      "cell": "L24->L19",
+      "classification": "on-manifold-item-varying",
+      "entropy_nats": {
+        "plain_lens_mean": 3.923405576290429,
+        "rmsnorm_lens_mean": 1.5291420733685515,
+        "uniform": 11.931214658529285
+      },
+      "family": "reference-on-manifold",
+      "gate": {
+        "content_hash_sha256": "ba656d81f3774279b1faf1fa3503245cf63771a41bfe1d6add8cd9862110c452",
+        "golden_check": null,
+        "golden_file": null,
+        "pinned_by_receipt": "receipts/run2-pertoken-dump-receipt.json",
+        "verified_against_training_receipt": true
+      },
+      "gold_answer_tokens": {
+        "mean_best_rank_rmsnorm": 11110.475,
+        "mean_rank_plain": 3336.7819345238095,
+        "mean_rank_rmsnorm": 40132.11074404761,
+        "vocab_percentile_rmsnorm": 0.2641382604784094
+      },
+      "item_invariance": {
+        "max": 0.9925110293680153,
+        "mean_pairwise_cosine_between_emitted_vectors": 0.7205863935497039,
+        "mean_resultant_length_of_unit_vectors": 0.8529781554711476,
+        "min": 0.27287278503467305
+      },
+      "label": "reference-receiver-L19-single-row",
+      "manifold": {
+        "emitted_l2": {
+          "max": 71.00473022460938,
+          "mean": 65.7646032333374,
+          "min": 57.27731704711914
+        },
+        "mean_cosine_to_same_item_natural_receiver_pooled_AT_ITS_OWN_BLOCK": 0.6793283412798881
+      },
+      "output_token_support_rmsnorm_lens": {
+        "distinct_tokens_in_union_of_40_top10_sets": 111,
+        "dominant_token_share": 0.875,
+        "dominant_tokens": [
+          {
+            "decoded": "<|endoftext|>",
+            "in_top10_of_n_items": 35,
+            "token_id": 151643
+          },
+          {
+            "decoded": "返回搜狐",
+            "in_top10_of_n_items": 24,
+            "token_id": 109073
+          },
+          {
+            "decoded": "  \n",
+            "in_top10_of_n_items": 22,
+            "token_id": 2303
+          },
+          {
+            "decoded": " \n\n",
+            "in_top10_of_n_items": 22,
+            "token_id": 4710
+          },
+          {
+            "decoded": "​\n\n",
+            "in_top10_of_n_items": 22,
+            "token_id": 33621
+          },
+          {
+            "decoded": "  \n\n",
+            "in_top10_of_n_items": 20,
+            "token_id": 18611
+          },
+          {
+            "decoded": "    \n\n",
+            "in_top10_of_n_items": 18,
+            "token_id": 14808
+          },
+          {
+            "decoded": "​",
+            "in_top10_of_n_items": 15,
+            "token_id": 15692
+          }
+        ],
+        "max_possible": 400
+      },
+      "receiver_block": 19,
+      "role": "NO ADAPTER and NO POOLING — one genuine receiver block-19 state. The like-for-like comparator for site 2's DE-POOLED payload, and the row site 2's manifold cosine should be read against.",
+      "sender_block": 24,
+      "sender_span_tokens": {
+        "mean_rank_plain": 21634.431766507878,
+        "mean_rank_rmsnorm": 46530.413127071326,
+        "vocab_percentile_rmsnorm": 0.3062500863986897
+      }
+    }
+  ],
+  "cross_depth_reading_caveat": "ABSOLUTE lens statistics are NOT comparable between the two cells. A block-19 residual state is five blocks closer to the readout than a block-14 one, so its projection through W_U.RMSNorm(h) is systematically sharper — lower entropy, better-ranked gold tokens — for reasons that have nothing to do with the adapter. That is why each cell carries its OWN pooled and un-pooled natural reference rows, and why the verdict compares each site's payload to its own depth's reference rather than comparing the two sites' numbers to each other.",
+  "depooled_payloads_should_be_read_against_the_single_row_reference": "cosine-to-natural is measured against the POOLED natural state at each block, for continuity with every prior pre-check receipt. Both of M5X's delivered payloads are DE-POOLED, so the like-for-like comparator is each cell's reference-receiver-*-single-row row, which is carried here for exactly that purpose.",
+  "design": "docs/adr/037-m5x-maximal-configuration-rung.md § 'Ruling 3 — build the second-site manifold pre-check': 'run2_manifold_precheck.rs is hardcoded to L18->L14, so the L24->L19 pre-check is a NEW BINARY — real work the cost table does not budget. Build it. The alternative is assuming by analogy, which that check exists to forbid.' Also discharges ADR-037's own publishability criterion 2, which requires the pre-check 'before the e-process's first draw, not assumed satisfied by analogy'.",
+  "env": {
+    "crate": "latentmesh-runtime 0.1.0",
+    "cuda_feature_enabled": false,
+    "device": "CPU (Device::Cpu; cuda feature OFF)",
+    "evidence_label": "deterministic CPU analysis over committed artifacts — no probe draw, annotates only",
+    "git_commit": "febcbdef859003c13a43e29dd15cd7e0cc38c65d",
+    "unix_time": 1788013067
+  },
+  "gates": {
+    "artifact_hashes_verified": {
+      "pass": true,
+      "rule": "every adapter candidate's content hash is compared to the hash its OWN training receipt froze; a mismatch aborts",
+      "site_1_hash": "a864e518cdfb09429988862775278bd7734e4342f8c6445fc6081f5ed9d73c91",
+      "site_1_pinned_by": "receipts/run2-m3-training-receipt-cellL18toL14.json",
+      "site_2_hash": "facd5c6f1f94c83c8eff6f948009502af7cf98ac4bf851718e355a5ec6fba638",
+      "site_2_pinned_by": "receipts/run2-m5x-training-receipt-cellL24toL19.json"
+    },
+    "cpu_only": {
+      "cuda_feature_enabled": false,
+      "device": "Cpu",
+      "pass": true
+    },
+    "hand_rolled_applies_match_trained_networks": {
+      "pass": true,
+      "rule": "each adapter's hand-rolled forward is re-verified against the golden input/output pairs the trained network itself produced (relative L2 <= 1e-5) before any projection"
+    },
+    "harness_faithfulness_vs_the_committed_precheck": {
+      "classification_agrees": true,
+      "committed_label": "m4h-s1-m3-mlp-lasttoken-depooled",
+      "committed_receipt": "receipts/run2-m4i-manifold-precheck-receipt.json",
+      "comparisons": {
+        "entropy_nats_rmsnorm_lens_mean": {
+          "abs_delta": 0.0,
+          "committed": 3.3199199027473307,
+          "recomputed": 3.3199199027473307
+        },
+        "gold_vocab_percentile_rmsnorm": {
+          "abs_delta": 0.0,
+          "committed": 0.2295049239090645,
+          "recomputed": 0.2295049239090645
+        },
+        "item_invariance_mean_pairwise_cosine": {
+          "abs_delta": 0.0,
+          "committed": 0.66695660009359,
+          "recomputed": 0.66695660009359
+        },
+        "mean_cosine_to_same_item_natural_receiver_pooled": {
+          "abs_delta": 0.0,
+          "committed": 0.6813573445460819,
+          "recomputed": 0.6813573445460819
+        }
+      },
+      "pass": true,
+      "rule": "this binary duplicates run2_manifold_precheck's harness. Its site-1 row uses a payload derivation BYTE-IDENTICAL to the one the committed M4i pre-check scored on these same 40 rows, so it must reproduce that committed row. Compared statistics and their deltas are recorded below; a divergence above the tolerance aborts.",
+      "tolerance": 0.005,
+      "why_a_tolerance_and_not_bit_equality": "this binary batches a different number of columns through project_batch than run2_manifold_precheck did, so the f32 GEMM's reassociation differs. The tolerance is set well below any difference a real harness bug would produce."
+    },
+    "input_artifacts_sha256_verified": {
+      "capture_dumps": {
+        "receiver_L14.tok.f32bin": "e528e37ec0e3aa766989cc80f2feffeee71eb73c7b84a8c9a15dab6a2795e263",
+        "receiver_L19.tok.f32bin": "ba656d81f3774279b1faf1fa3503245cf63771a41bfe1d6add8cd9862110c452",
+        "sender_L18.tok.f32bin": "44574f9e38bbbe8e2f5b5955cd1cccae0d399b48ed87b5270d1564ab85069c04",
+        "sender_L24.tok.f32bin": "b0c1a3b7abb686639a3da15d669e897a7133fb39f005db365e89c69bacbe900d"
+      },
+      "gsm8k_train": "17f347dc51477c50d4efb83959dbb7c56297aba886e5544ee2aaed3024813465",
+      "pass": true,
+      "pinned_by": "receipts/run2-pertoken-dump-receipt.json",
+      "token_streams": "ad5713116cb5acf663fe9c33ac58aaedb1fd64fcf629dd78b21439d244958539"
+    },
+    "shared_holdout_split_verified": {
+      "pass": true,
+      "pinned_identically_by": [
+        "receipts/run2-m3-training-receipt-cellL18toL14.json",
+        "receipts/run2-m4c-training-receipt-cellL18toL14.json",
+        "receipts/run2-m5x-training-receipt-cellL24toL19.json"
+      ],
+      "sha256_comma_joined": "02c1bf502244db56a2159a275e90917d465c7184d5bf981f574eddb58800e5a4",
+      "why_m5x_is_in_this_list": "the second-site adapter must be HELD OUT of the rows this pre-check measures it on, or the new row would be an in-sample reading. Its trainer pins the same split hash as M3's and M4c's, asserted here rather than assumed."
+    }
+  },
+  "gating": "NONE — ORDERING ONLY, per ADR-024's M4f framing, carried unchanged into ADR-037. This pre-check must EXIST and have measured M5X's exact (artifact hash, derivation, cell) triples before the draw; it decides nothing about the outcome.",
+  "hidden": 1536,
+  "m5x_sites_measured": {
+    "payload_derivation_at_both_sites": "apply_last_row — per-token translate, then the LAST generated-span token. De-pooled (ADR-037 factor 2).",
+    "site_1": {
+      "artifact": "receipts/run2-m3-mlp-cellL18toL14.f32bin",
+      "cell": "L18->L14",
+      "provenance": "M3's committed adapter, reused byte-identical — not retrained for this rung",
+      "receiver_block": 14,
+      "training_receipt": "receipts/run2-m3-training-receipt-cellL18toL14.json"
+    },
+    "site_2": {
+      "artifact": "receipts/run2-m5x-mlp-cellL24toL19.f32bin",
+      "cell": "L24->L19",
+      "provenance": "ADR-037 factor 1's newly trained adapter; M3's byte-identical recipe (same TRAIN_SEED, golden seed, lr, batch, epochs, split and stopping rule), the ONLY difference being which two dump files are read",
+      "receiver_block": 19,
+      "training_receipt": "receipts/run2-m5x-training-receipt-cellL24toL19.json"
+    }
+  },
+  "method": "docs/research/033 §4's unembedding-projection diagnostic, applied unchanged. The metric kit and every threshold are common/lens.rs — the SAME definitions run2_manifold_precheck and run2_rescale_diagnostic use, imported rather than re-implemented, per ADR-037 Ruling 3's 'duplicate the harness, not the definitions'. The ONE structural difference from run2_manifold_precheck is that the (sender tap, receiver depth) cell is DATA rather than module constants, because M5X has two of them.",
+  "protocol_safety": "ANNOTATES ONLY. No probe draw, no live-model forward, no probe item / control / statistic touched (ADR-028 protected list untouched). Changes no recorded outcome. CPU-only by construction so it cannot hold GPU memory.",
+  "question": "Before M5X's one registered e-process draw: is the freshly trained L24->L19 second-site payload, measured at its own block-19 depth against its own natural reference, in the same geometric family as the reused L18->L14 first-site payload?",
+  "receiver_model": "Qwen/Qwen2.5-1.5B-Instruct",
+  "sample": {
+    "dump_rows": [
+      494,
+      2070,
+      72,
+      589,
+      1298,
+      2549,
+      916,
+      560,
+      681,
+      170,
+      1360,
+      969,
+      465,
+      226,
+      2091,
+      2287,
+      1162,
+      2006,
+      144,
+      1365,
+      537,
+      2505,
+      1948,
+      325,
+      1259,
+      180,
+      2340,
+      1450,
+      430,
+      1971,
+      454,
+      5,
+      1630,
+      1118,
+      2044,
+      742,
+      1747,
+      1994,
+      2383,
+      905
+    ],
+    "gsm8k_items": [
+      945,
+      3866,
+      154,
+      1129,
+      2449,
+      4778,
+      1760,
+      1068,
+      1304,
+      331,
+      2569,
+      1853,
+      883,
+      447,
+      3904,
+      4269,
+      2190,
+      3748,
+      275,
+      2576,
+      1026,
+      4696,
+      3659,
+      632,
+      2366,
+      352,
+      4370,
+      2714,
+      830,
+      3696,
+      866,
+      15,
+      3053,
+      2110,
+      3811,
+      1425,
+      3281,
+      3728,
+      4444,
+      1732
+    ],
+    "n": 40,
+    "source": "first 40 rows of the holdout split M3, M4c and the M5X second-site trainer all pin identically (M4c receipt's split.holdout_rows, in receipt order)",
+    "why_not_the_probe_items": "the frozen probes' own items are not reconstructible from committed artifacts — their sender captures are produced live inside the probe and never dumped. Same substitute docs/research/033 registered and every pre-check since has used, so these rows are directly comparable to the committed pre-check receipts."
+  },
+  "stage": "run2-m5x-second-site-manifold-precheck",
+  "threshold_calibration_per_cell": {
+    "L18->L14": {
+      "reference_dominant_token_share": 0.775,
+      "reference_entropy_nats": 9.303802427447724,
+      "reference_gold_vocab_percentile": 0.38351925865715386,
+      "reference_mean_pairwise_cosine": 0.9617436322837736,
+      "reference_row": "reference-receiver-L14-pooled",
+      "reference_trips_the_invariance_arm": true
+    },
+    "L24->L19": {
+      "reference_dominant_token_share": 0.9,
+      "reference_entropy_nats": 9.471855817985725,
+      "reference_gold_vocab_percentile": 0.18719390307197012,
+      "reference_mean_pairwise_cosine": 0.9642297095883219,
+      "reference_row": "reference-receiver-L19-pooled",
+      "reference_trips_the_invariance_arm": true
+    }
+  },
+  "thresholds_registered": {
+    "collapse_dominant_token_share_at_or_above": 0.9,
+    "collapse_mean_pairwise_cosine_at_or_above": 0.95,
+    "collapse_top10_token_union_at_or_below_RETIRED": 120,
+    "off_manifold_mean_cosine_to_natural_below": 0.2,
+    "source": "common/lens.rs — the same constants run2_manifold_precheck applies, imported not copied"
+  },
+  "verdict": {
+    "answer": "SAME FAMILY — M5X's two delivered payloads both classify as 'on-manifold-item-varying'. The newly trained L24->L19 second-site adapter emits into the same geometric regime, measured at its own block-19 depth against its own natural reference, that the reused L18->L14 adapter emits into at block 14. The multi-layer factor therefore adds a second site of the SAME kind rather than introducing a payload of a different kind.",
+    "same_family": true,
+    "site_1": {
+      "cell": "L18->L14",
+      "classification": "on-manifold-item-varying",
+      "dominant_token_share": 0.55,
+      "item_invariance": 0.66695660009359,
+      "label": "m5x-site1-m3-mlp-lasttoken-depooled",
+      "manifold_cosine": 0.6813573445460819
+    },
+    "site_2": {
+      "cell": "L24->L19",
+      "classification": "on-manifold-item-varying",
+      "dominant_token_share": 0.875,
+      "item_invariance": 0.7610788973834365,
+      "label": "m5x-site2-mlp-lasttoken-depooled",
+      "manifold_cosine": 0.692944847650053
+    },
+    "what_this_does_not_say": "Nothing about whether M5X will transfer. The pre-check measures the geometry of the EMITTED VECTORS only; it is independent of the injection operator, the site's token positions and the receiver's response. ADR-024's M4f framing makes it diagnostic, and ADR-037 inherits that unchanged."
+  },
+  "vocab": 151936,
+  "wall_clock_s": 15.128660202026367
+}

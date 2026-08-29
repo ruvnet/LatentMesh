@@ -1,0 +1,21 @@
+# latentmesh-reasoning — Phase 1 deterministic scaffold for distributed
+# recurrent latent reasoning (ADR-041). This crate is a coordination point for
+# several independently-owned modules (context/workspace, envelope/codec,
+# budget); each module is pure and zero-I/O by design (ADR-041 §20 Phase 1:
+# "in memory reference algorithms and deterministic test fixtures"). No
+# candle dependency — recurrent model execution is out of scope until Phase 3.
+[package]
+name = "latentmesh-reasoning"
+version = "0.1.0"
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+repository.workspace = true
+description = "Deterministic scaffold for ADR-041 distributed recurrent latent reasoning: recurrent context, latent workspace, reasoning-delta envelope, and the adaptive reasoning-budget controller."
+
+[dependencies]
+serde = { workspace = true }
+sha2 = { workspace = true }
+
+[dev-dependencies]
+serde_json = { workspace = true }

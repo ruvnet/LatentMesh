@@ -22,6 +22,7 @@ members = [
   "crates/latentmesh-meshtastic",
   "crates/latentmesh-agentbbs-bridge",
   "crates/latentmesh-cognitum-client",
+  "crates/latentmesh-reasoning",
   "harness/latentmesh-live",
 ]
 

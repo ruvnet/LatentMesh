@@ -8,6 +8,41 @@ contract — reported without softening.
 
 ---
 
+## The programme's thesis, restated after M5X
+
+**LatentMesh does not optimise for latent transport. It optimises for the
+measured causal utility of a representation.**
+
+That is not a retreat from the original goal — it is what the receipts support.
+The runtime's job is to *discover* which representation earns its cost:
+
+```
+candidate representation
+  none · text · semantic delta · symbolic rule · prototype · KV · latent
+                            ↓
+                   causal gate (five controls)
+                            ↓
+                      UtilityDensity
+                            ↓
+              route only if it earns its cost
+```
+
+**Text and deterministic semantic deltas are first-class reference channels,
+not fallbacks.** Text is the only channel in this repository with a *positive*
+causal result on decisions: Run 3 crossed at item 43, beating **every** control,
+and beating `mismatched` — another episode's genuine message — **hardest**
+(27W/1L, p = 2.2e-7). That is what shows the receiver responds to *this*
+message's content rather than to any message at all. (The *ordering among the
+controls* is **not** supported — see
+[research/052](052-decision-equivalence-from-receipts.md); they are
+statistically indistinguishable at n = 43.) Treating text as the thing you
+resort to when latent fails inverts the evidence.
+
+**`UtilityDensity` is the selection objective**, not a diagnostic — implemented
+in `crates/latentmesh-reasoning/src/routing.rs`, where `None` is a first-class
+candidate that can win and `Unmeasured` is structurally distinct from
+`Measured(0.0)`.
+
 ## The result in one sentence
 
 **Activation injection carries semantic content into a receiver's likelihood
@@ -111,6 +146,65 @@ carrying its own number — is the load-bearing control, and the one text beat
 hardest. That ordering is what makes this a causal claim about
 [ADR-003](../adr/003-causal-edge-verification.md)'s gate rather than a
 copy-the-answer artefact.
+
+## M5X — MULTI-LAYER CHANGES NOTHING. The ladder closes definitively. (2026-08-29)
+
+**The last open question is answered.** M5X ran multi-layer injection
+(L18→L14 **and** L24→L19 simultaneously, `FuseMany`, 4+4 slots) on **M4i's exact
+300-item stream at M4i's exact site**, with reconstruction weights at both —
+so **layer count was the only difference** between them.
+
+| | **M5X (multi-layer)** | **M4i (single-layer)** |
+|---|---|---|
+| primary, aligned vs random | **34W/30L**, p = 0.354 | 31W/35L, p = 0.356 |
+| wealth (threshold 20) | 0.8837, never crossed | 0.2578, never crossed |
+| accuracy aligned | **128** | **128** |
+| NLL vs baseline | 184W/116L, p = 5.2e-5 | 181W/119L, p = 2.1e-4 |
+| **NLL vs norm-matched random** | **166W/134L** | **166W/134L** |
+
+**The likelihood arm's split against norm-matched random is *identical* — 166W
+/134L in both.** Not similar. Identical. Accuracy is 128 in both. **Doubling the
+injection sites changed nothing measurable, on either endpoint.**
+
+**This was a powered null**: n_disc = 64, minimum attainable p = 5.4e-21, against
+a registered bar of ≥46 of 66 discordant wins stated before the draw. It got 34
+of 64 (53.1%).
+
+### The C2C hypothesis does not transfer
+
+M5X existed because **Cache-to-Cache's Table 10** shows its own method
+collapsing to ~0.1pp when reduced to a single layer — our exact signature — while
+its 6.4–14.2pp effect uses gated fusion across ~5 of 28 layers. That made layer
+count the obvious suspect: **the one variable every rung had held fixed.**
+
+**It is not the missing factor.** Two sites behave exactly like one. Whatever
+C2C's multi-layer fusion is doing, it is not reproduced by injecting at two
+depths with this apparatus — which points at their **learned gating and
+task-loss-trained Fuser**, not at layer count per se.
+
+### Unblocking M5X was still right
+
+[Coordinator error #16](../adr/024-run2-trained-thought-adapter-ladder.md) —
+blocking M5X on a mischaracterisation — was a real error, and correcting it was
+correct **even though the rung nulled**. The alternative was closing a field on
+an untested variable that the literature specifically implicated. **A cheap
+decisive experiment that returns "no" is worth more than an assumption that
+returns nothing**, and it cost ~1 GPU-hour.
+
+### What is now closed
+
+Every candidate explanation for the ladder's null has been tested and refuted
+with receipts: **task loss** (off-manifold is the untrained default),
+**the injection operator** (fuse reproduced it), **pooling** (de-pooling made
+the payload geometrically indistinguishable from a real receiver state),
+**injection site** (M4i, first powered null), and now **layer count** (M5X,
+identical to single-layer on both endpoints).
+
+**The dissociation stands as the final result**, unchanged and now
+comprehensively defended:
+
+> **Activation injection is SEMANTIC at the likelihood level and NON-SEMANTIC at
+> the decision level** — and that holds at one layer and at two.
 
 ## What this refutes
 

@@ -240,6 +240,252 @@ already-scoped-multi-factor rung —
 its e-process adoption, restated here: a pre-registration buys attribution clarity, it does not
 create or predict an effect.
 
+## Blast radius of error #20 — a FROZEN file was touched, and the owner caught it
+
+**Recorded because I did not catch it; the rung owner did.** The duplicate agent
+I spawned had also modified **`examples/common/m3.rs`** — the **frozen shared
+protocol every completed rung runs**. That file is load-bearing for
+reproducibility across the entire ladder.
+
+**The owner handled it exactly right**: diffed it in full *before* acting, found
+the change **additive only** (two constants, four imports, **no function body
+altered**, so no prior receipt was ever at risk), confirmed nothing referenced
+the additions, and reverted it to HEAD **byte-for-byte**. Verified
+independently: `git diff` on `m3.rs` is **0 bytes**.
+
+**The lesson is about blast radius, not about the diff.** The additions were
+harmless. But a duplicate owner spawned onto a live rung reached a file that
+every *completed* rung depends on, and nothing in my process would have caught
+it — I was watching the rung's own files, not the shared protocol. **The cost of
+a duplicate-owner error is not bounded by the rung it duplicates.**
+
+The owner also caught that its own earlier edit had rewired only site 1's
+pre-check constant, leaving `PRECHECK_LABEL_2` stale, and fixed it before
+launching rather than spending a registered draw proving Gate 4 works.
+
+### An unplanned cross-implementation check
+
+The owner's **retracted** site-2 pre-check numbers (inv-cos 0.7611,
+manifold-cos 0.6929) turned out **identical** to the replacement harness's
+numbers for the same cell. **Two independently written harnesses produced the
+same figures.** The retraction stands on process grounds — the source that
+produced the first set no longer exists — but the agreement is a real check that
+neither implementation was asked to provide.
+
+### What the pre-check establishes for reading the draw
+
+Each delivered payload sits on **its own block's** natural un-pooled state:
+
+| | inv-cos / manifold-cos | its block's genuine single-row reference |
+|---|---|---|
+| site 1 (L18→L14) | 0.6670 / 0.6814 | 0.6350 / 0.6670 |
+| site 2 (L24→L19) | 0.7611 / 0.6929 | 0.7206 / 0.6793 |
+
+**The multi-layer factor adds a second site of the same kind, not a payload of a
+different kind** — which is what makes "layer count is the only difference"
+readable rather than asserted. The pooled CONTRAST row at the same cell
+(inv-cos 0.9725) shows what collapse looks like there, so the de-pooled rows are
+demonstrated healthy rather than assumed.
+
+## COORDINATOR ERROR #20 — I spawned a second owner onto a live rung (2026-08-29)
+
+**A repeat of coordinator error #11, with the same cause and a new delivery
+failure layered on top.**
+
+Sequence:
+1. The rung owner asked for three rulings. **I recorded them on
+   `feat/latentmesh-reasoning-phase1` while its worktree was on
+   `feat/m5x-multi-layer`** — a branch that did not contain them. It could not
+   read the rulings in the ADR, and my direct messages were not reaching it
+   either. It reported "still blocked" three times, correctly.
+2. It then reported *"stopping at the adjudication boundary."* **I read that as
+   finished rather than blocked** and spawned a second agent to carry the rung
+   home.
+3. That agent **rewrote the owner's `run2_m5x_manifold_precheck.rs` mid-session**,
+   invalidating a receipt the owner had already produced and changing the
+   candidate labels its probe gate resolved against.
+
+**The duplicate has been stopped; the original owner is sole owner.** The
+rulings were synced to the correct branch at `febcbde`.
+
+### What prevented this from costing a registered draw
+
+**The owner's Gate 4 failed loudly rather than silently.** It looked the
+pre-check label up and errored — *"carries no `<label>` candidate row"* — rather
+than skipping an unresolvable check. **A gate that treats a missing input as a
+failure rather than a pass is why a mid-session file swap cost fifteen minutes
+instead of one wasted draw**, of which this rung permits exactly one.
+
+### What was kept, on merit
+
+The replacement pre-check was **not reverted**, because it is better: it
+measures **both sites at matched N in one pass**, and adds a **harness-
+faithfulness gate** asserting its site-1 row reproduces the committed M4i
+pre-check row within 5e-3 (`FAITHFULNESS_LABEL =
+m4h-s1-m3-mlp-lasttoken-depooled`). Validating a duplicated harness against a
+known-good committed row **before** anyone reads its new row is a genuinely
+better design than either implementation had alone.
+
+**The owner's earlier pre-check numbers are RETRACTED, not provisional** — they
+were produced by a source that no longer exists on disk and therefore cannot be
+reproduced from the tree.
+
+### The standing rule this violates, restated
+
+**One owner per rung, and the rulings must land where that owner can read
+them.** Recording a decision on a branch the deciding agent cannot see is not a
+decision; it is a note to oneself. Both halves failed here.
+
+## RULING 2 — reconstruction at BOTH sites; factor 4 (task loss) DEFERRED to a follow-on (2026-08-29)
+
+**The rung owner found ADR-037 internally inconsistent about the loss, and it is
+right.** Factor 2 says L18→L14 reuses M4h Stage 1's weights (M3's
+**reconstruction** training) and that L24→L19 uses *"M3's recipe, not
+M4c/M4d/M4g's"* — while factor 4 lists **task-loss training** among the combined
+factors, and the cost table budgets **both** a reconstruction pass and a
+task-loss pass at the new site.
+
+**Read literally that is an asymmetric rung** — reconstruction at site 1,
+task-loss at site 2 — which confounds layer count with loss inside a single
+draw.
+
+**And it cannot be papered over.** Verified in source:
+`crates/latentmesh-train/src/bin/train_m4c_taskloss.rs:6` — *"FRESH seeded init
+(not warm-started from M3's reconstruction-trained weights)"*, and line 433:
+*"the ablation isolates exactly one factor, the loss function."* **The two
+passes produce two different artifacts from two different inits.** A probe must
+load one adapter per site, so "do both at a site" is not a configuration that
+exists. The cost table budgeting both does not describe a coherent rung.
+
+### Ruling: option (a) — reconstruction at BOTH sites
+
+**Three reasons, the first decisive.**
+
+**1. Only (a) preserves the head-to-head that justifies the rung.** M4i runs
+M3's **on-manifold reconstruction** weights. If M5X used task loss, layer count
+would no longer be the only difference from M4i — the **loss** would change
+too — and the comparison this whole rung was unblocked to make evaporates.
+
+**2. Our own receipts say task loss is destructive at this cell.** M4c (task
+loss, `fim_pad`) moved NLL **+3.230 nats** — the off-manifold family. Combining
+multi-layer with a factor we have receipts showing is harmful would very likely
+null **for the wrong reason**, teaching us nothing about layer count.
+
+**3. Factor 1 is the reason this rung exists.** M5X was unblocked on the C2C
+Table 10 argument, which is about **layer count**, not loss. Testing the
+unblocking variable first is the cheap decisive experiment; bundling a known-bad
+factor with it is not.
+
+### What this changes in the registered configuration
+
+- **Factor 4 (task-loss training) is DEFERRED**, not deleted. If M5X-a shows
+  signal, task loss becomes **M5X-b**, a registered follow-on with its own
+  pre-registration and its own ADR-040 power calculation. If M5X-a nulls, M5X-b
+  is pointless and must not be run to "rescue" it.
+- **Factors 1, 2, 3 stand**: multi-layer L18/L24→L14/L19, de-pooling, fuse
+  delivery, 4+4=8 slots.
+- **This narrows M5X from a four-factor conjunction to a three-factor one.**
+  Stated plainly because it weakens what a PASS would license: a PASS now says
+  *multi-layer + de-pooling + fuse* moved decisions, **not** that the full
+  registered conjunction did.
+
+### Ruling 3 — build the second-site manifold pre-check
+
+ADR-037's own publishability check requires the pre-check *"before the
+e-process's first draw, **not assumed satisfied by analogy**."*
+`run2_manifold_precheck.rs` is hardcoded to L18→L14, so the L24→L19 pre-check is
+a **new binary — real work the cost table does not budget.** Build it. The
+alternative is assuming by analogy, which that check exists to forbid.
+
+### Registration precedent, confirmed
+
+M3's training receipt noted that an anchor-cell L24→L19 run *"has no ADR-024
+registration and would be an extra unregistered draw … (coordinator decision if
+ever wanted)."* **ADR-037 factor 1 is that registration**, and the rung owner's
+reading is correct. The new adapter is trained on a **byte-identical recipe** to
+`train_m3_mlp` (same `TRAIN_SEED 0x4D330001`, same golden seed, lr, batch,
+epochs, split and stopping rule) with the **only** difference being which two
+dump files are read — which is what makes the two sites comparable.
+
+## RULING — §5's ordinary-token exclusion is SUPERSEDED; M5X draws at the question-tail site (2026-08-29)
+
+**Coordinator error #18: my Amendment 1 asserted a fact I did not check.** It
+said *"M4i is M5X's single-layer counterpart. **Same site**, same operator
+family, same on-manifold payload, same items."* **The site claim is false.**
+M4i's own receipt:
+
+```
+config.injection_site      = "question_tail_ordinary_tokens"
+config.placeholder_token   = None
+config.placeholder_token_note = "NONE. This rung's prompt contains no
+                                 <|fim_pad|> and no slot sentence."
+```
+
+M5X's registered configuration uses the **placeholder-slot** site, and §5
+explicitly **excludes** M4i's ordinary-token axis. Amendment 1 and §5 cannot
+both stand. Caught by the rung owner, who refused to draw until it was
+resolved — correct call. This is the same failure mode as errors #12, #16 and
+#17: asserting a conflict-or-agreement from memory instead of opening the
+artifact.
+
+### The ruling: adopt M4i's question-tail site
+
+**Two independent reasons, either sufficient.**
+
+**1. §5's exclusion was explicitly conditional, and the condition has expired.**
+Its own text: *"decided now, **before M4i's own outcome is known** — this ADR
+does not wait for or inherit M4i's result."* The confound it feared was that
+M5X *"could not distinguish 'the conjunction works' from **'M4i's specific fix
+was doing the real work.'**"* **That confound is now empirically dead: M4i
+FAILED** (31W/35L, final wealth 0.2578, never crossed). A fix that did not work
+cannot be secretly doing the real work. §5's reasoning does not merely permit
+revisiting — it **anticipated** it.
+
+**2. There is no alternative baseline. M4i is the ONLY e-process rung.**
+Verified across every `*eprocess*` receipt: exactly one exists, and its site is
+question-tail. Every placeholder-site rung (M3, M4, M4c…) ran the **frozen
+40-item protocol**, not ADR-036's e-process, and ADR-032's no-protocol-shopping
+rule forbids conflating the two eras. **So keeping §5 would leave M5X with no
+same-protocol comparator at all** — its result would be uninterpretable for
+lack of a baseline, which is a worse outcome than editing a conditional
+exclusion whose condition has lapsed.
+
+### What this does and does not change
+
+- **Changed**: M5X injects at `question_tail_ordinary_tokens`, making **layer
+  count the only difference from M4i** — which is the entire point of the rung.
+- **Unchanged**: every other registered factor — multi-layer L18/L24→L14/L19,
+  de-pooling, fuse delivery, task loss, 4+4=8 slots — and the e-process
+  parameters. This supersedes one exclusion, not the configuration.
+- **Recorded, not hidden**: §5 stands as written above; this section supersedes
+  it and says why. The ADR is append-only.
+
+### Registered power calculation (ADR-040), stated before any draw
+
+Anchored on M4i's `n_disc = 66` on this identical stream, **verified by
+replaying M4i's committed trajectory** — the replay reproduces
+`final_wealth = 0.25780744271218675` exactly and recovers n_disc 66, 31W/35L.
+
+| quantity | value |
+|---|---|
+| win / loss multiplier (λ=0.30) | ×1.15 / ×0.85 |
+| max attainable wealth at n_disc=66 | 1.15⁶⁶ = **10,140** ≫ 20 |
+| unanimous-win crossing | 22 discordant wins |
+| **realistic crossing bar** | **≥ 46 of 66 discordant wins (69.7%)** |
+| min attainable one-sided sign-test p | 0.5⁶⁶ = **1.4e-20** |
+
+**VERDICT: not power-blocked.** The endpoint can reach α = 0.05 at N = 300.
+
+### Standing reminder for the write-up
+
+M4i's **likelihood arm is not inert**: NLL aligned 2.2446 vs baseline 2.3928
+(−0.148, 181W/119L, mid-p 1.7e-4) and vs **norm-matched random** 2.3474
+(−0.103, 166W/134L, mid-p 0.032). All four figures re-verified against the
+receipt by the rung owner. So on this exact stream the likelihood endpoint
+already beats norm-matched random while accuracy is deaf — the dissociation
+amendment 3 exists to catch. **A bare accuracy null from M5X is uninterpretable
+without the likelihood co-report.**
+
 ## ⛔ MANDATORY AMENDMENTS BEFORE M5X DRAWS (2026-08-29, added on unblocking)
 
 **Three things must be settled before a single item is consumed.** M5X was
