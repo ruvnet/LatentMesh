@@ -216,3 +216,79 @@ not codecs.
   wrongness — was not found already published. Nearest analogue is the human
   processing-fluency / illusory-truth literature. **Flagged as tentative**
   (arXiv-API-only search reach), and worth writing up separately.
+
+---
+
+# RANKED SHORTLIST — all four lanes closed
+
+Costs are **verified against this repo**, not estimated: GPU figures anchor on
+`wall_clock_s` from committed receipts (M4c training 1,604 s; M4i draw 3,397 s
+for 300 items × 4 conditions).
+
+## 1. M5X — multi-layer injection · **HIGHEST DECISIVENESS** · ~1.5–2 GPU-h + engineering
+
+**Spec already exists**: [ADR-037](../adr/037-m5x-maximal-configuration-rung.md),
+now unblocked with three mandatory amendments.
+
+**Why first**: it tests the one variable C2C's Table 10 identifies as
+load-bearing — layer count — and every rung we ran held it at one. A PASS
+re-scopes the entire mission's null from *"activation injection is
+decision-inert"* to *"single-layer activation injection is decision-inert."*
+That is the difference between closing a field and closing a configuration.
+
+**Verified cost drivers:**
+- `FuseMany` **does not exist** — must be added to the vendored Qwen2 forward
+  pass. Engineering, no GPU. **This is the real cost.**
+- L24/L19 dumps **are present** (`sender_L24.tok.f32bin`,
+  `receiver_L19.tok.f32bin`) — ADR-037's *"zero new capture required"* claim
+  **verified true**.
+- One new MLP for the L24→L19 pair, M3's recipe: **~0.45 GPU-h**.
+- The draw, anchored on M4i's identical shape: **~0.95 GPU-h**.
+
+**Head-to-head is free**: M4i is the single-layer counterpart on the identical
+stream, so layer count is the only difference.
+
+## 2. Misinformation-ordering write-up · **~0 cost** · possibly novel
+
+Our three-way ordering — **plausible-wrong (30.2%) < random noise (34.9%) <
+no message (39.5%)** — isolates *plausibility itself*, not mere wrongness, as
+the damaging factor. The general phenomenon is documented
+(arXiv:2606.16710, 2506.00509, 2410.07283) but **the random-noise-controlled
+triangulation was not found published**. Nearest analogue is the human
+processing-fluency / illusory-truth literature.
+
+**No GPU, data already collected.** Flagged tentative — the search reach was
+arXiv-API-only, so a proper literature check is a precondition, not an
+afterthought.
+
+## 3. M5 — receiver-side LoRA · ~1.2–2.0 GPU-h · **prior LOWERED by lane 2**
+
+Spec is ready to run at `research/034` (32 KB) and **verified never executed**
+(no M5 receipts). But lane 2 **lowered its prior**: C2C and ITI both move
+decisions with a **frozen** receiver, so receiver-weight-training is *not* what
+working methods share. It remains genuinely unexplored — the "Beyond Tokens"
+survey (arXiv:2606.05711) states receiver-parameter adaptation is outside every
+surveyed method's design space — but it is no longer the leading hypothesis.
+**Run it after M5X, not instead of.**
+
+## 4. Runtime plausibility gate · engineering only · **needs a new ADR if built**
+
+`latentmesh-gate::causal` already implements the five-control test with
+`mismatched` — our finding's exact independent variable — at
+`crates/latentmesh-gate/src/causal.rs`. Today it is offline topology-fitness
+tooling. Reframing it as a **runtime per-message gate**, pointed at the **text**
+channel (where decisions actually move) and paired with ΔV rather than
+likelihood alone, is the one product-shaped item here. **The only shortlist
+entry lacking a spec.**
+
+## Not proceeding
+
+- **Lane 1 (scoring/reranking)** — closed negative. UPR (arXiv:2204.07496) does
+  it better, cheaper, training-free, over an API.
+- **Latent payloads over LoRa** — dead on duty-cycle economics before the
+  science even matters: at SF11 a 1.5–6 KB activation consumes 93–100% of the
+  hourly budget in one message.
+
+**Standing rule for every item above**: ADR-040's power calculation before any
+draw, and no accuracy-only endpoint — PC1b/PC2/PC3 proved accuracy can be deaf
+while likelihood carries the signal.
