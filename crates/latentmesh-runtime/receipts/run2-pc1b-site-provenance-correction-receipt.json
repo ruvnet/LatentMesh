@@ -1,0 +1,91 @@
+{
+  "stage": "run2-PC1b-site-provenance-correction",
+  "what_this_is": "A CORRECTION RECORD, appended beside the PC1b draw receipt rather than edited into it. The draw receipt run2-pc1b-receipt-identity-L19lasttoken-goldtf-fuse-questiontail-slots8-eprocess.json is left byte-for-byte as the probe binary wrote it, per the append-only discipline ADR-031(a) applies to ADRs and this repository applies to receipts. Nothing here changes the draw's verdict, its statistic, or any gate that bears on the verdict.",
+  "why_it_exists": "The PC1b probe binary reported its own site provenance as unverifiable. That report is a FALSE NEGATIVE produced by two JSON field-name lookup errors against M4i's receipt. The site is in fact verifiable, and verified. Because the probe's own receipt therefore UNDERSTATES its provenance, the corrected values are recorded here with the raw line preserved verbatim so a reader can see exactly what was claimed and exactly why it was wrong.",
+
+  "verbatim_line_from_the_draw_binary_stdout": "site provenance: tag question_tail_ordinary_tokens (M4i recorded <unrecorded>, match=false); stream identical to M4i's = false",
+  "verbatim_gate_object_as_written_into_the_draw_receipt": {
+    "gate": "site_provably_identical_to_m4i",
+    "pass": false,
+    "site_tag_matches": false,
+    "item_stream_matches": false,
+    "note": "build_site_prompt is reused verbatim from M4i, and the resolved item stream is asserted equal to M4i's committed one"
+  },
+
+  "defect_1_site_tag": {
+    "what_the_binary_read": "m4i[\"config\"][\"site\"]",
+    "result_of_that_read": "absent -> rendered as \"<unrecorded>\"",
+    "where_m4i_actually_records_it": "m4i[\"config\"][\"injection_site\"]",
+    "m4i_recorded_value": "question_tail_ordinary_tokens",
+    "pc1b_site_tag": "question_tail_ordinary_tokens",
+    "corrected_verdict": "MATCH",
+    "consequence": "M4i's receipt is NOT missing a site tag. There is no receipt-completeness gap to flag against M4i, and any note to that effect should be withdrawn.",
+    "m4i_receipt": "receipts/run2-m4i-receipt-cellL18toL14-mlp-pertokenlast-fuse-questiontail-slots8-eprocess.json"
+  },
+
+  "defect_2_item_stream": {
+    "what_the_binary_read": "a path resolving through m4i[\"dataset\"], which does not exist as a top-level key in M4i's receipt",
+    "result_of_that_read": "null -> empty vector -> compares unequal to 300 items -> false",
+    "where_m4i_actually_records_its_stream": "m4i[\"items\"][*][\"item\"] (300 per-item rows)",
+    "corrected_verdict": "IDENTICAL",
+    "independent_derivations_that_agree": [
+      {
+        "derivation": "M4i's committed per-item rows",
+        "source": "m4i[\"items\"][*][\"item\"]",
+        "n": 300,
+        "head": [4, 20, 23, 39, 42]
+      },
+      {
+        "derivation": "PC1b's capture stream, committed before the draw",
+        "source": "run2-pc1b-capture-receipt.json dataset.indices",
+        "n": 300,
+        "head": [4, 20, 23, 39, 42]
+      },
+      {
+        "derivation": "recomputed from source data: adaptation-512 in fixed ascending index order, ADR-024's 13-item leakage exclusion applied, first N_max=300 taken",
+        "source": "harness/latentmesh-live/data/adaptation-512.json",
+        "n": 300,
+        "head": [4, 20, 23, 39, 42]
+      }
+    ],
+    "equality_checks": {
+      "capture_stream_equals_m4i_items": true,
+      "recomputed_first_300_eligible_equals_m4i_items": true
+    },
+    "the_hard_gate_that_did_run": {
+      "where": "examples/run2_pc1b_capture.rs, the anyhow::ensure!(m4i_stream == stream, ...) at the stream resolution step",
+      "reads": "m4i[\"items\"] — the field that exists",
+      "outcome": "PASSED; it aborts before any payload file is written if the streams differ",
+      "committed_as": "run2-pc1b-capture-receipt.json gates.stream_identical_to_m4i = {pass: true, n: 300}",
+      "note": "The capture binary and the probe binary resolved the stream independently and by different code; the capture's gate is the one that was enforced, and it agrees with the two derivations above."
+    }
+  },
+
+  "corrected_site_provenance": {
+    "same_function": "common::m3::build_site_prompt(Site::QuestionTail) — the same function M4i called, not a re-implementation",
+    "site_tag": "question_tail_ordinary_tokens (PC1b) == question_tail_ordinary_tokens (M4i, config.injection_site)",
+    "item_stream": "identical to M4i's 300-item stream, item for item and in order",
+    "tokenization_preflight_exclusions": 0,
+    "slots_per_item": 8,
+    "verdict": "The site IS provably identical to M4i's. Comparisons between PC1b and M4i that depend on a shared site — including reading PC1b's n_discordant against M4i's 66 on the same stream — are AVAILABLE and licensed by this evidence.",
+    "supersedes": "the draw receipt's gates.site_provably_identical_to_m4i = false, which is a false negative and must not be read as a detected mismatch"
+  },
+
+  "what_is_NOT_claimed_here": [
+    "That the draw receipt is wrong about anything bearing on the verdict. Every gate that bears on the verdict — payload sha, bit-identity to PC1 on the shared item, identity transform with no adapter weights, slot count, e-process stream matching the capture, e-process never restarted, gaming guard — passed as written.",
+    "That the site being M4i's makes PC1b's null a statement about transfer. The docs/research/045 section 3 firewall is unchanged: PC1b is a same-model, same-item, identity-transform, gold-derived control, and it tests LIVENESS ONLY, NEVER TRANSFER.",
+    "Any attribution for who authored the probe source containing the two defective lookups. examples/run2_pc1b_probe.rs is untracked, so there is no git history and authorship is UNVERIFIABLE. It is recorded as a defect in the artifact, not as a fault of any agent."
+  ],
+
+  "process_finding_worth_recording": "The draw's binary reported weaker provenance than the evidence supports, and the error was only caught by reading M4i's receipt directly rather than trusting the binary's summary of it. Both defects are of the same class: a JSON lookup against a key that does not exist, silently yielding a falsy value instead of an error. A lookup whose failure is indistinguishable from a negative result should fail loudly. The capture binary's hard anyhow::ensure! is the pattern that worked; the probe's soft boolean print is the pattern that produced a false negative in a receipt.",
+
+  "gating": "NONE. This receipt corrects a provenance annotation. It does not alter, and must not be read as altering, PC1b's registered outcome, which was and remains a FAIL.",
+  "related_receipts": {
+    "the_draw": "receipts/run2-pc1b-receipt-identity-L19lasttoken-goldtf-fuse-questiontail-slots8-eprocess.json",
+    "the_capture": "receipts/run2-pc1b-capture-receipt.json",
+    "the_pre_draw_manifold_precheck": "receipts/run2-pc1b-manifold-precheck-receipt.json",
+    "the_post_draw_instrument_diagnostic": "receipts/run2-pc1b-precheck-n-invariance-receipt.json",
+    "m4i": "receipts/run2-m4i-receipt-cellL18toL14-mlp-pertokenlast-fuse-questiontail-slots8-eprocess.json",
+    "pc1": "receipts/run2-pc1-receipt-identity-L19lasttoken-goldtf-fuse-slots8-nopool-rescaletrue-n40.json"
+  }
+}

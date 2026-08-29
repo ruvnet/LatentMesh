@@ -1036,6 +1036,98 @@ Open tension to settle before pre-registering: 8 slots across 2 sites is
 either 16 total or a 4+4 split, and ADR-028's slot-count discipline (already
 self-contradictory and unadjudicated) does not cover it.
 
+## PC1b FINAL — my "unvalidated apparatus" reading is WRONG; the bottleneck is LOCALIZED (2026-08-29)
+
+**Supersedes my inversion argument in the section below.** The implementer
+refuted it from the receipt's own numbers and it is right. Recorded here first
+because the section below is now only partly correct.
+
+### What refutes me: the norm-matched random control
+
+I argued a failed positive control leaves the apparatus unvalidated, making
+the method the leading explanation for every null. **That is wrong, and the
+`random` condition is why.** It is a per-item seeded Gaussian, **norm-matched**
+to the effective aligned vector, delivered by the **same operator at the same
+8 positions** — ITI's floor control (arXiv:2306.03341). Aligned beats it by
+**0.237 nats on 198 of 300 items.**
+
+A payload carrying nothing the receiver lacked **could not do that**. The gain
+is attributable to the payload's **content**, not to perturbing activations.
+**The delivery mechanics are therefore validated as carrying content-dependent
+information.** "The apparatus was never shown to carry signal" is **discharged**.
+
+### The precise finding, which is sharper than either position I argued
+
+> **The pathway is LIVE at the likelihood level and DEAD at the decision level.**
+
+- **Live**: moves the gold answer's likelihood **0.282 nats on 71% of items**
+  (213W/87L), and beats norm-matched noise by 0.237 nats (198W/102L).
+- **Dead**: accuracy falls **140 → 127**, and **loses to the random control's
+  133**.
+- **Not answer-handover**: mean aligned NLL 2.1110 is **~21x above** the
+  0.10-nat collapse threshold, 0/300 degenerate, length ratio 1.034. The
+  payload *nudges* the distribution; it does not hand over the answer.
+
+This is a **positive localization of the bottleneck**, not merely a null.
+
+### My pre-draw objection: refuted, on stronger grounds than I conceded
+
+I withdrew it on "the payload is gold-derived." The implementer's grounds are
+better: the capture teacher-forces the receiver over the item's **actual GSM8K
+gold solution** and taps block 19 at the **last token of that continuation**
+(ending `#### <answer>`). At injection the receiver has **the question only**.
+This is `docs/research/045` §2 candidate **(c)** — the strongest constructible
+ceiling — and explicitly **not** candidates (a)/(b), the self-generated
+designs against which my redundancy objection would have had real force.
+
+### M5X and M4b STAY BLOCKED — but my reason was wrong
+
+I blocked them because "the apparatus is unvalidated." That reason is void.
+**The correct reason is stronger**: the bottleneck is now localized to
+**delivery→decision**, which is **upstream of everything M5X (ADR-037) and
+M4b (ADR-035) vary**. Both change payload construction and configuration;
+neither touches conversion-to-decision. Running them would vary a factor that
+is not the binding constraint.
+
+The **a fortiori** inference holds: a pathway that cannot convert a
+**gold-derived, own-model, identity-transformed** payload into correctness will
+not convert a **weaker cross-model adapter output**.
+
+### The registered wording is still wrong, on both our accounts
+
+The pre-registration says a powered fail makes the nulls *"evidence about
+**TRANSFER** rather than about plumbing."* Both the implementer and I reject
+this independently. The nulls are evidence about **the delivery→decision
+step** — a third category that is neither plumbing nor transfer. The receipt's
+own firewall says it plainly: *"this FAIL says nothing directly about
+cross-model transfer."* **The symmetric firewall rule stands: a FAIL may not be
+cited as transfer evidence, just as a PASS may not.**
+
+### The honest residual gap, and the next experiment
+
+**No control in this repository has yet shown the pathway can move ACCURACY.**
+PC1b shows nonzero bandwidth at the likelihood level and **zero** at the
+decision level.
+
+What does not exist is a control isolating **decision-level steering**: inject
+a state encoding a **different** answer and test whether the receiver's answer
+**flips**. PC1/PC1b are *restoration* controls; this would be a *steering*
+control. **Registered as the next thing worth building — not claimed as done.**
+
+### Correction: PC1's manifold anomaly is NOT resolved
+
+I wrote that the item-invariance surprise "was an instrument artifact, not a
+payload property." **The matched-N diagnostic
+(`run2-pc1b-precheck-n-invariance-receipt.json`) shows I overstated.** At
+**matched N=40**, PC1b's own payload classifies **`item-invariant-but-on-manifold`
+— exactly as PC1's did — with a *lower* union (86 vs 98)**.
+
+So: the **flip between the two rungs** is an N artifact (`flip_is_an_n_artifact
+= true`), and `classify()`'s label is not comparable across N. But the
+**underlying item-invariance at N=40 is real and reproducible in both
+payloads**, and **remains unexplained**. Only the cross-N comparison is void.
+`"PC1's surprise flag is NOT resolved by PC1b."`
+
 ## PC1b RESULT — the gating experiment FAILED, and the pre-registered interpretation of that failure is LOGICALLY INVERTED (2026-08-29)
 
 **Receipt**: `run2-pc1b-receipt-identity-L19lasttoken-goldtf-fuse-questiontail-slots8-eprocess.json`
