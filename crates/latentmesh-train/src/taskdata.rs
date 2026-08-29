@@ -227,6 +227,200 @@ pub fn build_task_items(
     Ok((items, skipped))
 }
 
+// ---------------------------------------------------------------------------
+// ADR-045 M5: question-tail site + gold-answer continuation target.
+//
+// M5's receiver prompt has NO slot sentence and NO placeholder token: it is
+// exactly `chat_prompt(SYSTEM, "{question}\n\n{ANSWER_FORMAT}")`, which is
+// BYTE-IDENTICAL to the sender's capture prompt. That is load-bearing rather
+// than incidental — it means the existing prompt-parity gate (re-encode ==
+// the S2c stream's stored `prompt_tokens`) pins M5's own injected prompt
+// bit-for-bit, with no second copy of the wording to drift.
+//
+// The CE target is the probe's OWN likelihood target, `"#### {gold}"`
+// (`examples/common/m3.rs::four_conditions_at`, step 5), not the sender's
+// generated span — `docs/research/034` §5.2 names the sender-span target as
+// M4c's diagnosed mismatch, and ADR-045 registers the gold continuation.
+// ---------------------------------------------------------------------------
+
+/// Normalised final answer: text after the last `####`, non-numeric characters
+/// stripped, trailing period removed. Verbatim behaviour of the probe's
+/// `examples/common/mod.rs::extract_final_answer` (which this crate cannot
+/// import — the dependency runs the other way). Pinned by unit test below and
+/// by the `#### {gold}` token comparison the M5 trainer records.
+pub fn extract_final_answer(text: &str) -> Option<String> {
+    let after = text.rsplit_once("####")?.1;
+    let token = after.split_whitespace().next()?;
+    let cleaned: String = token
+        .chars()
+        .filter(|c| c.is_ascii_digit() || *c == '-' || *c == '.')
+        .collect();
+    let cleaned = cleaned.trim_end_matches('.').to_string();
+    (!cleaned.is_empty()).then_some(cleaned)
+}
+
+/// GSM8K `(question, gold)` by item index, sha-gated — the probe's own
+/// `load_gsm8k` fields, minus the ones M5 does not use.
+pub fn load_gsm8k_items(path: &Path) -> anyhow::Result<Vec<(String, String)>> {
+    let bytes = read_pinned(path, GSM8K_TRAIN_SHA256)?;
+    let mut items = Vec::new();
+    for (index, line) in String::from_utf8(bytes)?.lines().enumerate() {
+        if line.trim().is_empty() {
+            continue;
+        }
+        let v: serde_json::Value = serde_json::from_str(line)?;
+        let question = v["question"].as_str().unwrap_or_default().to_string();
+        let gold = extract_final_answer(v["answer"].as_str().unwrap_or_default())
+            .ok_or_else(|| anyhow::anyhow!("item {index}: no '#### n' in gold answer"))?;
+        items.push((question, gold));
+    }
+    Ok(items)
+}
+
+/// Whitespace-insensitive containment helper for the question-tail gate.
+fn squeeze(s: &str) -> String {
+    s.chars().filter(|c| !c.is_whitespace()).collect()
+}
+
+/// Resolve the `n_slots` question-tail delivery positions for one item —
+/// the training-side replica of `examples/common/m3.rs::build_site_prompt`
+/// under `Site::QuestionTail`, algorithm for algorithm.
+///
+/// Positions are read off the CANONICAL tokenisation's own offset map: the
+/// last `n_slots` tokens whose byte span lies wholly inside `question`.
+/// Re-encoding a prefix instead was measured to reject every item on the probe
+/// side (Qwen2.5's pre-tokeniser groups a trailing `?` with the newlines that
+/// follow it, so the boundary token straddles question/answer-format), which
+/// is why the decode gate checks containment rather than a strict suffix.
+///
+/// Returns `(prompt_tokens, positions, position_token_ids)`.
+pub fn question_tail_positions(
+    tok: &tokenizers::Tokenizer,
+    question: &str,
+    n_slots: usize,
+) -> anyhow::Result<(Vec<u32>, Vec<usize>, Vec<u32>)> {
+    let user = format!("{question}\n\n{ANSWER_FORMAT}");
+    let full = QwenRuntime::chat_prompt(SYSTEM, &user);
+    let q_start = full
+        .find(&user)
+        .ok_or_else(|| anyhow::anyhow!("chat template did not contain the user turn"))?;
+    let q_end = q_start + question.len();
+    let enc = tok
+        .encode(full.as_str(), false)
+        .map_err(|e| anyhow::anyhow!("encode: {e}"))?;
+    let tokens = enc.get_ids().to_vec();
+    let inside: Vec<usize> = enc
+        .get_offsets()
+        .iter()
+        .enumerate()
+        .filter(|(_, &(s, t))| t > s && s >= q_start && t <= q_end)
+        .map(|(i, _)| i)
+        .collect();
+    anyhow::ensure!(
+        inside.len() >= n_slots,
+        "only {} tokens lie wholly inside the question, fewer than the {n_slots} required",
+        inside.len()
+    );
+    let positions: Vec<usize> = inside[inside.len() - n_slots..].to_vec();
+    anyhow::ensure!(
+        positions.windows(2).all(|w| w[1] == w[0] + 1),
+        "the resolved question-tail positions are not contiguous ({positions:?})"
+    );
+    anyhow::ensure!(
+        positions[n_slots - 1] == inside[inside.len() - 1],
+        "the tail window does not end at the last token wholly inside the question"
+    );
+    let position_token_ids: Vec<u32> = positions.iter().map(|&p| tokens[p]).collect();
+    let decoded = tok
+        .decode(&position_token_ids, true)
+        .map_err(|e| anyhow::anyhow!("decode: {e}"))?;
+    anyhow::ensure!(
+        squeeze(question).contains(&squeeze(&decoded)),
+        "the {n_slots} injected positions decode to {decoded:?}, which is not part of the question"
+    );
+    Ok((tokens, positions, position_token_ids))
+}
+
+/// One M5 trainable item.
+pub struct M5Item {
+    /// Dataset row (0..2560) — the split/leakage unit.
+    pub row: usize,
+    /// GSM8K train item index.
+    pub item: usize,
+    /// Receiver prompt length (== the S2c capture prompt's length).
+    pub prompt_len: usize,
+    /// The 8 question-tail delivery positions.
+    pub positions: Vec<usize>,
+    pub position_token_ids: Vec<u32>,
+    /// `prompt ‖ "#### {gold}"` — the teacher-forced training sequence.
+    pub full_tokens: Vec<u32>,
+    /// CE targets: the `"#### {gold}"` tokens.
+    pub target_tokens: Vec<u32>,
+    /// Logits-row start: `prompt_len - 1` (row p predicts token p+1).
+    pub span_start: usize,
+    /// Global token index of the item's LAST generated-span row in the dump —
+    /// the only row `apply_last_row` reads.
+    pub last_row_tok: usize,
+}
+
+/// Build M5 items for a set of dataset rows. Every item passes the
+/// prompt-parity gate, the question-tail site gate, and the sequence cap.
+pub fn build_m5_items(
+    rows: &[usize],
+    streams: &[StreamRow],
+    items: &[(String, String)],
+    tok: &tokenizers::Tokenizer,
+    token_offsets: &[u64],
+    n_slots: usize,
+    seq_cap: usize,
+) -> anyhow::Result<(Vec<M5Item>, Vec<SkippedItem>)> {
+    let mut out = Vec::with_capacity(rows.len());
+    let mut skipped = Vec::new();
+    for &row in rows {
+        let sr = &streams[row];
+        let (question, gold) = &items[sr.item];
+        let (tokens, positions, position_token_ids) =
+            question_tail_positions(tok, question, n_slots)
+                .map_err(|e| anyhow::anyhow!("row {row} (item {}): {e}", sr.item))?;
+        // Prompt-parity gate: M5's receiver prompt IS the capture prompt, so
+        // this pins the injected prompt bit-for-bit against the S2c dump.
+        anyhow::ensure!(
+            tokens == sr.prompt_tokens,
+            "row {row} (item {}): prompt-parity gate failed — the question-tail prompt \
+             re-encodes to {} tokens != the stream's stored {}",
+            sr.item,
+            tokens.len(),
+            sr.prompt_tokens.len()
+        );
+        let target_tokens = encode(tok, &format!("#### {gold}"))?;
+        let prompt_len = tokens.len();
+        if prompt_len + target_tokens.len() > seq_cap {
+            skipped.push(SkippedItem {
+                row,
+                item: sr.item,
+                inj_len: prompt_len,
+                target_fit: target_tokens.len(),
+                reason: "prompt + gold continuation exceeds the measured seq cap",
+            });
+            continue;
+        }
+        let mut full_tokens = tokens;
+        full_tokens.extend_from_slice(&target_tokens);
+        out.push(M5Item {
+            row,
+            item: sr.item,
+            prompt_len,
+            positions,
+            position_token_ids,
+            full_tokens,
+            target_tokens,
+            span_start: prompt_len - 1,
+            last_row_tok: token_offsets[row] as usize + sr.gen_tokens.len() - 1,
+        });
+    }
+    Ok((out, skipped))
+}
+
 /// Current per-pid VRAM (MiB) via nvidia-smi; `None` when unavailable.
 pub fn process_vram_mib() -> Option<u64> {
     let pid = std::process::id();
@@ -269,6 +463,30 @@ mod tests {
             1,
         );
         assert_eq!(without, cap);
+    }
+
+    /// The gold-rendering rule must behave exactly like the probe's
+    /// `extract_final_answer` on the cases its own test pins.
+    #[test]
+    fn gold_extraction_matches_the_probe_rule() {
+        assert_eq!(
+            extract_final_answer("x #### 1,000").as_deref(),
+            Some("1000")
+        );
+        assert_eq!(extract_final_answer("#### 18.").as_deref(), Some("18"));
+        assert_eq!(extract_final_answer("#### -3").as_deref(), Some("-3"));
+        assert_eq!(extract_final_answer("no marker"), None);
+    }
+
+    #[test]
+    fn m5_prompt_is_the_capture_prompt() {
+        // ADR-045 M5 removes the slot sentence entirely, so the receiver
+        // prompt collapses onto the capture prompt. `question_tail_positions`
+        // tokenises exactly this string.
+        let q = "Q?";
+        let user = format!("{q}\n\n{ANSWER_FORMAT}");
+        assert_eq!(QwenRuntime::chat_prompt(SYSTEM, &user), capture_prompt(q));
+        assert!(!capture_prompt(q).contains("<|fim_pad|>"));
     }
 
     #[test]

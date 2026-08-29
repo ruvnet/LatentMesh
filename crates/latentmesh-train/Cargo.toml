@@ -76,3 +76,7 @@ required-features = ["cuda"]
 [[bin]]
 name = "train_m4g_fuse"
 required-features = ["cuda"]
+
+[[bin]]
+name = "train_m5_receiver_lora"
+required-features = ["cuda"]

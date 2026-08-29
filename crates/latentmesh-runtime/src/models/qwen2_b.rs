@@ -14,6 +14,7 @@
 //! bit-identically on live GPU rather than trusting the argument.
 
 use super::qwen2_a::{rms_norm, Attention, Config, RotaryEmbedding, MLP};
+use crate::lora::ResidualLora;
 use candle_core::{DType, Device, IndexOp, Module, Result, Tensor, D};
 use candle_nn::{Linear, RmsNorm, VarBuilder};
 use std::sync::Arc;
@@ -180,6 +181,13 @@ pub struct Model {
     sliding_window: usize,
     device: Device,
     dtype: DType,
+    /// ADR-045 M5: an optional additive low-rank adapter on the residual
+    /// stream after `lora.after_block`. `None` by default, in which case the
+    /// executed op sequence is the vendored one exactly. Unlike a
+    /// [`LayerEdit`] — supplied per pass, and therefore only during prefill —
+    /// this is part of the model, so it is live on decode steps too, which is
+    /// what makes it a receiver *weight* change rather than an injection.
+    lora: Option<ResidualLora>,
 }
 
 impl Model {
@@ -202,7 +210,17 @@ impl Model {
             sliding_window: cfg.sliding_window,
             device: vb.device().clone(),
             dtype: vb.dtype(),
+            lora: None,
         })
+    }
+
+    /// Install (or remove) the residual adapter. ADR-045 M5.
+    pub fn set_residual_lora(&mut self, lora: Option<ResidualLora>) {
+        self.lora = lora;
+    }
+
+    pub fn residual_lora(&self) -> Option<&ResidualLora> {
+        self.lora.as_ref()
     }
 
     fn prepare_causal_attention_mask(
@@ -279,10 +297,24 @@ impl Model {
             }
         };
         let mut xs = self.embed_tokens.forward(input_ids)?;
+        // Disjoint field borrows: `self.lora` is read while `self.layers` is
+        // iterated mutably.
+        let lora = self.lora.as_ref();
         for (idx, layer) in self.layers.iter_mut().enumerate() {
             xs = layer.forward(&xs, attention_mask.as_ref(), seqlen_offset)?;
             if let Some(e) = edit.as_deref_mut() {
                 xs = apply_edit(xs, idx + 1, e)?;
+            }
+            // ORDER, frozen and recorded in every M5 receipt: block ->
+            // LayerEdit -> LoRA. The adapter therefore sees the injected
+            // content (its job is to make the receiver use it), while a
+            // `Capture` tap at the same block reads the residual BEFORE the
+            // adapter, so the rescale-to-natural-median target the probe
+            // computes is the base receiver's, unchanged from M4i.
+            if let Some(l) = lora {
+                if l.after_block == idx + 1 {
+                    xs = l.apply(&xs)?;
+                }
             }
         }
         xs.apply(&self.norm)
@@ -353,6 +385,15 @@ impl ModelForCausalLM {
 
     pub fn clear_kv_cache(&mut self) {
         self.base_model.clear_kv_cache()
+    }
+
+    /// Install (or remove) the ADR-045 M5 residual adapter on the receiver.
+    pub fn set_residual_lora(&mut self, lora: Option<ResidualLora>) {
+        self.base_model.set_residual_lora(lora)
+    }
+
+    pub fn residual_lora(&self) -> Option<&ResidualLora> {
+        self.base_model.residual_lora()
     }
 }
 

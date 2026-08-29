@@ -26,6 +26,7 @@
 //! selected explicitly per call so the training loop and the frozen probe
 //! can be pinned to the same one (ADR-024 M4g).
 
+use crate::receiver_lora::LoraAdapter;
 use candle_core::{DType, Device, Module, Tensor, D};
 use candle_nn::{linear, linear_no_bias, Activation, Linear, VarBuilder};
 use latentmesh_runtime::inject::InjectionMode;
@@ -261,6 +262,26 @@ impl TrainReceiver {
         span_start: usize,
         t_len: usize,
     ) -> candle_core::Result<Tensor> {
+        self.forward_span_logits_with_lora(tokens, inject, None, span_start, t_len)
+    }
+
+    /// [`Self::forward_span_logits`] with an ADR-045 M5 receiver adapter
+    /// applied after `lora.after_block` blocks.
+    ///
+    /// ORDER, identical to the deployed `latentmesh_runtime::models::Model`
+    /// forward and recorded in every M5 receipt: **block → injection edit →
+    /// LoRA**. The adapter therefore sees the injected content, while
+    /// [`Self::natural_per_position_l2`] (which never runs the adapter)
+    /// still reports the base receiver's norms, so the rescale target is the
+    /// same one every frozen-receiver rung used.
+    pub fn forward_span_logits_with_lora(
+        &self,
+        tokens: &Tensor,
+        inject: Option<(&Tensor, &[usize], usize, InjectionMode)>,
+        lora: Option<(&LoraAdapter, usize)>,
+        span_start: usize,
+        t_len: usize,
+    ) -> candle_core::Result<Tensor> {
         let (_b, l) = tokens.dims2()?;
         let mask = self.causal_mask(l)?;
         let mut xs = self.embed.forward(tokens)?;
@@ -281,6 +302,11 @@ impl TrainReceiver {
                         };
                         xs = xs.slice_assign(&[0..1, pos..pos + 1, 0..self.hidden], &write)?;
                     }
+                }
+            }
+            if let Some((adapter, after_block)) = lora {
+                if idx + 1 == after_block {
+                    xs = adapter.apply(&xs)?;
                 }
             }
         }

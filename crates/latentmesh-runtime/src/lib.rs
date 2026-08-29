@@ -16,6 +16,7 @@
 
 pub mod capture;
 pub mod inject;
+pub mod lora;
 mod models;
 pub mod norms;
 pub mod sampler;
