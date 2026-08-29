@@ -893,6 +893,33 @@ off-manifold payloads only.
 times α. The receipt flags this itself (`power_limited: true`). This draw
 **could not have rejected under any effect size whatsoever.**
 
+**POOLING IS REFUTED — the pre-check makes this decisive.** Removing the mean
+(not one trained weight changed) moved the emitted object onto the real
+single-state values:
+
+| candidate | invariance | top-10 union | cos-to-pooled-ref | entropy | class |
+|---|---|---|---|---|---|
+| M3 per-token (pooled) | 0.9702 | 70/400 | 0.9889 | 9.34 | item-invariant-but-on-manifold |
+| **M4h S1 (de-pooled)** | **0.6670** | **133/400** | **0.6814** | **3.32** | **on-manifold-item-varying** |
+| ref: receiver L14 **single row** | 0.6350 | 153/400 | 0.6670 | 3.36 | on-manifold-item-varying |
+| ref: receiver L14 pooled | 0.9617 | 78/400 | 1.0000 | 9.30 | item-invariant-but-on-manifold |
+
+The de-pooled payload is **statistically indistinguishable from a genuine
+un-pooled receiver state** on every axis measured. And it still transfers
+nothing — indeed NLL got slightly *worse*: +0.031 vs baseline, the largest
+positive delta of any on-manifold rung, and 10W/30L against zerovec where
+pooled M3 was an even 20W/20L. **A payload can be made geometrically
+identical to a real receiver state and still carry nothing.** Pooling joins
+task loss (M4c/M4d) and injection operator (M4g) as a refuted root cause —
+the third to fall.
+
+**Framing correction to my own earlier note**: I described the 2W/0L accuracy
+result as "the best we've seen". The implementer's framing is more accurate
+and I adopt it: *a clean 2W/0L sweep that cannot clear α is what a
+power-limited design produces — it is not encouraging.* The NLL result, which
+is not power-limited, is the one that carries weight here, and it points the
+wrong way.
+
 **THE BINDING CONSTRAINT IS NOW THE INSTRUMENT, NOT THE SCIENCE.** Discordant
 counts across the ladder's recent draws: M4d **7** (the only non-limited
 one), M4g **3** (floor 0.125), M4h-S1 **2** (floor 0.25). As payloads become
