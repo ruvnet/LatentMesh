@@ -533,6 +533,41 @@ from the NLL dissociation above (a delivery path that cannot fight the answer
 format is a different failure surface), but activating it still requires its own
 addendum frozen before any probe.
 
+## M4c engineering findings (recorded 2026-08-29 from the feasibility+implementation receipts)
+
+Three facts worth preserving for anyone reproducing this work, and one that
+narrows the M4c diagnosis:
+
+1. **candle 0.9.2's inference forward silently cuts the gradient graph.**
+   Measured: injecting a `Var`, running the vendored forward, computing CE and
+   calling `backward()` succeeds but `grads.get(var)` returns `None`.
+   Source-verified cause: `candle_nn::ops::softmax_last_dim`,
+   `ops::rms_norm` and `rotary_emb::rope` are `apply_op*_no_bwd` — the op is
+   never recorded — and the final `rms_norm` severs the residual skip path.
+   `slice_assign` itself is differentiable. Fix used: a training-shaped
+   forward variant substituting exactly three call sites (`rms_norm_slow`,
+   a composed softmax with detached max, a composed rotate-half), no candle
+   patching. F32 parity 128/128 argmax vs the vendored forward.
+2. **F32 training of the 1.5B receiver does not fit 16 GB** — measured OOM at
+   seq len 64, because candle 0.9.2's backward materialises frozen-weight
+   gradients (no `requires_grad` gating). BF16 fits with ~4.7 GB headroom
+   (9.9 GB process peak at L=256, 81 ms/step). candle 0.9.2 has no
+   gradient-checkpointing API.
+3. **Dropping a candle model does not return VRAM to the driver mid-process**
+   (12,624 MiB retained after drop) — trainer and probe must be separate
+   processes, which is why the harness runs them that way (see ADR-034).
+
+**Why this narrows the M4c diagnosis**: training ran through the composed
+BF16 forward while the frozen probe runs the vendored *fused* BF16 forward,
+and those differ numerically (116/128 argmax agreement, max |Δlogit| 8.19 at
+L=128). That confound was registered and then *closed* before the probe: the
+`transfer_check_passed_before_probe` gate evaluated the trained vectors'
+teacher-forced NLL **through the vendored fused forward** and measured
+0.2385 → 0.1570. So the improvement demonstrably survives the numeric gap.
+The 0/40 probe-time NLL inversion therefore cannot be attributed to
+composed-vs-fused numerics — it is specific to the **deployment
+configuration**, which is exactly what M4d isolates.
+
 ## Registered hypothesis — M4e, continuous per-step injection (added 2026-08-29, BEFORE M4d's verdict)
 
 Injection-configuration research ([docs/research/032](../research/032-injection-configuration-science.md))
