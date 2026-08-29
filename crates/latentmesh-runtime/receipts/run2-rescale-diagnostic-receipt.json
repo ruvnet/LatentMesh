@@ -1,0 +1,5283 @@
+{
+  "design": "docs/adr/024-run2-trained-thought-adapter-ladder.md § 'Registered zero-GPU diagnostic (protocol-safe, no probe draw)'; method = docs/research/032-injection-configuration-science.md §4 / §5.1 (LAP A_lin logit-lens check, arXiv:2604.15557)",
+  "env": {
+    "crate": "latentmesh-runtime 0.1.0",
+    "cuda_feature_enabled": false,
+    "device": "CPU (Device::Cpu; cuda feature OFF — ADR-034 lane rule, GPU held by M4d)",
+    "evidence_label": "deterministic CPU analysis over committed artifacts — no probe draw, annotates only",
+    "git_commit": "77f4c81ecb5d25671b0c63a29fcaa75129679da6",
+    "unix_time": 1787970081
+  },
+  "gates": {
+    "artifact_hash_verified": {
+      "hash": "fe4de15bfa79d39df2fd7f975ae20798b2a7eca03407c320666a2d034ec15141",
+      "pass": true
+    },
+    "cpu_only": {
+      "cuda_feature_enabled": false,
+      "device": "Cpu",
+      "pass": true
+    },
+    "hand_rolled_apply_matches_trained_network": {
+      "max_relative_l2_error": 1.8865748074858857e-7,
+      "pass": true
+    },
+    "input_artifacts_sha256_verified": {
+      "pass": true
+    },
+    "rescale_operator_matches_probe": {
+      "input_seed_chacha8": 1583129056,
+      "max_relative_l2_error": 0.0,
+      "max_relative_norm_error": 4.0208084328696714e-7,
+      "method": "the probe's OWN code path is called directly (latentmesh_runtime::inject::InjectionSpec::effective_vector with scale = natural_median / ||v||, exactly as examples/common/m3.rs::four_conditions builds it); additionally pinned against an independent recomputation on 8 seeded vectors over four magnitudes",
+      "n_vectors": 8,
+      "pass": true,
+      "tolerance": 9.999999974752427e-7
+    }
+  },
+  "inputs": {
+    "adapter_artifact": {
+      "content_hash_sha256": "fe4de15bfa79d39df2fd7f975ae20798b2a7eca03407c320666a2d034ec15141",
+      "file": "receipts/run2-m4c-mlp-taskloss-cellL18toL14.f32bin",
+      "matches_training_receipt": true,
+      "training_receipt": "receipts/run2-m4c-training-receipt-cellL18toL14.json"
+    },
+    "gsm8k_train": {
+      "file": "../../harness/latentmesh-live/data/gsm8k-train.jsonl",
+      "sha256": "17f347dc51477c50d4efb83959dbb7c56297aba886e5544ee2aaed3024813465"
+    },
+    "hand_rolled_apply_golden": {
+      "file": "receipts/run2-m4c-golden-mlp-taskloss-cellL18toL14.json",
+      "input_seed_chacha8": 1295304221,
+      "max_relative_l2_error": 1.8865748074858857e-7,
+      "pairs": 8,
+      "pass": true,
+      "tolerance": 9.999999747378752e-6
+    },
+    "receiver_unembedding": {
+      "dtype_loaded": "F32",
+      "file": "/home/ruvultra/.cache/huggingface/hub/models--Qwen--Qwen2.5-1.5B-Instruct/snapshots/989aa7980e4cf806f80c7fef2b1adb7bc71aa306/model.safetensors",
+      "final_norm_tensor": "model.norm.weight",
+      "model": "Qwen/Qwen2.5-1.5B-Instruct",
+      "rms_norm_eps": 1e-6,
+      "shape": [
+        151936,
+        1536
+      ],
+      "tensor": "model.embed_tokens.weight (tied, config tie_word_embeddings=true)"
+    },
+    "sender_states": {
+      "capture": "sender L18 per-token states over the sender's own generated span (run2-pertoken-dump-receipt.json)",
+      "file": "sender_L18.tok.f32bin",
+      "sha256": "44574f9e38bbbe8e2f5b5955cd1cccae0d399b48ed87b5270d1564ab85069c04"
+    },
+    "token_streams": {
+      "file": "../../harness/latentmesh-live/data/s2c-token-streams.jsonl",
+      "sha256": "ad5713116cb5acf663fe9c33ac58aaedb1fd64fcf629dd78b21439d244958539"
+    }
+  },
+  "items": [
+    {
+      "dump_row": 494,
+      "gold": "120",
+      "gsm8k_item": 945,
+      "lens_plain": {
+        "cosine_raw_vs_rescaled_logits": 0.9999999999998788,
+        "entropy_nats": {
+          "raw": 5.57426659063192,
+          "rescaled": 11.053939087320066
+        },
+        "gold_answer_tokens": {
+          "best_rank": {
+            "raw": 80944,
+            "rescaled": 80944
+          },
+          "mean_logprob": {
+            "raw": -22.47482955305305,
+            "rescaled": -13.832585219590902
+          },
+          "mean_rank": {
+            "raw": 110728.6,
+            "rescaled": 110728.6
+          },
+          "n": 5
+        },
+        "sender_span_tokens": {
+          "best_rank": {
+            "raw": 1622,
+            "rescaled": 1622
+          },
+          "mean_logprob": {
+            "raw": -20.01111318914621,
+            "rescaled": -12.99117248540029
+          },
+          "mean_rank": {
+            "raw": 83587.37333333334,
+            "rescaled": 83587.36
+          },
+          "n_unique": 75
+        },
+        "topk_overlap": {
+          "top10": {
+            "argmax_identical": true,
+            "overlap": 1.0
+          },
+          "top100": {
+            "argmax_identical": true,
+            "overlap": 1.0
+          },
+          "top50": {
+            "argmax_identical": true,
+            "overlap": 1.0
+          }
+        }
+      },
+      "lens_rmsnorm": {
+        "cosine_raw_vs_rescaled_logits": 0.9999999999998902,
+        "entropy_nats": {
+          "raw": 6.602443902776749,
+          "rescaled": 6.6024457089515804
+        },
+        "gold_answer_tokens": {
+          "best_rank": {
+            "raw": 93264,
+            "rescaled": 93264
+          },
+          "mean_logprob": {
+            "raw": -21.106294334331793,
+            "rescaled": -21.10629084299834
+          },
+          "mean_rank": {
+            "raw": 119466.0,
+            "rescaled": 119466.0
+          },
+          "n": 5
+        },
+        "sender_span_tokens": {
+          "best_rank": {
+            "raw": 3453,
+            "rescaled": 3453
+          },
+          "mean_logprob": {
+            "raw": -18.883002426623932,
+            "rescaled": -18.88299928338164
+          },
+          "mean_rank": {
+            "raw": 91275.26666666666,
+            "rescaled": 91275.25333333333
+          },
+          "n_unique": 75
+        },
+        "topk_overlap": {
+          "top10": {
+            "argmax_identical": true,
+            "overlap": 1.0
+          },
+          "top100": {
+            "argmax_identical": true,
+            "overlap": 1.0
+          },
+          "top50": {
+            "argmax_identical": true,
+            "overlap": 1.0
+          }
+        }
+      },
+      "n_span_tokens": 189,
+      "natural_median_used": 51.78384017944336,
+      "raw_l2": 151.6267547607422,
+      "rescaled_l2": 51.78383255004883,
+      "scale_c": 0.3415217995643616,
+      "top10_tokens_rmsnorm_lens_raw": [
+        " Svens",
+        "#ab",
+        "/testify",
+        " Lanc",
+        "rias",
+        "يان",
+        "上海证券",
+        " Stake",
+        ".scalablytyped",
+        "rng"
+      ]
+    },
+    {
+      "dump_row": 2070,
+      "gold": "51",
+      "gsm8k_item": 3866,
+      "lens_plain": {
+        "cosine_raw_vs_rescaled_logits": 0.9999999999998767,
+        "entropy_nats": {
+          "raw": 2.729662763102817,
+          "rescaled": 11.073019894879895
+        },
+        "gold_answer_tokens": {
+          "best_rank": {
+            "raw": 46142,
+            "rescaled": 46142
+          },
+          "mean_logprob": {
+            "raw": -21.606884545025046,
+            "rescaled": -13.122622877197264
+          },
+          "mean_rank": {
+            "raw": 88558.0,
+            "rescaled": 88558.0
+          },
+          "n": 4
+        },
+        "sender_span_tokens": {
+          "best_rank": {
+            "raw": 1164,
+            "rescaled": 1164
+          },
+          "mean_logprob": {
+            "raw": -19.560336181624194,
+            "rescaled": -12.442664169482196
+          },
+          "mean_rank": {
+            "raw": 64855.64444444444,
+            "rescaled": 64855.64444444444
+          },
+          "n_unique": 90
+        },
+        "topk_overlap": {
+          "top10": {
+            "argmax_identical": true,
+            "overlap": 1.0
+          },
+          "top100": {
+            "argmax_identical": true,
+            "overlap": 1.0
+          },
+          "top50": {
+            "argmax_identical": true,
+            "overlap": 1.0
+          }
+        }
+      },
+      "lens_rmsnorm": {
+        "cosine_raw_vs_rescaled_logits": 0.9999999999999392,
+        "entropy_nats": {
+          "raw": 4.972338208957804,
+          "rescaled": 4.972340868231788
+        },
+        "gold_answer_tokens": {
+          "best_rank": {
+            "raw": 68086,
+            "rescaled": 68086
+          },
+          "mean_logprob": {
+            "raw": -20.070422724669278,
+            "rescaled": -20.07041882480212
+          },
+          "mean_rank": {
+            "raw": 105644.75,
+            "rescaled": 105644.75
+          },
+          "n": 4
+        },
+        "sender_span_tokens": {
+          "best_rank": {
+            "raw": 2224,
+            "rescaled": 2224
+          },
+          "mean_logprob": {
+            "raw": -17.838361549329502,
+            "rescaled": -17.83835855197603
+          },
+          "mean_rank": {
+            "raw": 74900.28888888888,
+            "rescaled": 74900.32222222222
+          },
+          "n_unique": 90
+        },
+        "topk_overlap": {
+          "top10": {
+            "argmax_identical": true,
+            "overlap": 1.0
+          },
+          "top100": {
+            "argmax_identical": true,
+            "overlap": 1.0
+          },
+          "top50": {
+            "argmax_identical": true,
+            "overlap": 1.0
+          }
+        }
+      },
+      "n_span_tokens": 339,
+      "natural_median_used": 52.294647216796875,
+      "raw_l2": 157.39712524414062,
+      "rescaled_l2": 52.294647216796875,
+      "scale_c": 0.3322465121746063,
+      "top10_tokens_rmsnorm_lens_raw": [
+        " Lanc",
+        "rias",
+        " Svens",
+        "上海证券",
+        "农历",
+        "stile",
+        " concession",
+        "lider",
+        "DirectoryName",
+        " Caval"
+      ]
+    },
+    {
+      "dump_row": 72,
+      "gold": "720",
+      "gsm8k_item": 154,
+      "lens_plain": {
+        "cosine_raw_vs_rescaled_logits": 0.9999999999998473,
+        "entropy_nats": {
+          "raw": 6.066323837526044,
+          "rescaled": 11.04681902667915
+        },
+        "gold_answer_tokens": {
+          "best_rank": {
+            "raw": 15544,
+            "rescaled": 15544
+          },
+          "mean_logprob": {
+            "raw": -18.198412195452335,
+            "rescaled": -12.949601353804109
+          },
+          "mean_rank": {
+            "raw": 78195.6,
+            "rescaled": 78195.6
+          },
+          "n": 5
+        },
+        "sender_span_tokens": {
+          "best_rank": {
+            "raw": 1586,
+            "rescaled": 1586
+          },
+          "mean_logprob": {
+            "raw": -17.856074485479823,
+            "rescaled": -12.815485802130848
+          },
+          "mean_rank": {
+            "raw": 76492.11340206186,
+            "rescaled": 76492.11340206186
+          },
+          "n_unique": 97
+        },
+        "topk_overlap": {
+          "top10": {
+            "argmax_identical": true,
+            "overlap": 1.0
+          },
+          "top100": {
+            "argmax_identical": true,
+            "overlap": 1.0
+          },
+          "top50": {
+            "argmax_identical": true,
+            "overlap": 1.0
+          }
+        }
+      },
+      "lens_rmsnorm": {
+        "cosine_raw_vs_rescaled_logits": 0.9999999999998711,
+        "entropy_nats": {
+          "raw": 6.299515558728122,
+          "rescaled": 6.299517396593739
+        },
+        "gold_answer_tokens": {
+          "best_rank": {
+            "raw": 18915,
+            "rescaled": 18915
+          },
+          "mean_logprob": {
+            "raw": -18.522575114871913,
+            "rescaled": -18.52257268842079
+          },
+          "mean_rank": {
+            "raw": 83092.0,
+            "rescaled": 83092.0
+          },
+          "n": 5
+        },
+        "sender_span_tokens": {
+          "best_rank": {
+            "raw": 2991,
+            "rescaled": 2991
+          },
+          "mean_logprob": {
+            "raw": -18.221203610152187,
+            "rescaled": -18.221200965621787
+          },
+          "mean_rank": {
+            "raw": 82117.35051546391,
+            "rescaled": 82117.35051546391
+          },
+          "n_unique": 97
+        },
+        "topk_overlap": {
+          "top10": {
+            "argmax_identical": true,
+            "overlap": 1.0
+          },
+          "top100": {
+            "argmax_identical": true,
+            "overlap": 1.0
+          },
+          "top50": {
+            "argmax_identical": true,
+            "overlap": 1.0
+          }
+        }
+      },
+      "n_span_tokens": 328,
+      "natural_median_used": 52.59990310668945,
+      "raw_l2": 134.26431274414062,
+      "rescaled_l2": 52.599918365478516,
+      "scale_c": 0.391763836145401,
+      "top10_tokens_rmsnorm_lens_raw": [
+        "DirectoryName",
+        " Svens",
+        "上海证券",
+        "代码",
+        " Stake",
+        "antd",
+        "endregion",
+        "rias",
+        " concession",
+        "UY"
+      ]
+    },
+    {
+      "dump_row": 589,
+      "gold": "550",
+      "gsm8k_item": 1129,
+      "lens_plain": {
+        "cosine_raw_vs_rescaled_logits": 0.9999999999998705,
+        "entropy_nats": {
+          "raw": 7.684851690555627,
+          "rescaled": 11.097715237319326
+        },
+        "gold_answer_tokens": {
+          "best_rank": {
+            "raw": 9621,
+            "rescaled": 9621
+          },
+          "mean_logprob": {
+            "raw": -15.44391068497327,
+            "rescaled": -12.422734986647848
+          },
+          "mean_rank": {
+            "raw": 62419.4,
+            "rescaled": 62419.4
+          },
+          "n": 5
+        },
+        "sender_span_tokens": {
+          "best_rank": {
+            "raw": 4394,
+            "rescaled": 4394
+          },
+          "mean_logprob": {
+            "raw": -15.334290487170037,
+            "rescaled": -12.374188737169284
+          },
+          "mean_rank": {
+            "raw": 61950.619047619046,
+            "rescaled": 61950.619047619046
+          },
+          "n_unique": 63
+        },
+        "topk_overlap": {
+          "top10": {
+            "argmax_identical": true,
+            "overlap": 1.0
+          },
+          "top100": {
+            "argmax_identical": true,
+            "overlap": 1.0
+          },
+          "top50": {
+            "argmax_identical": true,
+            "overlap": 1.0
+          }
+        }
+      },
+      "lens_rmsnorm": {
+        "cosine_raw_vs_rescaled_logits": 0.9999999999998902,
+        "entropy_nats": {
+          "raw": 6.656844287197556,
+          "rescaled": 6.656845521766018
+        },
+        "gold_answer_tokens": {
+          "best_rank": {
+            "raw": 20696,
+            "rescaled": 20696
+          },
+          "mean_logprob": {
+            "raw": -18.091711853825036,
+            "rescaled": -18.09170975789032
+          },
+          "mean_rank": {
+            "raw": 76522.0,
+            "rescaled": 76522.0
+          },
+          "n": 5
+        },
+        "sender_span_tokens": {
+          "best_rank": {
+            "raw": 4374,
+            "rescaled": 4374
+          },
+          "mean_logprob": {
+            "raw": -17.302769076566015,
+            "rescaled": -17.302766899266253
+          },
+          "mean_rank": {
+            "raw": 73152.79365079365,
+            "rescaled": 73152.79365079365
+          },
+          "n_unique": 63
+        },
+        "topk_overlap": {
+          "top10": {
+            "argmax_identical": true,
+            "overlap": 1.0
+          },
+          "top100": {
+            "argmax_identical": true,
+            "overlap": 1.0
+          },
+          "top50": {
+            "argmax_identical": true,
+            "overlap": 1.0
+          }
+        }
+      },
+      "n_span_tokens": 169,
+      "natural_median_used": 52.28715515136719,
+      "raw_l2": 118.06723022460938,
+      "rescaled_l2": 52.28715515136719,
+      "scale_c": 0.4428591728210449,
+      "top10_tokens_rmsnorm_lens_raw": [
+        "DirectoryName",
+        "iances",
+        ".scalablytyped",
+        "يان",
+        " Lanc",
+        "mlx",
+        "ería",
+        "IAM",
+        "PDOException",
+        "<AM"
+      ]
+    },
+    {
+      "dump_row": 1298,
+      "gold": "41",
+      "gsm8k_item": 2449,
+      "lens_plain": {
+        "cosine_raw_vs_rescaled_logits": 0.9999999999998974,
+        "entropy_nats": {
+          "raw": 2.7730577701721786,
+          "rescaled": 11.044169798298107
+        },
+        "gold_answer_tokens": {
+          "best_rank": {
+            "raw": 14553,
+            "rescaled": 14553
+          },
+          "mean_logprob": {
+            "raw": -21.716753699094088,
+            "rescaled": -12.635466161680725
+          },
+          "mean_rank": {
+            "raw": 72252.25,
+            "rescaled": 72252.25
+          },
+          "n": 4
+        },
+        "sender_span_tokens": {
+          "best_rank": {
+            "raw": 1847,
+            "rescaled": 1847
+          },
+          "mean_logprob": {
+            "raw": -22.428436771355067,
+            "rescaled": -12.849446869785176
+          },
+          "mean_rank": {
+            "raw": 78290.79104477612,
+            "rescaled": 78290.79104477612
+          },
+          "n_unique": 67
+        },
+        "topk_overlap": {
+          "top10": {
+            "argmax_identical": true,
+            "overlap": 1.0
+          },
+          "top100": {
+            "argmax_identical": true,
+            "overlap": 1.0
+          },
+          "top50": {
+            "argmax_identical": true,
+            "overlap": 1.0
+          }
+        }
+      },
+      "lens_rmsnorm": {
+        "cosine_raw_vs_rescaled_logits": 0.9999999999998667,
+        "entropy_nats": {
+          "raw": 5.288928601861955,
+          "rescaled": 5.288929366839368
+        },
+        "gold_answer_tokens": {
+          "best_rank": {
+            "raw": 29659,
+            "rescaled": 29659
+          },
+          "mean_logprob": {
+            "raw": -18.645561291292875,
+            "rescaled": -18.64555889694121
+          },
+          "mean_rank": {
+            "raw": 84298.75,
+            "rescaled": 84298.5
+          },
+          "n": 4
+        },
+        "sender_span_tokens": {
+          "best_rank": {
+            "raw": 2106,
+            "rescaled": 2106
+          },
+          "mean_logprob": {
+            "raw": -18.795738456936355,
+            "rescaled": -18.795735730311037
+          },
+          "mean_rank": {
+            "raw": 86827.86567164179,
+            "rescaled": 86827.86567164179
+          },
+          "n_unique": 67
+        },
+        "topk_overlap": {
+          "top10": {
+            "argmax_identical": true,
+            "overlap": 1.0
+          },
+          "top100": {
+            "argmax_identical": true,
+            "overlap": 1.0
+          },
+          "top50": {
+            "argmax_identical": true,
+            "overlap": 1.0
+          }
+        }
+      },
+      "n_span_tokens": 232,
+      "natural_median_used": 52.90739822387695,
+      "raw_l2": 175.96592712402344,
+      "rescaled_l2": 52.907371520996094,
+      "scale_c": 0.3006684184074402,
+      "top10_tokens_rmsnorm_lens_raw": [
+        "rias",
+        "DirectoryName",
+        " Svens",
+        " Lanc",
+        "ESH",
+        "alış",
+        "Ir",
+        "tery",
+        "Fair",
+        " concession"
+      ]
+    },
+    {
+      "dump_row": 2549,
+      "gold": "480",
+      "gsm8k_item": 4778,
+      "lens_plain": {
+        "cosine_raw_vs_rescaled_logits": 0.9999999999998876,
+        "entropy_nats": {
+          "raw": 6.82857837540648,
+          "rescaled": 11.049764484256217
+        },
+        "gold_answer_tokens": {
+          "best_rank": {
+            "raw": 28241,
+            "rescaled": 28241
+          },
+          "mean_logprob": {
+            "raw": -17.435509160673007,
+            "rescaled": -13.328701698176229
+          },
+          "mean_rank": {
+            "raw": 89975.8,
+            "rescaled": 89975.8
+          },
+          "n": 5
+        },
+        "sender_span_tokens": {
+          "best_rank": {
+            "raw": 1744,
+            "rescaled": 1744
+          },
+          "mean_logprob": {
+            "raw": -15.82432480783463,
+            "rescaled": -12.585999333582972
+          },
+          "mean_rank": {
+            "raw": 69603.52542372882,
+            "rescaled": 69603.52542372882
+          },
+          "n_unique": 59
+        },
+        "topk_overlap": {
+          "top10": {
+            "argmax_identical": true,
+            "overlap": 1.0
+          },
+          "top100": {
+            "argmax_identical": true,
+            "overlap": 1.0
+          },
+          "top50": {
+            "argmax_identical": true,
+            "overlap": 1.0
+          }
+        }
+      },
+      "lens_rmsnorm": {
+        "cosine_raw_vs_rescaled_logits": 0.9999999999998511,
+        "entropy_nats": {
+          "raw": 5.109291032918682,
+          "rescaled": 5.109294119940911
+        },
+        "gold_answer_tokens": {
+          "best_rank": {
+            "raw": 42933,
+            "rescaled": 42933
+          },
+          "mean_logprob": {
+            "raw": -20.137221885697503,
+            "rescaled": -20.137218679801506
+          },
+          "mean_rank": {
+            "raw": 99317.6,
+            "rescaled": 99317.6
+          },
+          "n": 5
+        },
+        "sender_span_tokens": {
+          "best_rank": {
+            "raw": 3464,
+            "rescaled": 3464
+          },
+          "mean_logprob": {
+            "raw": -18.082933365349245,
+            "rescaled": -18.082930400599494
+          },
+          "mean_rank": {
+            "raw": 77041.98305084746,
+            "rescaled": 77041.98305084746
+          },
+          "n_unique": 59
+        },
+        "topk_overlap": {
+          "top10": {
+            "argmax_identical": true,
+            "overlap": 1.0
+          },
+          "top100": {
+            "argmax_identical": true,
+            "overlap": 1.0
+          },
+          "top50": {
+            "argmax_identical": true,
+            "overlap": 1.0
+          }
+        }
+      },
+      "n_span_tokens": 180,
+      "natural_median_used": 52.49592208862305,
+      "raw_l2": 113.88223266601562,
+      "rescaled_l2": 52.49589920043945,
+      "scale_c": 0.46096673607826233,
+      "top10_tokens_rmsnorm_lens_raw": [
+        ".scalablytyped",
+        "DirectoryName",
+        "上海证券",
+        " Svens",
+        " Lanc",
+        "/testify",
+        "IAM",
+        "#ab",
+        "angs",
+        "拥"
+      ]
+    },
+    {
+      "dump_row": 916,
+      "gold": "35",
+      "gsm8k_item": 1760,
+      "lens_plain": {
+        "cosine_raw_vs_rescaled_logits": 0.9999999999998795,
+        "entropy_nats": {
+          "raw": 7.997907644753973,
+          "rescaled": 11.078207958037718
+        },
+        "gold_answer_tokens": {
+          "best_rank": {
+            "raw": 14941,
+            "rescaled": 14941
+          },
+          "mean_logprob": {
+            "raw": -15.699846230698299,
+            "rescaled": -12.727186235944536
+          },
+          "mean_rank": {
+            "raw": 75226.75,
+            "rescaled": 75226.75
+          },
+          "n": 4
+        },
+        "sender_span_tokens": {
+          "best_rank": {
+            "raw": 809,
+            "rescaled": 809
+          },
+          "mean_logprob": {
+            "raw": -15.517053012262798,
+            "rescaled": -12.641043296429107
+          },
+          "mean_rank": {
+            "raw": 69038.18055555556,
+            "rescaled": 69038.18055555556
+          },
+          "n_unique": 72
+        },
+        "topk_overlap": {
+          "top10": {
+            "argmax_identical": true,
+            "overlap": 1.0
+          },
+          "top100": {
+            "argmax_identical": true,
+            "overlap": 1.0
+          },
+          "top50": {
+            "argmax_identical": true,
+            "overlap": 1.0
+          }
+        }
+      },
+      "lens_rmsnorm": {
+        "cosine_raw_vs_rescaled_logits": 0.9999999999999406,
+        "entropy_nats": {
+          "raw": 6.369195085898187,
+          "rescaled": 6.369197738997993
+        },
+        "gold_answer_tokens": {
+          "best_rank": {
+            "raw": 26397,
+            "rescaled": 26397
+          },
+          "mean_logprob": {
+            "raw": -18.540777537249628,
+            "rescaled": -18.54077432941147
+          },
+          "mean_rank": {
+            "raw": 84298.25,
+            "rescaled": 84298.25
+          },
+          "n": 4
+        },
+        "sender_span_tokens": {
+          "best_rank": {
+            "raw": 1329,
+            "rescaled": 1329
+          },
+          "mean_logprob": {
+            "raw": -17.86869893026659,
+            "rescaled": -17.86869589668924
+          },
+          "mean_rank": {
+            "raw": 77168.01388888889,
+            "rescaled": 77167.98611111111
+          },
+          "n_unique": 72
+        },
+        "topk_overlap": {
+          "top10": {
+            "argmax_identical": true,
+            "overlap": 1.0
+          },
+          "top100": {
+            "argmax_identical": true,
+            "overlap": 1.0
+          },
+          "top50": {
+            "argmax_identical": true,
+            "overlap": 1.0
+          }
+        }
+      },
+      "n_span_tokens": 246,
+      "natural_median_used": 52.14871597290039,
+      "raw_l2": 110.65826416015625,
+      "rescaled_l2": 52.1486930847168,
+      "scale_c": 0.47125911712646484,
+      "top10_tokens_rmsnorm_lens_raw": [
+        "DirectoryName",
+        "-thumbnails",
+        "IAM",
+        "orer",
+        " Svens",
+        " endregion",
+        "rias",
+        "PDOException",
+        " concession",
+        "esch"
+      ]
+    },
+    {
+      "dump_row": 560,
+      "gold": "14",
+      "gsm8k_item": 1068,
+      "lens_plain": {
+        "cosine_raw_vs_rescaled_logits": 0.9999999999998733,
+        "entropy_nats": {
+          "raw": 5.340231684044298,
+          "rescaled": 11.054936289034016
+        },
+        "gold_answer_tokens": {
+          "best_rank": {
+            "raw": 10265,
+            "rescaled": 10265
+          },
+          "mean_logprob": {
+            "raw": -19.35748524925683,
+            "rescaled": -12.828790433346455
+          },
+          "mean_rank": {
+            "raw": 76814.75,
+            "rescaled": 76814.75
+          },
+          "n": 4
+        },
+        "sender_span_tokens": {
+          "best_rank": {
+            "raw": 4369,
+            "rescaled": 4369
+          },
+          "mean_logprob": {
+            "raw": -18.832864859722562,
+            "rescaled": -12.647628055306063
+          },
+          "mean_rank": {
+            "raw": 71975.57627118644,
+            "rescaled": 71975.57627118644
+          },
+          "n_unique": 59
+        },
+        "topk_overlap": {
+          "top10": {
+            "argmax_identical": true,
+            "overlap": 1.0
+          },
+          "top100": {
+            "argmax_identical": true,
+            "overlap": 1.0
+          },
+          "top50": {
+            "argmax_identical": true,
+            "overlap": 1.0
+          }
+        }
+      },
+      "lens_rmsnorm": {
+        "cosine_raw_vs_rescaled_logits": 0.9999999999999145,
+        "entropy_nats": {
+          "raw": 6.501957412448803,
+          "rescaled": 6.5019589539665406
+        },
+        "gold_answer_tokens": {
+          "best_rank": {
+            "raw": 25230,
+            "rescaled": 25230
+          },
+          "mean_logprob": {
+            "raw": -18.96258192806497,
+            "rescaled": -18.962578986404424
+          },
+          "mean_rank": {
+            "raw": 87681.25,
+            "rescaled": 87681.25
+          },
+          "n": 4
+        },
+        "sender_span_tokens": {
+          "best_rank": {
+            "raw": 3788,
+            "rescaled": 3788
+          },
+          "mean_logprob": {
+            "raw": -17.990793325199636,
+            "rescaled": -17.990790578011858
+          },
+          "mean_rank": {
+            "raw": 81888.7627118644,
+            "rescaled": 81888.7627118644
+          },
+          "n_unique": 59
+        },
+        "topk_overlap": {
+          "top10": {
+            "argmax_identical": true,
+            "overlap": 1.0
+          },
+          "top100": {
+            "argmax_identical": true,
+            "overlap": 1.0
+          },
+          "top50": {
+            "argmax_identical": true,
+            "overlap": 1.0
+          }
+        }
+      },
+      "n_span_tokens": 186,
+      "natural_median_used": 53.07569122314453,
+      "raw_l2": 153.6995849609375,
+      "rescaled_l2": 53.075660705566406,
+      "scale_c": 0.3453209698200226,
+      "top10_tokens_rmsnorm_lens_raw": [
+        "DirectoryName",
+        " Lanc",
+        " Svens",
+        "iances",
+        "IAM",
+        "rias",
+        " concession",
+        "يان",
+        "Ir",
+        ".scalablytyped"
+      ]
+    },
+    {
+      "dump_row": 681,
+      "gold": "760",
+      "gsm8k_item": 1304,
+      "lens_plain": {
+        "cosine_raw_vs_rescaled_logits": 0.9999999999999021,
+        "entropy_nats": {
+          "raw": 8.117487619443684,
+          "rescaled": 11.068123086523132
+        },
+        "gold_answer_tokens": {
+          "best_rank": {
+            "raw": 2184,
+            "rescaled": 2184
+          },
+          "mean_logprob": {
+            "raw": -14.43614199971149,
+            "rescaled": -12.155442933926981
+          },
+          "mean_rank": {
+            "raw": 59929.6,
+            "rescaled": 59929.6
+          },
+          "n": 5
+        },
+        "sender_span_tokens": {
+          "best_rank": {
+            "raw": 2184,
+            "rescaled": 2184
+          },
+          "mean_logprob": {
+            "raw": -15.652528760753677,
+            "rescaled": -12.733000824518285
+          },
+          "mean_rank": {
+            "raw": 73897.29545454546,
+            "rescaled": 73897.29545454546
+          },
+          "n_unique": 88
+        },
+        "topk_overlap": {
+          "top10": {
+            "argmax_identical": true,
+            "overlap": 1.0
+          },
+          "top100": {
+            "argmax_identical": true,
+            "overlap": 1.0
+          },
+          "top50": {
+            "argmax_identical": true,
+            "overlap": 1.0
+          }
+        }
+      },
+      "lens_rmsnorm": {
+        "cosine_raw_vs_rescaled_logits": 0.9999999999999365,
+        "entropy_nats": {
+          "raw": 6.466386474956169,
+          "rescaled": 6.4663901942949975
+        },
+        "gold_answer_tokens": {
+          "best_rank": {
+            "raw": 5020,
+            "rescaled": 5020
+          },
+          "mean_logprob": {
+            "raw": -17.224715954116576,
+            "rescaled": -17.22471301065902
+          },
+          "mean_rank": {
+            "raw": 71757.4,
+            "rescaled": 71757.4
+          },
+          "n": 5
+        },
+        "sender_span_tokens": {
+          "best_rank": {
+            "raw": 3633,
+            "rescaled": 3633
+          },
+          "mean_logprob": {
+            "raw": -18.161473535526657,
+            "rescaled": -18.16147061557228
+          },
+          "mean_rank": {
+            "raw": 83745.43181818182,
+            "rescaled": 83745.43181818182
+          },
+          "n_unique": 88
+        },
+        "topk_overlap": {
+          "top10": {
+            "argmax_identical": true,
+            "overlap": 1.0
+          },
+          "top100": {
+            "argmax_identical": true,
+            "overlap": 1.0
+          },
+          "top50": {
+            "argmax_identical": true,
+            "overlap": 1.0
+          }
+        }
+      },
+      "n_span_tokens": 264,
+      "natural_median_used": 52.657958984375,
+      "raw_l2": 110.90218353271484,
+      "rescaled_l2": 52.657920837402344,
+      "scale_c": 0.47481444478034973,
+      "top10_tokens_rmsnorm_lens_raw": [
+        "DirectoryName",
+        "mlx",
+        "-thumbnails",
+        "orer",
+        "��",
+        "IAM",
+        "/apis",
+        " flag",
+        " Lanc",
+        " Svens"
+      ]
+    },
+    {
+      "dump_row": 170,
+      "gold": "6",
+      "gsm8k_item": 331,
+      "lens_plain": {
+        "cosine_raw_vs_rescaled_logits": 0.9999999999998594,
+        "entropy_nats": {
+          "raw": 7.689211428979935,
+          "rescaled": 11.071827968481955
+        },
+        "gold_answer_tokens": {
+          "best_rank": {
+            "raw": 44468,
+            "rescaled": 44468
+          },
+          "mean_logprob": {
+            "raw": -17.62180769267746,
+            "rescaled": -13.505151766469837
+          },
+          "mean_rank": {
+            "raw": 102597.66666666667,
+            "rescaled": 102597.66666666667
+          },
+          "n": 3
+        },
+        "sender_span_tokens": {
+          "best_rank": {
+            "raw": 3215,
+            "rescaled": 3215
+          },
+          "mean_logprob": {
+            "raw": -15.993847921257528,
+            "rescaled": -12.757011673247915
+          },
+          "mean_rank": {
+            "raw": 73287.32673267326,
+            "rescaled": 73287.33663366336
+          },
+          "n_unique": 101
+        },
+        "topk_overlap": {
+          "top10": {
+            "argmax_identical": true,
+            "overlap": 1.0
+          },
+          "top100": {
+            "argmax_identical": true,
+            "overlap": 1.0
+          },
+          "top50": {
+            "argmax_identical": true,
+            "overlap": 1.0
+          }
+        }
+      },
+      "lens_rmsnorm": {
+        "cosine_raw_vs_rescaled_logits": 0.9999999999998433,
+        "entropy_nats": {
+          "raw": 6.305544933026679,
+          "rescaled": 6.305546788867909
+        },
+        "gold_answer_tokens": {
+          "best_rank": {
+            "raw": 62950,
+            "rescaled": 62950
+          },
+          "mean_logprob": {
+            "raw": -20.40347222315923,
+            "rescaled": -20.403468941409805
+          },
+          "mean_rank": {
+            "raw": 112152.33333333333,
+            "rescaled": 112152.33333333333
+          },
+          "n": 3
+        },
+        "sender_span_tokens": {
+          "best_rank": {
+            "raw": 4616,
+            "rescaled": 4616
+          },
+          "mean_logprob": {
+            "raw": -18.21138103031807,
+            "rescaled": -18.211378298485414
+          },
+          "mean_rank": {
+            "raw": 82262.08910891089,
+            "rescaled": 82262.099009901
+          },
+          "n_unique": 101
+        },
+        "topk_overlap": {
+          "top10": {
+            "argmax_identical": true,
+            "overlap": 1.0
+          },
+          "top100": {
+            "argmax_identical": true,
+            "overlap": 1.0
+          },
+          "top50": {
+            "argmax_identical": true,
+            "overlap": 1.0
+          }
+        }
+      },
+      "n_span_tokens": 396,
+      "natural_median_used": 52.59870910644531,
+      "raw_l2": 114.45528411865234,
+      "rescaled_l2": 52.59870147705078,
+      "scale_c": 0.45955684781074524,
+      "top10_tokens_rmsnorm_lens_raw": [
+        "DirectoryName",
+        " Lanc",
+        "rias",
+        " Svens",
+        "农历",
+        " concession",
+        "上海证券",
+        "lider",
+        "我想",
+        "stile"
+      ]
+    },
+    {
+      "dump_row": 1360,
+      "gold": "9",
+      "gsm8k_item": 2569,
+      "lens_plain": {
+        "cosine_raw_vs_rescaled_logits": 0.9999999999998486,
+        "entropy_nats": {
+          "raw": 6.036354259100293,
+          "rescaled": 11.00764815585928
+        },
+        "gold_answer_tokens": {
+          "best_rank": {
+            "raw": 19949,
+            "rescaled": 19949
+          },
+          "mean_logprob": {
+            "raw": -16.161974077925535,
+            "rescaled": -12.131834562364025
+          },
+          "mean_rank": {
+            "raw": 50310.0,
+            "rescaled": 50310.0
+          },
+          "n": 3
+        },
+        "sender_span_tokens": {
+          "best_rank": {
+            "raw": 317,
+            "rescaled": 317
+          },
+          "mean_logprob": {
+            "raw": -15.442277561754446,
+            "rescaled": -11.848204140668408
+          },
+          "mean_rank": {
+            "raw": 46149.53125,
+            "rescaled": 46149.53125
+          },
+          "n_unique": 96
+        },
+        "topk_overlap": {
+          "top10": {
+            "argmax_identical": true,
+            "overlap": 1.0
+          },
+          "top100": {
+            "argmax_identical": true,
+            "overlap": 1.0
+          },
+          "top50": {
+            "argmax_identical": true,
+            "overlap": 1.0
+          }
+        }
+      },
+      "lens_rmsnorm": {
+        "cosine_raw_vs_rescaled_logits": 0.9999999999999,
+        "entropy_nats": {
+          "raw": 5.963475891811807,
+          "rescaled": 5.9634790469237275
+        },
+        "gold_answer_tokens": {
+          "best_rank": {
+            "raw": 32783,
+            "rescaled": 32783
+          },
+          "mean_logprob": {
+            "raw": -17.27008255747487,
+            "rescaled": -17.270079307092242
+          },
+          "mean_rank": {
+            "raw": 66308.33333333333,
+            "rescaled": 66308.33333333333
+          },
+          "n": 3
+        },
+        "sender_span_tokens": {
+          "best_rank": {
+            "raw": 325,
+            "rescaled": 325
+          },
+          "mean_logprob": {
+            "raw": -16.104281711293062,
+            "rescaled": -16.104279029638068
+          },
+          "mean_rank": {
+            "raw": 53771.510416666664,
+            "rescaled": 53771.5
+          },
+          "n_unique": 96
+        },
+        "topk_overlap": {
+          "top10": {
+            "argmax_identical": true,
+            "overlap": 1.0
+          },
+          "top100": {
+            "argmax_identical": true,
+            "overlap": 1.0
+          },
+          "top50": {
+            "argmax_identical": true,
+            "overlap": 1.0
+          }
+        }
+      },
+      "n_span_tokens": 257,
+      "natural_median_used": 53.23817825317383,
+      "raw_l2": 135.08892822265625,
+      "rescaled_l2": 53.23817825317383,
+      "scale_c": 0.3940972685813904,
+      "top10_tokens_rmsnorm_lens_raw": [
+        "endregion",
+        "DirectoryName",
+        "AH",
+        " flag",
+        "Ir",
+        "IAM",
+        "/testify",
+        "alış",
+        "rias",
+        "UY"
+      ]
+    },
+    {
+      "dump_row": 969,
+      "gold": "11",
+      "gsm8k_item": 1853,
+      "lens_plain": {
+        "cosine_raw_vs_rescaled_logits": 0.9999999999998864,
+        "entropy_nats": {
+          "raw": 7.244506531900671,
+          "rescaled": 11.065161798606145
+        },
+        "gold_answer_tokens": {
+          "best_rank": {
+            "raw": 21790,
+            "rescaled": 21790
+          },
+          "mean_logprob": {
+            "raw": -17.053059827496256,
+            "rescaled": -12.881823390567348
+          },
+          "mean_rank": {
+            "raw": 77427.0,
+            "rescaled": 77427.0
+          },
+          "n": 4
+        },
+        "sender_span_tokens": {
+          "best_rank": {
+            "raw": 302,
+            "rescaled": 302
+          },
+          "mean_logprob": {
+            "raw": -15.88658415727244,
+            "rescaled": -12.391410626399816
+          },
+          "mean_rank": {
+            "raw": 62608.49438202247,
+            "rescaled": 62608.49438202247
+          },
+          "n_unique": 89
+        },
+        "topk_overlap": {
+          "top10": {
+            "argmax_identical": true,
+            "overlap": 1.0
+          },
+          "top100": {
+            "argmax_identical": true,
+            "overlap": 1.0
+          },
+          "top50": {
+            "argmax_identical": true,
+            "overlap": 1.0
+          }
+        }
+      },
+      "lens_rmsnorm": {
+        "cosine_raw_vs_rescaled_logits": 0.9999999999999541,
+        "entropy_nats": {
+          "raw": 6.688438445196956,
+          "rescaled": 6.6884401411178
+        },
+        "gold_answer_tokens": {
+          "best_rank": {
+            "raw": 43956,
+            "rescaled": 43956
+          },
+          "mean_logprob": {
+            "raw": -19.175497107665688,
+            "rescaled": -19.175494250159588
+          },
+          "mean_rank": {
+            "raw": 93013.25,
+            "rescaled": 93013.25
+          },
+          "n": 4
+        },
+        "sender_span_tokens": {
+          "best_rank": {
+            "raw": 620,
+            "rescaled": 620
+          },
+          "mean_logprob": {
+            "raw": -17.30286648839964,
+            "rescaled": -17.302863964746486
+          },
+          "mean_rank": {
+            "raw": 73439.96629213484,
+            "rescaled": 73439.95505617978
+          },
+          "n_unique": 89
+        },
+        "topk_overlap": {
+          "top10": {
+            "argmax_identical": true,
+            "overlap": 1.0
+          },
+          "top100": {
+            "argmax_identical": true,
+            "overlap": 1.0
+          },
+          "top50": {
+            "argmax_identical": true,
+            "overlap": 1.0
+          }
+        }
+      },
+      "n_span_tokens": 238,
+      "natural_median_used": 52.63791275024414,
+      "raw_l2": 125.20237731933594,
+      "rescaled_l2": 52.637882232666016,
+      "scale_c": 0.42042264342308044,
+      "top10_tokens_rmsnorm_lens_raw": [
+        "DirectoryName",
+        " Lanc",
+        "IAM",
+        "rias",
+        " concession",
+        "PDOException",
+        "<AM",
+        "ería",
+        ".scalablytyped",
+        "mlx"
+      ]
+    },
+    {
+      "dump_row": 465,
+      "gold": "113",
+      "gsm8k_item": 883,
+      "lens_plain": {
+        "cosine_raw_vs_rescaled_logits": 0.9999999999998543,
+        "entropy_nats": {
+          "raw": 7.36240839674534,
+          "rescaled": 11.074707585206983
+        },
+        "gold_answer_tokens": {
+          "best_rank": {
+            "raw": 2725,
+            "rescaled": 2725
+          },
+          "mean_logprob": {
+            "raw": -14.044750044373302,
+            "rescaled": -11.664807791780657
+          },
+          "mean_rank": {
+            "raw": 45041.4,
+            "rescaled": 45041.4
+          },
+          "n": 5
+        },
+        "sender_span_tokens": {
+          "best_rank": {
+            "raw": 345,
+            "rescaled": 345
+          },
+          "mean_logprob": {
+            "raw": -15.13899202008106,
+            "rescaled": -12.13020200318476
+          },
+          "mean_rank": {
+            "raw": 54231.641975308645,
+            "rescaled": 54231.62962962963
+          },
+          "n_unique": 81
+        },
+        "topk_overlap": {
+          "top10": {
+            "argmax_identical": true,
+            "overlap": 1.0
+          },
+          "top100": {
+            "argmax_identical": true,
+            "overlap": 1.0
+          },
+          "top50": {
+            "argmax_identical": true,
+            "overlap": 1.0
+          }
+        }
+      },
+      "lens_rmsnorm": {
+        "cosine_raw_vs_rescaled_logits": 0.9999999999998856,
+        "entropy_nats": {
+          "raw": 6.67254445462407,
+          "rescaled": 6.672546733897336
+        },
+        "gold_answer_tokens": {
+          "best_rank": {
+            "raw": 6807,
+            "rescaled": 6807
+          },
+          "mean_logprob": {
+            "raw": -16.071910666997823,
+            "rescaled": -16.071908988604907
+          },
+          "mean_rank": {
+            "raw": 58662.4,
+            "rescaled": 58662.4
+          },
+          "n": 5
+        },
+        "sender_span_tokens": {
+          "best_rank": {
+            "raw": 1109,
+            "rescaled": 1109
+          },
+          "mean_logprob": {
+            "raw": -16.52378151679999,
+            "rescaled": -16.523779215023435
+          },
+          "mean_rank": {
+            "raw": 62267.11111111111,
+            "rescaled": 62267.11111111111
+          },
+          "n_unique": 81
+        },
+        "topk_overlap": {
+          "top10": {
+            "argmax_identical": true,
+            "overlap": 1.0
+          },
+          "top100": {
+            "argmax_identical": true,
+            "overlap": 1.0
+          },
+          "top50": {
+            "argmax_identical": true,
+            "overlap": 1.0
+          }
+        }
+      },
+      "n_span_tokens": 305,
+      "natural_median_used": 52.630714416503906,
+      "raw_l2": 123.74609375,
+      "rescaled_l2": 52.63072204589844,
+      "scale_c": 0.4253121316432953,
+      "top10_tokens_rmsnorm_lens_raw": [
+        "DirectoryName",
+        " Svens",
+        "endregion",
+        " https",
+        "Ir",
+        " Lanc",
+        "rias",
+        "alış",
+        "我想",
+        "上海证券"
+      ]
+    },
+    {
+      "dump_row": 226,
+      "gold": "65",
+      "gsm8k_item": 447,
+      "lens_plain": {
+        "cosine_raw_vs_rescaled_logits": 0.9999999999999164,
+        "entropy_nats": {
+          "raw": 5.449774414098469,
+          "rescaled": 11.05387570665734
+        },
+        "gold_answer_tokens": {
+          "best_rank": {
+            "raw": 46678,
+            "rescaled": 46678
+          },
+          "mean_logprob": {
+            "raw": -19.42064522903942,
+            "rescaled": -13.243057224442346
+          },
+          "mean_rank": {
+            "raw": 91812.25,
+            "rescaled": 91812.25
+          },
+          "n": 4
+        },
+        "sender_span_tokens": {
+          "best_rank": {
+            "raw": 496,
+            "rescaled": 496
+          },
+          "mean_logprob": {
+            "raw": -18.295440641343106,
+            "rescaled": -12.816210702916209
+          },
+          "mean_rank": {
+            "raw": 76294.12676056338,
+            "rescaled": 76294.14084507042
+          },
+          "n_unique": 71
+        },
+        "topk_overlap": {
+          "top10": {
+            "argmax_identical": true,
+            "overlap": 1.0
+          },
+          "top100": {
+            "argmax_identical": true,
+            "overlap": 1.0
+          },
+          "top50": {
+            "argmax_identical": true,
+            "overlap": 1.0
+          }
+        }
+      },
+      "lens_rmsnorm": {
+        "cosine_raw_vs_rescaled_logits": 0.9999999999999278,
+        "entropy_nats": {
+          "raw": 6.089202869528261,
+          "rescaled": 6.089205517698969
+        },
+        "gold_answer_tokens": {
+          "best_rank": {
+            "raw": 70634,
+            "rescaled": 70634
+          },
+          "mean_logprob": {
+            "raw": -20.050227501495627,
+            "rescaled": -20.050223825703803
+          },
+          "mean_rank": {
+            "raw": 108755.75,
+            "rescaled": 108755.75
+          },
+          "n": 4
+        },
+        "sender_span_tokens": {
+          "best_rank": {
+            "raw": 1300,
+            "rescaled": 1300
+          },
+          "mean_logprob": {
+            "raw": -18.656765442761735,
+            "rescaled": -18.656762258078626
+          },
+          "mean_rank": {
+            "raw": 88316.74647887323,
+            "rescaled": 88316.74647887323
+          },
+          "n_unique": 71
+        },
+        "topk_overlap": {
+          "top10": {
+            "argmax_identical": true,
+            "overlap": 1.0
+          },
+          "top100": {
+            "argmax_identical": true,
+            "overlap": 1.0
+          },
+          "top50": {
+            "argmax_identical": true,
+            "overlap": 1.0
+          }
+        }
+      },
+      "n_span_tokens": 272,
+      "natural_median_used": 52.88973617553711,
+      "raw_l2": 139.42198181152344,
+      "rescaled_l2": 52.88972091674805,
+      "scale_c": 0.37935006618499756,
+      "top10_tokens_rmsnorm_lens_raw": [
+        " Lanc",
+        " Svens",
+        "DirectoryName",
+        "ще",
+        "上海证券",
+        "rias",
+        " dbo",
+        "AH",
+        "移动端",
+        "aken"
+      ]
+    },
+    {
+      "dump_row": 2091,
+      "gold": "5",
+      "gsm8k_item": 3904,
+      "lens_plain": {
+        "cosine_raw_vs_rescaled_logits": 0.9999999999999014,
+        "entropy_nats": {
+          "raw": 5.216409094724709,
+          "rescaled": 11.03968312086364
+        },
+        "gold_answer_tokens": {
+          "best_rank": {
+            "raw": 41306,
+            "rescaled": 41306
+          },
+          "mean_logprob": {
+            "raw": -19.55375317742796,
+            "rescaled": -13.29756309039619
+          },
+          "mean_rank": {
+            "raw": 95808.0,
+            "rescaled": 95808.0
+          },
+          "n": 3
+        },
+        "sender_span_tokens": {
+          "best_rank": {
+            "raw": 645,
+            "rescaled": 645
+          },
+          "mean_logprob": {
+            "raw": -17.74648488056954,
+            "rescaled": -12.60449394546238
+          },
+          "mean_rank": {
+            "raw": 70212.63855421687,
+            "rescaled": 70212.63855421687
+          },
+          "n_unique": 83
+        },
+        "topk_overlap": {
+          "top10": {
+            "argmax_identical": true,
+            "overlap": 1.0
+          },
+          "top100": {
+            "argmax_identical": true,
+            "overlap": 1.0
+          },
+          "top50": {
+            "argmax_identical": true,
+            "overlap": 1.0
+          }
+        }
+      },
+      "lens_rmsnorm": {
+        "cosine_raw_vs_rescaled_logits": 0.999999999999882,
+        "entropy_nats": {
+          "raw": 5.47208296778503,
+          "rescaled": 5.472085701276436
+        },
+        "gold_answer_tokens": {
+          "best_rank": {
+            "raw": 63365,
+            "rescaled": 63365
+          },
+          "mean_logprob": {
+            "raw": -20.213120102009814,
+            "rescaled": -20.213116359354697
+          },
+          "mean_rank": {
+            "raw": 108850.66666666667,
+            "rescaled": 108850.66666666667
+          },
+          "n": 3
+        },
+        "sender_span_tokens": {
+          "best_rank": {
+            "raw": 1124,
+            "rescaled": 1124
+          },
+          "mean_logprob": {
+            "raw": -18.26610581112548,
+            "rescaled": -18.26610292998488
+          },
+          "mean_rank": {
+            "raw": 81116.69879518072,
+            "rescaled": 81116.69879518072
+          },
+          "n_unique": 83
+        },
+        "topk_overlap": {
+          "top10": {
+            "argmax_identical": true,
+            "overlap": 1.0
+          },
+          "top100": {
+            "argmax_identical": true,
+            "overlap": 1.0
+          },
+          "top50": {
+            "argmax_identical": true,
+            "overlap": 1.0
+          }
+        }
+      },
+      "n_span_tokens": 400,
+      "natural_median_used": 52.896087646484375,
+      "raw_l2": 137.9334716796875,
+      "rescaled_l2": 52.896080017089844,
+      "scale_c": 0.38348984718322754,
+      "top10_tokens_rmsnorm_lens_raw": [
+        " Lanc",
+        " Svens",
+        "rias",
+        "stown",
+        " dbo",
+        "ще",
+        "DirectoryName",
+        "angent",
+        "/testify",
+        "AH"
+      ]
+    },
+    {
+      "dump_row": 2287,
+      "gold": "147700",
+      "gsm8k_item": 4269,
+      "lens_plain": {
+        "cosine_raw_vs_rescaled_logits": 0.9999999999998174,
+        "entropy_nats": {
+          "raw": 6.341433840623432,
+          "rescaled": 11.062993759134505
+        },
+        "gold_answer_tokens": {
+          "best_rank": {
+            "raw": 4644,
+            "rescaled": 4644
+          },
+          "mean_logprob": {
+            "raw": -15.953146182669794,
+            "rescaled": -12.13256522344222
+          },
+          "mean_rank": {
+            "raw": 55347.5,
+            "rescaled": 55347.5
+          },
+          "n": 8
+        },
+        "sender_span_tokens": {
+          "best_rank": {
+            "raw": 1736,
+            "rescaled": 1736
+          },
+          "mean_logprob": {
+            "raw": -17.57037073774702,
+            "rescaled": -12.76774860350257
+          },
+          "mean_rank": {
+            "raw": 74596.7356321839,
+            "rescaled": 74596.7356321839
+          },
+          "n_unique": 87
+        },
+        "topk_overlap": {
+          "top10": {
+            "argmax_identical": true,
+            "overlap": 1.0
+          },
+          "top100": {
+            "argmax_identical": true,
+            "overlap": 1.0
+          },
+          "top50": {
+            "argmax_identical": true,
+            "overlap": 1.0
+          }
+        }
+      },
+      "lens_rmsnorm": {
+        "cosine_raw_vs_rescaled_logits": 0.9999999999998412,
+        "entropy_nats": {
+          "raw": 6.1634618235282215,
+          "rescaled": 6.1634629251580435
+        },
+        "gold_answer_tokens": {
+          "best_rank": {
+            "raw": 9167,
+            "rescaled": 9167
+          },
+          "mean_logprob": {
+            "raw": -17.29777320328998,
+            "rescaled": -17.297770945849184
+          },
+          "mean_rank": {
+            "raw": 70530.75,
+            "rescaled": 70530.75
+          },
+          "n": 8
+        },
+        "sender_span_tokens": {
+          "best_rank": {
+            "raw": 3650,
+            "rescaled": 3650
+          },
+          "mean_logprob": {
+            "raw": -18.431100486512115,
+            "rescaled": -18.431097918030936
+          },
+          "mean_rank": {
+            "raw": 84589.63218390805,
+            "rescaled": 84589.63218390805
+          },
+          "n_unique": 87
+        },
+        "topk_overlap": {
+          "top10": {
+            "argmax_identical": true,
+            "overlap": 1.0
+          },
+          "top100": {
+            "argmax_identical": true,
+            "overlap": 1.0
+          },
+          "top50": {
+            "argmax_identical": true,
+            "overlap": 1.0
+          }
+        }
+      },
+      "n_span_tokens": 400,
+      "natural_median_used": 52.29951477050781,
+      "raw_l2": 133.15847778320312,
+      "rescaled_l2": 52.29951858520508,
+      "scale_c": 0.3927614390850067,
+      "top10_tokens_rmsnorm_lens_raw": [
+        "DirectoryName",
+        "rias",
+        "UnderTest",
+        "يان",
+        " Lanc",
+        " Svens",
+        "农历",
+        "IAM",
+        "截图",
+        "EditingStyle"
+      ]
+    },
+    {
+      "dump_row": 1162,
+      "gold": "45",
+      "gsm8k_item": 2190,
+      "lens_plain": {
+        "cosine_raw_vs_rescaled_logits": 0.9999999999999092,
+        "entropy_nats": {
+          "raw": 7.090537198864197,
+          "rescaled": 11.076708882315966
+        },
+        "gold_answer_tokens": {
+          "best_rank": {
+            "raw": 80881,
+            "rescaled": 80881
+          },
+          "mean_logprob": {
+            "raw": -20.63280077176083,
+            "rescaled": -14.429931979239338
+          },
+          "mean_rank": {
+            "raw": 125214.5,
+            "rescaled": 125214.5
+          },
+          "n": 4
+        },
+        "sender_span_tokens": {
+          "best_rank": {
+            "raw": 4502,
+            "rescaled": 4502
+          },
+          "mean_logprob": {
+            "raw": -17.825353076223102,
+            "rescaled": -13.235637877883175
+          },
+          "mean_rank": {
+            "raw": 90664.08695652174,
+            "rescaled": 90664.08695652174
+          },
+          "n_unique": 92
+        },
+        "topk_overlap": {
+          "top10": {
+            "argmax_identical": true,
+            "overlap": 1.0
+          },
+          "top100": {
+            "argmax_identical": true,
+            "overlap": 1.0
+          },
+          "top50": {
+            "argmax_identical": true,
+            "overlap": 1.0
+          }
+        }
+      },
+      "lens_rmsnorm": {
+        "cosine_raw_vs_rescaled_logits": 0.9999999999999141,
+        "entropy_nats": {
+          "raw": 6.3898320984079895,
+          "rescaled": 6.38983426818564
+        },
+        "gold_answer_tokens": {
+          "best_rank": {
+            "raw": 86572,
+            "rescaled": 86572
+          },
+          "mean_logprob": {
+            "raw": -22.385341558434497,
+            "rescaled": -22.385337594057734
+          },
+          "mean_rank": {
+            "raw": 127656.25,
+            "rescaled": 127656.25
+          },
+          "n": 4
+        },
+        "sender_span_tokens": {
+          "best_rank": {
+            "raw": 4470,
+            "rescaled": 4470
+          },
+          "mean_logprob": {
+            "raw": -19.347902905672857,
+            "rescaled": -19.347899982109872
+          },
+          "mean_rank": {
+            "raw": 94617.22826086957,
+            "rescaled": 94617.22826086957
+          },
+          "n_unique": 92
+        },
+        "topk_overlap": {
+          "top10": {
+            "argmax_identical": true,
+            "overlap": 1.0
+          },
+          "top100": {
+            "argmax_identical": true,
+            "overlap": 1.0
+          },
+          "top50": {
+            "argmax_identical": true,
+            "overlap": 1.0
+          }
+        }
+      },
+      "n_span_tokens": 400,
+      "natural_median_used": 51.36140060424805,
+      "raw_l2": 120.73612213134766,
+      "rescaled_l2": 51.361419677734375,
+      "scale_c": 0.42540210485458374,
+      "top10_tokens_rmsnorm_lens_raw": [
+        " Lanc",
+        "iams",
+        ".scalablytyped",
+        " Svens",
+        "DirectoryName",
+        "tractor",
+        " concession",
+        "يان",
+        "endregion",
+        "上海证券"
+      ]
+    },
+    {
+      "dump_row": 2006,
+      "gold": "16",
+      "gsm8k_item": 3748,
+      "lens_plain": {
+        "cosine_raw_vs_rescaled_logits": 0.9999999999999102,
+        "entropy_nats": {
+          "raw": 7.562586426138871,
+          "rescaled": 11.006270185863405
+        },
+        "gold_answer_tokens": {
+          "best_rank": {
+            "raw": 9231,
+            "rescaled": 9231
+          },
+          "mean_logprob": {
+            "raw": -14.007472621239831,
+            "rescaled": -11.875295143378995
+          },
+          "mean_rank": {
+            "raw": 44726.25,
+            "rescaled": 44726.25
+          },
+          "n": 4
+        },
+        "sender_span_tokens": {
+          "best_rank": {
+            "raw": 249,
+            "rescaled": 249
+          },
+          "mean_logprob": {
+            "raw": -14.613364409547456,
+            "rescaled": -12.167600189623531
+          },
+          "mean_rank": {
+            "raw": 54190.05063291139,
+            "rescaled": 54190.05063291139
+          },
+          "n_unique": 79
+        },
+        "topk_overlap": {
+          "top10": {
+            "argmax_identical": true,
+            "overlap": 1.0
+          },
+          "top100": {
+            "argmax_identical": true,
+            "overlap": 1.0
+          },
+          "top50": {
+            "argmax_identical": true,
+            "overlap": 1.0
+          }
+        }
+      },
+      "lens_rmsnorm": {
+        "cosine_raw_vs_rescaled_logits": 0.9999999999999318,
+        "entropy_nats": {
+          "raw": 5.935889046719995,
+          "rescaled": 5.935890393838436
+        },
+        "gold_answer_tokens": {
+          "best_rank": {
+            "raw": 22844,
+            "rescaled": 22844
+          },
+          "mean_logprob": {
+            "raw": -16.85467815445544,
+            "rescaled": -16.854676346913447
+          },
+          "mean_rank": {
+            "raw": 60841.25,
+            "rescaled": 60841.25
+          },
+          "n": 4
+        },
+        "sender_span_tokens": {
+          "best_rank": {
+            "raw": 498,
+            "rescaled": 498
+          },
+          "mean_logprob": {
+            "raw": -17.06032269202053,
+            "rescaled": -17.06032062116182
+          },
+          "mean_rank": {
+            "raw": 64549.79746835443,
+            "rescaled": 64549.79746835443
+          },
+          "n_unique": 79
+        },
+        "topk_overlap": {
+          "top10": {
+            "argmax_identical": true,
+            "overlap": 1.0
+          },
+          "top100": {
+            "argmax_identical": true,
+            "overlap": 1.0
+          },
+          "top50": {
+            "argmax_identical": true,
+            "overlap": 1.0
+          }
+        }
+      },
+      "n_span_tokens": 297,
+      "natural_median_used": 53.26142501831055,
+      "raw_l2": 110.4005355834961,
+      "rescaled_l2": 53.26142120361328,
+      "scale_c": 0.4824381172657013,
+      "top10_tokens_rmsnorm_lens_raw": [
+        "/testify",
+        "DirectoryName",
+        "AH",
+        " flag",
+        "ще",
+        "Ir",
+        " Lanc",
+        " Svens",
+        "rias",
+        "lider"
+      ]
+    },
+    {
+      "dump_row": 144,
+      "gold": "1500",
+      "gsm8k_item": 275,
+      "lens_plain": {
+        "cosine_raw_vs_rescaled_logits": 0.999999999999819,
+        "entropy_nats": {
+          "raw": 6.105176874112391,
+          "rescaled": 11.074164198534445
+        },
+        "gold_answer_tokens": {
+          "best_rank": {
+            "raw": 15958,
+            "rescaled": 15958
+          },
+          "mean_logprob": {
+            "raw": -15.555103025543827,
+            "rescaled": -12.261068445630416
+          },
+          "mean_rank": {
+            "raw": 56938.0,
+            "rescaled": 56938.0
+          },
+          "n": 6
+        },
+        "sender_span_tokens": {
+          "best_rank": {
+            "raw": 3783,
+            "rescaled": 3783
+          },
+          "mean_logprob": {
+            "raw": -16.616816404810546,
+            "rescaled": -12.723658296723135
+          },
+          "mean_rank": {
+            "raw": 74029.88571428572,
+            "rescaled": 74029.88571428572
+          },
+          "n_unique": 70
+        },
+        "topk_overlap": {
+          "top10": {
+            "argmax_identical": true,
+            "overlap": 1.0
+          },
+          "top100": {
+            "argmax_identical": true,
+            "overlap": 1.0
+          },
+          "top50": {
+            "argmax_identical": true,
+            "overlap": 1.0
+          }
+        }
+      },
+      "lens_rmsnorm": {
+        "cosine_raw_vs_rescaled_logits": 0.9999999999998772,
+        "entropy_nats": {
+          "raw": 3.8634046938665647,
+          "rescaled": 3.863407511921983
+        },
+        "gold_answer_tokens": {
+          "best_rank": {
+            "raw": 33783,
+            "rescaled": 33783
+          },
+          "mean_logprob": {
+            "raw": -18.33768184006789,
+            "rescaled": -18.33767944175894
+          },
+          "mean_rank": {
+            "raw": 71221.0,
+            "rescaled": 71221.0
+          },
+          "n": 6
+        },
+        "sender_span_tokens": {
+          "best_rank": {
+            "raw": 4047,
+            "rescaled": 4047
+          },
+          "mean_logprob": {
+            "raw": -18.889353641504393,
+            "rescaled": -18.88935041128489
+          },
+          "mean_rank": {
+            "raw": 83174.62857142858,
+            "rescaled": 83174.61428571428
+          },
+          "n_unique": 70
+        },
+        "topk_overlap": {
+          "top10": {
+            "argmax_identical": true,
+            "overlap": 1.0
+          },
+          "top100": {
+            "argmax_identical": true,
+            "overlap": 1.0
+          },
+          "top50": {
+            "argmax_identical": true,
+            "overlap": 1.0
+          }
+        }
+      },
+      "n_span_tokens": 377,
+      "natural_median_used": 52.08220291137695,
+      "raw_l2": 119.53649139404297,
+      "rescaled_l2": 52.082218170166016,
+      "scale_c": 0.43570128083229065,
+      "top10_tokens_rmsnorm_lens_raw": [
+        "DirectoryName",
+        " Svens",
+        "rias",
+        "Ir",
+        "上海证券",
+        " concession",
+        "若您",
+        "/testify",
+        "我想",
+        "agation"
+      ]
+    },
+    {
+      "dump_row": 1365,
+      "gold": "14",
+      "gsm8k_item": 2576,
+      "lens_plain": {
+        "cosine_raw_vs_rescaled_logits": 0.9999999999998083,
+        "entropy_nats": {
+          "raw": 5.681802079847794,
+          "rescaled": 11.0039379752154
+        },
+        "gold_answer_tokens": {
+          "best_rank": {
+            "raw": 91593,
+            "rescaled": 91593
+          },
+          "mean_logprob": {
+            "raw": -22.187556365493563,
+            "rescaled": -14.479001811172019
+          },
+          "mean_rank": {
+            "raw": 126140.5,
+            "rescaled": 126140.5
+          },
+          "n": 4
+        },
+        "sender_span_tokens": {
+          "best_rank": {
+            "raw": 389,
+            "rescaled": 389
+          },
+          "mean_logprob": {
+            "raw": -18.683408360895072,
+            "rescaled": -13.091787586737064
+          },
+          "mean_rank": {
+            "raw": 86628.58823529411,
+            "rescaled": 86628.58823529411
+          },
+          "n_unique": 85
+        },
+        "topk_overlap": {
+          "top10": {
+            "argmax_identical": true,
+            "overlap": 1.0
+          },
+          "top100": {
+            "argmax_identical": true,
+            "overlap": 1.0
+          },
+          "top50": {
+            "argmax_identical": true,
+            "overlap": 1.0
+          }
+        }
+      },
+      "lens_rmsnorm": {
+        "cosine_raw_vs_rescaled_logits": 0.9999999999999505,
+        "entropy_nats": {
+          "raw": 5.926639187895206,
+          "rescaled": 5.926640948197761
+        },
+        "gold_answer_tokens": {
+          "best_rank": {
+            "raw": 109866,
+            "rescaled": 109866
+          },
+          "mean_logprob": {
+            "raw": -22.82235788233752,
+            "rescaled": -22.82235416642557
+          },
+          "mean_rank": {
+            "raw": 133438.75,
+            "rescaled": 133438.75
+          },
+          "n": 4
+        },
+        "sender_span_tokens": {
+          "best_rank": {
+            "raw": 848,
+            "rescaled": 848
+          },
+          "mean_logprob": {
+            "raw": -19.17124450035564,
+            "rescaled": -19.171241613824847
+          },
+          "mean_rank": {
+            "raw": 93935.50588235294,
+            "rescaled": 93935.50588235294
+          },
+          "n_unique": 85
+        },
+        "topk_overlap": {
+          "top10": {
+            "argmax_identical": true,
+            "overlap": 1.0
+          },
+          "top100": {
+            "argmax_identical": true,
+            "overlap": 1.0
+          },
+          "top50": {
+            "argmax_identical": true,
+            "overlap": 1.0
+          }
+        }
+      },
+      "n_span_tokens": 387,
+      "natural_median_used": 53.28345489501953,
+      "raw_l2": 134.59573364257812,
+      "rescaled_l2": 53.28347396850586,
+      "scale_c": 0.39587774872779846,
+      "top10_tokens_rmsnorm_lens_raw": [
+        " Lanc",
+        "rias",
+        " concession",
+        "农历",
+        " Svens",
+        "stile",
+        "DirectoryName",
+        "-thumbnails",
+        "/testify",
+        "上海证券"
+      ]
+    },
+    {
+      "dump_row": 537,
+      "gold": "12",
+      "gsm8k_item": 1026,
+      "lens_plain": {
+        "cosine_raw_vs_rescaled_logits": 0.9999999999998844,
+        "entropy_nats": {
+          "raw": 4.782438024591336,
+          "rescaled": 11.055553770274829
+        },
+        "gold_answer_tokens": {
+          "best_rank": {
+            "raw": 68559,
+            "rescaled": 68559
+          },
+          "mean_logprob": {
+            "raw": -24.493093381690908,
+            "rescaled": -13.639846488536948
+          },
+          "mean_rank": {
+            "raw": 107437.75,
+            "rescaled": 107437.75
+          },
+          "n": 4
+        },
+        "sender_span_tokens": {
+          "best_rank": {
+            "raw": 508,
+            "rescaled": 508
+          },
+          "mean_logprob": {
+            "raw": -21.13675702015983,
+            "rescaled": -12.652274774598984
+          },
+          "mean_rank": {
+            "raw": 71962.18181818182,
+            "rescaled": 71962.18181818182
+          },
+          "n_unique": 66
+        },
+        "topk_overlap": {
+          "top10": {
+            "argmax_identical": true,
+            "overlap": 1.0
+          },
+          "top100": {
+            "argmax_identical": true,
+            "overlap": 1.0
+          },
+          "top50": {
+            "argmax_identical": true,
+            "overlap": 1.0
+          }
+        }
+      },
+      "lens_rmsnorm": {
+        "cosine_raw_vs_rescaled_logits": 0.9999999999999076,
+        "entropy_nats": {
+          "raw": 6.62165594113117,
+          "rescaled": 6.621658095567612
+        },
+        "gold_answer_tokens": {
+          "best_rank": {
+            "raw": 79461,
+            "rescaled": 79461
+          },
+          "mean_logprob": {
+            "raw": -20.284778226035428,
+            "rescaled": -20.28477376123077
+          },
+          "mean_rank": {
+            "raw": 113450.5,
+            "rescaled": 113450.5
+          },
+          "n": 4
+        },
+        "sender_span_tokens": {
+          "best_rank": {
+            "raw": 931,
+            "rescaled": 931
+          },
+          "mean_logprob": {
+            "raw": -17.834655226387184,
+            "rescaled": -17.834651907165735
+          },
+          "mean_rank": {
+            "raw": 78384.60606060606,
+            "rescaled": 78384.59090909091
+          },
+          "n_unique": 66
+        },
+        "topk_overlap": {
+          "top10": {
+            "argmax_identical": true,
+            "overlap": 1.0
+          },
+          "top100": {
+            "argmax_identical": true,
+            "overlap": 1.0
+          },
+          "top50": {
+            "argmax_identical": true,
+            "overlap": 1.0
+          }
+        }
+      },
+      "n_span_tokens": 177,
+      "natural_median_used": 52.00836944580078,
+      "raw_l2": 176.75436401367188,
+      "rescaled_l2": 52.00835037231445,
+      "scale_c": 0.29424092173576355,
+      "top10_tokens_rmsnorm_lens_raw": [
+        " Svens",
+        " Stake",
+        "endregion",
+        "DirectoryName",
+        "rias",
+        "UY",
+        "ormap",
+        "代码",
+        "steen",
+        "ETA"
+      ]
+    },
+    {
+      "dump_row": 2505,
+      "gold": "195",
+      "gsm8k_item": 4696,
+      "lens_plain": {
+        "cosine_raw_vs_rescaled_logits": 0.9999999999999541,
+        "entropy_nats": {
+          "raw": 3.1094500211741214,
+          "rescaled": 11.075741138620042
+        },
+        "gold_answer_tokens": {
+          "best_rank": {
+            "raw": 29989,
+            "rescaled": 29989
+          },
+          "mean_logprob": {
+            "raw": -22.698133089998343,
+            "rescaled": -13.028723608487212
+          },
+          "mean_rank": {
+            "raw": 80184.6,
+            "rescaled": 80184.6
+          },
+          "n": 5
+        },
+        "sender_span_tokens": {
+          "best_rank": {
+            "raw": 2622,
+            "rescaled": 2622
+          },
+          "mean_logprob": {
+            "raw": -22.131065191909435,
+            "rescaled": -12.858933145626073
+          },
+          "mean_rank": {
+            "raw": 79025.93548387097,
+            "rescaled": 79025.91935483871
+          },
+          "n_unique": 62
+        },
+        "topk_overlap": {
+          "top10": {
+            "argmax_identical": true,
+            "overlap": 1.0
+          },
+          "top100": {
+            "argmax_identical": true,
+            "overlap": 1.0
+          },
+          "top50": {
+            "argmax_identical": true,
+            "overlap": 1.0
+          }
+        }
+      },
+      "lens_rmsnorm": {
+        "cosine_raw_vs_rescaled_logits": 0.9999999999998676,
+        "entropy_nats": {
+          "raw": 5.5051089849939405,
+          "rescaled": 5.5051109436214505
+        },
+        "gold_answer_tokens": {
+          "best_rank": {
+            "raw": 44551,
+            "rescaled": 44551
+          },
+          "mean_logprob": {
+            "raw": -19.723197360305154,
+            "rescaled": -19.723193953358507
+          },
+          "mean_rank": {
+            "raw": 95285.8,
+            "rescaled": 95285.8
+          },
+          "n": 5
+        },
+        "sender_span_tokens": {
+          "best_rank": {
+            "raw": 3840,
+            "rescaled": 3840
+          },
+          "mean_logprob": {
+            "raw": -18.903791372830916,
+            "rescaled": -18.903788296017087
+          },
+          "mean_rank": {
+            "raw": 90030.46774193548,
+            "rescaled": 90030.5
+          },
+          "n_unique": 62
+        },
+        "topk_overlap": {
+          "top10": {
+            "argmax_identical": true,
+            "overlap": 1.0
+          },
+          "top100": {
+            "argmax_identical": true,
+            "overlap": 1.0
+          },
+          "top50": {
+            "argmax_identical": true,
+            "overlap": 1.0
+          }
+        }
+      },
+      "n_span_tokens": 238,
+      "natural_median_used": 52.19149398803711,
+      "raw_l2": 174.30958557128906,
+      "rescaled_l2": 52.19151306152344,
+      "scale_c": 0.2994183897972107,
+      "top10_tokens_rmsnorm_lens_raw": [
+        "DirectoryName",
+        " Svens",
+        "上海证券",
+        "rias",
+        "ENTA",
+        " Lanc",
+        " concession",
+        "若您",
+        "-thumbnails",
+        "Ir"
+      ]
+    },
+    {
+      "dump_row": 1948,
+      "gold": "30",
+      "gsm8k_item": 3659,
+      "lens_plain": {
+        "cosine_raw_vs_rescaled_logits": 0.9999999999998408,
+        "entropy_nats": {
+          "raw": 4.241476889521447,
+          "rescaled": 11.067810429643727
+        },
+        "gold_answer_tokens": {
+          "best_rank": {
+            "raw": 43495,
+            "rescaled": 43495
+          },
+          "mean_logprob": {
+            "raw": -21.62663722834931,
+            "rescaled": -13.165840169504058
+          },
+          "mean_rank": {
+            "raw": 87557.75,
+            "rescaled": 87557.75
+          },
+          "n": 4
+        },
+        "sender_span_tokens": {
+          "best_rank": {
+            "raw": 5531,
+            "rescaled": 5531
+          },
+          "mean_logprob": {
+            "raw": -20.677610889687568,
+            "rescaled": -12.86143837144814
+          },
+          "mean_rank": {
+            "raw": 77934.06329113925,
+            "rescaled": 77934.06329113925
+          },
+          "n_unique": 79
+        },
+        "topk_overlap": {
+          "top10": {
+            "argmax_identical": true,
+            "overlap": 1.0
+          },
+          "top100": {
+            "argmax_identical": true,
+            "overlap": 1.0
+          },
+          "top50": {
+            "argmax_identical": true,
+            "overlap": 1.0
+          }
+        }
+      },
+      "lens_rmsnorm": {
+        "cosine_raw_vs_rescaled_logits": 0.9999999999999063,
+        "entropy_nats": {
+          "raw": 6.346586292324628,
+          "rescaled": 6.346587940260104
+        },
+        "gold_answer_tokens": {
+          "best_rank": {
+            "raw": 66177,
+            "rescaled": 66177
+          },
+          "mean_logprob": {
+            "raw": -19.631647223964016,
+            "rescaled": -19.631644795303377
+          },
+          "mean_rank": {
+            "raw": 100916.75,
+            "rescaled": 100916.75
+          },
+          "n": 4
+        },
+        "sender_span_tokens": {
+          "best_rank": {
+            "raw": 6185,
+            "rescaled": 6185
+          },
+          "mean_logprob": {
+            "raw": -18.556477303797152,
+            "rescaled": -18.556474507323067
+          },
+          "mean_rank": {
+            "raw": 87796.02531645569,
+            "rescaled": 87796.02531645569
+          },
+          "n_unique": 79
+        },
+        "topk_overlap": {
+          "top10": {
+            "argmax_identical": true,
+            "overlap": 1.0
+          },
+          "top100": {
+            "argmax_identical": true,
+            "overlap": 1.0
+          },
+          "top50": {
+            "argmax_identical": true,
+            "overlap": 1.0
+          }
+        }
+      },
+      "n_span_tokens": 267,
+      "natural_median_used": 52.567012786865234,
+      "raw_l2": 163.8870086669922,
+      "rescaled_l2": 52.5670166015625,
+      "scale_c": 0.3207515478134155,
+      "top10_tokens_rmsnorm_lens_raw": [
+        " Lanc",
+        "rias",
+        " Svens",
+        "上海证券",
+        "农历",
+        "DirectoryName",
+        "stile",
+        " conced",
+        " concession",
+        " Laud"
+      ]
+    },
+    {
+      "dump_row": 325,
+      "gold": "1660",
+      "gsm8k_item": 632,
+      "lens_plain": {
+        "cosine_raw_vs_rescaled_logits": 0.9999999999998312,
+        "entropy_nats": {
+          "raw": 4.870327863888651,
+          "rescaled": 11.06998596192141
+        },
+        "gold_answer_tokens": {
+          "best_rank": {
+            "raw": 30013,
+            "rescaled": 30013
+          },
+          "mean_logprob": {
+            "raw": -19.044107765272113,
+            "rescaled": -12.780311161340508
+          },
+          "mean_rank": {
+            "raw": 71227.66666666667,
+            "rescaled": 71227.66666666667
+          },
+          "n": 6
+        },
+        "sender_span_tokens": {
+          "best_rank": {
+            "raw": 4843,
+            "rescaled": 4843
+          },
+          "mean_logprob": {
+            "raw": -19.224813458040224,
+            "rescaled": -12.844336096705224
+          },
+          "mean_rank": {
+            "raw": 77188.92,
+            "rescaled": 77188.92
+          },
+          "n_unique": 75
+        },
+        "topk_overlap": {
+          "top10": {
+            "argmax_identical": true,
+            "overlap": 1.0
+          },
+          "top100": {
+            "argmax_identical": true,
+            "overlap": 1.0
+          },
+          "top50": {
+            "argmax_identical": true,
+            "overlap": 1.0
+          }
+        }
+      },
+      "lens_rmsnorm": {
+        "cosine_raw_vs_rescaled_logits": 0.999999999999915,
+        "entropy_nats": {
+          "raw": 5.960683662518024,
+          "rescaled": 5.960685827596727
+        },
+        "gold_answer_tokens": {
+          "best_rank": {
+            "raw": 58071,
+            "rescaled": 58071
+          },
+          "mean_logprob": {
+            "raw": -19.17756023874284,
+            "rescaled": -19.17755707816893
+          },
+          "mean_rank": {
+            "raw": 90639.33333333333,
+            "rescaled": 90639.33333333333
+          },
+          "n": 6
+        },
+        "sender_span_tokens": {
+          "best_rank": {
+            "raw": 10119,
+            "rescaled": 10119
+          },
+          "mean_logprob": {
+            "raw": -18.683635376993813,
+            "rescaled": -18.683632245824874
+          },
+          "mean_rank": {
+            "raw": 87646.34666666666,
+            "rescaled": 87646.34666666666
+          },
+          "n_unique": 75
+        },
+        "topk_overlap": {
+          "top10": {
+            "argmax_identical": true,
+            "overlap": 1.0
+          },
+          "top100": {
+            "argmax_identical": true,
+            "overlap": 1.0
+          },
+          "top50": {
+            "argmax_identical": true,
+            "overlap": 1.0
+          }
+        }
+      },
+      "n_span_tokens": 253,
+      "natural_median_used": 52.579349517822266,
+      "raw_l2": 148.40103149414062,
+      "rescaled_l2": 52.57933044433594,
+      "scale_c": 0.35430583357810974,
+      "top10_tokens_rmsnorm_lens_raw": [
+        "DirectoryName",
+        " Svens",
+        "上海证券",
+        " Lanc",
+        " Caval",
+        "射手",
+        " concession",
+        " mâ",
+        "若您",
+        "rias"
+      ]
+    },
+    {
+      "dump_row": 1259,
+      "gold": "3",
+      "gsm8k_item": 2366,
+      "lens_plain": {
+        "cosine_raw_vs_rescaled_logits": 0.9999999999998617,
+        "entropy_nats": {
+          "raw": 6.765803618472774,
+          "rescaled": 11.07898134569815
+        },
+        "gold_answer_tokens": {
+          "best_rank": {
+            "raw": 22718,
+            "rescaled": 22718
+          },
+          "mean_logprob": {
+            "raw": -18.353375971499812,
+            "rescaled": -13.535090687599654
+          },
+          "mean_rank": {
+            "raw": 100616.33333333333,
+            "rescaled": 100616.33333333333
+          },
+          "n": 3
+        },
+        "sender_span_tokens": {
+          "best_rank": {
+            "raw": 2189,
+            "rescaled": 2189
+          },
+          "mean_logprob": {
+            "raw": -16.58850366714644,
+            "rescaled": -12.765560757416804
+          },
+          "mean_rank": {
+            "raw": 75741.31168831169,
+            "rescaled": 75741.31168831169
+          },
+          "n_unique": 77
+        },
+        "topk_overlap": {
+          "top10": {
+            "argmax_identical": true,
+            "overlap": 1.0
+          },
+          "top100": {
+            "argmax_identical": true,
+            "overlap": 1.0
+          },
+          "top50": {
+            "argmax_identical": true,
+            "overlap": 1.0
+          }
+        }
+      },
+      "lens_rmsnorm": {
+        "cosine_raw_vs_rescaled_logits": 0.9999999999999253,
+        "entropy_nats": {
+          "raw": 5.5513520779442835,
+          "rescaled": 5.5513543702097135
+        },
+        "gold_answer_tokens": {
+          "best_rank": {
+            "raw": 41595,
+            "rescaled": 41595
+          },
+          "mean_logprob": {
+            "raw": -21.120963784297498,
+            "rescaled": -21.120959414413033
+          },
+          "mean_rank": {
+            "raw": 109561.0,
+            "rescaled": 109561.0
+          },
+          "n": 3
+        },
+        "sender_span_tokens": {
+          "best_rank": {
+            "raw": 5037,
+            "rescaled": 5037
+          },
+          "mean_logprob": {
+            "raw": -18.6552563143563,
+            "rescaled": -18.655253335246847
+          },
+          "mean_rank": {
+            "raw": 85604.15584415584,
+            "rescaled": 85604.16883116883
+          },
+          "n_unique": 77
+        },
+        "topk_overlap": {
+          "top10": {
+            "argmax_identical": true,
+            "overlap": 1.0
+          },
+          "top100": {
+            "argmax_identical": true,
+            "overlap": 1.0
+          },
+          "top50": {
+            "argmax_identical": true,
+            "overlap": 1.0
+          }
+        }
+      },
+      "n_span_tokens": 391,
+      "natural_median_used": 51.87165069580078,
+      "raw_l2": 118.96463012695312,
+      "rescaled_l2": 51.87164306640625,
+      "scale_c": 0.43602582812309265,
+      "top10_tokens_rmsnorm_lens_raw": [
+        "DirectoryName",
+        " Lanc",
+        " Svens",
+        "rias",
+        " concession",
+        "上海证券",
+        "若您",
+        "Ir",
+        "ENTA",
+        " Caval"
+      ]
+    },
+    {
+      "dump_row": 180,
+      "gold": "42",
+      "gsm8k_item": 352,
+      "lens_plain": {
+        "cosine_raw_vs_rescaled_logits": 0.999999999999932,
+        "entropy_nats": {
+          "raw": 4.88531203547907,
+          "rescaled": 11.058382502415366
+        },
+        "gold_answer_tokens": {
+          "best_rank": {
+            "raw": 58887,
+            "rescaled": 58887
+          },
+          "mean_logprob": {
+            "raw": -24.744247343992143,
+            "rescaled": -13.95511092604246
+          },
+          "mean_rank": {
+            "raw": 117284.0,
+            "rescaled": 117284.0
+          },
+          "n": 4
+        },
+        "sender_span_tokens": {
+          "best_rank": {
+            "raw": 1003,
+            "rescaled": 1003
+          },
+          "mean_logprob": {
+            "raw": -21.155326600854966,
+            "rescaled": -12.850517021920407
+          },
+          "mean_rank": {
+            "raw": 78645.59420289854,
+            "rescaled": 78645.62318840579
+          },
+          "n_unique": 69
+        },
+        "topk_overlap": {
+          "top10": {
+            "argmax_identical": true,
+            "overlap": 1.0
+          },
+          "top100": {
+            "argmax_identical": true,
+            "overlap": 1.0
+          },
+          "top50": {
+            "argmax_identical": true,
+            "overlap": 1.0
+          }
+        }
+      },
+      "lens_rmsnorm": {
+        "cosine_raw_vs_rescaled_logits": 0.9999999999999332,
+        "entropy_nats": {
+          "raw": 6.613023497655467,
+          "rescaled": 6.613025933080095
+        },
+        "gold_answer_tokens": {
+          "best_rank": {
+            "raw": 68600,
+            "rescaled": 68600
+          },
+          "mean_logprob": {
+            "raw": -21.121156275272284,
+            "rescaled": -21.12115242287313
+          },
+          "mean_rank": {
+            "raw": 121339.75,
+            "rescaled": 121339.75
+          },
+          "n": 4
+        },
+        "sender_span_tokens": {
+          "best_rank": {
+            "raw": 2137,
+            "rescaled": 2137
+          },
+          "mean_logprob": {
+            "raw": -18.499487826141674,
+            "rescaled": -18.499484529404665
+          },
+          "mean_rank": {
+            "raw": 86323.60869565218,
+            "rescaled": 86323.60869565218
+          },
+          "n_unique": 69
+        },
+        "topk_overlap": {
+          "top10": {
+            "argmax_identical": true,
+            "overlap": 1.0
+          },
+          "top100": {
+            "argmax_identical": true,
+            "overlap": 1.0
+          },
+          "top50": {
+            "argmax_identical": true,
+            "overlap": 1.0
+          }
+        }
+      },
+      "n_span_tokens": 166,
+      "natural_median_used": 51.91965866088867,
+      "raw_l2": 168.69143676757812,
+      "rescaled_l2": 51.919673919677734,
+      "scale_c": 0.30777886509895325,
+      "top10_tokens_rmsnorm_lens_raw": [
+        "rias",
+        "/testify",
+        "#ab",
+        " Svens",
+        "<AM",
+        "stown",
+        "abouts",
+        "上海证券",
+        " Stake",
+        " Lanc"
+      ]
+    },
+    {
+      "dump_row": 2340,
+      "gold": "2600",
+      "gsm8k_item": 4370,
+      "lens_plain": {
+        "cosine_raw_vs_rescaled_logits": 0.9999999999998164,
+        "entropy_nats": {
+          "raw": 4.188954430941456,
+          "rescaled": 11.0735876867774
+        },
+        "gold_answer_tokens": {
+          "best_rank": {
+            "raw": 37289,
+            "rescaled": 37289
+          },
+          "mean_logprob": {
+            "raw": -19.035979352019382,
+            "rescaled": -12.816001920541794
+          },
+          "mean_rank": {
+            "raw": 73457.16666666667,
+            "rescaled": 73457.16666666667
+          },
+          "n": 6
+        },
+        "sender_span_tokens": {
+          "best_rank": {
+            "raw": 1619,
+            "rescaled": 1619
+          },
+          "mean_logprob": {
+            "raw": -18.850237460555807,
+            "rescaled": -12.74905619563149
+          },
+          "mean_rank": {
+            "raw": 74348.52688172043,
+            "rescaled": 74348.52688172043
+          },
+          "n_unique": 93
+        },
+        "topk_overlap": {
+          "top10": {
+            "argmax_identical": true,
+            "overlap": 1.0
+          },
+          "top100": {
+            "argmax_identical": true,
+            "overlap": 1.0
+          },
+          "top50": {
+            "argmax_identical": true,
+            "overlap": 1.0
+          }
+        }
+      },
+      "lens_rmsnorm": {
+        "cosine_raw_vs_rescaled_logits": 0.999999999999959,
+        "entropy_nats": {
+          "raw": 5.129828924646637,
+          "rescaled": 5.129831621650449
+        },
+        "gold_answer_tokens": {
+          "best_rank": {
+            "raw": 57525,
+            "rescaled": 57525
+          },
+          "mean_logprob": {
+            "raw": -19.07303005717927,
+            "rescaled": -19.073026950044156
+          },
+          "mean_rank": {
+            "raw": 88439.83333333333,
+            "rescaled": 88439.83333333333
+          },
+          "n": 6
+        },
+        "sender_span_tokens": {
+          "best_rank": {
+            "raw": 1246,
+            "rescaled": 1246
+          },
+          "mean_logprob": {
+            "raw": -18.467771173531222,
+            "rescaled": -18.467768154521295
+          },
+          "mean_rank": {
+            "raw": 82859.63440860216,
+            "rescaled": 82859.6129032258
+          },
+          "n_unique": 93
+        },
+        "topk_overlap": {
+          "top10": {
+            "argmax_identical": true,
+            "overlap": 1.0
+          },
+          "top100": {
+            "argmax_identical": true,
+            "overlap": 1.0
+          },
+          "top50": {
+            "argmax_identical": true,
+            "overlap": 1.0
+          }
+        }
+      },
+      "n_span_tokens": 295,
+      "natural_median_used": 52.14472579956055,
+      "raw_l2": 144.67654418945312,
+      "rescaled_l2": 52.14475631713867,
+      "scale_c": 0.3604227900505066,
+      "top10_tokens_rmsnorm_lens_raw": [
+        "rias",
+        " Svens",
+        "stile",
+        "DirectoryName",
+        "农历",
+        " Lanc",
+        "Fair",
+        " concession",
+        " IMDb",
+        "�장"
+      ]
+    },
+    {
+      "dump_row": 1450,
+      "gold": "130",
+      "gsm8k_item": 2714,
+      "lens_plain": {
+        "cosine_raw_vs_rescaled_logits": 0.9999999999998489,
+        "entropy_nats": {
+          "raw": 4.966713687907571,
+          "rescaled": 11.067982373878753
+        },
+        "gold_answer_tokens": {
+          "best_rank": {
+            "raw": 25373,
+            "rescaled": 25373
+          },
+          "mean_logprob": {
+            "raw": -18.199888063031608,
+            "rescaled": -12.515206731937871
+          },
+          "mean_rank": {
+            "raw": 65666.0,
+            "rescaled": 65666.0
+          },
+          "n": 5
+        },
+        "sender_span_tokens": {
+          "best_rank": {
+            "raw": 1091,
+            "rescaled": 1091
+          },
+          "mean_logprob": {
+            "raw": -18.021130786273073,
+            "rescaled": -12.451657681156004
+          },
+          "mean_rank": {
+            "raw": 64016.6,
+            "rescaled": 64016.5875
+          },
+          "n_unique": 80
+        },
+        "topk_overlap": {
+          "top10": {
+            "argmax_identical": true,
+            "overlap": 1.0
+          },
+          "top100": {
+            "argmax_identical": true,
+            "overlap": 1.0
+          },
+          "top50": {
+            "argmax_identical": true,
+            "overlap": 1.0
+          }
+        }
+      },
+      "lens_rmsnorm": {
+        "cosine_raw_vs_rescaled_logits": 0.9999999999998913,
+        "entropy_nats": {
+          "raw": 5.912495501284926,
+          "rescaled": 5.912498699113637
+        },
+        "gold_answer_tokens": {
+          "best_rank": {
+            "raw": 47446,
+            "rescaled": 47446
+          },
+          "mean_logprob": {
+            "raw": -18.342283023180503,
+            "rescaled": -18.342279632503626
+          },
+          "mean_rank": {
+            "raw": 83053.4,
+            "rescaled": 83053.4
+          },
+          "n": 5
+        },
+        "sender_span_tokens": {
+          "best_rank": {
+            "raw": 2375,
+            "rescaled": 2375
+          },
+          "mean_logprob": {
+            "raw": -17.701337184416204,
+            "rescaled": -17.701334151739726
+          },
+          "mean_rank": {
+            "raw": 74903.0625,
+            "rescaled": 74903.0625
+          },
+          "n_unique": 80
+        },
+        "topk_overlap": {
+          "top10": {
+            "argmax_identical": true,
+            "overlap": 1.0
+          },
+          "top100": {
+            "argmax_identical": true,
+            "overlap": 1.0
+          },
+          "top50": {
+            "argmax_identical": true,
+            "overlap": 1.0
+          }
+        }
+      },
+      "n_span_tokens": 400,
+      "natural_median_used": 52.45625686645508,
+      "raw_l2": 147.55381774902344,
+      "rescaled_l2": 52.45623016357422,
+      "scale_c": 0.35550591349601746,
+      "top10_tokens_rmsnorm_lens_raw": [
+        " Lanc",
+        "rias",
+        " Svens",
+        "DirectoryName",
+        "ще",
+        "上海证券",
+        "يان",
+        "stown",
+        " mâ",
+        "PDOException"
+      ]
+    },
+    {
+      "dump_row": 430,
+      "gold": "30",
+      "gsm8k_item": 830,
+      "lens_plain": {
+        "cosine_raw_vs_rescaled_logits": 0.999999999999837,
+        "entropy_nats": {
+          "raw": 3.696074822861238,
+          "rescaled": 11.056406365700592
+        },
+        "gold_answer_tokens": {
+          "best_rank": {
+            "raw": 31632,
+            "rescaled": 31632
+          },
+          "mean_logprob": {
+            "raw": -21.082410261636912,
+            "rescaled": -12.912441522457911
+          },
+          "mean_rank": {
+            "raw": 79635.0,
+            "rescaled": 79635.0
+          },
+          "n": 4
+        },
+        "sender_span_tokens": {
+          "best_rank": {
+            "raw": 2450,
+            "rescaled": 2450
+          },
+          "mean_logprob": {
+            "raw": -20.61405965185398,
+            "rescaled": -12.761747770881385
+          },
+          "mean_rank": {
+            "raw": 74515.74257425743,
+            "rescaled": 74515.73267326732
+          },
+          "n_unique": 101
+        },
+        "topk_overlap": {
+          "top10": {
+            "argmax_identical": true,
+            "overlap": 1.0
+          },
+          "top100": {
+            "argmax_identical": true,
+            "overlap": 1.0
+          },
+          "top50": {
+            "argmax_identical": true,
+            "overlap": 1.0
+          }
+        }
+      },
+      "lens_rmsnorm": {
+        "cosine_raw_vs_rescaled_logits": 0.9999999999999132,
+        "entropy_nats": {
+          "raw": 6.084209647218609,
+          "rescaled": 6.084211206209681
+        },
+        "gold_answer_tokens": {
+          "best_rank": {
+            "raw": 51432,
+            "rescaled": 51432
+          },
+          "mean_logprob": {
+            "raw": -19.199880405848255,
+            "rescaled": -19.19987765214154
+          },
+          "mean_rank": {
+            "raw": 94515.25,
+            "rescaled": 94515.25
+          },
+          "n": 4
+        },
+        "sender_span_tokens": {
+          "best_rank": {
+            "raw": 3487,
+            "rescaled": 3487
+          },
+          "mean_logprob": {
+            "raw": -18.298731826349933,
+            "rescaled": -18.29872894399164
+          },
+          "mean_rank": {
+            "raw": 83572.82178217822,
+            "rescaled": 83572.81188118811
+          },
+          "n_unique": 101
+        },
+        "topk_overlap": {
+          "top10": {
+            "argmax_identical": true,
+            "overlap": 1.0
+          },
+          "top100": {
+            "argmax_identical": true,
+            "overlap": 1.0
+          },
+          "top50": {
+            "argmax_identical": true,
+            "overlap": 1.0
+          }
+        }
+      },
+      "n_span_tokens": 313,
+      "natural_median_used": 52.82474899291992,
+      "raw_l2": 164.17742919921875,
+      "rescaled_l2": 52.824771881103516,
+      "scale_c": 0.3217540383338928,
+      "top10_tokens_rmsnorm_lens_raw": [
+        " Lanc",
+        "上海证券",
+        "DirectoryName",
+        "农历",
+        " Svens",
+        "rias",
+        " concession",
+        "stile",
+        " conced",
+        "我想"
+      ]
+    },
+    {
+      "dump_row": 1971,
+      "gold": "74",
+      "gsm8k_item": 3696,
+      "lens_plain": {
+        "cosine_raw_vs_rescaled_logits": 0.9999999999999346,
+        "entropy_nats": {
+          "raw": 7.455236090015429,
+          "rescaled": 11.057189775894749
+        },
+        "gold_answer_tokens": {
+          "best_rank": {
+            "raw": 4290,
+            "rescaled": 4290
+          },
+          "mean_logprob": {
+            "raw": -16.386277385768626,
+            "rescaled": -12.88501390577184
+          },
+          "mean_rank": {
+            "raw": 85533.25,
+            "rescaled": 85533.25
+          },
+          "n": 4
+        },
+        "sender_span_tokens": {
+          "best_rank": {
+            "raw": 704,
+            "rescaled": 704
+          },
+          "mean_logprob": {
+            "raw": -15.963153523881582,
+            "rescaled": -12.69170907444471
+          },
+          "mean_rank": {
+            "raw": 70847.03797468354,
+            "rescaled": 70847.06329113925
+          },
+          "n_unique": 79
+        },
+        "topk_overlap": {
+          "top10": {
+            "argmax_identical": true,
+            "overlap": 1.0
+          },
+          "top100": {
+            "argmax_identical": true,
+            "overlap": 1.0
+          },
+          "top50": {
+            "argmax_identical": true,
+            "overlap": 1.0
+          }
+        }
+      },
+      "lens_rmsnorm": {
+        "cosine_raw_vs_rescaled_logits": 0.9999999999998475,
+        "entropy_nats": {
+          "raw": 5.982941045293081,
+          "rescaled": 5.982943539932316
+        },
+        "gold_answer_tokens": {
+          "best_rank": {
+            "raw": 9568,
+            "rescaled": 9568
+          },
+          "mean_logprob": {
+            "raw": -19.274094610530106,
+            "rescaled": -19.27409177007941
+          },
+          "mean_rank": {
+            "raw": 98392.0,
+            "rescaled": 98392.0
+          },
+          "n": 4
+        },
+        "sender_span_tokens": {
+          "best_rank": {
+            "raw": 1445,
+            "rescaled": 1445
+          },
+          "mean_logprob": {
+            "raw": -18.250209974215483,
+            "rescaled": -18.250207431788013
+          },
+          "mean_rank": {
+            "raw": 81493.53164556962,
+            "rescaled": 81493.53164556962
+          },
+          "n_unique": 79
+        },
+        "topk_overlap": {
+          "top10": {
+            "argmax_identical": true,
+            "overlap": 1.0
+          },
+          "top100": {
+            "argmax_identical": true,
+            "overlap": 1.0
+          },
+          "top50": {
+            "argmax_identical": true,
+            "overlap": 1.0
+          }
+        }
+      },
+      "n_span_tokens": 276,
+      "natural_median_used": 52.753509521484375,
+      "raw_l2": 115.47201538085938,
+      "rescaled_l2": 52.75355911254883,
+      "scale_c": 0.4568510353565216,
+      "top10_tokens_rmsnorm_lens_raw": [
+        " Lanc",
+        " concession",
+        "rias",
+        " Svens",
+        "DirectoryName",
+        "农历",
+        "يان",
+        "stile",
+        "铧",
+        "Fair"
+      ]
+    },
+    {
+      "dump_row": 454,
+      "gold": "100",
+      "gsm8k_item": 866,
+      "lens_plain": {
+        "cosine_raw_vs_rescaled_logits": 0.999999999999823,
+        "entropy_nats": {
+          "raw": 5.302582458428849,
+          "rescaled": 11.065639618632584
+        },
+        "gold_answer_tokens": {
+          "best_rank": {
+            "raw": 30168,
+            "rescaled": 30168
+          },
+          "mean_logprob": {
+            "raw": -18.081551722225225,
+            "rescaled": -12.843555321742263
+          },
+          "mean_rank": {
+            "raw": 74767.6,
+            "rescaled": 74767.6
+          },
+          "n": 5
+        },
+        "sender_span_tokens": {
+          "best_rank": {
+            "raw": 898,
+            "rescaled": 898
+          },
+          "mean_logprob": {
+            "raw": -17.064027296167303,
+            "rescaled": -12.447147836920312
+          },
+          "mean_rank": {
+            "raw": 64694.2875,
+            "rescaled": 64694.275
+          },
+          "n_unique": 80
+        },
+        "topk_overlap": {
+          "top10": {
+            "argmax_identical": true,
+            "overlap": 1.0
+          },
+          "top100": {
+            "argmax_identical": true,
+            "overlap": 1.0
+          },
+          "top50": {
+            "argmax_identical": true,
+            "overlap": 1.0
+          }
+        }
+      },
+      "lens_rmsnorm": {
+        "cosine_raw_vs_rescaled_logits": 0.9999999999999247,
+        "entropy_nats": {
+          "raw": 5.544384591366967,
+          "rescaled": 5.5443874836604445
+        },
+        "gold_answer_tokens": {
+          "best_rank": {
+            "raw": 59050,
+            "rescaled": 59050
+          },
+          "mean_logprob": {
+            "raw": -19.487229852062804,
+            "rescaled": -19.48722683808464
+          },
+          "mean_rank": {
+            "raw": 95284.6,
+            "rescaled": 95284.6
+          },
+          "n": 5
+        },
+        "sender_span_tokens": {
+          "best_rank": {
+            "raw": 1899,
+            "rescaled": 1899
+          },
+          "mean_logprob": {
+            "raw": -17.740999560487587,
+            "rescaled": -17.74099639824287
+          },
+          "mean_rank": {
+            "raw": 75594.375,
+            "rescaled": 75594.375
+          },
+          "n_unique": 80
+        },
+        "topk_overlap": {
+          "top10": {
+            "argmax_identical": true,
+            "overlap": 1.0
+          },
+          "top100": {
+            "argmax_identical": true,
+            "overlap": 1.0
+          },
+          "top50": {
+            "argmax_identical": true,
+            "overlap": 1.0
+          }
+        }
+      },
+      "n_span_tokens": 343,
+      "natural_median_used": 52.7364387512207,
+      "raw_l2": 135.3673095703125,
+      "rescaled_l2": 52.73638916015625,
+      "scale_c": 0.38958030939102173,
+      "top10_tokens_rmsnorm_lens_raw": [
+        " Lanc",
+        " mâ",
+        " Svens",
+        "DirectoryName",
+        "PDOException",
+        "rias",
+        "上海证券",
+        " concession",
+        "/testify",
+        "农历"
+      ]
+    },
+    {
+      "dump_row": 5,
+      "gold": "448000",
+      "gsm8k_item": 15,
+      "lens_plain": {
+        "cosine_raw_vs_rescaled_logits": 0.9999999999998547,
+        "entropy_nats": {
+          "raw": 5.299030837092627,
+          "rescaled": 11.0463225324808
+        },
+        "gold_answer_tokens": {
+          "best_rank": {
+            "raw": 41168,
+            "rescaled": 41168
+          },
+          "mean_logprob": {
+            "raw": -19.31538281334208,
+            "rescaled": -12.99128599768012
+          },
+          "mean_rank": {
+            "raw": 82452.125,
+            "rescaled": 82452.125
+          },
+          "n": 8
+        },
+        "sender_span_tokens": {
+          "best_rank": {
+            "raw": 1522,
+            "rescaled": 1522
+          },
+          "mean_logprob": {
+            "raw": -18.751401832031867,
+            "rescaled": -12.78618977189194
+          },
+          "mean_rank": {
+            "raw": 76515.77333333333,
+            "rescaled": 76515.77333333333
+          },
+          "n_unique": 75
+        },
+        "topk_overlap": {
+          "top10": {
+            "argmax_identical": true,
+            "overlap": 1.0
+          },
+          "top100": {
+            "argmax_identical": true,
+            "overlap": 1.0
+          },
+          "top50": {
+            "argmax_identical": true,
+            "overlap": 1.0
+          }
+        }
+      },
+      "lens_rmsnorm": {
+        "cosine_raw_vs_rescaled_logits": 0.9999999999999183,
+        "entropy_nats": {
+          "raw": 6.0594400237583885,
+          "rescaled": 6.059441797740641
+        },
+        "gold_answer_tokens": {
+          "best_rank": {
+            "raw": 66301,
+            "rescaled": 66301
+          },
+          "mean_logprob": {
+            "raw": -19.48623218063158,
+            "rescaled": -19.48622908160507
+          },
+          "mean_rank": {
+            "raw": 100399.0,
+            "rescaled": 100399.0
+          },
+          "n": 8
+        },
+        "sender_span_tokens": {
+          "best_rank": {
+            "raw": 3326,
+            "rescaled": 3326
+          },
+          "mean_logprob": {
+            "raw": -18.53526723313967,
+            "rescaled": -18.535264396522606
+          },
+          "mean_rank": {
+            "raw": 87644.77333333333,
+            "rescaled": 87644.77333333333
+          },
+          "n_unique": 75
+        },
+        "topk_overlap": {
+          "top10": {
+            "argmax_identical": true,
+            "overlap": 1.0
+          },
+          "top100": {
+            "argmax_identical": true,
+            "overlap": 1.0
+          },
+          "top50": {
+            "argmax_identical": true,
+            "overlap": 1.0
+          }
+        }
+      },
+      "n_span_tokens": 400,
+      "natural_median_used": 52.56947708129883,
+      "raw_l2": 144.5574493408203,
+      "rescaled_l2": 52.56950759887695,
+      "scale_c": 0.36365804076194763,
+      "top10_tokens_rmsnorm_lens_raw": [
+        " Lanc",
+        " Svens",
+        "rias",
+        "يان",
+        "DirectoryName",
+        "农历",
+        "angent",
+        "/--",
+        "stown",
+        "/testify"
+      ]
+    },
+    {
+      "dump_row": 1630,
+      "gold": "70",
+      "gsm8k_item": 3053,
+      "lens_plain": {
+        "cosine_raw_vs_rescaled_logits": 0.9999999999999277,
+        "entropy_nats": {
+          "raw": 8.686059338161815,
+          "rescaled": 11.073959629759747
+        },
+        "gold_answer_tokens": {
+          "best_rank": {
+            "raw": 1814,
+            "rescaled": 1814
+          },
+          "mean_logprob": {
+            "raw": -12.529961678989356,
+            "rescaled": -11.472374544978353
+          },
+          "mean_rank": {
+            "raw": 38273.75,
+            "rescaled": 38273.75
+          },
+          "n": 4
+        },
+        "sender_span_tokens": {
+          "best_rank": {
+            "raw": 644,
+            "rescaled": 644
+          },
+          "mean_logprob": {
+            "raw": -13.67977241994866,
+            "rescaled": -12.085068646332227
+          },
+          "mean_rank": {
+            "raw": 52307.54368932039,
+            "rescaled": 52307.54368932039
+          },
+          "n_unique": 103
+        },
+        "topk_overlap": {
+          "top10": {
+            "argmax_identical": true,
+            "overlap": 1.0
+          },
+          "top100": {
+            "argmax_identical": true,
+            "overlap": 1.0
+          },
+          "top50": {
+            "argmax_identical": true,
+            "overlap": 1.0
+          }
+        }
+      },
+      "lens_rmsnorm": {
+        "cosine_raw_vs_rescaled_logits": 0.9999999999998985,
+        "entropy_nats": {
+          "raw": 5.582542574240442,
+          "rescaled": 5.582543472452672
+        },
+        "gold_answer_tokens": {
+          "best_rank": {
+            "raw": 3897,
+            "rescaled": 3897
+          },
+          "mean_logprob": {
+            "raw": -15.62624473598909,
+            "rescaled": -15.626243665570016
+          },
+          "mean_rank": {
+            "raw": 51661.25,
+            "rescaled": 51661.5
+          },
+          "n": 4
+        },
+        "sender_span_tokens": {
+          "best_rank": {
+            "raw": 2260,
+            "rescaled": 2260
+          },
+          "mean_logprob": {
+            "raw": -16.669588593498496,
+            "rescaled": -16.669586637834698
+          },
+          "mean_rank": {
+            "raw": 59812.73786407767,
+            "rescaled": 59812.74757281553
+          },
+          "n_unique": 103
+        },
+        "topk_overlap": {
+          "top10": {
+            "argmax_identical": true,
+            "overlap": 1.0
+          },
+          "top100": {
+            "argmax_identical": true,
+            "overlap": 1.0
+          },
+          "top50": {
+            "argmax_identical": true,
+            "overlap": 1.0
+          }
+        }
+      },
+      "n_span_tokens": 270,
+      "natural_median_used": 51.889034271240234,
+      "raw_l2": 97.3774185180664,
+      "rescaled_l2": 51.88905334472656,
+      "scale_c": 0.5328651666641235,
+      "top10_tokens_rmsnorm_lens_raw": [
+        " flag",
+        "IAM",
+        "/license",
+        "DirectoryName",
+        "rias",
+        "/testify",
+        " Flag",
+        "Ir",
+        "Flag",
+        "AH"
+      ]
+    },
+    {
+      "dump_row": 1118,
+      "gold": "8",
+      "gsm8k_item": 2110,
+      "lens_plain": {
+        "cosine_raw_vs_rescaled_logits": 0.9999999999999166,
+        "entropy_nats": {
+          "raw": 7.312803982160968,
+          "rescaled": 11.075452825953397
+        },
+        "gold_answer_tokens": {
+          "best_rank": {
+            "raw": 28881,
+            "rescaled": 28881
+          },
+          "mean_logprob": {
+            "raw": -17.792399581335744,
+            "rescaled": -13.42764825112733
+          },
+          "mean_rank": {
+            "raw": 99846.33333333333,
+            "rescaled": 99846.33333333333
+          },
+          "n": 3
+        },
+        "sender_span_tokens": {
+          "best_rank": {
+            "raw": 6232,
+            "rescaled": 6232
+          },
+          "mean_logprob": {
+            "raw": -16.3150102269455,
+            "rescaled": -12.768782563613295
+          },
+          "mean_rank": {
+            "raw": 75704.94117647059,
+            "rescaled": 75704.94117647059
+          },
+          "n_unique": 85
+        },
+        "topk_overlap": {
+          "top10": {
+            "argmax_identical": true,
+            "overlap": 1.0
+          },
+          "top100": {
+            "argmax_identical": true,
+            "overlap": 1.0
+          },
+          "top50": {
+            "argmax_identical": true,
+            "overlap": 1.0
+          }
+        }
+      },
+      "lens_rmsnorm": {
+        "cosine_raw_vs_rescaled_logits": 0.999999999999938,
+        "entropy_nats": {
+          "raw": 6.087125164809999,
+          "rescaled": 6.0871285422093715
+        },
+        "gold_answer_tokens": {
+          "best_rank": {
+            "raw": 43744,
+            "rescaled": 43744
+          },
+          "mean_logprob": {
+            "raw": -20.40953793965642,
+            "rescaled": -20.409533957719137
+          },
+          "mean_rank": {
+            "raw": 108191.66666666667,
+            "rescaled": 108191.33333333333
+          },
+          "n": 3
+        },
+        "sender_span_tokens": {
+          "best_rank": {
+            "raw": 5229,
+            "rescaled": 5229
+          },
+          "mean_logprob": {
+            "raw": -18.438383198327138,
+            "rescaled": -18.438379839199946
+          },
+          "mean_rank": {
+            "raw": 84946.65882352942,
+            "rescaled": 84946.6705882353
+          },
+          "n_unique": 85
+        },
+        "topk_overlap": {
+          "top10": {
+            "argmax_identical": true,
+            "overlap": 1.0
+          },
+          "top100": {
+            "argmax_identical": true,
+            "overlap": 1.0
+          },
+          "top50": {
+            "argmax_identical": true,
+            "overlap": 1.0
+          }
+        }
+      },
+      "n_span_tokens": 338,
+      "natural_median_used": 51.99546813964844,
+      "raw_l2": 116.59059143066406,
+      "rescaled_l2": 51.995452880859375,
+      "scale_c": 0.4459662437438965,
+      "top10_tokens_rmsnorm_lens_raw": [
+        "DirectoryName",
+        " Lanc",
+        "rias",
+        " concession",
+        " Svens",
+        "ESH",
+        "农历",
+        "يان",
+        "tery",
+        "erah"
+      ]
+    },
+    {
+      "dump_row": 2044,
+      "gold": "42",
+      "gsm8k_item": 3811,
+      "lens_plain": {
+        "cosine_raw_vs_rescaled_logits": 0.9999999999998594,
+        "entropy_nats": {
+          "raw": 5.4809827940770885,
+          "rescaled": 11.053879710177139
+        },
+        "gold_answer_tokens": {
+          "best_rank": {
+            "raw": 31516,
+            "rescaled": 31516
+          },
+          "mean_logprob": {
+            "raw": -19.968858912413168,
+            "rescaled": -13.385124536434835
+          },
+          "mean_rank": {
+            "raw": 91458.5,
+            "rescaled": 91458.5
+          },
+          "n": 4
+        },
+        "sender_span_tokens": {
+          "best_rank": {
+            "raw": 2582,
+            "rescaled": 2582
+          },
+          "mean_logprob": {
+            "raw": -19.1007553935151,
+            "rescaled": -13.061541456909877
+          },
+          "mean_rank": {
+            "raw": 84435.92592592593,
+            "rescaled": 84435.92592592593
+          },
+          "n_unique": 81
+        },
+        "topk_overlap": {
+          "top10": {
+            "argmax_identical": true,
+            "overlap": 1.0
+          },
+          "top100": {
+            "argmax_identical": true,
+            "overlap": 1.0
+          },
+          "top50": {
+            "argmax_identical": true,
+            "overlap": 1.0
+          }
+        }
+      },
+      "lens_rmsnorm": {
+        "cosine_raw_vs_rescaled_logits": 0.9999999999999415,
+        "entropy_nats": {
+          "raw": 5.978125165032994,
+          "rescaled": 5.978127414332993
+        },
+        "gold_answer_tokens": {
+          "best_rank": {
+            "raw": 51603,
+            "rescaled": 51603
+          },
+          "mean_logprob": {
+            "raw": -20.31226173178892,
+            "rescaled": -20.312258250385852
+          },
+          "mean_rank": {
+            "raw": 102637.25,
+            "rescaled": 102637.25
+          },
+          "n": 4
+        },
+        "sender_span_tokens": {
+          "best_rank": {
+            "raw": 3979,
+            "rescaled": 3979
+          },
+          "mean_logprob": {
+            "raw": -19.124285182719863,
+            "rescaled": -19.124281986094523
+          },
+          "mean_rank": {
+            "raw": 93451.97530864198,
+            "rescaled": 93451.96296296296
+          },
+          "n_unique": 81
+        },
+        "topk_overlap": {
+          "top10": {
+            "argmax_identical": true,
+            "overlap": 1.0
+          },
+          "top100": {
+            "argmax_identical": true,
+            "overlap": 1.0
+          },
+          "top50": {
+            "argmax_identical": true,
+            "overlap": 1.0
+          }
+        }
+      },
+      "n_span_tokens": 220,
+      "natural_median_used": 52.94618225097656,
+      "raw_l2": 142.04310607910156,
+      "rescaled_l2": 52.94618225097656,
+      "scale_c": 0.3727472722530365,
+      "top10_tokens_rmsnorm_lens_raw": [
+        " Lanc",
+        "rias",
+        "DirectoryName",
+        "يان",
+        " Svens",
+        "IAM",
+        "iances",
+        "-thumbnails",
+        "Ir",
+        "若您"
+      ]
+    },
+    {
+      "dump_row": 742,
+      "gold": "10",
+      "gsm8k_item": 1425,
+      "lens_plain": {
+        "cosine_raw_vs_rescaled_logits": 0.9999999999998173,
+        "entropy_nats": {
+          "raw": 6.559267873793169,
+          "rescaled": 11.064520609031979
+        },
+        "gold_answer_tokens": {
+          "best_rank": {
+            "raw": 36147,
+            "rescaled": 36147
+          },
+          "mean_logprob": {
+            "raw": -18.378391673859028,
+            "rescaled": -13.40997743462021
+          },
+          "mean_rank": {
+            "raw": 92981.25,
+            "rescaled": 92981.25
+          },
+          "n": 4
+        },
+        "sender_span_tokens": {
+          "best_rank": {
+            "raw": 1216,
+            "rescaled": 1216
+          },
+          "mean_logprob": {
+            "raw": -16.870243823608416,
+            "rescaled": -12.769806356085004
+          },
+          "mean_rank": {
+            "raw": 75752.26923076923,
+            "rescaled": 75752.26923076923
+          },
+          "n_unique": 78
+        },
+        "topk_overlap": {
+          "top10": {
+            "argmax_identical": true,
+            "overlap": 1.0
+          },
+          "top100": {
+            "argmax_identical": true,
+            "overlap": 1.0
+          },
+          "top50": {
+            "argmax_identical": true,
+            "overlap": 1.0
+          }
+        }
+      },
+      "lens_rmsnorm": {
+        "cosine_raw_vs_rescaled_logits": 0.999999999999842,
+        "entropy_nats": {
+          "raw": 5.535569480197097,
+          "rescaled": 5.535572306686668
+        },
+        "gold_answer_tokens": {
+          "best_rank": {
+            "raw": 64805,
+            "rescaled": 64805
+          },
+          "mean_logprob": {
+            "raw": -20.91078643256865,
+            "rescaled": -20.910782671417763
+          },
+          "mean_rank": {
+            "raw": 110659.0,
+            "rescaled": 110659.0
+          },
+          "n": 4
+        },
+        "sender_span_tokens": {
+          "best_rank": {
+            "raw": 2732,
+            "rescaled": 2732
+          },
+          "mean_logprob": {
+            "raw": -18.671523511644907,
+            "rescaled": -18.67152040805556
+          },
+          "mean_rank": {
+            "raw": 86979.2564102564,
+            "rescaled": 86979.2564102564
+          },
+          "n_unique": 78
+        },
+        "topk_overlap": {
+          "top10": {
+            "argmax_identical": true,
+            "overlap": 1.0
+          },
+          "top100": {
+            "argmax_identical": true,
+            "overlap": 1.0
+          },
+          "top50": {
+            "argmax_identical": true,
+            "overlap": 1.0
+          }
+        }
+      },
+      "n_span_tokens": 268,
+      "natural_median_used": 52.42940902709961,
+      "raw_l2": 123.51583862304688,
+      "rescaled_l2": 52.42941665649414,
+      "scale_c": 0.42447519302368164,
+      "top10_tokens_rmsnorm_lens_raw": [
+        "DirectoryName",
+        " Svens",
+        "rias",
+        " Lanc",
+        " concession",
+        "上海证券",
+        "射手",
+        " mâ",
+        " cabins",
+        "-thumbnails"
+      ]
+    },
+    {
+      "dump_row": 1747,
+      "gold": "16",
+      "gsm8k_item": 3281,
+      "lens_plain": {
+        "cosine_raw_vs_rescaled_logits": 0.9999999999998674,
+        "entropy_nats": {
+          "raw": 8.817333183414119,
+          "rescaled": 11.079921000979105
+        },
+        "gold_answer_tokens": {
+          "best_rank": {
+            "raw": 15322,
+            "rescaled": 15322
+          },
+          "mean_logprob": {
+            "raw": -15.343714794933959,
+            "rescaled": -13.017548710875083
+          },
+          "mean_rank": {
+            "raw": 80830.0,
+            "rescaled": 80830.0
+          },
+          "n": 4
+        },
+        "sender_span_tokens": {
+          "best_rank": {
+            "raw": 8688,
+            "rescaled": 8688
+          },
+          "mean_logprob": {
+            "raw": -15.187407617049702,
+            "rescaled": -12.933297730046588
+          },
+          "mean_rank": {
+            "raw": 83608.94285714286,
+            "rescaled": 83608.94285714286
+          },
+          "n_unique": 70
+        },
+        "topk_overlap": {
+          "top10": {
+            "argmax_identical": true,
+            "overlap": 1.0
+          },
+          "top100": {
+            "argmax_identical": true,
+            "overlap": 1.0
+          },
+          "top50": {
+            "argmax_identical": true,
+            "overlap": 1.0
+          }
+        }
+      },
+      "lens_rmsnorm": {
+        "cosine_raw_vs_rescaled_logits": 0.999999999999911,
+        "entropy_nats": {
+          "raw": 6.2871804679285574,
+          "rescaled": 6.287183312331453
+        },
+        "gold_answer_tokens": {
+          "best_rank": {
+            "raw": 27216,
+            "rescaled": 27216
+          },
+          "mean_logprob": {
+            "raw": -19.5333703677115,
+            "rescaled": -19.533366716747658
+          },
+          "mean_rank": {
+            "raw": 91498.5,
+            "rescaled": 91498.5
+          },
+          "n": 4
+        },
+        "sender_span_tokens": {
+          "best_rank": {
+            "raw": 11895,
+            "rescaled": 11895
+          },
+          "mean_logprob": {
+            "raw": -18.88780127269599,
+            "rescaled": -18.887798405746082
+          },
+          "mean_rank": {
+            "raw": 94617.14285714286,
+            "rescaled": 94617.14285714286
+          },
+          "n_unique": 70
+        },
+        "topk_overlap": {
+          "top10": {
+            "argmax_identical": true,
+            "overlap": 1.0
+          },
+          "top100": {
+            "argmax_identical": true,
+            "overlap": 1.0
+          },
+          "top50": {
+            "argmax_identical": true,
+            "overlap": 1.0
+          }
+        }
+      },
+      "n_span_tokens": 214,
+      "natural_median_used": 52.28106689453125,
+      "raw_l2": 96.99484252929688,
+      "rescaled_l2": 52.281070709228516,
+      "scale_c": 0.5390087366104126,
+      "top10_tokens_rmsnorm_lens_raw": [
+        "DirectoryName",
+        " Lanc",
+        " Caval",
+        "-thumbnails",
+        " concession",
+        " Svens",
+        "上海证券",
+        ".scalablytyped",
+        "/testify",
+        "mlx"
+      ]
+    },
+    {
+      "dump_row": 1994,
+      "gold": "124",
+      "gsm8k_item": 3728,
+      "lens_plain": {
+        "cosine_raw_vs_rescaled_logits": 0.9999999999998638,
+        "entropy_nats": {
+          "raw": 8.016409614132682,
+          "rescaled": 11.103843537874306
+        },
+        "gold_answer_tokens": {
+          "best_rank": {
+            "raw": 8683,
+            "rescaled": 8683
+          },
+          "mean_logprob": {
+            "raw": -14.516864028133034,
+            "rescaled": -12.179709214631819
+          },
+          "mean_rank": {
+            "raw": 57363.8,
+            "rescaled": 57363.8
+          },
+          "n": 5
+        },
+        "sender_span_tokens": {
+          "best_rank": {
+            "raw": 415,
+            "rescaled": 415
+          },
+          "mean_logprob": {
+            "raw": -14.98272548730457,
+            "rescaled": -12.397880922029906
+          },
+          "mean_rank": {
+            "raw": 65496.12765957447,
+            "rescaled": 65496.12765957447
+          },
+          "n_unique": 94
+        },
+        "topk_overlap": {
+          "top10": {
+            "argmax_identical": true,
+            "overlap": 1.0
+          },
+          "top100": {
+            "argmax_identical": true,
+            "overlap": 1.0
+          },
+          "top50": {
+            "argmax_identical": true,
+            "overlap": 1.0
+          }
+        }
+      },
+      "lens_rmsnorm": {
+        "cosine_raw_vs_rescaled_logits": 0.999999999999852,
+        "entropy_nats": {
+          "raw": 6.204427416481978,
+          "rescaled": 6.204429526081739
+        },
+        "gold_answer_tokens": {
+          "best_rank": {
+            "raw": 24721,
+            "rescaled": 24721
+          },
+          "mean_logprob": {
+            "raw": -17.70659854974206,
+            "rescaled": -17.706596233261415
+          },
+          "mean_rank": {
+            "raw": 74239.0,
+            "rescaled": 74239.0
+          },
+          "n": 5
+        },
+        "sender_span_tokens": {
+          "best_rank": {
+            "raw": 739,
+            "rescaled": 739
+          },
+          "mean_logprob": {
+            "raw": -17.51831429167318,
+            "rescaled": -17.518311750533783
+          },
+          "mean_rank": {
+            "raw": 75780.9574468085,
+            "rescaled": 75780.9574468085
+          },
+          "n_unique": 94
+        },
+        "topk_overlap": {
+          "top10": {
+            "argmax_identical": true,
+            "overlap": 1.0
+          },
+          "top100": {
+            "argmax_identical": true,
+            "overlap": 1.0
+          },
+          "top50": {
+            "argmax_identical": true,
+            "overlap": 1.0
+          }
+        }
+      },
+      "n_span_tokens": 284,
+      "natural_median_used": 51.67307662963867,
+      "raw_l2": 110.33734893798828,
+      "rescaled_l2": 51.673057556152344,
+      "scale_c": 0.46831899881362915,
+      "top10_tokens_rmsnorm_lens_raw": [
+        "DirectoryName",
+        "يان",
+        " Lanc",
+        "IAM",
+        " concession",
+        "截图",
+        "ería",
+        "点击",
+        "rias",
+        "Ir"
+      ]
+    },
+    {
+      "dump_row": 2383,
+      "gold": "11800",
+      "gsm8k_item": 4444,
+      "lens_plain": {
+        "cosine_raw_vs_rescaled_logits": 0.999999999999907,
+        "entropy_nats": {
+          "raw": 4.415799346008786,
+          "rescaled": 11.07912201113923
+        },
+        "gold_answer_tokens": {
+          "best_rank": {
+            "raw": 31014,
+            "rescaled": 31014
+          },
+          "mean_logprob": {
+            "raw": -19.28929194387692,
+            "rescaled": -12.499717417293384
+          },
+          "mean_rank": {
+            "raw": 62972.142857142855,
+            "rescaled": 62972.142857142855
+          },
+          "n": 7
+        },
+        "sender_span_tokens": {
+          "best_rank": {
+            "raw": 332,
+            "rescaled": 332
+          },
+          "mean_logprob": {
+            "raw": -19.24058631208351,
+            "rescaled": -12.483890329715486
+          },
+          "mean_rank": {
+            "raw": 65812.1170212766,
+            "rescaled": 65812.12765957447
+          },
+          "n_unique": 94
+        },
+        "topk_overlap": {
+          "top10": {
+            "argmax_identical": true,
+            "overlap": 1.0
+          },
+          "top100": {
+            "argmax_identical": true,
+            "overlap": 1.0
+          },
+          "top50": {
+            "argmax_identical": true,
+            "overlap": 1.0
+          }
+        }
+      },
+      "lens_rmsnorm": {
+        "cosine_raw_vs_rescaled_logits": 0.9999999999999114,
+        "entropy_nats": {
+          "raw": 6.34615090163456,
+          "rescaled": 6.346153538284245
+        },
+        "gold_answer_tokens": {
+          "best_rank": {
+            "raw": 60133,
+            "rescaled": 60133
+          },
+          "mean_logprob": {
+            "raw": -18.4543368777286,
+            "rescaled": -18.454334057450904
+          },
+          "mean_rank": {
+            "raw": 86180.57142857143,
+            "rescaled": 86180.57142857143
+          },
+          "n": 7
+        },
+        "sender_span_tokens": {
+          "best_rank": {
+            "raw": 824,
+            "rescaled": 824
+          },
+          "mean_logprob": {
+            "raw": -17.67067497931056,
+            "rescaled": -17.67067223648263
+          },
+          "mean_rank": {
+            "raw": 76834.89361702128,
+            "rescaled": 76834.8829787234
+          },
+          "n_unique": 94
+        },
+        "topk_overlap": {
+          "top10": {
+            "argmax_identical": true,
+            "overlap": 1.0
+          },
+          "top100": {
+            "argmax_identical": true,
+            "overlap": 1.0
+          },
+          "top50": {
+            "argmax_identical": true,
+            "overlap": 1.0
+          }
+        }
+      },
+      "n_span_tokens": 380,
+      "natural_median_used": 52.39483642578125,
+      "raw_l2": 161.23660278320312,
+      "rescaled_l2": 52.394840240478516,
+      "scale_c": 0.3249562084674835,
+      "top10_tokens_rmsnorm_lens_raw": [
+        "DirectoryName",
+        " Lanc",
+        "上海证券",
+        " Svens",
+        "/testify",
+        "rias",
+        "农历",
+        " Caval",
+        " concession",
+        "ще"
+      ]
+    },
+    {
+      "dump_row": 905,
+      "gold": "16",
+      "gsm8k_item": 1732,
+      "lens_plain": {
+        "cosine_raw_vs_rescaled_logits": 0.9999999999998609,
+        "entropy_nats": {
+          "raw": 7.086084319257058,
+          "rescaled": 11.062837642061647
+        },
+        "gold_answer_tokens": {
+          "best_rank": {
+            "raw": 64165,
+            "rescaled": 64165
+          },
+          "mean_logprob": {
+            "raw": -16.877682799115856,
+            "rescaled": -13.170169902330759
+          },
+          "mean_rank": {
+            "raw": 87303.0,
+            "rescaled": 87303.0
+          },
+          "n": 4
+        },
+        "sender_span_tokens": {
+          "best_rank": {
+            "raw": 267,
+            "rescaled": 267
+          },
+          "mean_logprob": {
+            "raw": -15.929140896951626,
+            "rescaled": -12.725942515787343
+          },
+          "mean_rank": {
+            "raw": 74537.0744680851,
+            "rescaled": 74537.0744680851
+          },
+          "n_unique": 94
+        },
+        "topk_overlap": {
+          "top10": {
+            "argmax_identical": true,
+            "overlap": 1.0
+          },
+          "top100": {
+            "argmax_identical": true,
+            "overlap": 1.0
+          },
+          "top50": {
+            "argmax_identical": true,
+            "overlap": 1.0
+          }
+        }
+      },
+      "lens_rmsnorm": {
+        "cosine_raw_vs_rescaled_logits": 0.9999999999998496,
+        "entropy_nats": {
+          "raw": 4.663313400551589,
+          "rescaled": 4.663316590205866
+        },
+        "gold_answer_tokens": {
+          "best_rank": {
+            "raw": 79340,
+            "rescaled": 79340
+          },
+          "mean_logprob": {
+            "raw": -19.953656300834023,
+            "rescaled": -19.953653302562827
+          },
+          "mean_rank": {
+            "raw": 98534.0,
+            "rescaled": 98534.0
+          },
+          "n": 4
+        },
+        "sender_span_tokens": {
+          "best_rank": {
+            "raw": 299,
+            "rescaled": 299
+          },
+          "mean_logprob": {
+            "raw": -18.482794269533972,
+            "rescaled": -18.482791185184787
+          },
+          "mean_rank": {
+            "raw": 81734.82978723405,
+            "rescaled": 81734.82978723405
+          },
+          "n_unique": 94
+        },
+        "topk_overlap": {
+          "top10": {
+            "argmax_identical": true,
+            "overlap": 1.0
+          },
+          "top100": {
+            "argmax_identical": true,
+            "overlap": 1.0
+          },
+          "top50": {
+            "argmax_identical": true,
+            "overlap": 1.0
+          }
+        }
+      },
+      "n_span_tokens": 367,
+      "natural_median_used": 52.239200592041016,
+      "raw_l2": 111.54438018798828,
+      "rescaled_l2": 52.23917770385742,
+      "scale_c": 0.468326598405838,
+      "top10_tokens_rmsnorm_lens_raw": [
+        "rias",
+        " Lanc",
+        "Fair",
+        "stile",
+        "IAM",
+        " IMDb",
+        "취",
+        "ений",
+        "农历",
+        " concession"
+      ]
+    }
+  ],
+  "probe_deployment_statistics": {
+    "n": 40,
+    "natural_median": {
+      "max": 53.28345489501953,
+      "mean": 52.44753837585449,
+      "min": 51.36140060424805
+    },
+    "note": "the scale factor deployment actually applied, per the M4c probe receipt: c = natural_median / ||adapter output||",
+    "scale_c": {
+      "max": 0.5790280127687576,
+      "mean": 0.38645495240873184,
+      "min": 0.25947868193082996
+    }
+  },
+  "protocol_safety": "ANNOTATES ONLY. No probe draw, no live-model forward, no probe item / control / statistic touched (ADR-028 protected list untouched). Changes no recorded outcome.",
+  "question": "Does the deployment rescale-to-natural-median destroy the output-token alignment of M4c's trained adapter?",
+  "sample": {
+    "dump_rows": [
+      494,
+      2070,
+      72,
+      589,
+      1298,
+      2549,
+      916,
+      560,
+      681,
+      170,
+      1360,
+      969,
+      465,
+      226,
+      2091,
+      2287,
+      1162,
+      2006,
+      144,
+      1365,
+      537,
+      2505,
+      1948,
+      325,
+      1259,
+      180,
+      2340,
+      1450,
+      430,
+      1971,
+      454,
+      5,
+      1630,
+      1118,
+      2044,
+      742,
+      1747,
+      1994,
+      2383,
+      905
+    ],
+    "gsm8k_items": [
+      945,
+      3866,
+      154,
+      1129,
+      2449,
+      4778,
+      1760,
+      1068,
+      1304,
+      331,
+      2569,
+      1853,
+      883,
+      447,
+      3904,
+      4269,
+      2190,
+      3748,
+      275,
+      2576,
+      1026,
+      4696,
+      3659,
+      632,
+      2366,
+      352,
+      4370,
+      2714,
+      830,
+      3696,
+      866,
+      15,
+      3053,
+      2110,
+      3811,
+      1425,
+      3281,
+      3728,
+      4444,
+      1732
+    ],
+    "n": 40,
+    "natural_median_source": "the 40 natural_inject_block_norms.median values RECORDED BY THE M4c PROBE ITSELF, paired to sample slots in receipt order — the authoritative deployment statistic",
+    "source": "first 40 rows of the M4c training receipt's holdout split (split.holdout_rows), in receipt order",
+    "why_not_the_probe_items": "the frozen probe's 40 items are NOT reconstructible from committed artifacts — their sender captures are produced live inside run2_m4c_probe and never dumped; the M4c probe receipt records only their NORMS (pooled_l2_raw / aligned_l2_raw / natural_inject_block_norms). Reconstructing them needs a live sender forward, i.e. GPU, which ADR-034 forbids this lane. The holdout rows share the capture pipeline, the adapter's input distribution, and are held out of M4c's own fit."
+  },
+  "stage": "run2-rescale-output-alignment-diagnostic",
+  "summary": {
+    "a_lin_output_alignment_regime": {
+      "lens_plain": {
+        "gold_answer_tokens": {
+          "best_rank": {
+            "raw": 31069.525,
+            "rescaled": 31069.525
+          },
+          "max_abs_mean_rank_delta_raw_vs_rescaled": 0.0,
+          "mean_logprob": {
+            "raw": -18.408002303126715,
+            "rescaled": -12.93839826957832
+          },
+          "mean_rank": {
+            "raw": 80557.79586309523,
+            "rescaled": 80557.79586309523
+          },
+          "mean_rank_as_vocab_percentile": 0.5302087448866314,
+          "rank_changed_by_rescale_on_n_items": 0
+        },
+        "sender_span_tokens": {
+          "best_rank": {
+            "raw": 2026.35,
+            "rescaled": 2026.35
+          },
+          "max_abs_mean_rank_delta_raw_vs_rescaled": 0.028985507247853093,
+          "mean_logprob": {
+            "raw": -17.65784230707049,
+            "rescaled": -12.664034355982857
+          },
+          "mean_rank": {
+            "raw": 71891.87856450486,
+            "rescaled": 71891.87886992295
+          },
+          "mean_rank_as_vocab_percentile": 0.47317211565728245,
+          "rank_changed_by_rescale_on_n_items": 11
+        }
+      },
+      "lens_rmsnorm": {
+        "gold_answer_tokens": {
+          "best_rank": {
+            "raw": 46954.075,
+            "rescaled": 46954.075
+          },
+          "max_abs_mean_rank_delta_raw_vs_rescaled": 0.3333333333430346,
+          "mean_logprob": {
+            "raw": -19.275321289889423,
+            "rescaled": -19.275318209739527
+          },
+          "mean_rank": {
+            "raw": 93459.67970238095,
+            "rescaled": 93459.67136904763
+          },
+          "mean_rank_as_vocab_percentile": 0.6151253139636488,
+          "rank_changed_by_rescale_on_n_items": 3
+        },
+        "sender_span_tokens": {
+          "best_rank": {
+            "raw": 2998.825,
+            "rescaled": 2998.825
+          },
+          "max_abs_mean_rank_delta_raw_vs_rescaled": 0.03333333334012423,
+          "mean_logprob": {
+            "raw": -18.16752665436912,
+            "rescaled": -18.16752379776798
+          },
+          "mean_rank": {
+            "raw": 81154.26331357239,
+            "rescaled": 81154.26239761087
+          },
+          "mean_rank_as_vocab_percentile": 0.534134525810686,
+          "rank_changed_by_rescale_on_n_items": 16
+        }
+      },
+      "reading": "LAP (arXiv:2604.15557) calls a direction steerable at peak A_lin > 0.1 and negligible below 0.05. Under the receiver's real readout the M4c vector's gold-answer tokens sit near the MIDDLE of the 151,936-token vocabulary and its own sender-span tokens barely better — output-alignment is ~absent for BOTH targets, raw and rescaled alike. The distribution is nonetheless peaked (entropy well below uniform), i.e. the vector confidently points somewhere that is neither the probe's target nor the sender's span.",
+      "uniform_entropy_nats": 11.931214658529285,
+      "vocab_size": 151936
+    },
+    "gold_vs_sender_span_target_mismatch": {
+      "gold_mean_rank": 80557.79586309523,
+      "note": "reported alongside, per docs/research/032 §4: separates 'rescale broke it' from 'the vector was aligned with the sender's own tokens, not the probe's gold-answer target'",
+      "sender_span_mean_rank": 71891.87856450486
+    },
+    "lens_plain": {
+      "cosine_raw_vs_rescaled_logits": {
+        "mean": 0.9999999999998718,
+        "min": 0.9999999999998083
+      },
+      "entropy_nats": {
+        "raw_mean": 6.020767743803836,
+        "rescaled_mean": 11.061769866700041,
+        "rescaled_over_raw_ratio": {
+          "max": 4.056552349453291,
+          "mean": 2.0014186270420735,
+          "min": 1.2566068186944592
+        }
+      },
+      "gold_mean_rank": {
+        "items_whose_gold_rank_changed": 0,
+        "raw": 80557.79586309523,
+        "rescaled": 80557.79586309523
+      },
+      "sender_span_mean_rank_raw": 71891.87856450486,
+      "top100_overlap": {
+        "mean": 1.0,
+        "min": 1.0
+      },
+      "top10_overlap": {
+        "mean": 1.0,
+        "min": 1.0
+      }
+    },
+    "lens_rmsnorm": {
+      "entropy_nats": {
+        "raw_mean": 5.943339043478703,
+        "rescaled_mean": 5.94334130019737
+      },
+      "note": "the receiver's ACTUAL readout applies RMSNorm before the unembedding; RMSNorm is scale-invariant, so every metric here — entropy and log-prob included — is identical between raw and rescaled"
+    },
+    "scale_sweep_at_probe_extremes": {
+      "min_cosine_vs_raw": 0.9999999999997675,
+      "min_top100_overlap_vs_raw": 1.0,
+      "scales_tested": [
+        0.25947868193082996,
+        0.5790280127687576
+      ]
+    }
+  },
+  "verdict": {
+    "disclosed_numerical_jitter": "The two arms are computed through INDEPENDENT f32 matmuls (unembed*(c*v), not c*(unembed*v)), and the rmsnorm arm recomputes an f32 reciprocal square root per arm. A handful of deep-tail tokens therefore move by <=1 rank out of 151,936 (max |delta mean_rank| over any item/lens/token-set is reported in summary.a_lin_output_alignment_regime). This is float rounding, not a rescale effect: the analytic map is exactly order-preserving, and the top-k/argmax statistics are identical on every item.",
+    "finding": "NO. The deployment rescale is multiplication by a strictly positive scalar c = natural_median/||v||, applied to a vector that OVERWRITES (not adds to) the residual rows at the 8 placeholder positions. Under the unembedding it maps z -> c*z, which preserves token ordering: top-k overlap 1.0 at k=10/50/100 and argmax identical on all 40 items in both lenses, gold-answer token ranks bit-unchanged under the plain lens, logit cosine 1.0 to 1e-12. Only the softmax TEMPERATURE moves (entropy roughly doubles under the plain lens), and the receiver's real readout applies a scale-invariant RMSNorm before the unembedding, which removes even that. Output-token alignment is NOT the channel through which rescaling could hurt.",
+    "redirects_to": "the one-shot-vs-continuous axis and the downstream-stack (post-block-14) magnitude effect, NOT the output-alignment/norm-mismatch hypothesis",
+    "rescale_destroys_output_alignment": false
+  },
+  "wall_clock_s": 11.034010887145996
+}

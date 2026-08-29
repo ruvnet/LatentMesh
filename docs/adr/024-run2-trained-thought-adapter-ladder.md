@@ -615,6 +615,62 @@ The 0/40 probe-time NLL inversion therefore cannot be attributed to
 composed-vs-fused numerics — it is specific to the **deployment
 configuration**, which is exactly what M4d isolates.
 
+## DIAGNOSIS (2026-08-29): the adapter collapsed to a fixed OFF-MANIFOLD direction
+
+The registered zero-GPU diagnostic ([docs/research/033](../research/033-rescale-output-alignment-diagnostic.md))
+answered its own question negatively and then found the real mechanism.
+
+**Rescaling is exonerated.** It is a positive scalar, and the receiver applies
+a scale-invariant RMSNorm before the unembedding: top-k token overlap between
+raw and rescaled vectors is **1.000** at k=10/50/100 on all 40 items, argmax
+identical on every item, gold-token ranks bit-unchanged, logit cosine 1.0 to
+2e-13. The norm-mismatch hypothesis M4d was registered to test **cannot be
+the mechanism behind M4c's 0/40 reversal.**
+
+**What is**: M4c's adapter emits a nearly **item-invariant, off-manifold**
+direction. Projected through the receiver's real readout, the induced
+distribution is confident (entropy 5.94 nats vs 11.93 uniform, perplexity
+~380) but points at rare embedding outliers: across all 40 items the top-10
+token sets draw from only **77 distinct tokens**, dominated by
+`DirectoryName` (37/40 items), `rias` (35), ` Svens` (34), ` Lanc` (34).
+Gold-answer tokens sit at mean rank 93,460/151,936 (61st percentile — worse
+than the middle); sender-span tokens at 81,154 (53rd). Both are deep inside
+LAP's "negligible effect regardless of intervention strength" regime
+(peak A_lin < 0.05). The adapter did not learn the sender's tokens instead of
+the gold answer — **it learned neither**, and collapsed to substantially the
+same direction for every item.
+
+This explains the previously puzzling shape of the result: losing 0/40 to
+*both* the zero vector and a norm-matched random control is the ablation
+literature's signature of an **actively counterproductive** intervention, not
+an ignored one — and "a fixed off-manifold direction normalised to look
+natural and injected at block 14 on every item" is precisely such a
+mechanism.
+
+**Interpretive consequences, registered before M4d reports:**
+- An **M4d null is now expected and weakly informative** — it changes the
+  norm handling, and norm is exonerated. It remains worth completing (already
+  running, ~0 marginal cost) but must NOT be read as evidence about
+  configuration matching in general.
+- **An M4d pass would be surprising** and would have to be attributed to slot
+  placement or the training path, not to the rescale.
+- The ladder's live hypotheses are now: **off-manifold collapse** (new, best
+  supported), **one-shot vs continuous injection** (M4e), and **receiver
+  scale** (M4b). The loss-function axis (M3/M4 vs M4c) is no longer the
+  leading explanation, because M4c's task-loss training *did* optimise its
+  objective and still produced a degenerate, item-invariant solution — which
+  is itself evidence that the injection channel admits a degenerate shortcut.
+
+**M4f registered (new, unscheduled, own pre-registration required before any
+probe draw)**: constrain the adapter's output to the receiver's residual-stream
+manifold — candidate mechanisms include initialising/anchoring to real
+receiver states, penalising distance to the natural state distribution during
+training, or predicting a convex combination of observed receiver states
+rather than an unconstrained vector. Cheap pre-check available with no probe
+draw: re-run the same unembedding projection on M4d's artifact and on the
+M3/M4 artifacts to establish whether off-manifold collapse is universal
+across the ladder or specific to task-loss training.
+
 ## Registered hypothesis — M4e, continuous per-step injection (added 2026-08-29, BEFORE M4d's verdict)
 
 Injection-configuration research ([docs/research/032](../research/032-injection-configuration-science.md))

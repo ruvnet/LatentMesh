@@ -25,7 +25,16 @@
 //! accordingly and written BEFORE any frozen-probe invocation — the probe
 //! invocation order is the freeze point (ADR-024 § Frozen registration).
 
+//! M4d scope (ADR-024 § Registered contingency — M4d, train/deploy
+//! configuration match): M4c's task loss, unchanged, but the adapter output
+//! now reaches the receiver through the probe's deployment path with no
+//! residual configuration gap — the rescale target is taken from the probe's
+//! OWN `forward_capture` + `norms::stats` code path (vendored FUSED forward,
+//! not the composed one), and the rescale/slot-broadcast operator itself is
+//! pinned against the probe's own `InjectionSpec::effective_vector` by a
+//! measured equivalence gate (`deploy`).
 pub mod dataset;
+pub mod deploy;
 pub mod fastgrnn;
 pub mod mlp;
 pub mod qwen2_c;

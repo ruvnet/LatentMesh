@@ -141,6 +141,23 @@ pub fn sign_test_one_sided(wins: usize, losses: usize) -> f64 {
     p.min(1.0)
 }
 
+/// One-sided **mid-p McNemar** statistic on the same discordant pairs:
+/// `exact_p − 0.5·P(X = wins)` (Fagerland, Lydersen & Laake 2013, *BMC Med
+/// Res Methodol* 13:91; `docs/research/031` §2.4, adopted as run 3's primary
+/// statistic by ADR-030).
+///
+/// **Reporting-only in run 2.** Run-2 receipts record their verdict on
+/// [`sign_test_one_sided`]; this value is disclosed alongside it and gates
+/// nothing — the frozen protocol's statistic is ADR-028-protected and is not
+/// retroactively changed by adding a second number to a receipt.
+pub fn mid_p_one_sided(wins: usize, losses: usize) -> f64 {
+    let n = wins + losses;
+    if n == 0 {
+        return 1.0;
+    }
+    (sign_test_one_sided(wins, losses) - 0.5 * binom_pmf(n, wins)).clamp(0.0, 1.0)
+}
+
 fn binom_pmf(n: usize, k: usize) -> f64 {
     (ln_choose(n, k) - (n as f64) * std::f64::consts::LN_2).exp()
 }
@@ -243,5 +260,18 @@ mod tests {
         // 5 wins, 0 losses => p = 2^-5 = 0.03125
         assert!((sign_test_one_sided(5, 0) - 0.03125).abs() < 1e-12);
         assert!((sign_test_one_sided(0, 0) - 1.0).abs() < 1e-12);
+    }
+
+    #[test]
+    fn mid_p_matches_research_031_table() {
+        // docs/research/031 §1: draw #1 (5W/0L) 0.0312 -> 0.0156 mid-p;
+        // draw #10 (4W/1L) 0.1875 -> 0.1094; draw #6 (2W/2L) 0.6875 -> 0.5000.
+        assert!((mid_p_one_sided(5, 0) - 0.015625).abs() < 1e-12);
+        assert!((mid_p_one_sided(4, 1) - 0.109375).abs() < 1e-12);
+        assert!((mid_p_one_sided(2, 2) - 0.5).abs() < 1e-12);
+        // M4c's own primary draw (4W/2L): exact 0.34375 -> mid-p 0.2265625.
+        assert!((sign_test_one_sided(4, 2) - 0.34375).abs() < 1e-12);
+        assert!((mid_p_one_sided(4, 2) - 0.2265625).abs() < 1e-12);
+        assert!((mid_p_one_sided(0, 0) - 1.0).abs() < 1e-12);
     }
 }

@@ -68,3 +68,7 @@ required-features = ["cuda"]
 [[bin]]
 name = "train_m4c_taskloss"
 required-features = ["cuda"]
+
+[[bin]]
+name = "train_m4d_deploymatch"
+required-features = ["cuda"]
