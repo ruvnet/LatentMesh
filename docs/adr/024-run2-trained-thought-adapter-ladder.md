@@ -1036,6 +1036,99 @@ Open tension to settle before pre-registering: 8 slots across 2 sites is
 either 16 total or a 4+4 split, and ADR-028's slot-count discipline (already
 self-contradictory and unadjudicated) does not cover it.
 
+## COORDINATOR ERROR #13 — "worse than noise, reproducibly" is RETRACTED (2026-08-29)
+
+**I foregrounded a finding that the data does not support.** I wrote that the
+payload being beaten by the random control "deserves its own line — it is a
+positive finding about harm, not just an absence." **It is not a finding at
+all.** Exact one-sided sign tests on the discordant pairs, computed by me:
+
+| comparison | split | one-sided p |
+|---|---|---|
+| PC1b aligned vs random | 29W/35L | **0.2662** |
+| M4i aligned vs random | 31W/35L | **0.3561** |
+| **pooled** | **60W/70L** | **0.2150** |
+
+**Nothing approaches significance.** Two consistent directions at n_disc ≈ 65
+each is not replication of an effect — it is two null results that happen to
+lean the same way. Foregrounding it would have been precisely the over-reading
+the e-process exists to prevent, and it would have been this ADR's **fourth
+restated-number drift**. Caught by the implementer.
+
+**What the data does support**, and what replaces it: *injecting a non-zero
+vector at this site costs accuracy relative to baseline* — PC1b aligned vs
+baseline **21W/34L, one-sided p = 0.0524**. **Marginal, not conclusive.** It is
+a statement about **injection**, not about the payload beating or losing to
+noise. `zerovec` being bit-identical to baseline (max |Δ| = 0.0) is what makes
+it attributable to injected **content** rather than to the operator. For
+completeness: **no accuracy comparison in either rung reaches p < 0.05.**
+
+The contrast with the likelihood endpoint is the whole story: NLL
+aligned-vs-baseline **213W/87L (p ≈ 1e-13)** and aligned-vs-random **198W/102L
+(p ≈ 2e-8)** are overwhelming, while **every accuracy comparison is null.**
+
+## THE INVERSION IS REINSTATED — and I was wrong to withdraw it (2026-08-29)
+
+I argued the pre-registered FAIL branch is logically inverted, then
+**withdrew** that on the implementer's norm-matched-random argument. **The
+implementer has now withdrawn its refutation and I accept: my original
+position was right, and my withdrawal was the error.** I flip-flopped; both
+turns are preserved.
+
+**The distinction that reconciles everything — endpoints:**
+
+- **Likelihood endpoint: the apparatus is VALIDATED.** Aligned beats a
+  norm-matched Gaussian through the same operator at the same positions by
+  0.237 nats on 198/300. Delivery of content-dependent information is
+  **proven**. This fact stands and is not in dispute.
+- **Accuracy endpoint: the apparatus is UNVALIDATED.** **No control in this
+  repository has shown it can move accuracy at all.**
+
+**Every rung's verdict rests on the accuracy endpoint.** So for the endpoint
+that decides every result, the apparatus cannot distinguish *"no effect"* from
+*"cannot detect effects"* — and the method remains the **leading explanation**
+for every null. Ruling plumbing out requires a **PASS on the endpoint being
+measured**. Delivery working was never the gate; **conversion to the measured
+outcome** is.
+
+**The a fortiori argument supports BLOCKING, not proceeding.** *"A pathway that
+cannot convert a gold-derived same-model identity payload will not convert a
+weaker cross-model adapter output"* is a prediction that M5X/M4b **also fail
+for apparatus reasons** — which is exactly why their nulls would be
+uninformative. Both of us initially read this backwards.
+
+**M5X (ADR-037) and M4b (ADR-035) STAY BLOCKED.** Headline, unhedged:
+**we have still not run a passing positive control** — worse for the mission
+than a clean transfer null.
+
+### The pre-registered FAIL branch is itself DEFECTIVE — flagged at its source
+
+This is not merely a bad verdict string repeating a good registration. **The
+registration is wrong.** `pre_registered_interpretation_recorded_before_the_draw.fail_with_real_power`
+— *"the ladder nulls would stand as evidence about TRANSFER rather than about
+plumbing"* — **must be treated as defective wherever it is inherited.** Any
+successor rung copying this pre-registration block inherits the inversion.
+**Mark it at registration time, not at verdict time.**
+
+**Symmetric firewall, now load-bearing**: `FIREWALL_liveness_not_transfer`
+forbids citing a **PASS** as transfer evidence; **a FAIL may not be cited as
+transfer evidence either.** It is evidence about the apparatus.
+
+### The one finding that is stronger than I stated
+
+| | n_disc | W/L | final wealth | **max wealth** | accuracy | baseline |
+|---|---|---|---|---|---|---|
+| M4i (trained MLP, **cross-model**) | 66 | 31/35 | 0.2578 | **1.0000** | 128 | 140 |
+| PC1b (identity, gold, **same-model**) | 64 | 29/35 | 0.1949 | **1.0000** | 127 | 140 |
+
+**Identical losses (35), adjacent wins, and neither wealth process ever rose
+above its 1.0 starting value at any point across 300 items.** A trained
+cross-model adapter and **the answer itself**, delivered through the same
+apparatus, are indistinguishable. **This is the strongest single line of
+evidence that the apparatus — not the payload — determines the outcome**, and
+it is what makes "we have not run a passing positive control" the correct
+headline rather than a hedge.
+
 ## PC1b FINAL — my "unvalidated apparatus" reading is WRONG; the bottleneck is LOCALIZED (2026-08-29)
 
 **Supersedes my inversion argument in the section below.** The implementer
