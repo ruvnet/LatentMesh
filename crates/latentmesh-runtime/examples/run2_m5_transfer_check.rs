@@ -36,6 +36,7 @@ mod common;
 use common::m3::{build_site_prompt, Site, GOLDEN_REL_TOL, N_SLOTS, RECEIVER, RECEIVER_BLOCK};
 use common::m5;
 use common::mlp::MlpTransform;
+use latentmesh_runtime::sampler::{Sampler, Sampling};
 use latentmesh_runtime::{
     capture::forward_capture,
     inject::{teacher_forced_nll, InjectionMode, InjectionSpec},
@@ -55,6 +56,10 @@ const HIDDEN: usize = 1536;
 /// recomputed skip set is asserted against the training receipt's.
 const SEQ_CAP: usize = 256;
 const INJECT_MODE: InjectionMode = InjectionMode::Fuse;
+/// Holdout items used for the degenerate-generation diagnostic. NON-GATING,
+/// and never a draw item — see `GEN_DIAG_WHY` in the receipt.
+const GEN_DIAG_ITEMS: usize = 64;
+const MAX_NEW_TOKENS: usize = 400;
 const STREAMS_SHA256: &str = "ad5713116cb5acf663fe9c33ac58aaedb1fd64fcf629dd78b21439d244958539";
 const GSM8K_TRAIN_SHA256: &str = "17f347dc51477c50d4efb83959dbb7c56297aba886e5544ee2aaed3024813465";
 
@@ -319,6 +324,60 @@ fn main() -> anyhow::Result<()> {
         "recomputed skip set {skipped:?} != the training receipt's {receipt_skipped:?} — the span \
          rule drifted between training and this check"
     );
+    // ---- Degenerate-generation diagnostic (NON-GATING) --------------------
+    // A rank-1 adapter trained hard on `"#### {gold}"` can in principle learn
+    // to emit the answer format and stop reasoning — a format collapse that
+    // would make the draw uninformative (every condition wrong, so almost no
+    // discordant pairs) for a reason that has nothing to do with the channel.
+    // ADR-024's PC1 registration already requires a degenerate-output check on
+    // any draw, and `examples/common/m3.rs` records generated length per
+    // condition for exactly this failure mode. This is the same instrument,
+    // run BEFORE the draw, on HOLDOUT items only.
+    //
+    // It does NOT gate, and deliberately so: gating the adapter on GSM8K
+    // accuracy would select it against the very confound ADR-045 exists to
+    // keep out of the primary. It is reported so that a null can be read
+    // correctly — "the receiver stopped answering" is a different finding from
+    // "the channel carries nothing".
+    let mut gen_rows = Vec::new();
+    let (mut acc_on, mut acc_off, mut chars_on, mut chars_off) = (0usize, 0usize, 0f64, 0f64);
+    let gen_n = GEN_DIAG_ITEMS.min(holdout_rows.len());
+    println!("degenerate-generation diagnostic over {gen_n} holdout items (baseline condition, adapter on vs off)...");
+    for &row in holdout_rows.iter().take(gen_n) {
+        let item = &all_items[streams[row].item];
+        let sp = build_site_prompt(&receiver, item, pad_id, Site::QuestionTail)?;
+        let mut gen = |on: bool| -> anyhow::Result<(bool, usize)> {
+            receiver
+                .model
+                .set_residual_lora(on.then(|| loaded.lora.clone()));
+            let mut s = Sampler::new(Sampling::Greedy, 0);
+            let out = receiver
+                .generate(&sp.tokens, None, &mut s, MAX_NEW_TOKENS, false)
+                .map_err(e)?;
+            let ok = common::extract_answer(&out.text)
+                .is_some_and(|a| common::answers_equal(&a, &item.gold));
+            Ok((ok, out.text.chars().count()))
+        };
+        let (ok_on, len_on) = gen(true)?;
+        let (ok_off, len_off) = gen(false)?;
+        acc_on += usize::from(ok_on);
+        acc_off += usize::from(ok_off);
+        chars_on += len_on as f64;
+        chars_off += len_off as f64;
+        gen_rows.push(serde_json::json!({
+            "row": row, "item": item.index,
+            "correct_adapter_on": ok_on, "correct_adapter_off": ok_off,
+            "generated_chars_adapter_on": len_on, "generated_chars_adapter_off": len_off,
+        }));
+    }
+    receiver.model.set_residual_lora(None);
+    println!(
+        "generation diagnostic: baseline accuracy adapter-on {acc_on}/{gen_n} vs off \
+         {acc_off}/{gen_n}; mean generated chars {:.0} vs {:.0}",
+        chars_on / gen_n as f64,
+        chars_off / gen_n as f64
+    );
+
     let mean_on = sum_on / n_eval as f64;
     let mean_off = sum_off / n_eval as f64;
     let pass = mean_on < mean_off;
@@ -363,6 +422,17 @@ fn main() -> anyhow::Result<()> {
             "composed_improvement_nats_from_training_receipt": tr["results"]["composed_forward_improvement_nats"],
             "wins_adapter_on_lower": wins, "losses": losses,
             "sign_test_p_one_sided_secondary": p_sign,
+            "generation_diagnostic": {
+                "gating": "NONE",
+                "why": "a rank-1 adapter trained on '#### {gold}' can learn the answer FORMAT and stop reasoning. That collapse would make the draw uninformative — almost no discordant pairs, because every condition is wrong — for a reason that has nothing to do with the channel. Measured here, before the draw, on HOLDOUT items only.",
+                "why_not_gating": "gating the adapter on GSM8K accuracy would select it against the very confound ADR-045 keeps out of the primary. This is reported so a null can be read correctly: 'the receiver stopped answering' is a different finding from 'the channel carries nothing'.",
+                "condition": "baseline (no injection), greedy, batch=1, max_new_tokens=400 — the draw's own decoding",
+                "n_items": gen_n,
+                "accuracy_adapter_on": acc_on, "accuracy_adapter_off": acc_off,
+                "mean_generated_chars_adapter_on": chars_on / gen_n as f64,
+                "mean_generated_chars_adapter_off": chars_off / gen_n as f64,
+                "items": gen_rows,
+            },
             "what_this_does_NOT_establish": "nothing about the channel. This measures only that a training improvement survives the composed->fused BF16 crossing, on items the draw never sees. An adapter that merely made the receiver a better GSM8K solver would pass this check too — which is exactly why ADR-045's primary is aligned vs random on the same adapted receiver.",
         },
         "gates": {
