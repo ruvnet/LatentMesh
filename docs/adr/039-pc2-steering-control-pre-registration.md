@@ -132,3 +132,54 @@ agents on PC1b, producing a duplicate process, concurrent edits to the running
 example's source, and message identities that could not be told apart. **Claim
 the rung before launching; do not resume an agent and start a workflow for the
 same work.**
+
+## AMENDMENT — the 2% leakage gate's *rationale* is wrong (written mid-draw, outcome unknown)
+
+**Timestamp discipline**: written while the draw was at **item 9 of 300**, with
+`steer` and `random` both at 1 hit and the primary undecided. I do not know the
+outcome. Recording it later would be indistinguishable from protocol-shopping,
+which [ADR-032](032-negative-result-publication-contract.md) forbids.
+
+**The registered claim was**: *"`random` hits the decoy at chance by
+construction, giving a clean floor."* **That is false, and the decoy rule above
+is why.**
+
+Decoys are drawn from `{g+1, g-1, g+10, 2g}` — precisely the space of **natural
+arithmetic slips**: off-by-one, off-by-ten, and forgetting to halve. A model
+that errs on a GSM8K item does not land uniformly over the integers; it lands
+disproportionately on exactly these. So the baseline decoy-emission rate is
+**structurally above chance**, and the observed early hit — item 20, gold 38,
+decoy 48 (`g+10`), where **all five conditions** including `baseline` and
+`zerovec` emitted 48 — is the predicted behaviour of a well-formed decoy set,
+not a bug. The detector is sound: it compares the **extracted final answer**
+under numeric equality (`extract_answer` → `answers_equal`), not a substring.
+
+**What this does and does not invalidate:**
+
+- **The primary comparison stands.** It is **paired `steer` vs `random`**, and
+  both arms carry the identical baseline propensity toward natural slips. If
+  `steer` reaches the decoy *more often than* `random`, that difference is
+  attributable to the payload's content. The floor being elevated costs
+  **power**, not validity.
+- **The 2% threshold is miscalibrated**, because it was derived from the false
+  "chance floor" premise. A baseline rate of, say, 8% would reflect the model's
+  natural error distribution — not a leaky decoy construction.
+
+**The gate is NOT being relaxed.** It was pre-registered and it will be
+**reported exactly as it falls**: if baseline decoy-emission exceeds 2%, that
+is recorded as *the registered gate tripping*. What this amendment changes is
+only the **interpretation** of a trip — from *"the decoy construction is leaky
+and the rung is void"* to *"the registered threshold was derived from a false
+premise about the floor."*
+
+**Deciding which reading applies is deferred to a stated, pre-committed test**,
+so it cannot be chosen to suit the result: the rung is void **only if
+`baseline` and `steer` are statistically indistinguishable on decoy-emission**
+— i.e. the payload adds nothing over the model's own error propensity. If
+`steer` separates from `random` while baseline is merely elevated, the rung is
+**valid with reduced power** and is reported that way.
+
+**A successor rung should use decoys drawn AWAY from natural-slip space** (a
+random integer of similar magnitude, not an arithmetic perturbation of `g`) to
+recover a genuine chance floor. Registered as a design note for PC3, not as a
+change to this rung.
