@@ -194,6 +194,48 @@ text agent-to-agent messages. This matters because ADR-003's own text notes the 
 ANY channel including plain text" — the gate's value doesn't depend on latent transfer working at
 all, and this literature check found no prior claim to that specific, channel-agnostic result.
 
+### In-ecosystem adjacent prior art: `radio-moe` (github.com/ruvnet/autogenous, `packages/radio-moe`)
+
+Verified by direct read of the package's committed `README.md` (**primary** — fetched via `gh api`,
+not a summary). `radio-moe` ("MoRA — Mixture Of Realtime Agents") is a real-time P2P mesh of
+heterogeneous experts with ed25519-signed frame transport, a top-k capability gate, and two
+combination regimes: `mixLogits` (true mixture, requires a shared tokenizer/vocabulary) and
+`raceTextExperts` (an ensemble over heterogeneous, differently-tokenized experts — explicitly typed
+`regime: 'text-ensemble'`, and the README is emphatic that racing free text is *not* the same claim
+as mixing logits). Its `bench:fusion` benchmark, reading the exact committed table:
+
+| Regime | best-single | naive-vote | mixture (sourceId de-dup) | mixture + lineage |
+|---|---|---|---|---|
+| Independent errors | 66.7% | 100% | 100% | **100%** (**+33.3 percentage points** vs. best-single) |
+| Correlated errors | 75.0% | 66.7% ↓ | 66.7% ↓ | **100%** (+25 pp vs. best-single) |
+
+**The 33.3% figure is a percentage-point accuracy gain (100% − 66.7%) on a deterministic synthetic
+corpus with controlled error-correlation structure, not a claim about latent bandwidth savings** —
+worth stating precisely since the raw number invites a different reading. The load-bearing finding
+underneath it: naive-vote and dedup-only fusion both *lose* to best-single once errors are
+correlated (correlated-errors row: 66.7% < 75.0%), and only **lineage-weighted independence
+weighting** (`effectiveSupport`, provider/architecture-graded, not just distinct-source-counted)
+recovers the win in both regimes. This is a genuinely relevant, receipt-quality data point for the
+broader thesis that *verified, governed* combination of independent agents has real measured value
+— independent of whether any single channel is latent or text.
+
+**Does it fill Q2's specific gap? No — it strengthens the motivation, but it is not the same claim,
+and does not preempt the minimum experiment below.** Three concrete differences from ADR-003's
+methodology: (1) `radio-moe`'s validation asks "does combining N experts' independent outputs beat
+the best single expert," using synthetic ground-truth error correlation as the manipulated variable
+— it never asks ADR-003's question, "does substituting *this specific sender's real message* for
+content-matched noise (zero / random / mismatched-task / self-generated) change *this specific
+receiver's* outcome." No decoy condition is applied to any one expert's message content anywhere in
+the package. (2) Its governance layer (`ActionGate`, `independentSupportSet`, lineage-weighted
+quorum) verifies *provenance and independence of sources* before release, not *causal contribution
+of content* — a different, complementary claim to ADR-003's `ΔV` permutation test. (3) `radio-moe`'s
+text-ensemble regime races complete, independently-generated text answers against each other; it
+never intervenes on the transmitted content of one specific sender→receiver message the way ADR-003
+(and the proposed StaticText+Gate/CausalDynamicText experiment) does. **Read together, `radio-moe`
+is best framed as adjacent, complementary prior art for the general "verified multi-agent
+combination beats naive combination" thesis, not as prior art for the specific content-level,
+decoy-controlled causal test Q2 asks about** — that gap stands as identified above.
+
 ### The minimum experiment
 
 ADR-023's own machinery already implements everything needed **except** the text-decoy conditions
@@ -263,3 +305,6 @@ depend on latent transfer ever working.
 - "Do Latent Channels Actually Communicate? A Causal Audit of Latent Multi-Agent LLM
   Communication" (Zhang & Emu): [arXiv:2607.26773](https://arxiv.org/abs/2607.26773),
   [HTML body](https://arxiv.org/html/2607.26773v1)
+- `radio-moe` (MoRA — Mixture Of Realtime Agents), `packages/radio-moe` in
+  [github.com/ruvnet/autogenous](https://github.com/ruvnet/autogenous) — package `README.md`
+  fetched directly via `gh api repos/ruvnet/autogenous/contents/packages/radio-moe/README.md`
