@@ -27,6 +27,22 @@ control: aligned **127** vs random **133**, against a 140 baseline.
 distributed-cognition claim does not hold and the review's own fallback — an
 efficient state cache and orchestrator — is the evidenced position.
 
+## ⚠️ CORRECTION — half of it is prior art (added 2026-08-29, see [053](053-novelty-audit-and-the-remaining-experiment.md))
+
+This section endorsed the review's framing that causal validation is *"probably
+LatentMesh's most defensible research contribution."* **A literature check
+deflates that.** arXiv:2607.26773 (submitted **2026-07-29**, three weeks before
+our `causal.rs` first commit) already performs *"controlled message replacements
+at the boundary where the sender-produced representation enters the receiver"*
+and decomposes the effect into example-specific content versus other-agent
+value — **that is ContentGain and AgentGain.** Verified directly from the
+abstract.
+
+What remains ours is narrower: a **hard admission gate** with **five** controls,
+a formal significance test, and a **runtime routing consumer** — where that
+paper is **diagnostic measurement only**, confirmed explicitly. Real, but a
+paragraph of differentiation, not a headline.
+
 ## The proposed contribution already exists in this repo
 
 The review names causal validation as *"probably LatentMesh's most defensible
