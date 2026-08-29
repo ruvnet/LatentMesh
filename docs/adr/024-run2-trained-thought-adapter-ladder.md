@@ -703,6 +703,31 @@ corrected to the receipt-summed 3.32 in ADR-023/research-025) — the pattern
 itself is worth watching: **numbers restated in prose drift from numbers in
 receipts.**
 
+## M4g manifold pre-check — recorded BEFORE its probe verdict (2026-08-29)
+
+`run2-manifold-precheck-m4g-receipt.json` (CPU-only, no probe draw) classifies
+**M4g's fuse-trained adapter as COLLAPSED-OFF-MANIFOLD** — the same class as
+M4c and M4d, and as their shared untrained initialisation. Changing the
+injection operator to a residual add did **not** move the adapter back onto
+the receiver's manifold. That is consistent with the standing diagnosis:
+off-manifold output is the untrained *default*, and no task-loss objective —
+under overwrite or under fuse — creates pressure to leave it.
+
+**Interpretation registered before the probe reports:**
+- If **M4g PASSES**, it passes *while off-manifold*. That would mean manifold
+  membership is not the operative variable at all and the **injection
+  operator** is — a strong, clean result that would also retroactively explain
+  M3/M4 (on-manifold but overwriting) and M4c/M4d (off-manifold *and*
+  overwriting).
+- If **M4g NULLS**, the ladder has three task-loss rungs that are all
+  off-manifold, and the two properties (on-manifold, and delivered by fuse)
+  have never yet been combined in a single adapter. The next rung should
+  therefore combine them — which is what **M4h Stage 1 delivers almost free**
+  (M3's *already-trained, on-manifold* MLP, last-token instead of mean, and —
+  if M4g's fuse path is available — delivered by fuse rather than overwrite).
+  That combination is registered here as the preferred successor, before the
+  verdict that would motivate it.
+
 ## M4h PRE-REGISTRATION (2026-08-29, before any run) — de-pooling
 
 [docs/research/040](../research/040-the-pooling-gap.md) verified from primary

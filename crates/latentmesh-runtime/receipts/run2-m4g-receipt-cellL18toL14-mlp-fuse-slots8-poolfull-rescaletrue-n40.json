@@ -1,0 +1,2221 @@
+{
+  "config": {
+    "adr_named_primary_for_this_rung": "ADR-024's M4g pre-registration names one-sided mid-p McNemar as M4g's primary with exact-sign reported alongside. BOTH are computed on the same collected pairs and BOTH appear below; neither was selected after seeing the other.",
+    "cell": "L18->L14 (S2 winner; M4g registers the overwrite-vs-fuse rung on this cell only)",
+    "conditions": {
+      "aligned_real": "sender per-token capture -> task-trained MLP per token -> pool -> 8-slot delivery, rescaled to natural median. DEFINITION UNCHANGED; delivered by residual ADD instead of overwrite.",
+      "baseline_uninjected": "no injection (spec=None), same prompt. DEFINITION UNCHANGED; under fuse it is the meaningful 'nothing delivered' reference, and aligned_vs_baseline is the informative 'did adding anything help' contrast.",
+      "no_substitute_control_added": "A destructive overwrite-with-zero condition was NOT retained alongside the fuse conditions: that would put two injection operators inside a rung whose entire content is that exactly one operator changed, and would be an unregistered addition to an ADR-028-protected control set.",
+      "random": "per-item seeded gaussian, norm-matched to the effective aligned_real vector, real path. DEFINITION AND MEANING UNCHANGED — under fuse it is a norm-matched, information-free PERTURBATION of the receiver's own rows, which is exactly the comparator the primary statistic needs.",
+      "zerovec_injected": "TRUE ZERO VECTOR through the real 8-slot path (scale: None). DEFINITION UNCHANGED, MEANING CHANGED BY THE OPERATOR: under overwrite this zeroed the eight rows (destructive); under fuse it is h += 0, an exact no-op, so it collapses onto baseline_uninjected. Declared before the draw (see control_semantics_under_fuse...), run anyway on all 40 items, and MEASURED below (fuse_zero_is_noop_vs_baseline). Not redefined, not replaced, not dropped."
+    },
+    "decoding": "greedy, batch=1, max_new_tokens=400",
+    "item_seed_chacha8": 20897,
+    "natural_norm_source": "receiver forward_capture over the slotted injection prompt at the inject block, per item (S0 cross-model precedent)",
+    "placeholder_id": 151662,
+    "placeholder_token": "<|fim_pad|>",
+    "pool_span": "full generated span",
+    "primary_test": "one-sided exact sign test, paired accuracy, aligned_real > random, alpha 0.05 — the frozen, ADR-028-protected statistic, unchanged, and the one gate_pass is computed from so this rung stays comparable with every prior one",
+    "randvec_seed_base": 1369571328,
+    "receiver": "Qwen/Qwen2.5-1.5B-Instruct",
+    "receiver_inject_block": 14,
+    "reported_secondary_statistic": "one-sided mid-p McNemar (exact_p - 0.5*P(X=wins); Fagerland, Lydersen & Laake 2013; docs/research/031 §2.4, ADR-030's run-3 primary) computed on the SAME collected pairs and reported alongside every sign-test line. It gates nothing and changes no recorded verdict here; run 2's protocol statistic is ADR-028-protected.",
+    "rescale_to_natural_median": true,
+    "secondary_diagnostic": "one-sided sign tests on paired teacher-forced NLL of '#### <gold>'",
+    "sender": "Qwen/Qwen2.5-3B-Instruct",
+    "sender_capture_block": 18,
+    "slots": 8,
+    "transform": {
+      "apply": "hand-rolled plain-Rust forward relu(x@W1+b1)@W2+b2 (latentmesh-train cannot be a path dep of runtime examples)",
+      "content_hash": "1b2fc2876d7a6748978ed66016d945f959334e18305fb1b2465cdd37a420841a",
+      "file": "/home/ruvultra/projects/LatentMesh-1/crates/latentmesh-runtime/receipts/run2-m4g-mlp-fuse-cellL18toL14.f32bin",
+      "hand_rolled_apply_verification": {
+        "golden_file": "/home/ruvultra/projects/LatentMesh-1/crates/latentmesh-runtime/receipts/run2-m4g-golden-mlp-fuse-cellL18toL14.json",
+        "golden_input_seed_chacha8": 1295304221,
+        "golden_pairs": 8,
+        "max_relative_l2_error": 2.3964202000570367e-7,
+        "pass": true,
+        "tolerance": 9.999999747378752e-6
+      },
+      "kind": "FUSE-trained task-loss M4g MLP 2048->512->1536 ReLU (M4c's/M4d's architecture, seed, split, loss, schedule and deployment transform; the one changed factor is the injection OPERATOR — residual add instead of overwrite — present identically in the training loop, the transfer check and this probe)",
+      "training_receipt": "receipts/run2-m4g-training-receipt-cellL18toL14.json",
+      "transfer_receipt": "receipts/run2-m4g-transfer-receipt-cellL18toL14.json",
+      "variant": "per-token pathway ONLY (the pathway training optimized; frozen in the training receipt — no pooled-variant second draw)"
+    },
+    "zerovec_gate": "pre-committed: pass iff 2 x zerovec accuracy >= baseline accuracy; numbers reported either way. DEGENERATE UNDER FUSE — zerovec and baseline are the same computation (h += 0), so this gate is trivially satisfied and carries NO evidential weight in this rung. Retained unchanged because the gate is part of the frozen protocol; labelled here so no reader mistakes it for evidence."
+  },
+  "control_semantics_under_fuse_registered_in_training_receipt": {
+    "aligned_real": {
+      "definition_unchanged": "sender per-token L18 capture -> trained MLP per token -> mean-pool the translated rows -> scale = natural inject-block median / ||pooled|| -> broadcast to 8 slots.",
+      "delivery_under_fuse": "h[slot] += c*v instead of h[slot] = c*v.",
+      "meaning": "unchanged in kind — it is still 'the adapter's content, delivered at the registered site with the registered rescale'."
+    },
+    "baseline_uninjected": {
+      "definition_unchanged": "no injection at all (spec = None), same slotted prompt.",
+      "meaning": "unchanged, and PROMOTED in importance: under fuse it is the reference the zero condition collapses onto, so aligned_vs_baseline is the informative 'did adding anything help' contrast."
+    },
+    "random": {
+      "definition_unchanged": "per-item seeded ChaCha8 Gaussian (RANDVEC_SEED_BASE + item index), norm-matched to the EFFECTIVE aligned vector, delivered through the same path.",
+      "meaning": "unchanged and still the right comparator: under fuse it is a norm-matched random PERTURBATION of the receiver's own state at those rows, which is exactly the 'same magnitude, no information' control the primary statistic needs. THE PRIMARY STATISTIC aligned_real > random IS THEREFORE UNAFFECTED IN MEANING."
+    },
+    "registered_before_the_probe": true,
+    "why_this_section_exists": "ADR-028 forbids a search or a rung from redefining a control. Changing the injection operator changes what two of the four registered conditions MEAN without changing what they ARE, and that must be recorded before the draw rather than explained after it.",
+    "zerovec_injected": {
+      "consequence_for_the_registered_zerovec_gate": "the gate '2 x zerovec_correct >= baseline_correct' becomes trivially satisfied under fuse (the two conditions are the same computation). It is still computed and reported, and it is labelled DEGENERATE-UNDER-FUSE in the probe receipt so no reader mistakes it for evidence.",
+      "definition_unchanged": "the true zero vector (vector = 0, scale = None) through the real 8-slot path.",
+      "deviation_declared": "This is a genuine semantic deviation forced by the one changed factor. It is declared here, not concealed. The control is NOT redefined, NOT replaced by a substitute (e.g. an overwrite-with-zero condition retained under a fuse rung), and NOT dropped: it is run exactly as registered, all 40 items, and its now-expected identity to the baseline is MEASURED and reported as an operator-correctness diagnostic (fuse_zero_payload_is_noop, below and in the probe receipt).",
+      "meaning_CHANGED": "under overwrite this ZEROED the eight residual rows — a destructive intervention, and the reason the registered zerovec gate ('2 x zerovec accuracy >= baseline accuracy') was a catastrophe check. Under fuse the identical payload is h += 0, an EXACT no-op, so the zero condition becomes mathematically identical to the uninjected baseline.",
+      "why_no_substitute_control_was_added": "Retaining a destructive overwrite-with-zero condition inside an M4g draw would introduce a second injection operator into a rung whose entire content is that exactly one operator changed, and would be an unregistered addition to a protected control set. The registered four-condition quad already contains the correct 'no information delivered' reference for a fuse rung: baseline_uninjected. It is unchanged and is reported."
+    }
+  },
+  "dataset": {
+    "indices": [
+      141,
+      150,
+      850,
+      1153,
+      1309,
+      1435,
+      1573,
+      1602,
+      2365,
+      2418,
+      2436,
+      2489,
+      2540,
+      2723,
+      2958,
+      2973,
+      3084,
+      3165,
+      3741,
+      3772,
+      3825,
+      3844,
+      3877,
+      4255,
+      4305,
+      4344,
+      4746,
+      4888,
+      5422,
+      5610,
+      6031,
+      6146,
+      6378,
+      6452,
+      6552,
+      6629,
+      7293,
+      7375,
+      7431,
+      7462
+    ],
+    "s1a_indices_match": true,
+    "sha256": "17f347dc51477c50d4efb83959dbb7c56297aba886e5544ee2aaed3024813465",
+    "source": "https://raw.githubusercontent.com/openai/grade-school-math/master/grade_school_math/data/train.jsonl"
+  },
+  "design": "docs/adr/024-run2-trained-thought-adapter-ladder.md § 'M4g PRE-REGISTRATION (2026-08-29, before any run) — fuse instead of overwrite' and § 'M4g REGISTERED (2026-08-29): overwrite vs fuse'; probe protocol = ADR-023's frozen S1a/S2b protocol inherited unchanged (never iterated, re-drawn, or re-tuned). M4g changed the INJECTION OPERATOR only — an ADR-028 evolvable surface; the probe is protected.",
+  "env": {
+    "crate": "latentmesh-runtime 0.1.0 (vendored candle-transformers 0.9.2 qwen2)",
+    "evidence_label": "live-model, single-host, simulation-free",
+    "git_commit": "be3609ae23c6e4d0366d4ffff886c183866af47e",
+    "gpu": "NVIDIA GeForce RTX 5080, 580.126.09, 16303 MiB",
+    "nvcc": "nvcc 12.8 (build-time 12.8)",
+    "nvcc_at_build": "12.8",
+    "unix_time": 1787974816
+  },
+  "gate_pass": false,
+  "gates": {
+    "M4g_aligned_real_vs_random": {
+      "p": 0.5,
+      "pass": false
+    },
+    "artifact_hash_matches_training_receipt": {
+      "hash": "1b2fc2876d7a6748978ed66016d945f959334e18305fb1b2465cdd37a420841a",
+      "pass": true
+    },
+    "fuse_zero_payload_is_a_noop": {
+      "accuracy_disagreements": 0,
+      "gating": "none — diagnostic",
+      "max_abs_nll_delta": 0.0,
+      "pass": true
+    },
+    "hand_rolled_apply_matches_trained_network": {
+      "max_relative_l2_error": 2.3964202000570367e-7,
+      "pass": true
+    },
+    "s1a_item_set_reproduced": {
+      "pass": true
+    },
+    "training_receipt_records_the_same_injection_operator": {
+      "mode": "fuse",
+      "pass": true
+    },
+    "transfer_check_passed_before_probe": {
+      "mean_fused_nll_init": 0.22764345626612076,
+      "mean_fused_nll_trained": 0.153628650492822,
+      "pass": true
+    },
+    "zerovec_not_catastrophic": {
+      "baseline_correct": 22,
+      "degenerate_under_fuse": true,
+      "note": "trivially satisfied because zerovec == baseline under the fuse operator; kept in gate_pass unchanged for cross-rung comparability, carries no evidential weight here",
+      "pass": true,
+      "zerovec_correct": 22
+    }
+  },
+  "injection_operator": {
+    "asserted_equal_to_training_receipt": true,
+    "equation": "h[slot] += c*v (residual add; C2C Eq.3 C_F = C_n(X) + F_n(...))",
+    "implementation": "LayerEdit::Fuse, a NEW enum variant — the Inject (overwrite) arm's executed op sequence is unchanged, so every prior receipt stays reproducible",
+    "in_probe": true,
+    "in_training_loop": true,
+    "in_transfer_check": true,
+    "mode": "fuse",
+    "prior_rungs": "overwrite, h[slot] = c*v (all of run 1, and run-2 M3 / M4 / M4c / M4d)",
+    "source_basis": "Cache-to-Cache Eq.3, C_F = C_n(X) + F_n(...), verified from the paper's method section in docs/research/038 §4; LatentMesh's overwrite verified from src/models/qwen2_b.rs in the same place"
+  },
+  "items": [
+    {
+      "aligned_answer_tail": " Larry spends on his dog each day is \\(\\boxed{62}\\) minutes.",
+      "capture": {
+        "aligned_l2_raw": 92.36820220947266,
+        "hidden_size": 2048,
+        "injected_l2": 51.783809661865234,
+        "injection_mode": "fuse",
+        "natural_inject_block_norms": {
+          "max": 11056.958984375,
+          "mean": 139.17172241210938,
+          "median": 51.78384017944336,
+          "min": 40.79857635498047,
+          "n": 127,
+          "p25": 49.65870666503906,
+          "p75": 55.112457275390625
+        },
+        "pooled_l2_raw": 38.649627685546875,
+        "span": [
+          103,
+          387
+        ],
+        "variant": "pertoken"
+      },
+      "conditions": {
+        "aligned_real": {
+          "correct": false,
+          "nll_gold": 5.081116676330566
+        },
+        "baseline_uninjected": {
+          "correct": false,
+          "nll_gold": 2.1964006423950195
+        },
+        "random": {
+          "correct": false,
+          "nll_gold": 2.24605655670166
+        },
+        "zerovec_injected": {
+          "correct": false,
+          "nll_gold": 2.1964006423950195
+        }
+      },
+      "gold": "72",
+      "item": 141,
+      "sender_first_pass": {
+        "answer": "72",
+        "correct": true,
+        "generated_tokens": 284
+      }
+    },
+    {
+      "aligned_answer_tail": "la delivers is:\n\\[ \\boxed{3} \\]\n\nThe final answer is: #### 3",
+      "capture": {
+        "aligned_l2_raw": 107.73563385009766,
+        "hidden_size": 2048,
+        "injected_l2": 52.29462814331055,
+        "injection_mode": "fuse",
+        "natural_inject_block_norms": {
+          "max": 11046.880859375,
+          "mean": 137.83975219726562,
+          "median": 52.294647216796875,
+          "min": 41.120582580566406,
+          "n": 129,
+          "p25": 49.77558898925781,
+          "p75": 55.498435974121094
+        },
+        "pooled_l2_raw": 39.58681869506836,
+        "span": [
+          105,
+          371
+        ],
+        "variant": "pertoken"
+      },
+      "conditions": {
+        "aligned_real": {
+          "correct": true,
+          "nll_gold": 4.65424108505249
+        },
+        "baseline_uninjected": {
+          "correct": true,
+          "nll_gold": 1.8239508867263794
+        },
+        "random": {
+          "correct": true,
+          "nll_gold": 1.828545093536377
+        },
+        "zerovec_injected": {
+          "correct": true,
+          "nll_gold": 1.8239508867263794
+        }
+      },
+      "gold": "3",
+      "item": 150,
+      "sender_first_pass": {
+        "answer": "3",
+        "correct": true,
+        "generated_tokens": 266
+      }
+    },
+    {
+      "aligned_answer_tail": "er is \\(35 + 55 = 85\\).\n\nThe final answer is \\(\\boxed{85}\\).",
+      "capture": {
+        "aligned_l2_raw": 96.56742858886719,
+        "hidden_size": 2048,
+        "injected_l2": 52.599891662597656,
+        "injection_mode": "fuse",
+        "natural_inject_block_norms": {
+          "max": 11046.880859375,
+          "mean": 130.3465576171875,
+          "median": 52.59990310668945,
+          "min": 41.18931198120117,
+          "n": 142,
+          "p25": 49.849735260009766,
+          "p75": 55.628318786621094
+        },
+        "pooled_l2_raw": 38.89369583129883,
+        "span": [
+          118,
+          485
+        ],
+        "variant": "pertoken"
+      },
+      "conditions": {
+        "aligned_real": {
+          "correct": false,
+          "nll_gold": 3.858166456222534
+        },
+        "baseline_uninjected": {
+          "correct": false,
+          "nll_gold": 2.919801950454712
+        },
+        "random": {
+          "correct": false,
+          "nll_gold": 2.8952341079711914
+        },
+        "zerovec_injected": {
+          "correct": false,
+          "nll_gold": 2.919801950454712
+        }
+      },
+      "gold": "90",
+      "item": 850,
+      "sender_first_pass": {
+        "answer": "85",
+        "correct": false,
+        "generated_tokens": 367
+      }
+    },
+    {
+      "aligned_answer_tail": " + 400 = 2050\n     \\]\n\n#### Final Answer:\n\\[\n\\boxed{2050}\n\\]",
+      "capture": {
+        "aligned_l2_raw": 81.15184020996094,
+        "hidden_size": 2048,
+        "injected_l2": 52.28715133666992,
+        "injection_mode": "fuse",
+        "natural_inject_block_norms": {
+          "max": 11046.880859375,
+          "mean": 126.34375,
+          "median": 52.28715515136719,
+          "min": 39.92435073852539,
+          "n": 149,
+          "p25": 49.782310485839844,
+          "p75": 54.862667083740234
+        },
+        "pooled_l2_raw": 39.73793029785156,
+        "span": [
+          125,
+          515
+        ],
+        "variant": "pertoken"
+      },
+      "conditions": {
+        "aligned_real": {
+          "correct": true,
+          "nll_gold": 3.0306408405303955
+        },
+        "baseline_uninjected": {
+          "correct": true,
+          "nll_gold": 2.4327943325042725
+        },
+        "random": {
+          "correct": true,
+          "nll_gold": 2.4431469440460205
+        },
+        "zerovec_injected": {
+          "correct": true,
+          "nll_gold": 2.4327943325042725
+        }
+      },
+      "gold": "2050",
+      "item": 1153,
+      "sender_first_pass": {
+        "answer": "2050",
+        "correct": true,
+        "generated_tokens": 390
+      }
+    },
+    {
+      "aligned_answer_tail": "\\[\n\\boxed{4}\n\\]\n\nSo, Martin will have 4 goldfish in 7 weeks.",
+      "capture": {
+        "aligned_l2_raw": 74.52577209472656,
+        "hidden_size": 2048,
+        "injected_l2": 52.907379150390625,
+        "injection_mode": "fuse",
+        "natural_inject_block_norms": {
+          "max": 11056.958984375,
+          "mean": 141.30093383789062,
+          "median": 52.90739822387695,
+          "min": 41.18536376953125,
+          "n": 124,
+          "p25": 49.7996711730957,
+          "p75": 54.76259231567383
+        },
+        "pooled_l2_raw": 40.384521484375,
+        "span": [
+          100,
+          401
+        ],
+        "variant": "pertoken"
+      },
+      "conditions": {
+        "aligned_real": {
+          "correct": false,
+          "nll_gold": 5.522057056427002
+        },
+        "baseline_uninjected": {
+          "correct": false,
+          "nll_gold": 2.4757440090179443
+        },
+        "random": {
+          "correct": false,
+          "nll_gold": 2.5625035762786865
+        },
+        "zerovec_injected": {
+          "correct": false,
+          "nll_gold": 2.4757440090179443
+        }
+      },
+      "gold": "4",
+      "item": 1309,
+      "sender_first_pass": {
+        "answer": "4",
+        "correct": true,
+        "generated_tokens": 301
+      }
+    },
+    {
+      "aligned_answer_tail": "l amount of money Harriett found is \\(\\boxed{4.8}\\) dollars.",
+      "capture": {
+        "aligned_l2_raw": 91.58161926269531,
+        "hidden_size": 2048,
+        "injected_l2": 52.49592208862305,
+        "injection_mode": "fuse",
+        "natural_inject_block_norms": {
+          "max": 11046.880859375,
+          "mean": 138.20408630371094,
+          "median": 52.49592208862305,
+          "min": 40.70705795288086,
+          "n": 129,
+          "p25": 49.849735260009766,
+          "p75": 55.498435974121094
+        },
+        "pooled_l2_raw": 39.54225158691406,
+        "span": [
+          105,
+          436
+        ],
+        "variant": "pertoken"
+      },
+      "conditions": {
+        "aligned_real": {
+          "correct": false,
+          "nll_gold": 2.8833487033843994
+        },
+        "baseline_uninjected": {
+          "correct": false,
+          "nll_gold": 1.5481958389282227
+        },
+        "random": {
+          "correct": false,
+          "nll_gold": 1.6498870849609375
+        },
+        "zerovec_injected": {
+          "correct": false,
+          "nll_gold": 1.5481958389282227
+        }
+      },
+      "gold": "3",
+      "item": 1435,
+      "sender_first_pass": {
+        "answer": "3.00",
+        "correct": true,
+        "generated_tokens": 331
+      }
+    },
+    {
+      "aligned_answer_tail": "ours Oliver worked out during these four days is \\boxed{18}.",
+      "capture": {
+        "aligned_l2_raw": 86.22698974609375,
+        "hidden_size": 2048,
+        "injected_l2": 52.14872741699219,
+        "injection_mode": "fuse",
+        "natural_inject_block_norms": {
+          "max": 11046.880859375,
+          "mean": 118.40746307373047,
+          "median": 52.14871597290039,
+          "min": 41.41735076904297,
+          "n": 167,
+          "p25": 50.018856048583984,
+          "p75": 54.88539505004883
+        },
+        "pooled_l2_raw": 38.7913932800293,
+        "span": [
+          143,
+          419
+        ],
+        "variant": "pertoken"
+      },
+      "conditions": {
+        "aligned_real": {
+          "correct": true,
+          "nll_gold": 5.000802993774414
+        },
+        "baseline_uninjected": {
+          "correct": true,
+          "nll_gold": 1.4380736351013184
+        },
+        "random": {
+          "correct": true,
+          "nll_gold": 1.5064265727996826
+        },
+        "zerovec_injected": {
+          "correct": true,
+          "nll_gold": 1.4380736351013184
+        }
+      },
+      "gold": "18",
+      "item": 1573,
+      "sender_first_pass": {
+        "answer": "18",
+        "correct": true,
+        "generated_tokens": 276
+      }
+    },
+    {
+      "aligned_answer_tail": "to drive to make it across the country is:\n\\[ \\boxed{636} \\]",
+      "capture": {
+        "aligned_l2_raw": 115.74429321289062,
+        "hidden_size": 2048,
+        "injected_l2": 53.07575225830078,
+        "injection_mode": "fuse",
+        "natural_inject_block_norms": {
+          "max": 11046.880859375,
+          "mean": 132.75770568847656,
+          "median": 53.07569122314453,
+          "min": 41.032371520996094,
+          "n": 138,
+          "p25": 50.27724075317383,
+          "p75": 55.82862091064453
+        },
+        "pooled_l2_raw": 38.95212936401367,
+        "span": [
+          114,
+          296
+        ],
+        "variant": "pertoken"
+      },
+      "conditions": {
+        "aligned_real": {
+          "correct": false,
+          "nll_gold": 5.269063472747803
+        },
+        "baseline_uninjected": {
+          "correct": false,
+          "nll_gold": 4.103189468383789
+        },
+        "random": {
+          "correct": false,
+          "nll_gold": 4.184473514556885
+        },
+        "zerovec_injected": {
+          "correct": false,
+          "nll_gold": 4.103189468383789
+        }
+      },
+      "gold": "6716",
+      "item": 1602,
+      "sender_first_pass": {
+        "answer": "6716",
+        "correct": true,
+        "generated_tokens": 182
+      }
+    },
+    {
+      "aligned_answer_tail": "the second dig site is \\(\\boxed{648}\\) years before 8400 BC.",
+      "capture": {
+        "aligned_l2_raw": 90.83185577392578,
+        "hidden_size": 2048,
+        "injected_l2": 52.65794372558594,
+        "injection_mode": "fuse",
+        "natural_inject_block_norms": {
+          "max": 11046.8759765625,
+          "mean": 110.76591491699219,
+          "median": 52.657958984375,
+          "min": 41.999908447265625,
+          "n": 191,
+          "p25": 50.586917877197266,
+          "p75": 55.735042572021484
+        },
+        "pooled_l2_raw": 38.65073013305664,
+        "span": [
+          167,
+          567
+        ],
+        "variant": "pertoken"
+      },
+      "conditions": {
+        "aligned_real": {
+          "correct": false,
+          "nll_gold": 4.2614922523498535
+        },
+        "baseline_uninjected": {
+          "correct": false,
+          "nll_gold": 2.4731993675231934
+        },
+        "random": {
+          "correct": false,
+          "nll_gold": 2.5810046195983887
+        },
+        "zerovec_injected": {
+          "correct": false,
+          "nll_gold": 2.4731993675231934
+        }
+      },
+      "gold": "852",
+      "item": 2365,
+      "sender_first_pass": {
+        "answer": "9252",
+        "correct": false,
+        "generated_tokens": 400
+      }
+    },
+    {
+      "aligned_answer_tail": ", the amount left on Lyra's weekly budget is \\(\\boxed{53}\\).",
+      "capture": {
+        "aligned_l2_raw": 115.5519027709961,
+        "hidden_size": 2048,
+        "injected_l2": 52.59871292114258,
+        "injection_mode": "fuse",
+        "natural_inject_block_norms": {
+          "max": 11046.880859375,
+          "mean": 132.05601501464844,
+          "median": 52.59870910644531,
+          "min": 40.578372955322266,
+          "n": 138,
+          "p25": 49.61911392211914,
+          "p75": 54.8867073059082
+        },
+        "pooled_l2_raw": 39.08216857910156,
+        "span": [
+          114,
+          385
+        ],
+        "variant": "pertoken"
+      },
+      "conditions": {
+        "aligned_real": {
+          "correct": true,
+          "nll_gold": 5.6347270011901855
+        },
+        "baseline_uninjected": {
+          "correct": false,
+          "nll_gold": 2.5601677894592285
+        },
+        "random": {
+          "correct": false,
+          "nll_gold": 2.5350451469421387
+        },
+        "zerovec_injected": {
+          "correct": false,
+          "nll_gold": 2.5601677894592285
+        }
+      },
+      "gold": "53",
+      "item": 2418,
+      "sender_first_pass": {
+        "answer": "53",
+        "correct": true,
+        "generated_tokens": 271
+      }
+    },
+    {
+      "aligned_answer_tail": "mber of boxes needed to ship the brochures is \\(\\boxed{5}\\).",
+      "capture": {
+        "aligned_l2_raw": 84.619140625,
+        "hidden_size": 2048,
+        "injected_l2": 53.23821258544922,
+        "injection_mode": "fuse",
+        "natural_inject_block_norms": {
+          "max": 11046.880859375,
+          "mean": 137.24183654785156,
+          "median": 53.23817825317383,
+          "min": 41.310943603515625,
+          "n": 131,
+          "p25": 50.327049255371094,
+          "p75": 55.84040451049805
+        },
+        "pooled_l2_raw": 38.27180099487305,
+        "span": [
+          107,
+          293
+        ],
+        "variant": "pertoken"
+      },
+      "conditions": {
+        "aligned_real": {
+          "correct": true,
+          "nll_gold": 8.659102439880371
+        },
+        "baseline_uninjected": {
+          "correct": true,
+          "nll_gold": 2.435922622680664
+        },
+        "random": {
+          "correct": true,
+          "nll_gold": 2.60149884223938
+        },
+        "zerovec_injected": {
+          "correct": true,
+          "nll_gold": 2.435922622680664
+        }
+      },
+      "gold": "5",
+      "item": 2436,
+      "sender_first_pass": {
+        "answer": "5",
+        "correct": true,
+        "generated_tokens": 186
+      }
+    },
+    {
+      "aligned_answer_tail": " of alligators Samara and her friends saw is \\(\\boxed{50}\\).",
+      "capture": {
+        "aligned_l2_raw": 82.74800109863281,
+        "hidden_size": 2048,
+        "injected_l2": 52.63792037963867,
+        "injection_mode": "fuse",
+        "natural_inject_block_norms": {
+          "max": 11046.880859375,
+          "mean": 121.00978088378906,
+          "median": 52.63791275024414,
+          "min": 42.21157455444336,
+          "n": 161,
+          "p25": 49.8380126953125,
+          "p75": 55.27376937866211
+        },
+        "pooled_l2_raw": 38.990177154541016,
+        "span": [
+          137,
+          279
+        ],
+        "variant": "pertoken"
+      },
+      "conditions": {
+        "aligned_real": {
+          "correct": true,
+          "nll_gold": 6.175556182861328
+        },
+        "baseline_uninjected": {
+          "correct": true,
+          "nll_gold": 1.3018739223480225
+        },
+        "random": {
+          "correct": true,
+          "nll_gold": 1.3684111833572388
+        },
+        "zerovec_injected": {
+          "correct": true,
+          "nll_gold": 1.3018739223480225
+        }
+      },
+      "gold": "50",
+      "item": 2489,
+      "sender_first_pass": {
+        "answer": "50",
+        "correct": true,
+        "generated_tokens": 142
+      }
+    },
+    {
+      "aligned_answer_tail": "e art piece will have increased by \\(\\boxed{8000}\\) dollars.",
+      "capture": {
+        "aligned_l2_raw": 101.0853042602539,
+        "hidden_size": 2048,
+        "injected_l2": 52.630733489990234,
+        "injection_mode": "fuse",
+        "natural_inject_block_norms": {
+          "max": 11056.958984375,
+          "mean": 138.92950439453125,
+          "median": 52.630714416503906,
+          "min": 41.21894454956055,
+          "n": 128,
+          "p25": 50.190528869628906,
+          "p75": 54.99297332763672
+        },
+        "pooled_l2_raw": 39.451358795166016,
+        "span": [
+          104,
+          383
+        ],
+        "variant": "pertoken"
+      },
+      "conditions": {
+        "aligned_real": {
+          "correct": true,
+          "nll_gold": 1.9145852327346802
+        },
+        "baseline_uninjected": {
+          "correct": false,
+          "nll_gold": 1.3244729042053223
+        },
+        "random": {
+          "correct": true,
+          "nll_gold": 1.3555994033813477
+        },
+        "zerovec_injected": {
+          "correct": false,
+          "nll_gold": 1.3244729042053223
+        }
+      },
+      "gold": "8000",
+      "item": 2540,
+      "sender_first_pass": {
+        "answer": "8000",
+        "correct": true,
+        "generated_tokens": 279
+      }
+    },
+    {
+      "aligned_answer_tail": "er is \\( 20 \\) miles.\n\nThe final answer is:\n\\[ \\boxed{20} \\]",
+      "capture": {
+        "aligned_l2_raw": 93.76467895507812,
+        "hidden_size": 2048,
+        "injected_l2": 52.88969802856445,
+        "injection_mode": "fuse",
+        "natural_inject_block_norms": {
+          "max": 11056.958984375,
+          "mean": 141.2401580810547,
+          "median": 52.88973617553711,
+          "min": 40.83546829223633,
+          "n": 125,
+          "p25": 50.370765686035156,
+          "p75": 56.28302764892578
+        },
+        "pooled_l2_raw": 39.20724105834961,
+        "span": [
+          101,
+          462
+        ],
+        "variant": "pertoken"
+      },
+      "conditions": {
+        "aligned_real": {
+          "correct": true,
+          "nll_gold": 2.3240966796875
+        },
+        "baseline_uninjected": {
+          "correct": true,
+          "nll_gold": 0.9043369293212891
+        },
+        "random": {
+          "correct": true,
+          "nll_gold": 0.8771723508834839
+        },
+        "zerovec_injected": {
+          "correct": true,
+          "nll_gold": 0.9043369293212891
+        }
+      },
+      "gold": "20",
+      "item": 2723,
+      "sender_first_pass": {
+        "answer": "20",
+        "correct": true,
+        "generated_tokens": 361
+      }
+    },
+    {
+      "aligned_answer_tail": "white homes that do not have a fireplace is \\(\\boxed{240}\\).",
+      "capture": {
+        "aligned_l2_raw": 102.5547103881836,
+        "hidden_size": 2048,
+        "injected_l2": 52.89608383178711,
+        "injection_mode": "fuse",
+        "natural_inject_block_norms": {
+          "max": 11046.880859375,
+          "mean": 137.19728088378906,
+          "median": 52.896087646484375,
+          "min": 41.38924026489258,
+          "n": 131,
+          "p25": 50.31737518310547,
+          "p75": 55.821590423583984
+        },
+        "pooled_l2_raw": 39.33065414428711,
+        "span": [
+          107,
+          468
+        ],
+        "variant": "pertoken"
+      },
+      "conditions": {
+        "aligned_real": {
+          "correct": true,
+          "nll_gold": 5.1922430992126465
+        },
+        "baseline_uninjected": {
+          "correct": true,
+          "nll_gold": 1.563247799873352
+        },
+        "random": {
+          "correct": true,
+          "nll_gold": 1.6087843179702759
+        },
+        "zerovec_injected": {
+          "correct": true,
+          "nll_gold": 1.563247799873352
+        }
+      },
+      "gold": "240",
+      "item": 2958,
+      "sender_first_pass": {
+        "answer": "240",
+        "correct": true,
+        "generated_tokens": 361
+      }
+    },
+    {
+      "aligned_answer_tail": "fies Janet received is:\n#### 10\nThe final answer is: #### 10",
+      "capture": {
+        "aligned_l2_raw": 88.86743927001953,
+        "hidden_size": 2048,
+        "injected_l2": 52.29951477050781,
+        "injection_mode": "fuse",
+        "natural_inject_block_norms": {
+          "max": 11046.880859375,
+          "mean": 133.139892578125,
+          "median": 52.29951477050781,
+          "min": 40.04020690917969,
+          "n": 136,
+          "p25": 49.19815444946289,
+          "p75": 54.79808807373047
+        },
+        "pooled_l2_raw": 38.92108154296875,
+        "span": [
+          112,
+          342
+        ],
+        "variant": "pertoken"
+      },
+      "conditions": {
+        "aligned_real": {
+          "correct": true,
+          "nll_gold": 2.693509101867676
+        },
+        "baseline_uninjected": {
+          "correct": true,
+          "nll_gold": 1.7319550514221191
+        },
+        "random": {
+          "correct": true,
+          "nll_gold": 1.8856263160705566
+        },
+        "zerovec_injected": {
+          "correct": true,
+          "nll_gold": 1.7319550514221191
+        }
+      },
+      "gold": "10",
+      "item": 2973,
+      "sender_first_pass": {
+        "answer": "10",
+        "correct": true,
+        "generated_tokens": 230
+      }
+    },
+    {
+      "aligned_answer_tail": "actually pick before her basket is full is:\n\\[\n\\boxed{30}\n\\]",
+      "capture": {
+        "aligned_l2_raw": 99.25633239746094,
+        "hidden_size": 2048,
+        "injected_l2": 51.36140060424805,
+        "injection_mode": "fuse",
+        "natural_inject_block_norms": {
+          "max": 11046.880859375,
+          "mean": 130.05795288085938,
+          "median": 51.36140060424805,
+          "min": 41.0392951965332,
+          "n": 140,
+          "p25": 48.97831726074219,
+          "p75": 53.619789123535156
+        },
+        "pooled_l2_raw": 39.49566650390625,
+        "span": [
+          116,
+          411
+        ],
+        "variant": "pertoken"
+      },
+      "conditions": {
+        "aligned_real": {
+          "correct": false,
+          "nll_gold": 3.5622189044952393
+        },
+        "baseline_uninjected": {
+          "correct": false,
+          "nll_gold": 2.8630530834198
+        },
+        "random": {
+          "correct": false,
+          "nll_gold": 2.945035934448242
+        },
+        "zerovec_injected": {
+          "correct": false,
+          "nll_gold": 2.8630530834198
+        }
+      },
+      "gold": "75",
+      "item": 3084,
+      "sender_first_pass": {
+        "answer": "60",
+        "correct": false,
+        "generated_tokens": 295
+      }
+    },
+    {
+      "aligned_answer_tail": " currently 39 years old.\n\nThus, the final answer is:\n#### 39",
+      "capture": {
+        "aligned_l2_raw": 137.36277770996094,
+        "hidden_size": 2048,
+        "injected_l2": 53.261390686035156,
+        "injection_mode": "fuse",
+        "natural_inject_block_norms": {
+          "max": 11046.880859375,
+          "mean": 125.71651458740234,
+          "median": 53.26142501831055,
+          "min": 39.83434295654297,
+          "n": 152,
+          "p25": 50.24033737182617,
+          "p75": 56.49971008300781
+        },
+        "pooled_l2_raw": 40.54572296142578,
+        "span": [
+          128,
+          371
+        ],
+        "variant": "pertoken"
+      },
+      "conditions": {
+        "aligned_real": {
+          "correct": false,
+          "nll_gold": 3.0883736610412598
+        },
+        "baseline_uninjected": {
+          "correct": true,
+          "nll_gold": 2.9988443851470947
+        },
+        "random": {
+          "correct": false,
+          "nll_gold": 3.0353922843933105
+        },
+        "zerovec_injected": {
+          "correct": true,
+          "nll_gold": 2.9988443851470947
+        }
+      },
+      "gold": "36",
+      "item": 3165,
+      "sender_first_pass": {
+        "answer": "36",
+        "correct": true,
+        "generated_tokens": 243
+      }
+    },
+    {
+      "aligned_answer_tail": "\\boxed{150} minutes to reach his daily goal of 10,000 steps.",
+      "capture": {
+        "aligned_l2_raw": 89.51580810546875,
+        "hidden_size": 2048,
+        "injected_l2": 52.08223342895508,
+        "injection_mode": "fuse",
+        "natural_inject_block_norms": {
+          "max": 11046.880859375,
+          "mean": 128.87551879882812,
+          "median": 52.08220291137695,
+          "min": 40.75791931152344,
+          "n": 144,
+          "p25": 49.928871154785156,
+          "p75": 55.0253791809082
+        },
+        "pooled_l2_raw": 38.18800354003906,
+        "span": [
+          120,
+          379
+        ],
+        "variant": "pertoken"
+      },
+      "conditions": {
+        "aligned_real": {
+          "correct": false,
+          "nll_gold": 4.815749645233154
+        },
+        "baseline_uninjected": {
+          "correct": false,
+          "nll_gold": 2.1443257331848145
+        },
+        "random": {
+          "correct": false,
+          "nll_gold": 1.9579893350601196
+        },
+        "zerovec_injected": {
+          "correct": false,
+          "nll_gold": 2.1443257331848145
+        }
+      },
+      "gold": "150",
+      "item": 3741,
+      "sender_first_pass": {
+        "answer": "150",
+        "correct": true,
+        "generated_tokens": 259
+      }
+    },
+    {
+      "aligned_answer_tail": "f Beast of War: Armoured Command is \\(\\boxed{100}\\) minutes.",
+      "capture": {
+        "aligned_l2_raw": 99.89676666259766,
+        "hidden_size": 2048,
+        "injected_l2": 53.283447265625,
+        "injection_mode": "fuse",
+        "natural_inject_block_norms": {
+          "max": 11046.880859375,
+          "mean": 129.0301513671875,
+          "median": 53.28345489501953,
+          "min": 41.37049865722656,
+          "n": 146,
+          "p25": 49.98970413208008,
+          "p75": 56.7739372253418
+        },
+        "pooled_l2_raw": 38.395042419433594,
+        "span": [
+          122,
+          389
+        ],
+        "variant": "pertoken"
+      },
+      "conditions": {
+        "aligned_real": {
+          "correct": true,
+          "nll_gold": 2.8606789112091064
+        },
+        "baseline_uninjected": {
+          "correct": true,
+          "nll_gold": 1.226447343826294
+        },
+        "random": {
+          "correct": true,
+          "nll_gold": 1.2451196908950806
+        },
+        "zerovec_injected": {
+          "correct": true,
+          "nll_gold": 1.226447343826294
+        }
+      },
+      "gold": "100",
+      "item": 3772,
+      "sender_first_pass": {
+        "answer": "100",
+        "correct": true,
+        "generated_tokens": 267
+      }
+    },
+    {
+      "aligned_answer_tail": "the final number of jellybeans in the jar is \\(\\boxed{23}\\).",
+      "capture": {
+        "aligned_l2_raw": 80.08965301513672,
+        "hidden_size": 2048,
+        "injected_l2": 52.008331298828125,
+        "injection_mode": "fuse",
+        "natural_inject_block_norms": {
+          "max": 11046.880859375,
+          "mean": 133.86351013183594,
+          "median": 52.00836944580078,
+          "min": 41.20509338378906,
+          "n": 135,
+          "p25": 49.924583435058594,
+          "p75": 54.8874397277832
+        },
+        "pooled_l2_raw": 40.403419494628906,
+        "span": [
+          111,
+          287
+        ],
+        "variant": "pertoken"
+      },
+      "conditions": {
+        "aligned_real": {
+          "correct": true,
+          "nll_gold": 7.9444475173950195
+        },
+        "baseline_uninjected": {
+          "correct": true,
+          "nll_gold": 1.9409360885620117
+        },
+        "random": {
+          "correct": true,
+          "nll_gold": 2.173593759536743
+        },
+        "zerovec_injected": {
+          "correct": true,
+          "nll_gold": 1.9409360885620117
+        }
+      },
+      "gold": "23",
+      "item": 3825,
+      "sender_first_pass": {
+        "answer": "23",
+        "correct": true,
+        "generated_tokens": 176
+      }
+    },
+    {
+      "aligned_answer_tail": "Thus, the cost of each single steak knife is \\(\\boxed{20}\\).",
+      "capture": {
+        "aligned_l2_raw": 101.53012084960938,
+        "hidden_size": 2048,
+        "injected_l2": 52.191463470458984,
+        "injection_mode": "fuse",
+        "natural_inject_block_norms": {
+          "max": 11046.880859375,
+          "mean": 126.94627380371094,
+          "median": 52.19149398803711,
+          "min": 40.74544143676758,
+          "n": 148,
+          "p25": 49.708457946777344,
+          "p75": 55.26982879638672
+        },
+        "pooled_l2_raw": 39.631080627441406,
+        "span": [
+          124,
+          368
+        ],
+        "variant": "pertoken"
+      },
+      "conditions": {
+        "aligned_real": {
+          "correct": true,
+          "nll_gold": 5.3358001708984375
+        },
+        "baseline_uninjected": {
+          "correct": true,
+          "nll_gold": 1.7454819679260254
+        },
+        "random": {
+          "correct": true,
+          "nll_gold": 1.8048458099365234
+        },
+        "zerovec_injected": {
+          "correct": true,
+          "nll_gold": 1.7454819679260254
+        }
+      },
+      "gold": "20",
+      "item": 3844,
+      "sender_first_pass": {
+        "answer": "20",
+        "correct": true,
+        "generated_tokens": 244
+      }
+    },
+    {
+      "aligned_answer_tail": "t/box}} = 5 \\]\n\nTherefore, Marissa tied \\(\\boxed{5}\\) boxes.",
+      "capture": {
+        "aligned_l2_raw": 105.41622924804688,
+        "hidden_size": 2048,
+        "injected_l2": 52.56703567504883,
+        "injection_mode": "fuse",
+        "natural_inject_block_norms": {
+          "max": 11046.880859375,
+          "mean": 132.49781799316406,
+          "median": 52.567012786865234,
+          "min": 40.068668365478516,
+          "n": 138,
+          "p25": 49.849735260009766,
+          "p75": 55.458683013916016
+        },
+        "pooled_l2_raw": 38.93804168701172,
+        "span": [
+          114,
+          334
+        ],
+        "variant": "pertoken"
+      },
+      "conditions": {
+        "aligned_real": {
+          "correct": true,
+          "nll_gold": 4.159662246704102
+        },
+        "baseline_uninjected": {
+          "correct": true,
+          "nll_gold": 1.823097825050354
+        },
+        "random": {
+          "correct": true,
+          "nll_gold": 1.9379234313964844
+        },
+        "zerovec_injected": {
+          "correct": true,
+          "nll_gold": 1.823097825050354
+        }
+      },
+      "gold": "5",
+      "item": 3877,
+      "sender_first_pass": {
+        "answer": "5",
+        "correct": true,
+        "generated_tokens": 220
+      }
+    },
+    {
+      "aligned_answer_tail": "the total time Jeannie's hike took is \\(\\boxed{0.7}\\) hours.",
+      "capture": {
+        "aligned_l2_raw": 97.25980377197266,
+        "hidden_size": 2048,
+        "injected_l2": 52.57936477661133,
+        "injection_mode": "fuse",
+        "natural_inject_block_norms": {
+          "max": 11046.880859375,
+          "mean": 136.7063446044922,
+          "median": 52.579349517822266,
+          "min": 41.306522369384766,
+          "n": 131,
+          "p25": 49.95872497558594,
+          "p75": 55.54620361328125
+        },
+        "pooled_l2_raw": 41.14567565917969,
+        "span": [
+          107,
+          301
+        ],
+        "variant": "pertoken"
+      },
+      "conditions": {
+        "aligned_real": {
+          "correct": false,
+          "nll_gold": 3.249605894088745
+        },
+        "baseline_uninjected": {
+          "correct": false,
+          "nll_gold": 1.8419979810714722
+        },
+        "random": {
+          "correct": false,
+          "nll_gold": 1.7407169342041016
+        },
+        "zerovec_injected": {
+          "correct": false,
+          "nll_gold": 1.8419979810714722
+        }
+      },
+      "gold": "5",
+      "item": 4255,
+      "sender_first_pass": {
+        "answer": "5",
+        "correct": true,
+        "generated_tokens": 194
+      }
+    },
+    {
+      "aligned_answer_tail": "s of eggs Gabrielle sells for the 4 days is:\n\\[\n\\boxed{8}\n\\]",
+      "capture": {
+        "aligned_l2_raw": 104.91358184814453,
+        "hidden_size": 2048,
+        "injected_l2": 51.8715934753418,
+        "injection_mode": "fuse",
+        "natural_inject_block_norms": {
+          "max": 11046.880859375,
+          "mean": 121.49589538574219,
+          "median": 51.87165069580078,
+          "min": 41.47922897338867,
+          "n": 159,
+          "p25": 49.91453170776367,
+          "p75": 54.53752136230469
+        },
+        "pooled_l2_raw": 39.288700103759766,
+        "span": [
+          135,
+          393
+        ],
+        "variant": "pertoken"
+      },
+      "conditions": {
+        "aligned_real": {
+          "correct": false,
+          "nll_gold": 6.308631420135498
+        },
+        "baseline_uninjected": {
+          "correct": true,
+          "nll_gold": 2.085714817047119
+        },
+        "random": {
+          "correct": true,
+          "nll_gold": 2.184345245361328
+        },
+        "zerovec_injected": {
+          "correct": true,
+          "nll_gold": 2.085714817047119
+        }
+      },
+      "gold": "28",
+      "item": 4305,
+      "sender_first_pass": {
+        "answer": "28",
+        "correct": true,
+        "generated_tokens": 258
+      }
+    },
+    {
+      "aligned_answer_tail": "refore, the value of one of the other toys is \\(\\boxed{5}\\).",
+      "capture": {
+        "aligned_l2_raw": 125.5495834350586,
+        "hidden_size": 2048,
+        "injected_l2": 51.91967010498047,
+        "injection_mode": "fuse",
+        "natural_inject_block_norms": {
+          "max": 11046.880859375,
+          "mean": 134.1837615966797,
+          "median": 51.91965866088867,
+          "min": 40.72663116455078,
+          "n": 134,
+          "p25": 49.111690521240234,
+          "p75": 55.04064178466797
+        },
+        "pooled_l2_raw": 38.81937026977539,
+        "span": [
+          110,
+          337
+        ],
+        "variant": "pertoken"
+      },
+      "conditions": {
+        "aligned_real": {
+          "correct": true,
+          "nll_gold": 6.1576056480407715
+        },
+        "baseline_uninjected": {
+          "correct": false,
+          "nll_gold": 2.5301830768585205
+        },
+        "random": {
+          "correct": false,
+          "nll_gold": 2.5518429279327393
+        },
+        "zerovec_injected": {
+          "correct": false,
+          "nll_gold": 2.5301830768585205
+        }
+      },
+      "gold": "5",
+      "item": 4344,
+      "sender_first_pass": {
+        "answer": "5",
+        "correct": true,
+        "generated_tokens": 227
+      }
+    },
+    {
+      "aligned_answer_tail": "efore, the total number of broken marbles is \\(\\boxed{17}\\).",
+      "capture": {
+        "aligned_l2_raw": 83.55247497558594,
+        "hidden_size": 2048,
+        "injected_l2": 52.14472579956055,
+        "injection_mode": "fuse",
+        "natural_inject_block_norms": {
+          "max": 11046.880859375,
+          "mean": 123.04320526123047,
+          "median": 52.14472579956055,
+          "min": 41.47252655029297,
+          "n": 156,
+          "p25": 49.849735260009766,
+          "p75": 55.009735107421875
+        },
+        "pooled_l2_raw": 39.18648147583008,
+        "span": [
+          132,
+          383
+        ],
+        "variant": "pertoken"
+      },
+      "conditions": {
+        "aligned_real": {
+          "correct": true,
+          "nll_gold": 3.2343997955322266
+        },
+        "baseline_uninjected": {
+          "correct": true,
+          "nll_gold": 1.8171968460083008
+        },
+        "random": {
+          "correct": true,
+          "nll_gold": 1.847011685371399
+        },
+        "zerovec_injected": {
+          "correct": true,
+          "nll_gold": 1.8171968460083008
+        }
+      },
+      "gold": "17",
+      "item": 4746,
+      "sender_first_pass": {
+        "answer": "17",
+        "correct": true,
+        "generated_tokens": 251
+      }
+    },
+    {
+      "aligned_answer_tail": "- 50 = -35 \\]\n\n#### 5\nTherefore, the final answer is: #### 5",
+      "capture": {
+        "aligned_l2_raw": 83.94011688232422,
+        "hidden_size": 2048,
+        "injected_l2": 52.456302642822266,
+        "injection_mode": "fuse",
+        "natural_inject_block_norms": {
+          "max": 11056.958984375,
+          "mean": 139.86224365234375,
+          "median": 52.45625686645508,
+          "min": 39.97791290283203,
+          "n": 126,
+          "p25": 49.848609924316406,
+          "p75": 55.0240592956543
+        },
+        "pooled_l2_raw": 39.072242736816406,
+        "span": [
+          102,
+          226
+        ],
+        "variant": "pertoken"
+      },
+      "conditions": {
+        "aligned_real": {
+          "correct": false,
+          "nll_gold": 3.7017974853515625
+        },
+        "baseline_uninjected": {
+          "correct": false,
+          "nll_gold": 1.478162169456482
+        },
+        "random": {
+          "correct": false,
+          "nll_gold": 1.6131447553634644
+        },
+        "zerovec_injected": {
+          "correct": false,
+          "nll_gold": 1.478162169456482
+        }
+      },
+      "gold": "25",
+      "item": 4888,
+      "sender_first_pass": {
+        "answer": "25",
+        "correct": true,
+        "generated_tokens": 124
+      }
+    },
+    {
+      "aligned_answer_tail": "cutive integers cannot be 18. The largest integer in the set",
+      "capture": {
+        "aligned_l2_raw": 94.94679260253906,
+        "hidden_size": 2048,
+        "injected_l2": 52.824737548828125,
+        "injection_mode": "fuse",
+        "natural_inject_block_norms": {
+          "max": 11056.98046875,
+          "mean": 147.9623565673828,
+          "median": 52.82474899291992,
+          "min": 40.87361145019531,
+          "n": 116,
+          "p25": 50.08302307128906,
+          "p75": 55.88361740112305
+        },
+        "pooled_l2_raw": 40.22347640991211,
+        "span": [
+          92,
+          369
+        ],
+        "variant": "pertoken"
+      },
+      "conditions": {
+        "aligned_real": {
+          "correct": false,
+          "nll_gold": 6.113619327545166
+        },
+        "baseline_uninjected": {
+          "correct": false,
+          "nll_gold": 2.590533971786499
+        },
+        "random": {
+          "correct": false,
+          "nll_gold": 2.4230754375457764
+        },
+        "zerovec_injected": {
+          "correct": false,
+          "nll_gold": 2.590533971786499
+        }
+      },
+      "gold": "7",
+      "item": 5422,
+      "sender_first_pass": {
+        "answer": "7",
+        "correct": true,
+        "generated_tokens": 277
+      }
+    },
+    {
+      "aligned_answer_tail": "  \\]\n\nThus, the youngest brother is \\(\\boxed{3}\\) years old.",
+      "capture": {
+        "aligned_l2_raw": 123.86173248291016,
+        "hidden_size": 2048,
+        "injected_l2": 52.75349044799805,
+        "injection_mode": "fuse",
+        "natural_inject_block_norms": {
+          "max": 11046.880859375,
+          "mean": 123.99488067626953,
+          "median": 52.753509521484375,
+          "min": 41.42026901245117,
+          "n": 155,
+          "p25": 50.222511291503906,
+          "p75": 55.70454406738281
+        },
+        "pooled_l2_raw": 39.02437973022461,
+        "span": [
+          131,
+          413
+        ],
+        "variant": "pertoken"
+      },
+      "conditions": {
+        "aligned_real": {
+          "correct": true,
+          "nll_gold": 5.0177435874938965
+        },
+        "baseline_uninjected": {
+          "correct": true,
+          "nll_gold": 1.877097487449646
+        },
+        "random": {
+          "correct": true,
+          "nll_gold": 1.7161048650741577
+        },
+        "zerovec_injected": {
+          "correct": true,
+          "nll_gold": 1.877097487449646
+        }
+      },
+      "gold": "3",
+      "item": 5610,
+      "sender_first_pass": {
+        "answer": "3",
+        "correct": true,
+        "generated_tokens": 282
+      }
+    },
+    {
+      "aligned_answer_tail": "\\]\n\\[ S = 18 \\]\n\nTherefore, Sam is \\(\\boxed{18}\\) years old.",
+      "capture": {
+        "aligned_l2_raw": 115.11992645263672,
+        "hidden_size": 2048,
+        "injected_l2": 52.73640441894531,
+        "injection_mode": "fuse",
+        "natural_inject_block_norms": {
+          "max": 11056.98046875,
+          "mean": 152.2140655517578,
+          "median": 52.7364387512207,
+          "min": 41.16202926635742,
+          "n": 111,
+          "p25": 49.923667907714844,
+          "p75": 55.418235778808594
+        },
+        "pooled_l2_raw": 39.50406265258789,
+        "span": [
+          87,
+          399
+        ],
+        "variant": "pertoken"
+      },
+      "conditions": {
+        "aligned_real": {
+          "correct": true,
+          "nll_gold": 2.2529280185699463
+        },
+        "baseline_uninjected": {
+          "correct": true,
+          "nll_gold": 1.5272310972213745
+        },
+        "random": {
+          "correct": true,
+          "nll_gold": 1.5411611795425415
+        },
+        "zerovec_injected": {
+          "correct": true,
+          "nll_gold": 1.5272310972213745
+        }
+      },
+      "gold": "18",
+      "item": 6031,
+      "sender_first_pass": {
+        "answer": "18",
+        "correct": true,
+        "generated_tokens": 312
+      }
+    },
+    {
+      "aligned_answer_tail": "= 277 - 277 = 0 \\]\n\nSo, the final answer is:\n\\[ \\boxed{0} \\]",
+      "capture": {
+        "aligned_l2_raw": 64.23393249511719,
+        "hidden_size": 2048,
+        "injected_l2": 52.569454193115234,
+        "injection_mode": "fuse",
+        "natural_inject_block_norms": {
+          "max": 11046.880859375,
+          "mean": 119.1249771118164,
+          "median": 52.56947708129883,
+          "min": 40.89020538330078,
+          "n": 166,
+          "p25": 50.23146438598633,
+          "p75": 55.418121337890625
+        },
+        "pooled_l2_raw": 39.016841888427734,
+        "span": [
+          142,
+          383
+        ],
+        "variant": "pertoken"
+      },
+      "conditions": {
+        "aligned_real": {
+          "correct": false,
+          "nll_gold": 6.962639331817627
+        },
+        "baseline_uninjected": {
+          "correct": false,
+          "nll_gold": 1.547318458557129
+        },
+        "random": {
+          "correct": false,
+          "nll_gold": 1.4263105392456055
+        },
+        "zerovec_injected": {
+          "correct": false,
+          "nll_gold": 1.547318458557129
+        }
+      },
+      "gold": "5",
+      "item": 6146,
+      "sender_first_pass": {
+        "answer": "5",
+        "correct": true,
+        "generated_tokens": 241
+      }
+    },
+    {
+      "aligned_answer_tail": "= $1.7368... - $20 = $1.7368... - $20 = $1.7368... - $20 = $",
+      "capture": {
+        "aligned_l2_raw": 109.7780990600586,
+        "hidden_size": 2048,
+        "injected_l2": 51.88907241821289,
+        "injection_mode": "fuse",
+        "natural_inject_block_norms": {
+          "max": 11046.8759765625,
+          "mean": 111.44664764404297,
+          "median": 51.889034271240234,
+          "min": 41.775733947753906,
+          "n": 187,
+          "p25": 50.02832794189453,
+          "p75": 55.221923828125
+        },
+        "pooled_l2_raw": 38.31718826293945,
+        "span": [
+          163,
+          352
+        ],
+        "variant": "pertoken"
+      },
+      "conditions": {
+        "aligned_real": {
+          "correct": false,
+          "nll_gold": 2.804304361343384
+        },
+        "baseline_uninjected": {
+          "correct": false,
+          "nll_gold": 2.1800057888031006
+        },
+        "random": {
+          "correct": false,
+          "nll_gold": 2.1645047664642334
+        },
+        "zerovec_injected": {
+          "correct": false,
+          "nll_gold": 2.1800057888031006
+        }
+      },
+      "gold": "2",
+      "item": 6378,
+      "sender_first_pass": {
+        "answer": "2",
+        "correct": true,
+        "generated_tokens": 189
+      }
+    },
+    {
+      "aligned_answer_tail": " Elizabeth uses a total of 21 stickers on her water bottles.",
+      "capture": {
+        "aligned_l2_raw": 91.9407730102539,
+        "hidden_size": 2048,
+        "injected_l2": 51.99545669555664,
+        "injection_mode": "fuse",
+        "natural_inject_block_norms": {
+          "max": 11046.880859375,
+          "mean": 124.56620025634766,
+          "median": 51.99546813964844,
+          "min": 40.57081985473633,
+          "n": 152,
+          "p25": 49.661014556884766,
+          "p75": 54.80020523071289
+        },
+        "pooled_l2_raw": 39.736480712890625,
+        "span": [
+          128,
+          315
+        ],
+        "variant": "pertoken"
+      },
+      "conditions": {
+        "aligned_real": {
+          "correct": true,
+          "nll_gold": 7.564484596252441
+        },
+        "baseline_uninjected": {
+          "correct": true,
+          "nll_gold": 2.4542384147644043
+        },
+        "random": {
+          "correct": true,
+          "nll_gold": 2.4579150676727295
+        },
+        "zerovec_injected": {
+          "correct": true,
+          "nll_gold": 2.4542384147644043
+        }
+      },
+      "gold": "21",
+      "item": 6452,
+      "sender_first_pass": {
+        "answer": "21",
+        "correct": true,
+        "generated_tokens": 187
+      }
+    },
+    {
+      "aligned_answer_tail": " number of jars of strawberry jelly sold is \\( \\boxed{3} \\).",
+      "capture": {
+        "aligned_l2_raw": 78.89269256591797,
+        "hidden_size": 2048,
+        "injected_l2": 52.94622802734375,
+        "injection_mode": "fuse",
+        "natural_inject_block_norms": {
+          "max": 11046.880859375,
+          "mean": 126.0242691040039,
+          "median": 52.94618225097656,
+          "min": 41.16984176635742,
+          "n": 151,
+          "p25": 50.432952880859375,
+          "p75": 55.70454406738281
+        },
+        "pooled_l2_raw": 39.20769500732422,
+        "span": [
+          127,
+          479
+        ],
+        "variant": "pertoken"
+      },
+      "conditions": {
+        "aligned_real": {
+          "correct": false,
+          "nll_gold": 6.33683443069458
+        },
+        "baseline_uninjected": {
+          "correct": false,
+          "nll_gold": 2.832852602005005
+        },
+        "random": {
+          "correct": false,
+          "nll_gold": 2.800355911254883
+        },
+        "zerovec_injected": {
+          "correct": false,
+          "nll_gold": 2.832852602005005
+        }
+      },
+      "gold": "18",
+      "item": 6552,
+      "sender_first_pass": {
+        "answer": "18",
+        "correct": true,
+        "generated_tokens": 352
+      }
+    },
+    {
+      "aligned_answer_tail": "otal number of questions Cameron answered is \\(\\boxed{75}\\).",
+      "capture": {
+        "aligned_l2_raw": 72.05712890625,
+        "hidden_size": 2048,
+        "injected_l2": 52.42939758300781,
+        "injection_mode": "fuse",
+        "natural_inject_block_norms": {
+          "max": 11046.8759765625,
+          "mean": 114.375,
+          "median": 52.42940902709961,
+          "min": 41.29051208496094,
+          "n": 178,
+          "p25": 50.070980072021484,
+          "p75": 54.82401657104492
+        },
+        "pooled_l2_raw": 39.01510238647461,
+        "span": [
+          154,
+          462
+        ],
+        "variant": "pertoken"
+      },
+      "conditions": {
+        "aligned_real": {
+          "correct": false,
+          "nll_gold": 6.389122009277344
+        },
+        "baseline_uninjected": {
+          "correct": false,
+          "nll_gold": 3.4991326332092285
+        },
+        "random": {
+          "correct": false,
+          "nll_gold": 3.59663724899292
+        },
+        "zerovec_injected": {
+          "correct": false,
+          "nll_gold": 3.4991326332092285
+        }
+      },
+      "gold": "68",
+      "item": 6629,
+      "sender_first_pass": {
+        "answer": "68",
+        "correct": true,
+        "generated_tokens": 308
+      }
+    },
+    {
+      "aligned_answer_tail": "So, Brenda needs to spay 7 cats. The final answer is:\n#### 7",
+      "capture": {
+        "aligned_l2_raw": 93.94669342041016,
+        "hidden_size": 2048,
+        "injected_l2": 52.28106689453125,
+        "injection_mode": "fuse",
+        "natural_inject_block_norms": {
+          "max": 11056.958984375,
+          "mean": 138.50611877441406,
+          "median": 52.28106689453125,
+          "min": 41.28638458251953,
+          "n": 128,
+          "p25": 49.607826232910156,
+          "p75": 54.884925842285156
+        },
+        "pooled_l2_raw": 39.13241958618164,
+        "span": [
+          104,
+          262
+        ],
+        "variant": "pertoken"
+      },
+      "conditions": {
+        "aligned_real": {
+          "correct": true,
+          "nll_gold": 6.535430431365967
+        },
+        "baseline_uninjected": {
+          "correct": true,
+          "nll_gold": 1.9697812795639038
+        },
+        "random": {
+          "correct": true,
+          "nll_gold": 2.0599639415740967
+        },
+        "zerovec_injected": {
+          "correct": true,
+          "nll_gold": 1.9697812795639038
+        }
+      },
+      "gold": "7",
+      "item": 7293,
+      "sender_first_pass": {
+        "answer": "7",
+        "correct": true,
+        "generated_tokens": 158
+      }
+    },
+    {
+      "aligned_answer_tail": "etes the problem step by step and provides the final answer.",
+      "capture": {
+        "aligned_l2_raw": 127.21880340576172,
+        "hidden_size": 2048,
+        "injected_l2": 51.67308807373047,
+        "injection_mode": "fuse",
+        "natural_inject_block_norms": {
+          "max": 11046.880859375,
+          "mean": 134.1980743408203,
+          "median": 51.67307662963867,
+          "min": 40.72987747192383,
+          "n": 134,
+          "p25": 49.13151168823242,
+          "p75": 54.672393798828125
+        },
+        "pooled_l2_raw": 39.16804504394531,
+        "span": [
+          110,
+          331
+        ],
+        "variant": "pertoken"
+      },
+      "conditions": {
+        "aligned_real": {
+          "correct": true,
+          "nll_gold": 4.989626884460449
+        },
+        "baseline_uninjected": {
+          "correct": true,
+          "nll_gold": 3.3636462688446045
+        },
+        "random": {
+          "correct": true,
+          "nll_gold": 3.5484542846679688
+        },
+        "zerovec_injected": {
+          "correct": true,
+          "nll_gold": 3.3636462688446045
+        }
+      },
+      "gold": "165",
+      "item": 7375,
+      "sender_first_pass": {
+        "answer": "165",
+        "correct": true,
+        "generated_tokens": 221
+      }
+    },
+    {
+      "aligned_answer_tail": "ers that can be fed is:\n#### 22\nThe final answer is: #### 22",
+      "capture": {
+        "aligned_l2_raw": 67.97151947021484,
+        "hidden_size": 2048,
+        "injected_l2": 52.3947868347168,
+        "injection_mode": "fuse",
+        "natural_inject_block_norms": {
+          "max": 11046.880859375,
+          "mean": 133.56492614746094,
+          "median": 52.39483642578125,
+          "min": 40.686031341552734,
+          "n": 136,
+          "p25": 49.775604248046875,
+          "p75": 55.4903564453125
+        },
+        "pooled_l2_raw": 38.975318908691406,
+        "span": [
+          112,
+          336
+        ],
+        "variant": "pertoken"
+      },
+      "conditions": {
+        "aligned_real": {
+          "correct": true,
+          "nll_gold": 7.036124229431152
+        },
+        "baseline_uninjected": {
+          "correct": true,
+          "nll_gold": 2.0937864780426025
+        },
+        "random": {
+          "correct": true,
+          "nll_gold": 2.2740910053253174
+        },
+        "zerovec_injected": {
+          "correct": true,
+          "nll_gold": 2.0937864780426025
+        }
+      },
+      "gold": "22",
+      "item": 7431,
+      "sender_first_pass": {
+        "answer": "22",
+        "correct": true,
+        "generated_tokens": 224
+      }
+    },
+    {
+      "aligned_answer_tail": "get 20 gold bars. Therefore, the answer is:\n\\[ \\boxed{20} \\]",
+      "capture": {
+        "aligned_l2_raw": 123.39664459228516,
+        "hidden_size": 2048,
+        "injected_l2": 52.23917007446289,
+        "injection_mode": "fuse",
+        "natural_inject_block_norms": {
+          "max": 11046.880859375,
+          "mean": 128.89593505859375,
+          "median": 52.239200592041016,
+          "min": 41.40227127075195,
+          "n": 144,
+          "p25": 49.85445785522461,
+          "p75": 55.1324577331543
+        },
+        "pooled_l2_raw": 40.07602310180664,
+        "span": [
+          120,
+          295
+        ],
+        "variant": "pertoken"
+      },
+      "conditions": {
+        "aligned_real": {
+          "correct": true,
+          "nll_gold": 4.043182373046875
+        },
+        "baseline_uninjected": {
+          "correct": true,
+          "nll_gold": 1.4886395931243896
+        },
+        "random": {
+          "correct": true,
+          "nll_gold": 1.6268199682235718
+        },
+        "zerovec_injected": {
+          "correct": true,
+          "nll_gold": 1.4886395931243896
+        }
+      },
+      "gold": "20",
+      "item": 7462,
+      "sender_first_pass": {
+        "answer": "20",
+        "correct": true,
+        "generated_tokens": 175
+      }
+    }
+  ],
+  "pre_committed": true,
+  "stage": "run2-M4g-fuse-probe",
+  "summary": {
+    "accuracy": {
+      "aligned_real": 23,
+      "baseline_uninjected": 22,
+      "random": 22,
+      "zerovec_injected": 22
+    },
+    "aligned_vs_baseline": {
+      "losses": 2,
+      "mid_p_one_sided_reported_only": 0.34375,
+      "p_one_sided": 0.5,
+      "wins": 3
+    },
+    "aligned_vs_zerovec": {
+      "losses": 2,
+      "mid_p_one_sided_reported_only": 0.34375,
+      "p_one_sided": 0.5,
+      "wins": 3
+    },
+    "fuse_zero_is_noop_vs_baseline": {
+      "accuracy_disagreements": 0,
+      "expected": "EXACT identity — under fuse the zerovec condition is h += 0",
+      "gating": "NONE — reported as an operator-correctness diagnostic only; it does not enter gate_pass",
+      "max_abs_nll_delta": 0.0,
+      "n_items": 40,
+      "nll_bit_identical_items": 40,
+      "pass": true,
+      "tolerance": 9.999999974752427e-7
+    },
+    "n_evaluated": 40,
+    "nll_aligned_vs_random": {
+      "losses": 40,
+      "mid_p_one_sided_reported_only": 0.9999999999995453,
+      "p_one_sided": 1.0,
+      "wins": 0
+    },
+    "nll_aligned_vs_zerovec": {
+      "losses": 40,
+      "mid_p_one_sided_reported_only": 0.9999999999995453,
+      "p_one_sided": 1.0,
+      "wins": 0
+    },
+    "nll_mean": {
+      "aligned_real": 4.815494060516357,
+      "baseline_uninjected": 2.1288259029388428,
+      "random": 2.170044422149658,
+      "zerovec_injected": 2.1288259029388428
+    },
+    "nll_zerovec_vs_baseline": {
+      "losses": 0,
+      "mid_p_one_sided_reported_only": 1.0,
+      "p_one_sided": 1.0,
+      "wins": 0
+    },
+    "primary_aligned_vs_random": {
+      "alpha": 0.05,
+      "losses": 1,
+      "mid_p_note": "reported per ADR-030/research-031; NOT the gate — 'pass' above is the recorded verdict and is computed from p_one_sided alone",
+      "mid_p_one_sided_reported_only": 0.3125,
+      "mid_p_pass_if_it_were_primary": false,
+      "min_attainable_p_at_this_n_disc": 0.125,
+      "n_discordant": 3,
+      "p_one_sided": 0.5,
+      "pass": false,
+      "wins": 2
+    },
+    "zerovec_vs_baseline": {
+      "baseline_wins": 0,
+      "criterion": "2 x zerovec_correct >= baseline_correct",
+      "degenerate_under_fuse": true,
+      "p_baseline_gt_zerovec": 1.0,
+      "p_zerovec_gt_baseline": 1.0,
+      "pass": true,
+      "zerovec_wins": 0
+    }
+  },
+  "variant": "pertoken-fuse",
+  "wall_clock_s": 412.1380310058594
+}
