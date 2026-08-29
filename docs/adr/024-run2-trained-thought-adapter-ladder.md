@@ -871,6 +871,54 @@ under overwrite or under fuse — creates pressure to leave it.
   That combination is registered here as the preferred successor, before the
   verdict that would motivate it.
 
+## M4i PRE-REGISTRATION (2026-08-29, before any run) — inject at ORDINARY tokens, not `<|fim_pad|>`
+
+[docs/research/043](../research/043-placeholder-token-choice.md) identifies a
+third structural difference from every working method, and it is the **only
+one that predicts INERTNESS** rather than degraded or harmful transfer —
+which is precisely the signature the correction above isolated.
+
+**What was found** (primary sources): the base Qwen2.5 technical report
+(2412.15115) **never mentions FIM**; FIM training is documented only in the
+Qwen2.5-**Coder** report (2409.12186) as Coder-specific continued
+pretraining. Our receiver is Qwen2.5-1.5B-**Instruct**, non-Coder — so
+`<|fim_pad|>` (id 151662, `"special": false` in its own tokenizer_config)
+is plausibly **experientially near-vacant for this model**: not a token it
+learned to suppress, but one it has essentially **no circuitry for**. We have
+been injecting eight copies of a state into a region of the vocabulary the
+receiver may never have meaningfully trained on. **No surveyed method
+(C2C, LatentMAS, Bicameral) injects at a placeholder token — all three
+inject onto real token positions.**
+
+Supporting literature (both abstract-only this pass, graded accordingly):
+"Let's Think Dot by Dot" (2404.15758) — models *can* use filler positions for
+hidden computation, but only with "specific, dense supervision to converge";
+the pause-token work (2310.02226) — gains require the model to be *pretrained
+and finetuned with* the tokens, not merely given them at inference. Neither
+condition holds here.
+
+**M4i spec** (no training, no capture — reuses M3's already-trained
+on-manifold adapter): keep slot count **8** and depth **L14** (slot count is
+protected; ADR-028's contradiction on that point remains flagged and
+unadjudicated), deliver by **fuse** (so real content is preserved rather than
+destroyed), and inject onto **8 already-present ordinary tokens** — the last
+8 tokens of the item's question, or the fixed ANSWER_FORMAT instruction
+tokens — instead of 8 `<|fim_pad|>` copies. One registered frozen-probe draw,
+controls per M4g's frozen fuse definitions, mid-p McNemar primary with
+exact-sign and n_disc-versus-power-floor reported.
+
+**Registered interpretation, before the run**: a **PASS** would mean the
+ladder's inertness was substantially an artifact of injecting into an
+untrained embedding region — and every prior on-manifold null would need that
+caveat attached. A **NULL** demotes this to a real-but-non-load-bearing
+structural difference and points back to pooling and receiver scale as the
+dominant candidates. **Honest limits recorded now**: the FIM-exposure claim is
+inferred from *absence of mention*, not from a stated negative, and NLL alone
+cannot distinguish "vacant embedding" from "mildly trained but unremarkable".
+
+**Ordering**: runs after M4h Stage 1 reports (that rung is already probing and
+also uses the fim_pad slots, so it does **not** test this).
+
 ## MAJOR CORRECTION (2026-08-29): the "0/40 NLL inversion" is NOT ladder-wide
 
 Two zero-cost checks against **already-committed receipts** — no new runs —
@@ -1013,6 +1061,139 @@ method — its own abstract describes multi-agent topology restructuring
 (roles, links, order, validation), not hidden-state content. It should not be
 cited alongside C2C/LatentMAS/Bicameral as a latent-transfer comparator; any
 earlier text of mine that did so is wrong.
+
+## M4h Stage 1 manifold pre-check — recorded BEFORE its probe verdict (2026-08-29)
+
+`run2-m4h-s1-manifold-precheck-receipt.json` (CPU-only, no probe draw). The
+de-pooled payload — M3's byte-identical trained MLP, applied per token, LAST
+token taken instead of the mean — is the **first candidate in the entire
+15-row kit that is neither collapsed nor pooled**. It classifies
+**`on-manifold-item-varying`**, a cell only one other row occupies: the
+un-pooled natural receiver state itself.
+
+| candidate | invariance | top-10 union | cos-to-natural | entropy (nats) | class |
+|---|---|---|---|---|---|
+| M3 per-token (pooled) | 0.9702 | 70/400 | 0.9889 | 9.34 | item-invariant-but-on-manifold |
+| **M4h S1 (de-pooled)** | **0.6670** | **133/400** | **0.6814** | **3.32** | **on-manifold-item-varying** |
+| reference: receiver L14 pooled | 0.9617 | 78/400 | 1.0000 | 9.30 | item-invariant-but-on-manifold |
+| reference: receiver L14 **single row** | 0.6350 | 153/400 | 0.6670 | 3.36 | on-manifold-item-varying |
+| M4g (off-manifold, pooled) | 0.8689 | 78/400 | −0.0412 | 5.93 | COLLAPSED-OFF-MANIFOLD |
+
+**Read the last two rows together.** On every registered metric the de-pooled
+payload lands on the *un-pooled* receiver state, not on the pooled one:
+invariance 0.667 vs 0.635, entropy 3.32 vs 3.36, gold-token percentile 23.0%
+vs 22.5%, top-10 union 133 vs 153. Its `cos-to-natural` of 0.6814 is measured
+against the **pooled** natural state — and a genuine single receiver state
+scores 0.6670 on that same metric, so the de-pooled payload is, if anything,
+marginally *closer* to the pooled mean than a real state is. This is the
+scoping caveat the M4h registration already flagged, now quantified: against a
+pooled reference, "0.68" is what being on the real manifold looks like.
+
+**This is a direct confirmation of [docs/research/040](../research/040-the-pooling-gap.md)
+at the representation level.** 036's numbers (invariance 0.962 pooled vs 0.635
+real; entropy 9.30 vs 3.36) are reproduced, and removing the mean — changing
+nothing else, not one trained weight — moves the emitted object from 0.970 /
+9.34 to 0.667 / 3.32. Pooling, not the adapter, was destroying the geometry.
+
+**Interpretation registered before the probe reports:**
+- If **M4h Stage 1 PASSES**, pooling-induced geometric damage was the
+  operative variable and the fix is nearly free.
+- If **M4h Stage 1 NULLS**, then a payload can be geometrically
+  indistinguishable from a real receiver state and still transfer nothing —
+  which would separate *representational fidelity* from *transfer* and rule
+  out the pooling explanation for the ladder's nulls.
+
+## M4h STAGE 1 OUTCOME (2026-08-29) — honest fail; pooling REFUTED as the cause
+
+`run2-m4h-s1-receipt-cellL18toL14-mlp-pertokenlast-fuse-slots8-nopool-rescaletrue-n40.json`.
+One registered draw, no retry. Aligned **24/40**, baseline 22, zerovec 22,
+random 22 — the aligned condition is the top row, and it lost **zero** items
+to any control on accuracy.
+
+**Primary (aligned > random): 2W/0L, n_disc = 2, exact-sign p = 0.2500,
+mid-p 0.1250 — FAIL.**
+
+**Power, stated first and plainly.** At n_disc = 2 the minimum attainable
+one-sided p is **0.25 > α**, so this draw was **structurally incapable of
+rejecting** the accuracy null at any outcome. It is the **weakest draw in the
+ladder**: M4d's n_disc = 7 (floor 0.0078) remains the only non-power-limited
+rung; M4g's n_disc = 3 (floor 0.125) was already incapable; this is worse
+still. A clean 2W/0L sweep that cannot clear α is exactly what a
+power-limited design produces, and it must not be read as encouraging.
+
+**The informative result is the NLL, and it is negative.** Against the
+on-manifold family — the correct comparator, per the MAJOR CORRECTION above,
+*not* M4g:
+
+| rung | manifold | pooled | aligned NLL | Δ vs baseline | vs zerovec | vs random |
+|---|---|---|---|---|---|---|
+| M3 per-token | on | yes | 2.1328 | +0.004 | 20W/20L | 16W/24L |
+| M4 r256 | on | yes | **2.1074** | **−0.021** | 21W/19L | 16W/24L |
+| **M4h S1** | **on** | **NO** | 2.1599 | **+0.031** | **10W/30L** | 15W/25L |
+| M4g | off | yes | 4.8155 | +2.687 | 0W/40L | 0W/40L |
+
+De-pooling made the NLL **worse**, not better: +0.031 nats is the largest
+positive deviation of any on-manifold rung, and 10W/30L against both baseline
+and zerovec is the worst win/loss of the family (M3 was an even 20W/20L). The
+payload stays firmly inside the on-manifold "inert" band in magnitude — two
+orders below the off-manifold rungs' +2.7 nats — but sits on the wrong side
+of it. **No benefit was added.**
+
+**What this refutes.** The pre-check and the probe, read together, are a
+clean dissociation:
+
+> A payload can be made **geometrically indistinguishable from a real,
+> un-pooled receiver state** — invariance, entropy, token support and
+> manifold cosine all matching the single-row reference — and still transfer
+> **nothing**, while costing slightly *more* NLL than the pooled version of
+> the same weights.
+
+**Pooling is therefore refuted as the explanation for the ladder's nulls**,
+in the same way and on the same evidential footing that M4g refuted the
+injection operator. Research 040's diagnosis was correct about the
+*representation* — the pre-check confirms pooling was destroying the geometry
+— and wrong about the *consequence*: restoring the geometry buys nothing.
+This is the third named root-cause candidate to fall (task loss → M4f;
+injection operator → M4g; pooling → M4h S1).
+
+**Scope of the refutation, honestly bounded.** Stage 1 removes the mean but
+still delivers **one vector broadcast to 8 identical slots**. What the
+literature actually does is deliver **many distinct per-token vectors**
+(C2C's full KV cache, LatentMAS's concatenated caches). So this rung refutes
+"*pooling-induced geometric damage* explains the nulls"; it does **not**
+refute "*one-vector bottleneck* explains the nulls". That distinction is
+precisely **M4h Stage 2** (8 distinct per-slot vectors by attention
+compression), which is now the better-motivated successor than it was before
+this draw: with geometry eliminated as the variable, the remaining
+non-pooling property the literature has and we lack is *channel capacity*.
+
+**Two changed factors, disclosed.** Stage 1 differs from M3's committed
+per-token receipt in both payload derivation (mean → last token) and
+injection operator (overwrite → fuse), as the registration specified. A null
+therefore cannot apportion blame between them. The fuse half is not a live
+suspect — M4g characterised it and this run re-verified the operator at
+**0 accuracy disagreements, 40/40 bit-identical zerovec-vs-baseline NLL,
+max |ΔNLL| = 0.0** — but the confound is recorded, not argued away.
+
+**Controls were M4g's, reused rather than restated**: the same shared
+`common::m3::four_conditions` code path under the same `InjectionMode::Fuse`,
+with M4g's frozen `control_semantics_under_fuse` block read out of M4g's
+training receipt and echoed into this one. `zerovec` is again a true no-op,
+so the registered `2 × zerovec ≥ baseline` gate is again **degenerate** and
+carries no evidential weight. Slot count stayed at **8** throughout, keeping
+clear of ADR-028's flagged contradiction.
+
+**Cost**: 395 s of GPU, no training, no capture — the cheapest rung in the
+ladder, and it eliminated a root-cause candidate.
+
+**Receipt prose amended after the draw, disclosed.** This rung's probe
+receipt was written with an `nll_inversion_status` block whose prose asserted
+the 0/40 inversion was ladder-wide — the false premise the MAJOR CORRECTION
+section above refutes, inherited from this rung's task brief and written
+before that correction landed. The block was renamed to `nll_harm_accounting`
+and its prose corrected, with a `post_draw_amendment` block recording exactly
+what changed. **No measured value, count, statistic or gate was touched, and
+the probe was not re-run.** Recorded rather than adjudicated.
 
 ## ADR-028 INTERNAL CONTRADICTION (found 2026-08-29, flagged not adjudicated)
 
