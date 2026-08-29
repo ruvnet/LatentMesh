@@ -1099,6 +1099,70 @@ verified before entering this record, so nothing rests on the attribution; but
 rung. Everything downstream — the duplicate process, the concurrent source
 edits, the merged message identity — follows from that single mistake.
 
+## THE DISSOCIATION, RESOLVED — "decision-inert" is WRONG; the apparatus is decision-PERTURBATIVE but NON-SEMANTIC (2026-08-29)
+
+**Computed from PC2's committed receipt with zero new GPU time**, by reading
+the per-item `extracted_answer` fields the probe already recorded. **This
+answers the question PC2 was built to ask, at full power, where PC2's own
+registered primary could not.**
+
+### The dense decision endpoint
+
+Instead of *"did the receiver emit the specific decoy"* (rate ~2%, n_disc = 3,
+unmeasurable), ask *"did the injection change the answer **at all** versus
+baseline"*:
+
+| condition | answer differs from baseline |
+|---|---|
+| `random` | **151 / 300 = 50.3%** |
+| `steer` | **140 / 300 = 46.7%** |
+| `restore` | 135 / 300 = 45.0% |
+| `zerovec` | **0 / 300 = 0.0%** |
+
+`zerovec` at exactly 0/300 re-confirms the operator: this endpoint measures
+injection, not harness noise.
+
+**Paired `steer` vs `random`**: steer-changed-only **33**, random-changed-only
+**44**, **n_discordant = 77** — minimum attainable p = **6.6e-24**, i.e.
+**fully powered**, versus n_disc = 3 on the registered primary. One-sided exact
+sign test: **p = 0.127**, and the direction slightly *favours random*.
+
+### I was wrong to call it "decision-inert"
+
+The apparatus is **not** inert at the decision level. **It changes the answer on
+roughly half of all items.** What it does not do is change them *because of what
+the payload says*: a norm-matched Gaussian moves decisions **at least as much**
+(50.3% vs 46.7%), and the paired test cannot separate them at n_disc = 77.
+
+**The corrected dissociation:**
+
+> **Likelihood level — SEMANTIC.** The payload's content determines the
+> direction with extreme fidelity: decoy NLL −0.721 nats, **p = 2.6e-44**; each
+> payload moves toward the answer it encodes and away from the other.
+>
+> **Decision level — PERTURBATIVE but NON-SEMANTIC.** Injection changes ~47% of
+> answers, but content contributes **nothing beyond what noise contributes**
+> (33 vs 44, **p = 0.127**, fully powered).
+
+The channel writes meaning into the distribution and the decision layer reads
+only the perturbation. That is a far sharper claim than "the pathway is dead",
+and it is the mission's central result.
+
+### Status of this analysis — POST-HOC, and labelled as such
+
+**This endpoint was not pre-registered.** Under
+[ADR-031](031-evidence-receipt-and-statistical-protocol-governance.md) and
+[ADR-032](032-negative-result-publication-contract.md) it is a **secondary
+post-hoc analysis**, and it is **not** promoted to a registered result on the
+strength of being interesting. It is powered and its direction is a clean null,
+but **it must be pre-registered and confirmed on a fresh draw** before it can
+be cited as established. That is exactly what ADR-040 does.
+
+**It does not change PC2's verdict**: the registered primary remains
+**UNINFORMATIVE**, and **M5X (ADR-037) and M4b (ADR-035) remain BLOCKED** —
+strengthened, since a payload's content demonstrably contributes nothing to
+decisions, and both rungs vary payload content.
+
 ## PC2 RESULT — primary UNINFORMATIVE (not a FAIL); the salvage is the mission's sharpest finding (2026-08-29)
 
 **Receipt**: `run2-pc2-receipt-identity-L19lasttoken-decoytf-fuse-questiontail-slots8-eprocess.json`.
