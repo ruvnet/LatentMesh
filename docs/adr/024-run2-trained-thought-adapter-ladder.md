@@ -615,6 +615,43 @@ The 0/40 probe-time NLL inversion therefore cannot be attributed to
 composed-vs-fused numerics — it is specific to the **deployment
 configuration**, which is exactly what M4d isolates.
 
+## CORRECTION to the M4d registration (2026-08-29) — a coordinator error, recorded
+
+The M4d contingency text above asserts that "no training rung has ever had
+[the rescale] in its loop — training optimizes a raw vector that deployment
+then rescales." **That premise was factually wrong.** The M4d implementer
+found and recorded it independently (`adr_premise_correction` field in
+`crates/latentmesh-train/src/bin/train_m4d_deploymatch.rs`): M4c's training
+loop **already contained the rescale**. The error was mine, in a
+pre-registration, and it is left in place above with this correction
+attached rather than edited away — per [ADR-031](031-evidence-receipt-and-statistical-protocol-governance.md)'s
+append-only rule.
+
+Consequence: M4d was registered to fix something that was not broken, on a
+premise that was not true. The diagnostic below independently establishes the
+stronger statement — rescaling cannot affect output alignment at all — so no
+conclusion drawn anywhere depended on the false premise, but the record must
+show the mistake was made and caught by an implementer reading the code
+rather than by the coordinator who wrote it.
+
+**Why the diagnostic's answer was analytically forced** (and still worth
+measuring): `inject.rs` **overwrites** the residual rows at the 8 placeholder
+positions rather than adding to them, so the residual *is* `c·v` with
+`c = natural_median/‖v‖ > 0`; `W_U(c·v) = c·(W_U v)` is exactly
+order-preserving, making every rank-based statistic invariant by
+construction. Measured anyway, which pinned the claim to the probe's own code
+path and surfaced the off-manifold finding.
+
+**Two magnitude mechanisms survive and are NOT refuted** (neither is an
+output-alignment mechanism, so the diagnostic says nothing about them):
+(i) blocks 15-28 *add* branch outputs to the carried `c·v` term while each
+block's own RMSNorm is scale-invariant, so the downstream balance shifts even
+though the block-14 readout does not; (ii) attention above block 14 reads the
+slot rows as keys/values, where absolute magnitude is not normalised away.
+Both are testable without a probe draw and are registered here as open.
+Measured deployment scale, for the record: `c ∈ [0.259, 0.579]`, mean 0.386 —
+the rescale *shrinks* M4c's vector by 1.7-3.9x.
+
 ## DIAGNOSIS (2026-08-29): the adapter collapsed to a fixed OFF-MANIFOLD direction
 
 The registered zero-GPU diagnostic ([docs/research/033](../research/033-rescale-output-alignment-diagnostic.md))
