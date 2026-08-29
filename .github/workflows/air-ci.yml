@@ -50,6 +50,32 @@ jobs:
         run: CARGO_RESOLVER_INCOMPATIBLE_RUST_VERSIONS=fallback cargo +stable generate-lockfile
       - run: cargo +1.77.0 check --workspace --all-targets --locked
 
+  # Covers crates/latentmesh-runtime, which is deliberately EXCLUDED from the
+  # root workspace (candle needs half ^2.5; latentmesh-core pins =2.4.1). The
+  # `rust` job's --workspace steps therefore never reach it, so this job is
+  # that crate's only CI. Named for the crate, not for a contract: PR #13's
+  # `run2_channel_qualification` example was retired with that PR, so the
+  # step checking it has been removed rather than restored.
+  latentmesh-runtime-standalone:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: crates/latentmesh-runtime
+    steps:
+      - uses: actions/checkout@v4
+      # The standalone lockfile currently contains an edition-2024 transitive
+      # manifest, which Cargo 1.81 cannot parse even though this crate's own
+      # rust-version remains 1.81. Use stable Cargo for dependency parsing.
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          components: rustfmt, clippy
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: crates/latentmesh-runtime -> target
+      - run: cargo fmt -- --check
+      - run: cargo test --locked
+      - run: cargo clippy --locked --all-targets -- -D warnings
+
   portable-c:
     runs-on: ubuntu-latest
     steps:
