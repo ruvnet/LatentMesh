@@ -110,11 +110,23 @@ Comparing Claim 1 against Claim 3 on the same receiver:
 
 - **Injected activations**: no decision effect at one layer, no decision effect
   at two, on a powered test.
-- **Text**: crossed its boundary at item 43, with a control ordering showing
-  content is being read.
+- **Text**: crossed its boundary at item 43, and beat `mismatched` — another
+  episode's *genuine* message — at **27W/1L, p = 2.2e-7**, which is what shows
+  the receiver responds to *this* content rather than to any message at all.
 
 **A reader who opens the four receipts and follows the paths above reaches this
 without needing any sentence in this repository to be true.**
+
+**One honest qualification on that claim.** Claims 1 and 2 are pure field
+lookups — every number is a stored value. The `gated_text`-vs-control tests are
+also stored. But the **control-vs-control** tests in the correction above are
+**not stored fields**: the receipt never computed them, because they were never
+registered. They are derived from `items[*].conditions[*].correct`, which is
+stored, so a reader can reproduce them exactly — but reproducing requires
+running a paired sign test, not just reading a value. **That gap is precisely
+how the ordering claim survived unchallenged for as long as it did**, and it is
+the strongest argument for computing control-vs-control comparisons in the
+probe itself on any future rung.
 
 ---
 
