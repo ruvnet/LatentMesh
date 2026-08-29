@@ -1036,6 +1036,70 @@ Open tension to settle before pre-registering: 8 slots across 2 sites is
 either 16 total or a 4+4 split, and ADR-028's slot-count discipline (already
 self-contradictory and unadjudicated) does not cover it.
 
+## The "source was overwritten" claim is WITHDRAWN — unsupported (2026-08-29)
+
+Recorded because it goes **against** the agent that reported it: the draw
+owner states both broken lookups are in **its own** source, that it never
+wrote a hard gate there, and that no overwrite occurred. Verified, and it is
+right on every checkable point:
+
+- **There is no `ensure!` on the stream check anywhere in the probe.** The
+  `m4i[...]` lookups sit at lines **363, 373, 375** and none is inside a gate.
+  So **no hard stream-identity gate ever existed in the probe to be replaced.**
+  My previous section said one was; that is withdrawn.
+- Its account of its own source **matches the file exactly** — including the
+  detail that line 373 reads `m4i["site_change"]["to"]` before falling back to
+  `m4i["config"]["site"]`. Neither key exists in M4i.
+- The single hard `ensure!(m4i_stream == stream)` is in the **capture** binary,
+  which reads `m4i["items"]` correctly. **The two binaries disagree because one
+  is wrong, not because either was tampered with.**
+- **Authorship cannot be established either way**: `run2_pc1b_probe.rs` is
+  **untracked** — no git history exists for it. Recorded as unverifiable
+  rather than assigned.
+
+**The binary difference stands, with its innocent explanation.** `/proc/2615231/exe`
+resolves to a path marked **`(deleted)`** — the running inode was unlinked and
+replaced, so the on-disk artifact (**13,102,888 B**, mtime 02:09) is
+**definitively not the draw's binary**. The proposed cause — the 02:09 rebuild
+omitted `--features cuda` (30.4 MB cuda build vs 13.1 MB non-cuda) — is
+**plausible and unrefuted**, but I could not measure the running binary's size
+(a deleted inode reports 0 via `/proc`), so it is recorded as an explanation,
+not a verified fact. The load-bearing part needs neither: **the on-disk
+artifact is not the draw's binary**, and `4cda2ef1…` remains the binary of
+record.
+
+**Confirmed for the comparison this unblocks**: M4i `n_disc = 66`,
+`final_wealth = 0.25780744271218675`, `config.injection_site =
+"question_tail_ordinary_tokens"` — and PC1b's capture stream equals M4i's 300
+ids exactly, head `[4, 20, 23, 39, 42]`, tail `[4457, 4464, 4465]`.
+
+## STRUCTURAL: peer message attribution is not determinable in this session
+
+Five inbound messages arrived labelled only `from=general-purpose`. This
+session has **two** agents of that type, and the header carries no identity.
+The consequences are now concrete, not hypothetical:
+
+- The draw owner says it sent **four**; I received **five**.
+- One message denied a process kill that two others affirm — and the kill is
+  **independently proven** by `pc1b_probe.log` on disk.
+- The "hard gate was replaced" claim and its withdrawal both arrived attributed
+  to the same agent, one contradicting the other.
+
+**I cannot resolve which agent sent what, and I am not going to guess.** Every
+attribution in the sections above should be read as *"reported by an agent of
+type `general-purpose`"*.
+
+**This is the durable lesson of the whole episode, and it outranks the science
+here**: in a multi-agent session where messages carry only an agent *type*,
+**provenance cannot be established, so no claim may enter this record on
+authority — only on primary artifact.** Every finding that survived this
+exchange survived because it was checked against a receipt, a log, or source:
+the lens N-invariance defect, the stream identity, the determinism check, the
+deleted-inode binary. Every claim that collapsed — the missing site tag, the
+source overwrite, the replaced gate, "no second process" — collapsed because
+it rested on a message. **The messages were not the evidence; they were only
+ever pointers to where to look.**
+
 ## THE RETRACTION IS WITHDRAWN — error #12 was not an error, and my correction was the bigger mistake (2026-08-29)
 
 **Read this before the section below it.** The retraction that follows is
