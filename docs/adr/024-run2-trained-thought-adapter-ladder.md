@@ -1036,6 +1036,99 @@ Open tension to settle before pre-registering: 8 slots across 2 sites is
 either 16 total or a 4+4 split, and ADR-028's slot-count discipline (already
 self-contradictory and unadjudicated) does not cover it.
 
+## INSTRUMENT DEFECT — `classify()`'s token-union arm is not N-invariant (2026-08-29)
+
+**Found by the PC1b implementer, verified independently against source and
+receipts.** I had hoped PC1b's `on-manifold-item-varying` classification
+resolved the PC1 `item-invariant-but-on-manifold` anomaly I flagged as
+blocking interpretation. **It does not. The flip is an artifact of the
+instrument, and the anomaly is neither resolved nor real.**
+
+`examples/common/lens.rs:38`:
+```rust
+let invariant = invariance >= COLLAPSE_COSINE || token_union <= COLLAPSE_TOKEN_UNION;
+```
+`COLLAPSE_TOKEN_UNION` is **120, an absolute count**, but the union's
+attainable maximum is **10 x N**. The constant's own doc comment scopes it:
+*"Distinct tokens in the union of the **40** top-10 sets ... (max possible
+400)."* It was defined for N=40 and silently reused at N=300.
+
+| | N | union | max | as % of max | dominant token in | inv-cos | manifold-cos | label |
+|---|---|---|---|---|---|---|---|---|
+| PC1 | 40 | 98 | 400 | **24.5%** | **40/40 items (100%)** | 0.8565 | 0.6869 | item-invariant-but-on-manifold |
+| PC1b | 300 | 219 | 3000 | **7.3%** | **297/300 items (99%)** | 0.8696 | 0.6905 | on-manifold-item-varying |
+
+Every N-invariant measure says these are **the same payload family**:
+invariance cosine differs by 0.013, manifold cosine by 0.004, and the
+dominant single token sits in the top-10 of **100% vs 99%** of items. Only the
+absolute union count differs, and it differs *because N differs*. As a
+fraction of attainable support PC1b is **more** concentrated, not less —
+the label flipped to the *less* alarming value on the *more* concentrated
+payload.
+
+**Scope of the damage — deliberately narrow, and I checked rather than
+assumed.** The defect is confined to the **invariance axis**, and only via
+the `token_union` disjunct:
+- `COLLAPSE_COSINE` compares a **mean pairwise cosine** — N-invariant. Unaffected.
+- `OFF_MANIFOLD_COSINE` compares a **mean cosine** — N-invariant. Unaffected.
+
+Therefore **the ladder's load-bearing conclusion survives intact**: the
+on-manifold/off-manifold axis is sound, so *"on-manifold = inert (within
+0.004 nats of baseline), off-manifold = actively destructive (NLL 4.8-5.4 vs
+2.13)"* still stands on N-invariant measurements.
+
+What does **not** survive: **any cross-rung comparison of the
+`item-invariant` label where N differed** is void. Documents citing that
+label — [research/033](../research/036-manifold-collapse-across-the-ladder.md),
+036, 038, 039, 040, 041, 046 — are annotated by this section rather than
+rewritten, per the append-only rule. Note that the receipts already carry the
+tell in their own field names: PC1 wrote
+`distinct_tokens_in_union_of_40_top10_sets`, PC1b wrote
+`distinct_tokens_in_union_of_all_item_top10_sets`.
+
+**Registered fix, deferred deliberately**: make the arm a fraction
+(`token_union as f64 / (10*n) as f64 <= COLLAPSE_TOKEN_UNION_FRAC`) or use
+the already-recorded N-invariant dominant-token share. **Not applied yet** —
+a rebuild of `run2_pc1b_probe` already occurred *under* the live draw (below),
+and I will not touch this crate again until PC1b lands. The pre-check is
+ordering-only and gates nothing, so no result is at risk from the delay.
+
+**This is the second instrument caveat on the same pre-check**, after PC1's
+`manifold` metric caveat. The pre-check is now the least trustworthy
+instrument in the ladder and its labels should not be quoted as findings.
+
+## Binary changed under the live PC1b draw (2026-08-29)
+
+`examples/run2_pc1b_probe.rs` was edited (mtime 02:09:09) and rebuilt at
+**02:09:28 — after the draw started at 02:08:07**. The draw is unaffected:
+Linux holds the original inode open, and the two differ:
+
+- **binary that is producing the draw** (`/proc/2615231/exe`): `4cda2ef1d60c1df716f92991f98f356c8731c99973caf18f725e5ac4f5d11922`
+- on-disk binary now: `a24c0d992a8ce3a9e2a9abb1603e77913198515d7c924cb413e55da01d9584ab`
+
+The implementer checked every pre-registered constant in the new source —
+`SITE`, `INJECT_MODE`, `LAMBDA` 0.30, `E_ALPHA` 0.05, `N_MAX` 300, and all
+three gaming-guard thresholds — **all unchanged**; the edit is
+prose/receipt-field only. **`4cda2ef1...` is the binary of record for PC1b.**
+Recorded because a rebuild under a live registered draw is exactly the kind
+of event that must not be discovered later from a hash mismatch.
+
+## Correction to coordinator error #11 (same day)
+
+My account of #11 credited the implementer with killing its own duplicate
+process as a first-claim-wins tiebreak. **It disputes this and says it issued
+no kill at all**, having launched exactly one probe. Its two messages to me
+are mutually inconsistent on that point, so I record only what I verified
+myself: `ps` shows **exactly one** `run2_pc1b_probe` process (2615231), whose
+parent 2615230 is that implementer's own `nohup` launcher shell.
+
+**Whether a second process ever existed is unresolved and I am not asserting
+either way.** What stands unchanged is the part that matters and that is
+entirely my fault: **I created two spawn paths for one registered rung** — an
+agent resumed with an approval, plus a workflow whose implementation agent
+does the same work. The process lesson is unaffected; only my narration of
+who cleaned it up was wrong.
+
 ## Coordinator error #11 — a duplicate launch of one registered rung (2026-08-29)
 
 **I launched PC1b twice.** I resumed the positive-control researcher with an
