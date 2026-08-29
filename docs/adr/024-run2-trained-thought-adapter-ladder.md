@@ -939,6 +939,64 @@ carries the power tables. This is a **protocol** change and therefore
 requires its own pre-registration; it is **not** a licence to re-draw any
 completed rung.
 
+## LAYER COVERAGE — the strongest external evidence yet, and a methodological reckoning (2026-08-29)
+
+[docs/research/044](../research/044-layer-coverage.md) found the citation this
+ladder has been missing.
+
+**C2C's own Table 10 ablates single-layer enrichment and reports ~0.1pp over
+baseline** (58.42% → 58.45-58.52% for its two best individual layers; most
+others net-negative). **The method that works, reduced to a single layer,
+produces exactly our signature** — inert, not harmful, indistinguishable from
+baseline. That is materially stronger support for a layer-coverage
+explanation than M4i's current backing (two abstract-only pause-token
+papers), and it comes from the strongest comparator in the field.
+
+**No content-transfer method uses one layer**: C2C gates over ~top-5 of 28
+layers; LatentMAS transfers the full per-token cache at **all** layers;
+Bicameral couples at **4 fixed layer indices** (2 read + 2 write per
+direction) found by sweeping **890 configurations**. *Correction to this
+repo's own earlier docs (028, 039, 040), which described Bicameral as simply
+"continuous per-step" without the 4-layer structure.*
+
+**The distinction that saves the steering literature from contradicting
+this**: CAA/ActAdd *do* work from a single layer — but they apply a steering
+**direction** continuously at every generated token, nudging an
+already-computed decision. We inject a one-shot **state** that must survive
+14+ subsequent blocks unassisted. RepE, which transfers richer content rather
+than a direction, explicitly uses many layers *"because changes made in
+earlier layers propagate to later layers, diminishing the effect"* — a
+primary-sourced statement of precisely the RMSNorm-dilution mechanism
+[docs/research/033](../research/033-rescale-output-alignment-diagnostic.md) §5
+flagged as un-refuted and which no rung has tested.
+
+**Honest limit**: layer coverage explains the on-manifold family's *ceiling*
+(why nothing gets through) but **not** the off-manifold family's *harm* —
+M4c/M4d/M4g were also single-layer, and if single-layer alone caused damage,
+single-layer on-manifold payloads would be damaging too. They are not. Same
+partial-explanation shape as pooling.
+
+**THE METHODOLOGICAL RECKONING, recorded because it may be the run's real
+conclusion**: every working method combines **multi-layer + continuous
+delivery + task-loss training simultaneously**. This ladder, by design, has
+only ever varied **one factor at a time** — that discipline is what makes
+each null attributable, and it may also be exactly why every rung nulls. If
+transfer requires a *conjunction* of these properties, no single-factor rung
+can ever succeed, and a one-factor-at-a-time ladder is structurally
+guaranteed to produce the result we have. That is a testable claim (a
+deliberate multi-factor rung, explicitly labelled as abandoning single-factor
+attribution) and it must appear in any write-up as a limitation of the method,
+not merely a finding about latent transfer.
+
+**Implementation note for a future layer rung**: `LayerEdit` is single-site by
+construction (only the read-only `Capture` has a multi-tap sibling); it needs
+an `InjectMany`/`FuseMany` variant, bounded work of the same shape as M4g's
+`Fuse`. **No new capture is required** — the dumps already hold sender
+L18/L24 and receiver L14/L19, and **no rung has ever used the L24→L19 pair**.
+Open tension to settle before pre-registering: 8 slots across 2 sites is
+either 16 total or a 4+4 split, and ADR-028's slot-count discipline (already
+self-contradictory and unadjudicated) does not cover it.
+
 ## M4i PRE-REGISTRATION (2026-08-29, before any run) — inject at ORDINARY tokens, not `<|fim_pad|>`
 
 [docs/research/043](../research/043-placeholder-token-choice.md) identifies a
