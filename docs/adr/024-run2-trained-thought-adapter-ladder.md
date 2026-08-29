@@ -688,6 +688,21 @@ loss function, deployment configuration, and injection operator.
 **Honest-fail path unchanged**: full numbers either way, no protocol
 iteration, no retry.
 
+## CLARIFICATION — the permutation-null count (2026-08-29)
+
+I have quoted the A6 permutation null as "0 of **160** permuted fits within
+0.46 of any real fit". The **committed receipt records 80** (4 cells × 20
+seeded permutations). The additional 80 come from the adversarial verifier's
+independent re-run with 20 *fresh* seeds per cell, reported in its verdict but
+**not** in the primary receipt. Both statements are true, but they are not the
+same statement: **80 in the receipt, 160 across receipt + verification.**
+Anything quoting 160 must say "across the original run and the independent
+re-run". Flagged by the synthesis pass as the second brief-vs-receipt numeric
+mismatch in this corpus (the first being the "~5.7 GPU-h" figure already
+corrected to the receipt-summed 3.32 in ADR-023/research-025) — the pattern
+itself is worth watching: **numbers restated in prose drift from numbers in
+receipts.**
+
 ## M4h PRE-REGISTRATION (2026-08-29, before any run) — de-pooling
 
 [docs/research/040](../research/040-the-pooling-gap.md) verified from primary

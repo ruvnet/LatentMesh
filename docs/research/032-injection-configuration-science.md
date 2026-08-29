@@ -1,5 +1,20 @@
 # Research: the science of injection configuration (norm, placement, train/deploy match, diagnostics)
 
+> **SUPERSEDED IN PART (2026-08-29) — read this before using this document.**
+> This document characterises Cache-to-Cache as injecting "continuously, at
+> every generation step, in lockstep". That is **wrong about C2C**: later
+> passes fetched C2C's own equation and found it **fuses ONCE at prefill**
+> (see [038](038-manifold-constrained-adapter-scout.md) and
+> [039](039-bidirectional-latent-exchange.md)). The continuous-coupling
+> description actually fits the **Bicameral Model**, which couples
+> bidirectionally at every decode step. The rest of this document — the
+> norm/rescale analysis and the diagnostic ranking — stands.
+> This pointer exists because the append-only rule means the original text is
+> never edited, and a reader consulting this file alone would otherwise carry
+> the error forward.
+
+
+
 * Purpose: informs the interpretation of M4d (ADR-024's registered train/deploy-configuration-match
   contingency, in flight as of this writing) and the design of any successor rung, by surveying what
   the activation-steering / activation-patching / cross-model-communication literature says about
