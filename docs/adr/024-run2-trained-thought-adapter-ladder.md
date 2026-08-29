@@ -1036,6 +1036,44 @@ Open tension to settle before pre-registering: 8 slots across 2 sites is
 either 16 total or a 4+4 split, and ADR-028's slot-count discipline (already
 self-contradictory and unadjudicated) does not cover it.
 
+## PC1b spec conflict (my tenth error) + an unregistered PC1 re-draw (2026-08-29)
+
+**1. Coordinator error #10, caught by the implementer before any GPU time.**
+My PC1b brief required both *"payload sha256 matches PC1"* and *"evaluate
+under the e-process at N_max = 300"*. Those are **mutually exclusive**: PC1's
+payload file holds exactly **40** vectors (S1a's items), while the e-process
+stream draws 300 from `adaptation-512` — and **ADR-036's own Decision 2
+already records that those sets intersect in exactly one item** (train index
+1153). A byte-identical payload file would have confined PC1b to the same
+40-item powerless regime PC1 already occupied (n_disc 3), which is precisely
+what the rung exists to escape. I wrote a gate that made the experiment
+impossible and did not notice.
+
+**Approved resolution, which is stronger than my spec**: hold the payload
+**derivation rule** byte-identical rather than the payload *file* — same code
+path (`render_gold` + `forward_capture_multi_with_rows` at block 19, last
+span row), reused verbatim from `run2_pc1_capture.rs`, not reimplemented —
+and replace the unsatisfiable file-sha gate with three checkable ones:
+(a) PC1's committed payload file still matches its receipt-pinned sha256;
+(b) the derivation is provably the same code path; (c) **bit-identity on the
+overlap item**: the freshly derived vector for train 1153 must equal PC1's
+committed vector byte-for-byte. That is a genuine cross-artifact equality
+check and it preserves what the gate was *for* — proving the payload is the
+receiver's own state — while permitting the power the rung needs. The
+no-adapter-weights gate is unchanged; the ~35 s capture is declared as a
+receipt-level deviation exactly as PC1 declared its own.
+
+**2. An unregistered PC1 re-draw occurred, and is recorded per
+[ADR-032](032-negative-result-publication-contract.md).** A second PC1 run
+(pid 2484574, finished 01:57:30) executed and **overwrote the committed PC1
+receipt**. The implementer diffed it against HEAD before restoring: accuracy,
+the primary comparison (1W/2L, n_disc 3, p = 0.875) and **all four NLL means
+were bit-identical**; only three non-scientific lines (timing, env) differed.
+The file has been restored to HEAD. **No evidence was corrupted**, and the
+event doubles as an **unintended determinism check on PC1**, which passed.
+Both facts belong in the record: an unregistered re-draw happened, and it
+changed nothing.
+
 ## CORRECTION + a critical interaction between M4i and PC1 (2026-08-29)
 
 **My M4i entry below understates the result, and the fuller receipt changes
