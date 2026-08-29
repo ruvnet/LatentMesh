@@ -3,7 +3,9 @@
 //! sha256 receipts, answer normalization, the exact sign test, and receipt
 //! environment capture.
 
+pub mod affine;
 pub mod fastgrnn;
+pub mod lens;
 pub mod m3;
 pub mod mlp;
 

@@ -615,6 +615,58 @@ The 0/40 probe-time NLL inversion therefore cannot be attributed to
 composed-vs-fused numerics — it is specific to the **deployment
 configuration**, which is exactly what M4d isolates.
 
+## M4d outcome (2026-08-29) — null, exactly as pre-registered
+
+`run2-m4d-receipt-cellL18toL14-mlp-deploymatch-*-n40.json`: **mid-p McNemar
+0.2266** (exact-sign 0.3438), aligned 24/40 vs random 21/40, 4W/2L vs
+baseline. All integrity gates pass, including the fused-forward transfer
+check (0.2385 → 0.1562). Two honest observations:
+
+- This is the **best accuracy any rung has produced** (24/40) and the lowest
+  p-value of the ladder — but it is not significant, and per the interpretive
+  rule registered *before* this rung reported, an M4d null was **expected and
+  weakly informative** because the diagnostic had already exonerated its
+  hypothesis. It must not be read as evidence about configuration matching.
+- The NLL inversion **persists unchanged**: 0W/40L against both random and
+  zero, mean NLL 4.92 vs baseline 2.13. Deployment matching did not repair
+  it, which is exactly what the pre-check predicts — the adapter was
+  off-manifold *from its random initialisation*, and matching the deployment
+  transform gives training no reason to return.
+
+## M4g PRE-REGISTRATION (2026-08-29, before any run) — fuse instead of overwrite
+
+**Coordinator decision, deviating from the scout's recommended ordering**
+(which put M4f first). Reasoning, recorded so it can be judged: M4g explains
+**both** families of null, while M4f addresses only one. M3/M4 were
+demonstrably **on-manifold and still useless** — if overwriting eight
+residual positions is what makes injected content unusable, that is precisely
+why manifold-correct adapters failed too, and it is the one mechanism
+verified to differ from the method that demonstrably works (C2C fuses:
+`C_F = C_n(X) + F_n(...)`, a residual ADD onto the receiver's own cache;
+`inject.rs` hard-`slice_assign` OVERWRITES, `qwen2_b.rs:79-87`). M4f remains
+registered and runs next if M4g nulls.
+
+**Spec**: change the injection operator from overwrite to residual add
+(`h[slot] += c·v`, preserving the receiver's own state at those positions),
+retrain the M3-shaped adapter under task loss with the fuse operator in the
+loop, single seeded run, same splits and the same 13 exclusions, training
+receipt + artifact hash + ≥8 golden pairs frozen before the probe, ONE
+registered frozen-probe draw under the unchanged protocol, mid-p McNemar
+primary with exact-sign reported alongside. **This changes the injection
+operator only** — an evolvable surface under ADR-028; the probe, controls,
+items and statistics are untouched. Estimated ~0.5 GPU-h by analogy to M4c's
+receipted 0.446.
+
+**Registered interpretation, before the run**: a PASS identifies
+overwrite-vs-fuse as the ladder's root cause and retroactively explains both
+null families (M3/M4's on-manifold uselessness and M4c/M4d's off-manifold
+harm), which would require annotating every earlier rung. A NULL leaves M4f
+(structural on-manifold constraint) and M4b (receiver scale) as the live
+hypotheses and makes the joint negative substantially stronger — spanning
+loss function, deployment configuration, and injection operator.
+**Honest-fail path unchanged**: full numbers either way, no protocol
+iteration, no retry.
+
 ## M4f PRE-CHECK VERDICT (2026-08-29): collapse is TASK-LOSS-SPECIFIC, and it was there from init
 
 The registered zero-probe pre-check ran across every ladder artifact

@@ -35,13 +35,18 @@
 #[allow(dead_code)]
 mod common;
 
-use candle_core::{DType, Device, Tensor};
+use candle_core::{DType, Device};
 use latentmesh_runtime::inject::InjectionSpec;
 use latentmesh_runtime::norms;
-use std::collections::BTreeSet;
 use std::io::{Read, Seek, SeekFrom};
 use std::path::{Path, PathBuf};
 
+// The §4 metric kit lives in `common/lens.rs` so that later re-projection
+// diagnostics measure with THIS code, not a re-implementation.
+use common::lens::{
+    cosine, entropy_nats, logsumexp, mean, minmax, overlap, project, rms_norm, token_set_stats,
+    top_k,
+};
 use common::m3::{GOLDEN_REL_TOL, N_SLOTS, RECEIVER, RECEIVER_BLOCK, SENDER_BLOCK};
 use common::mlp::{MlpTransform, D_IN, D_OUT};
 
@@ -68,84 +73,6 @@ fn crate_path(rel: &str) -> PathBuf {
     Path::new(env!("CARGO_MANIFEST_DIR")).join(rel)
 }
 
-// ---------------------------------------------------------------------------
-// Pure metric helpers (unit-tested below).
-// ---------------------------------------------------------------------------
-
-/// Indices of the `k` largest entries, descending by value.
-fn top_k(z: &[f32], k: usize) -> Vec<u32> {
-    let k = k.min(z.len());
-    let mut idx: Vec<u32> = (0..z.len() as u32).collect();
-    idx.select_nth_unstable_by(k.saturating_sub(1), |&a, &b| {
-        z[b as usize]
-            .partial_cmp(&z[a as usize])
-            .unwrap_or(std::cmp::Ordering::Equal)
-    });
-    idx.truncate(k);
-    idx.sort_unstable_by(|&a, &b| {
-        z[b as usize]
-            .partial_cmp(&z[a as usize])
-            .unwrap_or(std::cmp::Ordering::Equal)
-    });
-    idx
-}
-
-/// Fraction of `a`'s top-k that also appears in `b`'s top-k.
-fn overlap(a: &[u32], b: &[u32]) -> f64 {
-    if a.is_empty() {
-        return 1.0;
-    }
-    let set: BTreeSet<u32> = b.iter().copied().collect();
-    a.iter().filter(|t| set.contains(t)).count() as f64 / a.len() as f64
-}
-
-/// log-sum-exp, numerically stable (f64 accumulation).
-fn logsumexp(z: &[f32]) -> f64 {
-    let m = z.iter().copied().fold(f32::NEG_INFINITY, f32::max) as f64;
-    m + z.iter().map(|&x| (x as f64 - m).exp()).sum::<f64>().ln()
-}
-
-/// Shannon entropy (nats) of `softmax(z)`.
-fn entropy_nats(z: &[f32]) -> f64 {
-    let lse = logsumexp(z);
-    -z.iter()
-        .map(|&x| {
-            let lp = x as f64 - lse;
-            lp.exp() * lp
-        })
-        .sum::<f64>()
-}
-
-/// 1-based rank of `t` by descending logit (ties broken pessimistically:
-/// strictly-greater entries only, so equal logits share the best rank).
-fn rank_of(z: &[f32], t: usize) -> usize {
-    z.iter().filter(|&&x| x > z[t]).count() + 1
-}
-
-fn logprob_of(z: &[f32], t: usize, lse: f64) -> f64 {
-    z[t] as f64 - lse
-}
-
-fn cosine(a: &[f32], b: &[f32]) -> f64 {
-    let (mut d, mut na, mut nb) = (0f64, 0f64, 0f64);
-    for (&x, &y) in a.iter().zip(b) {
-        d += x as f64 * y as f64;
-        na += x as f64 * x as f64;
-        nb += y as f64 * y as f64;
-    }
-    d / (na.sqrt() * nb.sqrt()).max(1e-300)
-}
-
-/// Qwen2 RMSNorm: `x / sqrt(mean(x^2) + eps) * gain`.
-fn rms_norm(x: &[f32], gain: &[f32], eps: f64) -> Vec<f32> {
-    let ms = x.iter().map(|&v| v as f64 * v as f64).sum::<f64>() / x.len() as f64;
-    let inv = 1.0 / (ms + eps).sqrt();
-    x.iter()
-        .zip(gain)
-        .map(|(&v, &g)| ((v as f64 * inv) as f32) * g)
-        .collect()
-}
-
 /// The per-item scalars the run-level summary aggregates over.
 #[derive(Debug, Clone, Copy, Default)]
 struct Agg {
@@ -159,32 +86,6 @@ struct Agg {
     span_rank_raw: f64,
     normed_entropy_raw: f64,
     normed_entropy_rescaled: f64,
-}
-
-/// Per-token-set statistics against one logit vector.
-#[derive(Debug, Clone, Copy)]
-struct TokenSetStats {
-    mean_rank: f64,
-    best_rank: usize,
-    mean_logprob: f64,
-}
-
-fn token_set_stats(z: &[f32], toks: &[u32], lse: f64) -> TokenSetStats {
-    let n = toks.len().max(1) as f64;
-    let mut sum_rank = 0f64;
-    let mut best = usize::MAX;
-    let mut sum_lp = 0f64;
-    for &t in toks {
-        let r = rank_of(z, t as usize);
-        sum_rank += r as f64;
-        best = best.min(r);
-        sum_lp += logprob_of(z, t as usize, lse);
-    }
-    TokenSetStats {
-        mean_rank: sum_rank / n,
-        best_rank: if best == usize::MAX { 0 } else { best },
-        mean_logprob: sum_lp / n,
-    }
 }
 
 // ---------------------------------------------------------------------------
@@ -214,12 +115,6 @@ fn read_rows(dump: &Path, token_offset: usize, n_rows: usize) -> anyhow::Result<
         .chunks_exact(4)
         .map(|c| f32::from_le_bytes([c[0], c[1], c[2], c[3]]))
         .collect())
-}
-
-/// `logits = unembed · h` on CPU (f32).
-fn project(unembed: &Tensor, h: &[f32], device: &Device) -> anyhow::Result<Vec<f32>> {
-    let v = Tensor::from_slice(h, (h.len(), 1), device)?;
-    Ok(unembed.matmul(&v)?.squeeze(1)?.to_vec1::<f32>()?)
 }
 
 /// Every metric for one (raw, rescaled) logit pair.
@@ -264,21 +159,6 @@ fn compare(
             "mean_logprob": {"raw": s_raw.mean_logprob, "rescaled": s_res.mean_logprob},
         },
     })
-}
-
-fn mean(xs: &[f64]) -> f64 {
-    if xs.is_empty() {
-        0.0
-    } else {
-        xs.iter().sum::<f64>() / xs.len() as f64
-    }
-}
-
-fn minmax(xs: &[f64]) -> (f64, f64) {
-    (
-        xs.iter().copied().fold(f64::INFINITY, f64::min),
-        xs.iter().copied().fold(f64::NEG_INFINITY, f64::max),
-    )
 }
 
 fn main() -> anyhow::Result<()> {
@@ -771,56 +651,6 @@ fn main() -> anyhow::Result<()> {
     Ok(())
 }
 
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[test]
-    fn top_k_is_descending_and_correct() {
-        let z = [0.1f32, 5.0, -2.0, 3.0, 4.0];
-        assert_eq!(top_k(&z, 3), vec![1, 4, 3]);
-        assert_eq!(top_k(&z, 10).len(), 5);
-        assert!((overlap(&top_k(&z, 3), &top_k(&z, 3)) - 1.0).abs() < 1e-12);
-        assert!((overlap(&[1, 2, 3], &[3, 4, 5]) - 1.0 / 3.0).abs() < 1e-12);
-    }
-
-    #[test]
-    fn positive_scaling_preserves_every_rank_metric() {
-        // The whole diagnostic in miniature: z -> c*z leaves ordering,
-        // top-k and cosine invariant; only entropy (temperature) moves.
-        let z: Vec<f32> = (0..64)
-            .map(|i| ((i * 37 % 61) as f32) / 7.0 - 4.0)
-            .collect();
-        for c in [0.25f32, 0.5, 2.0, 9.0] {
-            let s: Vec<f32> = z.iter().map(|x| x * c).collect();
-            assert_eq!(top_k(&z, 16), top_k(&s, 16));
-            for t in [0usize, 5, 33, 63] {
-                assert_eq!(rank_of(&z, t), rank_of(&s, t));
-            }
-            assert!((cosine(&z, &s) - 1.0).abs() < 1e-12, "c={c}");
-        }
-        assert!(entropy_nats(&z.iter().map(|x| x * 9.0).collect::<Vec<_>>()) < entropy_nats(&z));
-    }
-
-    #[test]
-    fn rms_norm_is_scale_invariant() {
-        let gain = vec![1.0f32; 32];
-        let x: Vec<f32> = (0..32).map(|i| (i as f32) - 15.5).collect();
-        let a = rms_norm(&x, &gain, 1e-6);
-        for c in [0.1f32, 3.0, 40.0] {
-            let b = rms_norm(&x.iter().map(|v| v * c).collect::<Vec<_>>(), &gain, 1e-6);
-            for (p, q) in a.iter().zip(&b) {
-                assert!((p - q).abs() < 2e-4, "c={c}: {p} vs {q}");
-            }
-        }
-    }
-
-    #[test]
-    fn logsumexp_and_entropy_are_sane() {
-        let z = [0.0f32, 0.0, 0.0, 0.0];
-        assert!((logsumexp(&z) - 4f64.ln()).abs() < 1e-12);
-        assert!((entropy_nats(&z) - 4f64.ln()).abs() < 1e-12);
-        assert_eq!(rank_of(&[1.0f32, 3.0, 2.0], 1), 1);
-        assert_eq!(rank_of(&[1.0f32, 3.0, 2.0], 0), 3);
-    }
-}
+// Unit tests for the metric helpers live with the helpers, in
+// `common/lens.rs` (top-k, "a positive scalar preserves every rank metric",
+// "RMSNorm is scale-invariant", log-sum-exp/entropy).
