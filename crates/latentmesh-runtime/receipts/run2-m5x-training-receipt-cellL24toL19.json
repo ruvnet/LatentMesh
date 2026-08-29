@@ -1,0 +1,484 @@
+{
+  "artifact": {
+    "content_hash_sha256": "facd5c6f1f94c83c8eff6f948009502af7cf98ac4bf851718e355a5ec6fba638",
+    "file": "run2-m5x-mlp-cellL24toL19.f32bin",
+    "golden_file": "run2-m5x-golden-mlp-cellL24toL19.json",
+    "golden_file_sha256": "6ca7e77e57a1350ba7c64fd103a2e61fe89597740d92f126615fd59a51e30781",
+    "golden_input_seed_chacha8": 1295212573,
+    "golden_pairs": 8,
+    "layout": "little-endian f32: w1[2048x512 row-major, x@W convention] || b1[512] || w2[512x1536 row-major] || b2[1536]"
+  },
+  "cell": "L24->L19",
+  "curves": {
+    "per_epoch": [
+      {
+        "epoch": 0,
+        "holdout_mse": 0.37955313199118884,
+        "holdout_rel_residual_vs_fit_mean": 0.516404837453811,
+        "train_mse_mean": 0.4075379713407851,
+        "wall_s": 4.62331485748291
+      },
+      {
+        "epoch": 1,
+        "holdout_mse": 0.36868443403572015,
+        "holdout_rel_residual_vs_fit_mean": 0.5089573764986788,
+        "train_mse_mean": 0.33883967095530426,
+        "wall_s": 3.190361738204956
+      },
+      {
+        "epoch": 2,
+        "holdout_mse": 0.35247925568616695,
+        "holdout_rel_residual_vs_fit_mean": 0.49764631613244137,
+        "train_mse_mean": 0.3326103031654444,
+        "wall_s": 3.2309224605560303
+      },
+      {
+        "epoch": 3,
+        "holdout_mse": 0.3478092756501983,
+        "holdout_rel_residual_vs_fit_mean": 0.49433867833927453,
+        "train_mse_mean": 0.32956720720325017,
+        "wall_s": 3.198183059692383
+      },
+      {
+        "epoch": 4,
+        "holdout_mse": 0.34767001280844567,
+        "holdout_rel_residual_vs_fit_mean": 0.49423970182179866,
+        "train_mse_mean": 0.32750168103814425,
+        "wall_s": 3.26658034324646
+      },
+      {
+        "epoch": 5,
+        "holdout_mse": 0.3493622642342224,
+        "holdout_rel_residual_vs_fit_mean": 0.4954410745759528,
+        "train_mse_mean": 0.32600719397895006,
+        "wall_s": 3.1928648948669434
+      },
+      {
+        "epoch": 6,
+        "holdout_mse": 0.34934665059621206,
+        "holdout_rel_residual_vs_fit_mean": 0.4954300033687595,
+        "train_mse_mean": 0.3247942298452068,
+        "wall_s": 3.248347759246826
+      },
+      {
+        "epoch": 7,
+        "holdout_mse": 0.3471439282935109,
+        "holdout_rel_residual_vs_fit_mean": 0.49386562542843404,
+        "train_mse_mean": 0.32374271940668864,
+        "wall_s": 3.2573506832122803
+      },
+      {
+        "epoch": 8,
+        "holdout_mse": 0.3440154982315372,
+        "holdout_rel_residual_vs_fit_mean": 0.4916352526329238,
+        "train_mse_mean": 0.32284527801501717,
+        "wall_s": 3.222154140472412
+      },
+      {
+        "epoch": 9,
+        "holdout_mse": 0.3430115133175847,
+        "holdout_rel_residual_vs_fit_mean": 0.49091732708030783,
+        "train_mse_mean": 0.3221140811369624,
+        "wall_s": 3.298980951309204
+      }
+    ],
+    "sampled_steps_every_500": [
+      {
+        "epoch": 0,
+        "step": 0,
+        "train_mse": 3.018439769744873
+      },
+      {
+        "epoch": 0,
+        "step": 500,
+        "train_mse": 0.402566522359848
+      },
+      {
+        "epoch": 0,
+        "step": 1000,
+        "train_mse": 0.36312246322631836
+      },
+      {
+        "epoch": 0,
+        "step": 1500,
+        "train_mse": 0.3436116576194763
+      },
+      {
+        "epoch": 0,
+        "step": 2000,
+        "train_mse": 0.3469163775444031
+      },
+      {
+        "epoch": 1,
+        "step": 2500,
+        "train_mse": 0.34436866641044617
+      },
+      {
+        "epoch": 1,
+        "step": 3000,
+        "train_mse": 0.35665151476860046
+      },
+      {
+        "epoch": 1,
+        "step": 3500,
+        "train_mse": 0.3469984233379364
+      },
+      {
+        "epoch": 1,
+        "step": 4000,
+        "train_mse": 0.3433245122432709
+      },
+      {
+        "epoch": 2,
+        "step": 4500,
+        "train_mse": 0.33189254999160767
+      },
+      {
+        "epoch": 2,
+        "step": 5000,
+        "train_mse": 0.32890939712524414
+      },
+      {
+        "epoch": 2,
+        "step": 5500,
+        "train_mse": 0.32640916109085083
+      },
+      {
+        "epoch": 2,
+        "step": 6000,
+        "train_mse": 0.3374122977256775
+      },
+      {
+        "epoch": 2,
+        "step": 6500,
+        "train_mse": 0.33190980553627014
+      },
+      {
+        "epoch": 3,
+        "step": 7000,
+        "train_mse": 0.32422149181365967
+      },
+      {
+        "epoch": 3,
+        "step": 7500,
+        "train_mse": 0.3332512378692627
+      },
+      {
+        "epoch": 3,
+        "step": 8000,
+        "train_mse": 0.33799242973327637
+      },
+      {
+        "epoch": 3,
+        "step": 8500,
+        "train_mse": 0.3358858823776245
+      },
+      {
+        "epoch": 4,
+        "step": 9000,
+        "train_mse": 0.3194940984249115
+      },
+      {
+        "epoch": 4,
+        "step": 9500,
+        "train_mse": 0.318569540977478
+      },
+      {
+        "epoch": 4,
+        "step": 10000,
+        "train_mse": 0.3234861195087433
+      },
+      {
+        "epoch": 4,
+        "step": 10500,
+        "train_mse": 0.333992063999176
+      },
+      {
+        "epoch": 4,
+        "step": 11000,
+        "train_mse": 0.33478233218193054
+      },
+      {
+        "epoch": 5,
+        "step": 11500,
+        "train_mse": 0.3193608522415161
+      },
+      {
+        "epoch": 5,
+        "step": 12000,
+        "train_mse": 0.3436135947704315
+      },
+      {
+        "epoch": 5,
+        "step": 12500,
+        "train_mse": 0.3169538974761963
+      },
+      {
+        "epoch": 5,
+        "step": 13000,
+        "train_mse": 0.31438231468200684
+      },
+      {
+        "epoch": 6,
+        "step": 13500,
+        "train_mse": 0.3196125030517578
+      },
+      {
+        "epoch": 6,
+        "step": 14000,
+        "train_mse": 0.30559754371643066
+      },
+      {
+        "epoch": 6,
+        "step": 14500,
+        "train_mse": 0.3273989260196686
+      },
+      {
+        "epoch": 6,
+        "step": 15000,
+        "train_mse": 0.33049634099006653
+      },
+      {
+        "epoch": 6,
+        "step": 15500,
+        "train_mse": 0.3145328760147095
+      },
+      {
+        "epoch": 7,
+        "step": 16000,
+        "train_mse": 0.3408880829811096
+      },
+      {
+        "epoch": 7,
+        "step": 16500,
+        "train_mse": 0.3217276334762573
+      },
+      {
+        "epoch": 7,
+        "step": 17000,
+        "train_mse": 0.3268164396286011
+      },
+      {
+        "epoch": 7,
+        "step": 17500,
+        "train_mse": 0.3213042914867401
+      },
+      {
+        "epoch": 8,
+        "step": 18000,
+        "train_mse": 0.33284634351730347
+      },
+      {
+        "epoch": 8,
+        "step": 18500,
+        "train_mse": 0.3147639036178589
+      },
+      {
+        "epoch": 8,
+        "step": 19000,
+        "train_mse": 0.3045746088027954
+      },
+      {
+        "epoch": 8,
+        "step": 19500,
+        "train_mse": 0.31649670004844666
+      },
+      {
+        "epoch": 8,
+        "step": 20000,
+        "train_mse": 0.32832348346710205
+      },
+      {
+        "epoch": 9,
+        "step": 20500,
+        "train_mse": 0.31348076462745667
+      },
+      {
+        "epoch": 9,
+        "step": 21000,
+        "train_mse": 0.32163411378860474
+      },
+      {
+        "epoch": 9,
+        "step": 21500,
+        "train_mse": 0.32301175594329834
+      },
+      {
+        "epoch": 9,
+        "step": 22000,
+        "train_mse": 0.3253478705883026
+      }
+    ]
+  },
+  "dataset": {
+    "dump_receipt": "run2-pertoken-dump-receipt.json",
+    "index_sha256": "5069580651bdfd2c2772d442096530a54f81f6629bc509170bbacc7a00313f55",
+    "n_items": 2560,
+    "receiver_file": "receiver_L19.tok.f32bin",
+    "run_dir": "/home/ruvultra/projects/LatentMesh-1/crates/latentmesh-runtime/target/latentmesh-runs/run2",
+    "sender_file": "sender_L24.tok.f32bin",
+    "total_tokens": 719115,
+    "verified_before_training": [
+      {
+        "bytes": 4418242560,
+        "file": "receiver_L14.tok.f32bin",
+        "pass": true,
+        "sha256": "e528e37ec0e3aa766989cc80f2feffeee71eb73c7b84a8c9a15dab6a2795e263"
+      },
+      {
+        "bytes": 4418242560,
+        "file": "receiver_L19.tok.f32bin",
+        "pass": true,
+        "sha256": "ba656d81f3774279b1faf1fa3503245cf63771a41bfe1d6add8cd9862110c452"
+      },
+      {
+        "bytes": 5890990080,
+        "file": "sender_L18.tok.f32bin",
+        "pass": true,
+        "sha256": "44574f9e38bbbe8e2f5b5955cd1cccae0d399b48ed87b5270d1564ab85069c04"
+      },
+      {
+        "bytes": 5890990080,
+        "file": "sender_L24.tok.f32bin",
+        "pass": true,
+        "sha256": "b0c1a3b7abb686639a3da15d669e897a7133fb39f005db365e89c69bacbe900d"
+      }
+    ]
+  },
+  "design": "docs/adr/037-m5x-maximal-configuration-rung.md factor 1 (multi-layer injection): 'the L24->L19 site needs one freshly trained MLP of the identical shape and recipe (M3's)'",
+  "env": {
+    "crate": "latentmesh-train 0.1.0 (candle 0.9.2, lockfile copied from latentmesh-runtime)",
+    "evidence_label": "seeded deterministic GPU training (candle 0.9.2 AdamW) over captured per-token pairs; the pairs are live-model capture output (run2-pertoken-dump-receipt.json, evidence label live-model, single-host, simulation-free)",
+    "git_commit": "faba2e6f09a9089b6c7b4f0d92a88e793b3f9611",
+    "gpu": "NVIDIA GeForce RTX 5080, 580.126.09, 16303 MiB",
+    "nvcc": "nvcc 12.8 (build-time 12.8)",
+    "unix_time": 1788012012
+  },
+  "first_site_not_retrained": "M5X reuses M3's byte-identical L18->L14 weights (run2-m3-mlp-cellL18toL14.f32bin) at the first site, exactly as M4h Stage 1 and M4i did. Only this second site is newly trained.",
+  "recipe_identity_to_m3": {
+    "batch": 256,
+    "claim": "byte-identical recipe; the ONLY difference is which two dump files are read",
+    "differences_from_m3": [
+      "sender_file: sender_L18 -> sender_L24",
+      "receiver_file: receiver_L14 -> receiver_L19"
+    ],
+    "epochs": 10,
+    "golden_seed_chacha8": 1295212573,
+    "lr": 0.001,
+    "m3_training_receipt": "run2-m3-training-receipt-cellL18toL14.json",
+    "train_seed_chacha8": 1295187969,
+    "val_batch": 1024
+  },
+  "registration_note": "M3's own training receipt recorded that an anchor-cell (L24->L19) run 'has no ADR-024 registration and would be an extra unregistered draw against the frozen probe ... (coordinator decision if ever wanted)'. ADR-037 IS that registration. This artifact is scoped to M5X's second injection site and is NOT a second M3 draw against the frozen 40-item probe.",
+  "results": {
+    "best_epoch": 9,
+    "best_holdout_mse": 0.3430115133175847,
+    "best_holdout_rel_residual_vs_fit_mean": 0.49091732708030783,
+    "holdout_mean_predictor_mse_variance_baseline": 1.4232853386845938,
+    "rel_residual_formula": "sqrt(sum ||pred-y||^2 / sum ||y-mu_r||^2) over holdout tokens, mu_r = fit-side per-dim mean"
+  },
+  "scope": {
+    "what_it_is_not": "not an M3 variant draw, not a replacement for M3's weights, and not evidence about transfer in either direction — it is one half of an apparatus test",
+    "what_this_artifact_is_for": "the SECOND injection site of ADR-037's M5X multi-layer configuration (receiver block 19), paired with M3's existing L18->L14 weights at the first site (receiver block 14)"
+  },
+  "split": {
+    "excluded_probe_overlap_rows": [
+      {
+        "item": 150,
+        "row": 69,
+        "side": "fit"
+      },
+      {
+        "item": 1309,
+        "row": 683,
+        "side": "fit"
+      },
+      {
+        "item": 1573,
+        "row": 824,
+        "side": "fit"
+      },
+      {
+        "item": 2365,
+        "row": 1258,
+        "side": "fit"
+      },
+      {
+        "item": 2418,
+        "row": 1281,
+        "side": "fit"
+      },
+      {
+        "item": 2540,
+        "row": 1346,
+        "side": "holdout"
+      },
+      {
+        "item": 2958,
+        "row": 1577,
+        "side": "fit"
+      },
+      {
+        "item": 2973,
+        "row": 1586,
+        "side": "holdout"
+      },
+      {
+        "item": 3084,
+        "row": 1647,
+        "side": "fit"
+      },
+      {
+        "item": 3825,
+        "row": 2052,
+        "side": "fit"
+      },
+      {
+        "item": 3844,
+        "row": 2058,
+        "side": "fit"
+      },
+      {
+        "item": 3877,
+        "row": 2078,
+        "side": "fit"
+      },
+      {
+        "item": 4746,
+        "row": 2529,
+        "side": "fit"
+      }
+    ],
+    "fit_rows_sha256_comma_joined": "10b47b863e82641722e146b37f8d6b0ef79b00405013ba8b5ae32a778133607e",
+    "fit_split_seed": 616619523,
+    "fit_token_pairs": 572424,
+    "holdout_rows_sha256_comma_joined": "02c1bf502244db56a2159a275e90917d465c7184d5bf981f574eddb58800e5a4",
+    "holdout_token_pairs": 143121,
+    "n_fit": 2037,
+    "n_fit_pre_exclusion": 2048,
+    "n_holdout": 510,
+    "n_holdout_pre_exclusion": 512,
+    "rule": "fit_holdout_split(2560, FIT_SPLIT_SEED) BY ITEM first, THEN the 13 probe-overlap rows dropped from whichever side they landed in (ADR-024 frozen leakage rule); token-level shuffling happens only WITHIN the fit side for SGD batches. IDENTICAL to M3's."
+  },
+  "stage": "run2-m5x-mlp-training-second-site",
+  "training": {
+    "architecture": "MLP 2048->512->1536, ReLU, x@W convention",
+    "batch": 256,
+    "epochs": 10,
+    "loss": "MSE (reconstruction). This binary trains the RECONSTRUCTION pass only. ADR-037 factor 4 also names task-loss training; per train_m4c_taskloss's own header a task-loss adapter is a FRESH seeded init, NOT a warm start from reconstruction weights, so the two passes yield two DIFFERENT artifacts and the choice of which the probe delivers is a coordinator ruling, not a property of this binary.",
+    "note_no_discarded_runs": "single training run; no restarts, no hyperparameter retries",
+    "optimizer": {
+      "beta1": 0.9,
+      "beta2": 0.999,
+      "eps": 1e-8,
+      "lr": 0.001,
+      "name": "AdamW (candle-nn 0.9.2, the only Adam variant shipped — ADR-024 frozen optimizer constraint)",
+      "weight_decay": 0.01
+    },
+    "param_count": 1837056,
+    "runs_performed": 1,
+    "stopping_rule": "fixed 10-epoch budget; artifact = epoch checkpoint with lowest holdout MSE (frozen in this source before any probe invocation)",
+    "train_seed_chacha8": 1295187969
+  },
+  "wall_clock_s": 46.377340272
+}
