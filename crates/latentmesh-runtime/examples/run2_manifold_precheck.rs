@@ -53,9 +53,9 @@ use std::path::{Path, PathBuf};
 use common::affine::AffineTransform;
 use common::fastgrnn::FastGrnnTransform;
 use common::lens::{
-    classify, cosine, entropy_nats, logsumexp, mean, mean_pairwise_cosine, mean_resultant_length,
-    minmax, project_batch, rms_norm, token_set_stats, top_k, COLLAPSE_COSINE, COLLAPSE_TOKEN_UNION,
-    OFF_MANIFOLD_COSINE,
+    classify, cosine, dominant_token_share, entropy_nats, logsumexp, mean, mean_pairwise_cosine,
+    mean_resultant_length, minmax, project_batch, rms_norm, token_set_stats, top_k,
+    COLLAPSE_COSINE, COLLAPSE_DOMINANT_TOKEN_SHARE, COLLAPSE_TOKEN_UNION, OFF_MANIFOLD_COSINE,
 };
 use common::m3::{GOLDEN_REL_TOL, RECEIVER, RECEIVER_BLOCK, SENDER_BLOCK};
 use common::mlp::MlpTransform;
@@ -860,6 +860,11 @@ fn main() -> anyhow::Result<()> {
         let token_union = counts.len();
         let mut ordered: Vec<(u32, usize)> = counts.into_iter().collect();
         ordered.sort_by(|a, b| b.1.cmp(&a.1).then(a.0.cmp(&b.0)));
+        // N-invariant support statistic (common/lens.rs). `token_union` is the
+        // RETIRED absolute count — still reported below for the record, but no
+        // longer an input to the verdict. See ADR-024 § "INSTRUMENT DEFECT".
+        let dominant_share =
+            dominant_token_share(&rows.iter().map(|r| r.top10.clone()).collect::<Vec<_>>());
         let dominant: Vec<serde_json::Value> = ordered
             .iter()
             .take(N_DOMINANT)
@@ -881,7 +886,7 @@ fn main() -> anyhow::Result<()> {
         );
         let gold_n = mean(&col(|r| r.gold_rank_rmsnorm));
         let span_n = mean(&col(|r| r.span_rank_rmsnorm));
-        let verdict = classify(inv_mean, token_union, manifold_cos);
+        let verdict = classify(inv_mean, dominant_share, manifold_cos);
 
         let row = serde_json::json!({
             "label": c.label,
@@ -1099,7 +1104,9 @@ fn main() -> anyhow::Result<()> {
         "rung_status": rung_status,
         "thresholds_registered": {
             "collapse_mean_pairwise_cosine_at_or_above": COLLAPSE_COSINE,
-            "collapse_top10_token_union_at_or_below": COLLAPSE_TOKEN_UNION,
+            "collapse_dominant_token_share_at_or_above": COLLAPSE_DOMINANT_TOKEN_SHARE,
+            "collapse_top10_token_union_at_or_below_RETIRED": COLLAPSE_TOKEN_UNION,
+            "why_the_union_threshold_is_retired": "It is an ABSOLUTE count whose attainable ceiling is 10*n_items, so it is not comparable across draws of different N — PC1 (n=40) scored 98/400 and tripped it while PC1b (n=300) scored 219/3000 and did not, though PC1b's payload is MORE concentrated as a fraction. The live support arm is the dominant-token SHARE, which is N-invariant by construction. The union is still reported for continuity with earlier receipts. See ADR-024 § INSTRUMENT DEFECT.",
             "off_manifold_mean_cosine_to_natural_below": OFF_MANIFOLD_COSINE,
             "note": "chosen to reproduce docs/research/033 §4's own characterisation of M4c (77 distinct tokens across 40 items; 'nearly item-invariant'; 'off the receiver's residual-stream manifold') and applied identically to every candidate INCLUDING the on-manifold references, which therefore act as the calibration of the thresholds rather than as an exception to them",
         },
@@ -1154,12 +1161,48 @@ mod tests {
     fn classification_follows_the_registered_thresholds() {
         // M4c's own numbers from docs/research/033 §4 must land in the
         // collapsed cell; a spread, on-manifold emitter must not.
-        assert_eq!(classify(0.999, 77, 0.02), "COLLAPSED-OFF-MANIFOLD");
-        assert_eq!(classify(0.30, 340, 0.71), "on-manifold-item-varying");
-        assert_eq!(classify(0.99, 300, 0.80), "item-invariant-but-on-manifold");
-        assert_eq!(classify(0.10, 300, 0.01), "off-manifold-but-item-varying");
+        // Second argument is now a dominant-token SHARE in [0,1], not an
+        // absolute union count. See ADR-024 § "INSTRUMENT DEFECT".
+        assert_eq!(classify(0.999, 0.10, 0.02), "COLLAPSED-OFF-MANIFOLD");
+        assert_eq!(classify(0.30, 0.10, 0.71), "on-manifold-item-varying");
+        assert_eq!(classify(0.99, 0.10, 0.80), "item-invariant-but-on-manifold");
+        assert_eq!(classify(0.10, 0.10, 0.01), "off-manifold-but-item-varying");
         // The token-union arm alone is enough to call invariance.
-        assert_eq!(classify(0.10, 40, 0.01), "COLLAPSED-OFF-MANIFOLD");
+        assert_eq!(classify(0.10, 0.95, 0.01), "COLLAPSED-OFF-MANIFOLD");
+    }
+
+    /// Regression for ADR-024's instrument defect: the support arm must give
+    /// the SAME verdict for the same payload family regardless of how many
+    /// items were measured. PC1 (n=40) and PC1b (n=300) are the real numbers.
+    #[test]
+    fn classify_support_arm_is_n_invariant() {
+        // PC1: dominant token in 40/40 items. PC1b: 297/300. Same family, and
+        // the matched-N diagnostic proved it — so both must classify alike.
+        let pc1 = 40.0 / 40.0;
+        let pc1b = 297.0 / 300.0;
+        assert_eq!(
+            classify(0.8565, pc1, 0.6869),
+            classify(0.8696, pc1b, 0.6905)
+        );
+        assert_eq!(
+            classify(0.8565, pc1, 0.6869),
+            "item-invariant-but-on-manifold"
+        );
+
+        // The retired absolute rule DID split them: 98 <= 120 tripped, 219 > 120
+        // did not, purely because the ceiling is 10*N. Guard the shares instead.
+        assert!(pc1 >= COLLAPSE_DOMINANT_TOKEN_SHARE);
+        assert!(pc1b >= COLLAPSE_DOMINANT_TOKEN_SHARE);
+    }
+
+    #[test]
+    fn dominant_share_is_a_fraction_and_dedups_within_an_item() {
+        assert_eq!(dominant_token_share(&[]), 0.0);
+        // token 7 appears in every item -> share 1.0
+        let sets = vec![vec![7u32, 1], vec![7, 2], vec![7, 3], vec![9, 4]];
+        assert!((dominant_token_share(&sets) - 0.75).abs() < 1e-12);
+        // duplicates inside one item count once
+        assert!((dominant_token_share(&[vec![5u32, 5, 5]]) - 1.0).abs() < 1e-12);
     }
 
     #[test]

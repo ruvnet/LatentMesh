@@ -27,16 +27,68 @@ use std::collections::BTreeSet;
 /// Mean pairwise cosine between emitted vectors at or above which the
 /// emitter is called item-invariant.
 pub const COLLAPSE_COSINE: f64 = 0.95;
-/// Distinct tokens in the union of the 40 top-10 sets at or below which the
-/// emitter's output-token support is called collapsed (max possible 400).
+/// RETIRED 2026-08-29 — **no longer used by `classify()`**. Kept because
+/// historical receipts report this number and quote the constant in their
+/// `thresholds` blocks, and because `run2_pc1b_precheck_n_invariance` uses it
+/// to *document* the defect.
+///
+/// It is an **absolute** count whose attainable ceiling is `10 * n_items`, so
+/// it is **not comparable across draws of different N**. PC1 (n=40) scored
+/// 98/400 and tripped it; PC1b (n=300) scored 219/3000 and did not — even
+/// though PC1b's payload is *more* concentrated as a fraction of what was
+/// attainable (7.3% vs 24.5%). The constant's own former doc comment scoped
+/// it to "the union of the **40** top-10 sets (max possible 400)" and it was
+/// then reused at N=300. See ADR-024 § "INSTRUMENT DEFECT".
 pub const COLLAPSE_TOKEN_UNION: usize = 120;
+
+/// Share of items whose top-k set contains the single most frequent token, at
+/// or above which the emitter's output-token support is called collapsed.
+///
+/// This replaces [`COLLAPSE_TOKEN_UNION`] as `classify()`'s support arm. It is
+/// a **fraction of the items measured**, so it is invariant to N by
+/// construction — the property the retired absolute count lacked. Note the
+/// union count *saturates* sublinearly in N (PC1b: 98 at n=40 → 219 at n=300,
+/// against 735 if it grew linearly), so a "fraction of the 10*N ceiling" rule
+/// would merely fail in the opposite direction at large N; a per-item share
+/// does not.
+///
+/// Anchored so that the two payloads the matched-N diagnostic proved are the
+/// same geometric family both classify as invariant: PC1 = 40/40 = 1.00,
+/// PC1b = 297/300 = 0.99.
+pub const COLLAPSE_DOMINANT_TOKEN_SHARE: f64 = 0.90;
 /// Mean cosine to the receiver's OWN pooled L14 state for the same item,
 /// below which the emitted direction is called off-manifold.
 pub const OFF_MANIFOLD_COSINE: f64 = 0.20;
 
+/// Share of items whose top-k set contains the single most frequent token.
+///
+/// **N-invariant by construction** — a fraction of the items measured, not an
+/// absolute count against an `N`-dependent ceiling. This is the support
+/// statistic `classify()` uses; see [`COLLAPSE_DOMINANT_TOKEN_SHARE`].
+///
+/// A token is counted once per item even if it appears twice in that item's
+/// top-k, so the result is always in `[0, 1]`.
+pub fn dominant_token_share(top_sets: &[Vec<u32>]) -> f64 {
+    if top_sets.is_empty() {
+        return 0.0;
+    }
+    let mut counts: std::collections::BTreeMap<u32, usize> = std::collections::BTreeMap::new();
+    for set in top_sets {
+        for t in set.iter().copied().collect::<BTreeSet<u32>>() {
+            *counts.entry(t).or_insert(0) += 1;
+        }
+    }
+    counts.values().copied().max().unwrap_or(0) as f64 / top_sets.len() as f64
+}
+
 /// The registered two-axis verdict: item-invariance (either arm) × manifold.
-pub fn classify(invariance: f64, token_union: usize, manifold_cos: f64) -> &'static str {
-    let invariant = invariance >= COLLAPSE_COSINE || token_union <= COLLAPSE_TOKEN_UNION;
+///
+/// The support arm takes a **dominant-token share** (see
+/// [`dominant_token_share`]), not the retired absolute union count — so the
+/// verdict is comparable across draws of different N.
+pub fn classify(invariance: f64, dominant_share: f64, manifold_cos: f64) -> &'static str {
+    let invariant =
+        invariance >= COLLAPSE_COSINE || dominant_share >= COLLAPSE_DOMINANT_TOKEN_SHARE;
     let off = manifold_cos < OFF_MANIFOLD_COSINE;
     match (invariant, off) {
         (true, true) => "COLLAPSED-OFF-MANIFOLD",

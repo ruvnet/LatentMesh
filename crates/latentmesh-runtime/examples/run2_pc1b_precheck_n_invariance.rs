@@ -55,8 +55,8 @@ mod common;
 
 use candle_core::{DType, Device};
 use common::lens::{
-    classify, cosine, mean, mean_pairwise_cosine, project_batch, rms_norm, top_k, COLLAPSE_COSINE,
-    COLLAPSE_TOKEN_UNION, OFF_MANIFOLD_COSINE,
+    classify, cosine, dominant_token_share, mean, mean_pairwise_cosine, project_batch, rms_norm,
+    top_k, COLLAPSE_COSINE, COLLAPSE_TOKEN_UNION, OFF_MANIFOLD_COSINE,
 };
 use common::m3::RECEIVER;
 use std::collections::BTreeSet;
@@ -163,6 +163,11 @@ fn main() -> anyhow::Result<()> {
         })
         .collect();
 
+    // N-invariant support statistic, evaluated over the first `n` items.
+    // `union_at` is retained ABOVE only to document the retired rule's
+    // saturation curve — it no longer feeds any verdict.
+    let dominant_at = |n: usize| -> f64 { dominant_token_share(&top10[..n.min(top10.len())]) };
+
     // ---- The matched-N verdict: PC1b restricted to its first 40 items -----
     let u40 = union_at(PC1_N);
     let (inv40, _, _) = mean_pairwise_cosine(&payloads[..PC1_N]);
@@ -171,7 +176,7 @@ fn main() -> anyhow::Result<()> {
             .map(|i| cosine(&payloads[i], &l14_pooled[i]))
             .collect::<Vec<f64>>(),
     );
-    let class40 = classify(inv40, u40, man40);
+    let class40 = classify(inv40, dominant_at(PC1_N), man40);
 
     let (inv_all, _, _) = mean_pairwise_cosine(&payloads);
     let man_all = mean(
@@ -179,7 +184,7 @@ fn main() -> anyhow::Result<()> {
             .map(|i| cosine(&payloads[i], &l14_pooled[i]))
             .collect::<Vec<f64>>(),
     );
-    let class_all = classify(inv_all, union_at(n_items), man_all);
+    let class_all = classify(inv_all, dominant_at(n_items), man_all);
 
     // ---- PC1's committed numbers, read not retyped ------------------------
     let pc1: serde_json::Value =

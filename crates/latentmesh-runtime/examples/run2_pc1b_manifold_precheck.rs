@@ -48,9 +48,9 @@ mod common;
 
 use candle_core::{DType, Device};
 use common::lens::{
-    classify, cosine, entropy_nats, logsumexp, mean, mean_pairwise_cosine, mean_resultant_length,
-    minmax, project_batch, rms_norm, token_set_stats, top_k, COLLAPSE_COSINE, COLLAPSE_TOKEN_UNION,
-    OFF_MANIFOLD_COSINE,
+    classify, cosine, dominant_token_share, entropy_nats, logsumexp, mean, mean_pairwise_cosine,
+    mean_resultant_length, minmax, project_batch, rms_norm, token_set_stats, top_k,
+    COLLAPSE_COSINE, COLLAPSE_DOMINANT_TOKEN_SHARE, COLLAPSE_TOKEN_UNION, OFF_MANIFOLD_COSINE,
 };
 use common::m3::RECEIVER;
 use latentmesh_runtime::norms;
@@ -271,6 +271,11 @@ fn main() -> anyhow::Result<()> {
         let token_union = counts.len();
         let mut ordered: Vec<(u32, usize)> = counts.into_iter().collect();
         ordered.sort_by(|a, b| b.1.cmp(&a.1).then(a.0.cmp(&b.0)));
+        // N-invariant support statistic (common/lens.rs). `token_union` is the
+        // RETIRED absolute count — still reported below for the record, but no
+        // longer an input to the verdict. See ADR-024 § "INSTRUMENT DEFECT".
+        let dominant_share =
+            dominant_token_share(&rows.iter().map(|r| r.top10.clone()).collect::<Vec<_>>());
         let dominant: Vec<serde_json::Value> = ordered
             .iter()
             .take(N_DOMINANT)
@@ -284,7 +289,7 @@ fn main() -> anyhow::Result<()> {
             .collect();
         let manifold_cos = mean(&col(|r| r.cos_to_natural_same_item));
         let gold_n = mean(&col(|r| r.gold_rank_rmsnorm));
-        let verdict = classify(inv_mean, token_union, manifold_cos);
+        let verdict = classify(inv_mean, dominant_share, manifold_cos);
         if k == 0 {
             payload_verdict = verdict.to_string();
         }
@@ -365,7 +370,9 @@ fn main() -> anyhow::Result<()> {
         },
         "thresholds_registered": {
             "collapse_mean_pairwise_cosine_at_or_above": COLLAPSE_COSINE,
-            "collapse_top10_token_union_at_or_below": COLLAPSE_TOKEN_UNION,
+            "collapse_dominant_token_share_at_or_above": COLLAPSE_DOMINANT_TOKEN_SHARE,
+            "collapse_top10_token_union_at_or_below_RETIRED": COLLAPSE_TOKEN_UNION,
+            "why_the_union_threshold_is_retired": "It is an ABSOLUTE count whose attainable ceiling is 10*n_items, so it is not comparable across draws of different N — PC1 (n=40) scored 98/400 and tripped it while PC1b (n=300) scored 219/3000 and did not, though PC1b's payload is MORE concentrated as a fraction. The live support arm is the dominant-token SHARE, which is N-invariant by construction. The union is still reported for continuity with earlier receipts. See ADR-024 § INSTRUMENT DEFECT.",
             "off_manifold_mean_cosine_to_natural_below": OFF_MANIFOLD_COSINE,
             "source": "common/lens.rs — the same constants and the same classify() every prior pre-check used, reused rather than copied",
         },
