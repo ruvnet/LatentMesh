@@ -1,5 +1,44 @@
 # 024. Run 2: trained thought-adapter ladder
 
+> ## READING GUIDE (added 2026-08-29) — this document is append-only and out of order
+>
+> This ADR is the run-2 ladder's living ledger. Sections were appended by
+> several concurrent agents and by the coordinator, each inserting above a
+> marker, so **document order is not chronological** and a few topics have
+> **two sections written independently**. Nothing is deleted (ADR-031's
+> append-only rule); this guide is the map.
+>
+> **Duplicate-topic pairs — both are valid, read both:**
+> - **M4g outcome**: the implementer's account (§"M4g outcome … fuse is not
+>   the root cause") and the coordinator's (§"M4g OUTCOME … fuse REFUTED as
+>   the root cause"). Same verdict; the second adds the power-floor caveat
+>   (n_disc = 3, floor 0.125) and the control-semantics disclosure.
+> - **M4g registration**: §"M4g PRE-REGISTRATION … fuse instead of overwrite"
+>   and §"M4g REGISTERED … overwrite vs fuse — a separate root-cause
+>   candidate". The latter was written first, as a candidate; the former is
+>   the executed registration.
+> - **M4h Stage 1 outcome**: the coordinator's (§"M4h Stage 1 OUTCOME —
+>   mechanically successful, statistically unmeasurable") and the
+>   implementer's (§"M4h STAGE 1 OUTCOME — honest fail; pooling REFUTED").
+>   Same draw; the first emphasises the instrument's power floor, the second
+>   the pooling refutation. Both conclusions hold.
+>
+> **Chronological reading order for the findings** (rather than document
+> order): registered confounds → M3 outcome → M4 outcome → M4c outcome and
+> engineering findings → M4d outcome → the DIAGNOSIS → M4f pre-check verdict
+> → its CORRECTION → M4g registration → M4g outcome → MAJOR CORRECTION (the
+> 0/40 inversion is off-manifold-only) → M4h registration → M4h Stage 1
+> outcome → LAYER COVERAGE and the methodological reckoning → M4i and M5X
+> pre-registrations.
+>
+> **The corrections are load-bearing, not incidental**: several sections
+> correct claims made earlier *in this same document*, including three by the
+> coordinator. Where a later section contradicts an earlier one, **the later
+> one supersedes** — the earlier text is preserved so the reasoning trail
+> stays auditable, per ADR-032's negative-result contract.
+
+
+
 - **Status**: Proposed. Milestone M1 (this plan) — M0 (bootstrap scouting) is done and cited
   below; M2 through M6 are not started. This ADR embeds its own pre-registration section (§
   Frozen registration) rather than deferring it to a separate addendum, mirroring ADR-023's S2
