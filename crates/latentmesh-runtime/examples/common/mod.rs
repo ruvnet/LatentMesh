@@ -84,6 +84,40 @@ pub fn load_gsm8k(path: &Path) -> anyhow::Result<Vec<Gsm8kItem>> {
     Ok(items)
 }
 
+/// **Pre-committed gold rendering rule** (PC1's, promoted here verbatim so
+/// PC1b derives its payload through the SAME text as PC1 rather than through
+/// a second, independently-typed copy of the rule).
+///
+/// GSM8K's `answer` field is the human reference solution; it already ends
+/// with the `#### <n>` line the receiver's own `ANSWER_FORMAT` instruction
+/// asks for. The only edit is removal of the dataset's `<<a+b=c>>` calculator
+/// annotations, which are an artifact of the GSM8K authoring tool and appear
+/// in no model's output distribution. Nothing else is added — in particular
+/// no EOS token — so the captured span's LAST row is the state at the final
+/// answer token.
+///
+/// Behavioural identity with `run2_pc1_capture`'s private copy is not merely
+/// asserted by inspection: PC1b's capture re-derives the payload for train
+/// index 1153 (the one item `adaptation-512` shares with S1a's frozen 40) and
+/// gates on it being **bit-identical** to PC1's committed vector for that
+/// item, which exercises this function end-to-end.
+pub fn render_gold(answer_text: &str) -> String {
+    let mut out = String::with_capacity(answer_text.len());
+    let mut rest = answer_text;
+    while let Some(i) = rest.find("<<") {
+        out.push_str(&rest[..i]);
+        match rest[i..].find(">>") {
+            Some(j) => rest = &rest[i + j + 2..],
+            None => {
+                rest = "";
+                break;
+            }
+        }
+    }
+    out.push_str(rest);
+    out
+}
+
 /// Model-answer extraction: the `####`-marked answer when present, else the
 /// last number in the text (the standard "flexible extract" fallback —
 /// Qwen2.5-1.5B frequently answers correctly without emitting the marker;

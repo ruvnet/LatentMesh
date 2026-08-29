@@ -1036,6 +1036,53 @@ Open tension to settle before pre-registering: 8 slots across 2 sites is
 either 16 total or a 4+4 split, and ADR-028's slot-count discipline (already
 self-contradictory and unadjudicated) does not cover it.
 
+## PRECISION CORRECTION — "fails to register" was too strong (2026-08-29)
+
+PC1's full report refines my own correction one level further, and the
+refinement matters.
+
+I wrote that the `<|fim_pad|>` site is "where payloads **fail to register**".
+**That is too strong.** PC1's receipt shows that at the placeholder site
+**every one of the 40 items' aligned NLL differs from baseline** (15 wins +
+25 losses = 40 discordant on the NLL arm — *not* power-limited), and the
+generated text changes. The payload demonstrably **does** reach the forward
+pass at `<|fim_pad|>`. The implementer's phrase is the accurate one and is
+adopted: **"the channel is electrically connected and functionally dead."**
+
+**What the site actually changes is the magnitude and sign of the effect, not
+whether one exists:**
+
+| site | aligned vs baseline NLL | direction | accuracy effect |
+|---|---|---|---|
+| `<|fim_pad|>` (PC1, identity payload) | 2.1539 vs 2.1288, 15W/25L | slightly **worse** | **0W/0L** — literally no answer changed |
+| question-tail (M4i, M3 payload) | 2.2446 vs 2.3928, 181W/119L | **0.148 nats better** | none (128/300 vs 140/300) |
+
+**The sharpest single fact in the PC1 receipt**: injecting the receiver's own
+state changed **zero** of 40 answers relative to baseline, while an
+**information-free norm-matched Gaussian moved three**. The pathway perturbs
+the forward pass and never converts that perturbation into a different
+answer. Anti-gaming gates are clean (generated-character ratio 1.026, zero
+degenerate-short outputs, no NLL collapse), so this is not a degenerate-output
+artifact.
+
+**Two further facts from the receipt worth preserving:**
+- **Capture-path parity was proven, not assumed**: on the 13 S1a items the
+  committed dump covers, PC1's capture path reproduced the dump's block-19
+  rows **bit-identically** — 5,483,520 elements, max |Δ| = 0.0 — which is
+  what licenses using the same path for the 27 items the dump does not cover.
+- **A pipeline surprise, flagged by the implementer**: PC1's payload — the
+  receiver's *own* de-pooled state — classified **"item-invariant-but-
+  on-manifold"** rather than the expected "on-manifold-item-varying"
+  (inv-cos 0.8565, entropy 4.24). A real receiver state should be
+  item-varying. That is a finding about the payload pipeline, not about
+  transfer, and it is unexplained. It should be resolved before PC1b's result
+  is interpreted, since PC1b uses the same derivation.
+
+**PC1b's framing is unchanged** — it still separates "pathway inert" from
+"placeholder site inert" — but the question it answers is now sharper:
+**does moving the site convert a registering-but-useless perturbation into an
+answer-changing one?**
+
 ## PC1b spec conflict (my tenth error) + an unregistered PC1 re-draw (2026-08-29)
 
 **1. Coordinator error #10, caught by the implementer before any GPU time.**
