@@ -1,0 +1,160 @@
+{
+  "dataset": {
+    "source": "gsm8k-train.jsonl",
+    "source_sha256": "17f347dc51477c50d4efb83959dbb7c56297aba886e5544ee2aaed3024813465",
+    "split_file": "calibration-4000.json",
+    "split_file_sha256": "7d680615fe4022296f692fab2bf39386b99c5a8940766924e926739aaed41cc4",
+    "split_seed_chacha8": 616619521,
+    "subset_rule": "prefix of the committed calibration-4000 index list (stored sorted ascending; NOT a fresh random subsample; train-file order carries no known difficulty ordering)"
+  },
+  "design": "run-2 M2 per-token paired capture over saved S2c token streams (teacher-forced prefill only, no generation; data-shape scout spec 2026-08-28; S2c conventions: docs/adr/023, docs/research/024 sections 5.2/5.4)",
+  "env": {
+    "crate": "latentmesh-runtime 0.1.0 (vendored candle-transformers 0.9.2 qwen2)",
+    "evidence_label": "live-model, single-host, simulation-free",
+    "git_commit": "95edb10a9f85f57d13ef54f8041e327a2ddaee67",
+    "gpu": "NVIDIA GeForce RTX 5080, 580.126.09, 16303 MiB",
+    "nvcc": "nvcc 12.8 (build-time 12.8)",
+    "nvcc_at_build": "12.8",
+    "unix_time": 1787956020
+  },
+  "files": {
+    "receiver_L14.tok.f32bin": {
+      "bytes": 4418242560,
+      "dim": 1536,
+      "path": "/home/ruvultra/projects/LatentMesh-1/crates/latentmesh-runtime/target/latentmesh-runs/run2/receiver_L14.tok.f32bin",
+      "sha256": "e528e37ec0e3aa766989cc80f2feffeee71eb73c7b84a8c9a15dab6a2795e263",
+      "tokens": 719115
+    },
+    "receiver_L19.tok.f32bin": {
+      "bytes": 4418242560,
+      "dim": 1536,
+      "path": "/home/ruvultra/projects/LatentMesh-1/crates/latentmesh-runtime/target/latentmesh-runs/run2/receiver_L19.tok.f32bin",
+      "sha256": "ba656d81f3774279b1faf1fa3503245cf63771a41bfe1d6add8cd9862110c452",
+      "tokens": 719115
+    },
+    "sender_L18.tok.f32bin": {
+      "bytes": 5890990080,
+      "dim": 2048,
+      "path": "/home/ruvultra/projects/LatentMesh-1/crates/latentmesh-runtime/target/latentmesh-runs/run2/sender_L18.tok.f32bin",
+      "sha256": "44574f9e38bbbe8e2f5b5955cd1cccae0d399b48ed87b5270d1564ab85069c04",
+      "tokens": 719115
+    },
+    "sender_L24.tok.f32bin": {
+      "bytes": 5890990080,
+      "dim": 2048,
+      "path": "/home/ruvultra/projects/LatentMesh-1/crates/latentmesh-runtime/target/latentmesh-runs/run2/sender_L24.tok.f32bin",
+      "sha256": "b0c1a3b7abb686639a3da15d669e897a7133fb39f005db365e89c69bacbe900d",
+      "tokens": 719115
+    }
+  },
+  "gates": {
+    "file_bytes_exact": {
+      "pass": true,
+      "per_file": [
+        {
+          "bytes": 5890990080,
+          "expect_bytes": 5890990080,
+          "file": "sender_L18.tok.f32bin",
+          "pass": true,
+          "tokens": 719115
+        },
+        {
+          "bytes": 5890990080,
+          "expect_bytes": 5890990080,
+          "file": "sender_L24.tok.f32bin",
+          "pass": true,
+          "tokens": 719115
+        },
+        {
+          "bytes": 4418242560,
+          "expect_bytes": 4418242560,
+          "file": "receiver_L14.tok.f32bin",
+          "pass": true,
+          "tokens": 719115
+        },
+        {
+          "bytes": 4418242560,
+          "expect_bytes": 4418242560,
+          "file": "receiver_L19.tok.f32bin",
+          "pass": true,
+          "tokens": 719115
+        }
+      ]
+    },
+    "index_round_trip": {
+      "items_checked": [
+        328,
+        1072,
+        112,
+        601,
+        383
+      ],
+      "pass": true
+    },
+    "per_item_token_count": {
+      "note": "per item and layer, captured rows.len() asserted == gen_len x dim; T_i == gen_len from the streams file by construction of the capture span",
+      "pass": true
+    },
+    "pooled_mean_recompute": {
+      "items_checked": [
+        2035,
+        334,
+        1764,
+        2072,
+        1624,
+        523,
+        2315,
+        1515
+      ],
+      "max_abs_diff": 1.9836425764196974e-6,
+      "max_rel_diff": 1.091484137447366e-7,
+      "pass": true,
+      "s2c_bins_sha_verified_against_committed_manifest": true,
+      "tolerance": "abs(mean_f64 - pooled_f32) <= 1e-2 + 1e-3 * abs(pooled)"
+    },
+    "receiver_multi_tap_logits_parity_bit_identical": {
+      "pass": true
+    },
+    "sender_multi_tap_logits_parity_bit_identical": {
+      "pass": true
+    },
+    "streams_sha256": {
+      "expect": "ad5713116cb5acf663fe9c33ac58aaedb1fd64fcf629dd78b21439d244958539",
+      "measured": "ad5713116cb5acf663fe9c33ac58aaedb1fd64fcf629dd78b21439d244958539",
+      "pass": true
+    },
+    "token_streams_identical_across_models": {
+      "note": "per item, BOTH models' prompt re-encoding asserted equal to the stored stream; generated span shared as raw token ids (same tokenizer)",
+      "pass": true
+    },
+    "total_generated_tokens": {
+      "expect": 719115,
+      "measured": 719115,
+      "pass": true
+    }
+  },
+  "index": {
+    "file": "run2-pertoken-index.json",
+    "sha256": "5069580651bdfd2c2772d442096530a54f81f6629bc509170bbacc7a00313f55"
+  },
+  "run_dir": "/home/ruvultra/projects/LatentMesh-1/crates/latentmesh-runtime/target/latentmesh-runs/run2",
+  "seeds": {
+    "note": "capture itself is deterministic (teacher-forced prefill, greedy streams fixed); the seed only drives the post-write verification item draws",
+    "verification_draws_chacha8": 1381322290
+  },
+  "smoke_non_evidence": false,
+  "spans": "sender-GENERATED tokens only (prompt excluded) — matches S2c pooling convention and the live transmit distribution",
+  "stage": "run2-pertoken-dump",
+  "streams": {
+    "file": "s2c-token-streams.jsonl",
+    "n_rows": 2560,
+    "sha256_measured": "ad5713116cb5acf663fe9c33ac58aaedb1fd64fcf629dd78b21439d244958539",
+    "sha256_pinned": "ad5713116cb5acf663fe9c33ac58aaedb1fd64fcf629dd78b21439d244958539"
+  },
+  "wall_clock_s": {
+    "receiver_phase": 65.109551038,
+    "sender_phase": 117.22804299,
+    "total": 182.656989494,
+    "verify_phase": 0.084633763
+  }
+}

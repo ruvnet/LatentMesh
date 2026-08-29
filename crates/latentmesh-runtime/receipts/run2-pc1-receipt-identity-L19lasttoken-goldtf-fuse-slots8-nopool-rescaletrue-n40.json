@@ -1,0 +1,3832 @@
+{
+  "FIREWALL_liveness_not_transfer": {
+    "rule": "A PASS on this rung proves LIVENESS ONLY, NEVER TRANSFER, and may NEVER be cited as evidence for the transfer claim.",
+    "structural_scope": "same-model, same-item, identity transform, gold-derived content. No model boundary is crossed and no alignment is fitted anywhere in this rung.",
+    "verbatim_research_045_section_3": "This control used a same-model, same-item, identity-transform injection with gold-adjacent content. It tests whether this repository's injection mechanics (delivery operator, payload shape, injection site, norm-rescale) are capable of carrying signal at all. It does not test, and must not be cited as evidence for or against, whether a cross-model-derived, learned-alignment payload can transfer reasoning content — that is exactly the separate question M3 through M5X exist to answer."
+  },
+  "comparability_with_s1a": {
+    "changed_to_the_current_mechanics": [
+      "delivery operator: overwrite -> FUSE",
+      "payload: pooled over the full generated span -> DE-POOLED (single last-token state)",
+      "injection site: block 19 -> block 14 (the L18->L14 cell's receiver half)",
+      "payload capture text: the receiver's own greedy generation -> the item's GOLD solution (a STRONGER ceiling; docs/research/045 §2 candidate (c))",
+      "rescale reference: the capture pass's own L19 norms -> the injection prompt's block-14 norms (current mechanics)"
+    ],
+    "s1a_receipt": "receipts/s1a-receipt-slots8-block19-poolfull-rescaletrue-n40.json",
+    "s1a_result_for_reference": {
+      "accuracy": {
+        "random": 20,
+        "real": 25,
+        "zero": 22
+      },
+      "n_evaluated": 40,
+      "nll_mean": {
+        "random": 2.1308863162994385,
+        "real": 2.133902788162231,
+        "zero": 2.1288259029388428
+      },
+      "nll_real_vs_random": {
+        "losses": 21,
+        "p_one_sided": 0.6820859986855824,
+        "wins": 19
+      },
+      "nll_real_vs_zero": {
+        "losses": 20,
+        "p_one_sided": 0.5626853438097924,
+        "wins": 20
+      },
+      "primary_real_vs_random": {
+        "alpha": 0.05,
+        "losses": 0,
+        "p_one_sided": 0.03125,
+        "pass": true,
+        "wins": 5
+      },
+      "real_vs_zero": {
+        "losses": 0,
+        "p_one_sided": 0.12500000000000003,
+        "wins": 3
+      }
+    },
+    "same": [
+      "the 40 GSM8K-train items (ChaCha8 0x51A1, asserted equal)",
+      "identity transform / self-pair",
+      "8 <|fim_pad|> slots",
+      "rescale-to-natural-median",
+      "greedy, max 400 new tokens",
+      "the 40-item one-sided exact sign test at alpha 0.05"
+    ]
+  },
+  "config": {
+    "capture_receipt": "receipts/run2-pc1-capture-receipt.json",
+    "cell": "L18->L14 geometry — the injection site is the L18->L14 cell's receiver half, unchanged; PC1 replaces only the capture side (with the receiver's own L19 state) since there is no sender",
+    "conditions": {
+      "aligned_real": "the identity payload, rescaled to the natural median, delivered by residual ADD at the 8 <|fim_pad|> rows",
+      "baseline_uninjected": "no injection, same prompt",
+      "produced_by": "common::m3::four_conditions_at — the SAME shared code path M4g/M4h/M4i ran, under the same InjectionMode::Fuse, so no control is redefined by this rung",
+      "random": "per-item seeded gaussian, norm-matched to the effective aligned vector — under fuse an information-free perturbation of the receiver's own rows, which is exactly the comparator the primary needs",
+      "zerovec_injected": "TRUE ZERO VECTOR through the real 8-slot path. Under fuse this is h += 0, an exact NO-OP that collapses onto baseline_uninjected (M4g's frozen semantics, verified again below). The 2 x zerovec >= baseline gate is therefore DEGENERATE and carries no evidential weight; retained for cross-rung comparability."
+    },
+    "decoding": "greedy, batch=1, max_new_tokens=400",
+    "injection_operator": {
+      "equation": "h[slot] += c*v (residual add; C2C Eq.3 C_F = C_n(X) + F_n(...))",
+      "mode": "fuse"
+    },
+    "item_seed_chacha8": 20897,
+    "payload": "the receiver's OWN block-19 residual state, teacher-forced over the item's GSM8K gold solution, LAST token of the span (de-pooled)",
+    "payload_file": "/home/ruvultra/projects/LatentMesh-1/crates/latentmesh-runtime/target/latentmesh-runs/run2-pc1/run2-pc1-payloads.f32bin",
+    "payload_sha256": "ab250350163b0739a1beec6d50264bd6e792965bc6116b1ea33178e23430d8ab",
+    "placeholder_id": 151662,
+    "placeholder_token": "<|fim_pad|>",
+    "pool_span": "NONE — de-pooled. The payload is a single real receiver state; the 8-slot broadcast of that one vector is unchanged.",
+    "primary_test": "ADR-024's PC1 registration names the ORIGINAL frozen 40-item one-sided EXACT SIGN TEST as primary — chosen for direct comparability with S1a, the ladder's only PASS, on identical footing, NOT because the e-process (ADR-036) is unavailable. Mid-p McNemar is computed on the same pairs and reported alongside; neither was selected after seeing the other.",
+    "receiver": "Qwen/Qwen2.5-1.5B-Instruct",
+    "receiver_inject_block": 14,
+    "rescale_to_natural_median": true,
+    "secondary_diagnostic": "one-sided sign tests on paired teacher-forced NLL of '#### <gold>'",
+    "sender": "NONE — same-model self-pair",
+    "site": "fim_pad_slots",
+    "site_description": "8 <|fim_pad|> placeholder tokens inserted by the S1a slot sentence (ADR-023 original; every rung through M4h Stage 1)",
+    "slots": 8,
+    "transform": "IDENTITY — no adapter artifact is loaded, constructed or applied anywhere in this binary"
+  },
+  "dataset": {
+    "indices": [
+      141,
+      150,
+      850,
+      1153,
+      1309,
+      1435,
+      1573,
+      1602,
+      2365,
+      2418,
+      2436,
+      2489,
+      2540,
+      2723,
+      2958,
+      2973,
+      3084,
+      3165,
+      3741,
+      3772,
+      3825,
+      3844,
+      3877,
+      4255,
+      4305,
+      4344,
+      4746,
+      4888,
+      5422,
+      5610,
+      6031,
+      6146,
+      6378,
+      6452,
+      6552,
+      6629,
+      7293,
+      7375,
+      7431,
+      7462
+    ],
+    "s1a_indices_match": true,
+    "sha256": "17f347dc51477c50d4efb83959dbb7c56297aba886e5544ee2aaed3024813465",
+    "source": "https://raw.githubusercontent.com/openai/grade-school-math/master/grade_school_math/data/train.jsonl"
+  },
+  "declared_deviation_from_the_registered_payload_source": {
+    "direction_of_the_deviation": "TOWARD the registered design (literally gold, full registered item set), not away from it. The cost is 40 teacher-forced prefills, seconds of GPU time.",
+    "how_the_committed_dump_is_still_load_bearing": "Its sha256 is verified against run2-pertoken-dump-receipt.json, and on the 13 overlapping items THIS capture path is asserted to reproduce the committed block-19 rows from the stored token stream. That makes the fresh capture a verified extension of a receipted artifact rather than an unaudited second path.",
+    "registered_text": "docs/research/045 §5 'Capture: none new — read per-token receiver states directly from receiver_L14.tok.f32bin and receiver_L19.tok.f32bin'; ADR-024's PC1 section repeats it as 'the receiver's own gold teacher-forced per-token block-19 state — already on disk in receiver_L19.tok.f32bin'.",
+    "what_was_done_instead": "The receiver is teacher-forced over the item's ACTUAL GSM8K gold solution and block 19 is tapped — which is what docs/research/045 §2 candidate (c) literally specifies ('captured while teacher-forced on the gold solution text for the same item') — for ALL 40 of S1a's items, so the registered item set AND the registered statistic both survive.",
+    "why_it_is_not_executable_as_written": [
+      "COVERAGE: the dump covers the calibration-4000 split (2560 items, gsm8k-train indices 1..4797). Only 13 of S1a's 40 registered items appear in it; n=13 is far below docs/research/031's power floor, so the dump cannot supply the registered 40-item statistic.",
+      "SEMANTICS: the dump is NOT gold-teacher-forced. run2-pertoken-dump-receipt.json's own `spans` field reads 'sender-GENERATED tokens only' — the receiver states were captured while teacher-forced over the 3B SENDER's greedy solution, not over the GSM8K gold solution. The phrase 'gold teacher-forced ... from receiver_L19.tok.f32bin' describes an artifact that does not exist on disk."
+    ]
+  },
+  "design": "docs/adr/024-run2-trained-thought-adapter-ladder.md § 'PC1 PRE-REGISTRATION (2026-08-29) — the positive control this harness never had'; docs/research/045-positive-control-design.md §2 candidate (c) + §5. Probe protocol = ADR-023's frozen S1a/S2b four-condition protocol, inherited unchanged through common::m3::four_conditions_at.",
+  "env": {
+    "crate": "latentmesh-runtime 0.1.0 (vendored candle-transformers 0.9.2 qwen2)",
+    "evidence_label": "live-model, single-host, simulation-free",
+    "git_commit": "cd259905a26ffcda625d76ce850c34858f6e4fe1",
+    "gpu": "NVIDIA GeForce RTX 5080, 580.126.09, 16303 MiB",
+    "nvcc": "nvcc 12.8 (build-time 12.8)",
+    "nvcc_at_build": "12.8",
+    "unix_time": 1787982289
+  },
+  "gate_pass": false,
+  "gates": {
+    "PC1_aligned_real_vs_random": {
+      "mid_p": 0.6875,
+      "min_attainable_p": 0.125,
+      "n_discordant": 3,
+      "p": 0.875,
+      "pass": false,
+      "power_limited": true
+    },
+    "fuse_zero_payload_is_a_noop": {
+      "gating": "none — diagnostic",
+      "pass": true
+    },
+    "identity_transform_no_adapter_weights_loaded": {
+      "note": "no MlpTransform / FastGrnnTransform / AffineTransform is constructed anywhere in this binary; the injected vector IS a captured receiver state, byte-for-byte",
+      "pass": true
+    },
+    "injection_mode_recorded": {
+      "equation": "h[slot] += c*v (residual add; C2C Eq.3 C_F = C_n(X) + F_n(...))",
+      "mode": "fuse",
+      "pass": true
+    },
+    "manifold_precheck_ran_before_this_draw": {
+      "classification": "item-invariant-but-on-manifold",
+      "gating": "ordering only",
+      "pass": true,
+      "receipt": "receipts/run2-pc1-manifold-precheck-receipt.json"
+    },
+    "no_gaming_signature": {
+      "degenerate_output_signature": false,
+      "nll_collapse_signature": false,
+      "pass": true
+    },
+    "payload_sha256_matches_capture_receipt": {
+      "pass": true,
+      "sha256": "ab250350163b0739a1beec6d50264bd6e792965bc6116b1ea33178e23430d8ab"
+    },
+    "receiver_L19_dump_sha256_verified": {
+      "note": "verified in run2-pc1-capture-receipt.json against run2-pertoken-dump-receipt.json; see declared_deviation_from_the_registered_payload_source for why the dump could not supply the payload itself",
+      "pass": true,
+      "sha256": "ba656d81f3774279b1faf1fa3503245cf63771a41bfe1d6add8cd9862110c452"
+    },
+    "s1a_item_set_reproduced": {
+      "n": 40,
+      "pass": true
+    },
+    "slot_count_unchanged": {
+      "pass": true,
+      "slots": 8
+    },
+    "zerovec_not_catastrophic": {
+      "degenerate_under_fuse": true,
+      "pass": true
+    }
+  },
+  "honest_fail_contract": "ADR-032: ONE registered draw, no retry, full numbers reported either way. A FAILING positive control is the MORE consequential outcome and is stated plainly here, not softened. This receipt is written before any interpretation is added to the ADR.",
+  "items": [
+    {
+      "aligned_answer_tail": "ends \\(60 + 12 = 62\\) minutes on his dog each day. \n\n#### 62",
+      "capture": {
+        "aligned_l2_raw": 68.99002838134766,
+        "hidden_size": 1536,
+        "injected_l2": 51.78384780883789,
+        "injection_mode": "fuse",
+        "natural_inject_block_norms": {
+          "max": 11056.958984375,
+          "mean": 139.17172241210938,
+          "median": 51.78384017944336,
+          "min": 40.79857635498047,
+          "n": 127,
+          "p25": 49.65870666503906,
+          "p75": 55.112457275390625
+        },
+        "pooled_l2_raw": 68.99002838134766,
+        "span": [
+          61,
+          62
+        ],
+        "variant": "pc1-identity-L19-lasttoken-goldteacherforced"
+      },
+      "conditions": {
+        "aligned_real": {
+          "correct": false,
+          "nll_gold": 1.949751853942871
+        },
+        "baseline_uninjected": {
+          "correct": false,
+          "nll_gold": 2.1964006423950195
+        },
+        "random": {
+          "correct": false,
+          "nll_gold": 2.24605655670166
+        },
+        "zerovec_injected": {
+          "correct": false,
+          "nll_gold": 2.1964006423950195
+        }
+      },
+      "generated_chars": {
+        "aligned_real": 298,
+        "baseline_uninjected": 298,
+        "random": 328,
+        "zerovec_injected": 298
+      },
+      "gold": "72",
+      "injection_site": {
+        "position_token_ids": [
+          151662,
+          151662,
+          151662,
+          151662,
+          151662,
+          151662,
+          151662,
+          151662
+        ],
+        "positions": [
+          71,
+          72,
+          73,
+          74,
+          75,
+          76,
+          77,
+          78
+        ],
+        "positions_decoded": "<|fim_pad|><|fim_pad|><|fim_pad|><|fim_pad|><|fim_pad|><|fim_pad|><|fim_pad|><|fim_pad|>",
+        "prompt_tokens": 127,
+        "site": "fim_pad_slots"
+      },
+      "item": 141,
+      "pc1_payload": {
+        "gold_continuation_tokens": 62,
+        "l2_raw": 68.99002838134766,
+        "source": "receiver's OWN block-19 state, gold-teacher-forced, LAST span token",
+        "span_note": "capture.span records [gold_len-1, gold_len) — the single row that IS the payload",
+        "transform": "identity"
+      },
+      "sender_first_pass": {
+        "not_applicable": "PC1 is a same-model self-pair; no sender model is loaded or run"
+      }
+    },
+    {
+      "aligned_answer_tail": "{9} \\]\n\\[ m = 3 \\]\n\nSo, Angela delivers \\(\\boxed{3}\\) meals.",
+      "capture": {
+        "aligned_l2_raw": 67.1517333984375,
+        "hidden_size": 1536,
+        "injected_l2": 52.29472351074219,
+        "injection_mode": "fuse",
+        "natural_inject_block_norms": {
+          "max": 11046.880859375,
+          "mean": 137.83975219726562,
+          "median": 52.294647216796875,
+          "min": 41.120582580566406,
+          "n": 129,
+          "p25": 49.77558898925781,
+          "p75": 55.498435974121094
+        },
+        "pooled_l2_raw": 67.1517333984375,
+        "span": [
+          89,
+          90
+        ],
+        "variant": "pc1-identity-L19-lasttoken-goldteacherforced"
+      },
+      "conditions": {
+        "aligned_real": {
+          "correct": true,
+          "nll_gold": 1.7665337324142456
+        },
+        "baseline_uninjected": {
+          "correct": true,
+          "nll_gold": 1.8239508867263794
+        },
+        "random": {
+          "correct": true,
+          "nll_gold": 1.828545093536377
+        },
+        "zerovec_injected": {
+          "correct": true,
+          "nll_gold": 1.8239508867263794
+        }
+      },
+      "generated_chars": {
+        "aligned_real": 620,
+        "baseline_uninjected": 620,
+        "random": 628,
+        "zerovec_injected": 620
+      },
+      "gold": "3",
+      "injection_site": {
+        "position_token_ids": [
+          151662,
+          151662,
+          151662,
+          151662,
+          151662,
+          151662,
+          151662,
+          151662
+        ],
+        "positions": [
+          73,
+          74,
+          75,
+          76,
+          77,
+          78,
+          79,
+          80
+        ],
+        "positions_decoded": "<|fim_pad|><|fim_pad|><|fim_pad|><|fim_pad|><|fim_pad|><|fim_pad|><|fim_pad|><|fim_pad|>",
+        "prompt_tokens": 129,
+        "site": "fim_pad_slots"
+      },
+      "item": 150,
+      "pc1_payload": {
+        "gold_continuation_tokens": 90,
+        "l2_raw": 67.1517333984375,
+        "source": "receiver's OWN block-19 state, gold-teacher-forced, LAST span token",
+        "span_note": "capture.span records [gold_len-1, gold_len) — the single row that IS the payload",
+        "transform": "identity"
+      },
+      "sender_first_pass": {
+        "not_applicable": "PC1 is a same-model self-pair; no sender model is loaded or run"
+      }
+    },
+    {
+      "aligned_answer_tail": "tal Chocolate chips: 45\n  - Total: \\(35 + 45 = 75\\)\n\n#### 75",
+      "capture": {
+        "aligned_l2_raw": 67.2040786743164,
+        "hidden_size": 1536,
+        "injected_l2": 52.59993362426758,
+        "injection_mode": "fuse",
+        "natural_inject_block_norms": {
+          "max": 11046.880859375,
+          "mean": 130.3465576171875,
+          "median": 52.59990310668945,
+          "min": 41.18931198120117,
+          "n": 142,
+          "p25": 49.849735260009766,
+          "p75": 55.628318786621094
+        },
+        "pooled_l2_raw": 67.2040786743164,
+        "span": [
+          102,
+          103
+        ],
+        "variant": "pc1-identity-L19-lasttoken-goldteacherforced"
+      },
+      "conditions": {
+        "aligned_real": {
+          "correct": false,
+          "nll_gold": 2.1856138706207275
+        },
+        "baseline_uninjected": {
+          "correct": false,
+          "nll_gold": 2.919801950454712
+        },
+        "random": {
+          "correct": false,
+          "nll_gold": 2.8952341079711914
+        },
+        "zerovec_injected": {
+          "correct": false,
+          "nll_gold": 2.919801950454712
+        }
+      },
+      "generated_chars": {
+        "aligned_real": 867,
+        "baseline_uninjected": 1084,
+        "random": 867,
+        "zerovec_injected": 1084
+      },
+      "gold": "90",
+      "injection_site": {
+        "position_token_ids": [
+          151662,
+          151662,
+          151662,
+          151662,
+          151662,
+          151662,
+          151662,
+          151662
+        ],
+        "positions": [
+          86,
+          87,
+          88,
+          89,
+          90,
+          91,
+          92,
+          93
+        ],
+        "positions_decoded": "<|fim_pad|><|fim_pad|><|fim_pad|><|fim_pad|><|fim_pad|><|fim_pad|><|fim_pad|><|fim_pad|>",
+        "prompt_tokens": 142,
+        "site": "fim_pad_slots"
+      },
+      "item": 850,
+      "pc1_payload": {
+        "gold_continuation_tokens": 103,
+        "l2_raw": 67.2040786743164,
+        "source": "receiver's OWN block-19 state, gold-teacher-forced, LAST span token",
+        "span_note": "capture.span records [gold_len-1, gold_len) — the single row that IS the payload",
+        "transform": "identity"
+      },
+      "sender_first_pass": {
+        "not_applicable": "PC1 is a same-model self-pair; no sender model is loaded or run"
+      }
+    },
+    {
+      "aligned_answer_tail": "ohn's pool maintenance and chemicals per month is:\n#### 2050",
+      "capture": {
+        "aligned_l2_raw": 66.5480728149414,
+        "hidden_size": 1536,
+        "injected_l2": 52.28718185424805,
+        "injection_mode": "fuse",
+        "natural_inject_block_norms": {
+          "max": 11046.880859375,
+          "mean": 126.34375,
+          "median": 52.28715515136719,
+          "min": 39.92435073852539,
+          "n": 149,
+          "p25": 49.782310485839844,
+          "p75": 54.862667083740234
+        },
+        "pooled_l2_raw": 66.5480728149414,
+        "span": [
+          110,
+          111
+        ],
+        "variant": "pc1-identity-L19-lasttoken-goldteacherforced"
+      },
+      "conditions": {
+        "aligned_real": {
+          "correct": true,
+          "nll_gold": 2.4592854976654053
+        },
+        "baseline_uninjected": {
+          "correct": true,
+          "nll_gold": 2.4327943325042725
+        },
+        "random": {
+          "correct": true,
+          "nll_gold": 2.4431469440460205
+        },
+        "zerovec_injected": {
+          "correct": true,
+          "nll_gold": 2.4327943325042725
+        }
+      },
+      "generated_chars": {
+        "aligned_real": 1224,
+        "baseline_uninjected": 1152,
+        "random": 1224,
+        "zerovec_injected": 1152
+      },
+      "gold": "2050",
+      "injection_site": {
+        "position_token_ids": [
+          151662,
+          151662,
+          151662,
+          151662,
+          151662,
+          151662,
+          151662,
+          151662
+        ],
+        "positions": [
+          93,
+          94,
+          95,
+          96,
+          97,
+          98,
+          99,
+          100
+        ],
+        "positions_decoded": "<|fim_pad|><|fim_pad|><|fim_pad|><|fim_pad|><|fim_pad|><|fim_pad|><|fim_pad|><|fim_pad|>",
+        "prompt_tokens": 149,
+        "site": "fim_pad_slots"
+      },
+      "item": 1153,
+      "pc1_payload": {
+        "gold_continuation_tokens": 111,
+        "l2_raw": 66.5480728149414,
+        "source": "receiver's OWN block-19 state, gold-teacher-forced, LAST span token",
+        "span_note": "capture.span records [gold_len-1, gold_len) — the single row that IS the payload",
+        "transform": "identity"
+      },
+      "sender_first_pass": {
+        "not_applicable": "PC1 is a same-model self-pair; no sender model is loaded or run"
+      }
+    },
+    {
+      "aligned_answer_tail": "eans that Martin will have 0 goldfish after 7 weeks.\n\n#### 0",
+      "capture": {
+        "aligned_l2_raw": 64.9508056640625,
+        "hidden_size": 1536,
+        "injected_l2": 52.90744400024414,
+        "injection_mode": "fuse",
+        "natural_inject_block_norms": {
+          "max": 11056.958984375,
+          "mean": 141.30093383789062,
+          "median": 52.90739822387695,
+          "min": 41.18536376953125,
+          "n": 124,
+          "p25": 49.7996711730957,
+          "p75": 54.76259231567383
+        },
+        "pooled_l2_raw": 64.9508056640625,
+        "span": [
+          59,
+          60
+        ],
+        "variant": "pc1-identity-L19-lasttoken-goldteacherforced"
+      },
+      "conditions": {
+        "aligned_real": {
+          "correct": false,
+          "nll_gold": 2.551682710647583
+        },
+        "baseline_uninjected": {
+          "correct": false,
+          "nll_gold": 2.4757440090179443
+        },
+        "random": {
+          "correct": false,
+          "nll_gold": 2.5625035762786865
+        },
+        "zerovec_injected": {
+          "correct": false,
+          "nll_gold": 2.4757440090179443
+        }
+      },
+      "generated_chars": {
+        "aligned_real": 842,
+        "baseline_uninjected": 876,
+        "random": 1087,
+        "zerovec_injected": 876
+      },
+      "gold": "4",
+      "injection_site": {
+        "position_token_ids": [
+          151662,
+          151662,
+          151662,
+          151662,
+          151662,
+          151662,
+          151662,
+          151662
+        ],
+        "positions": [
+          68,
+          69,
+          70,
+          71,
+          72,
+          73,
+          74,
+          75
+        ],
+        "positions_decoded": "<|fim_pad|><|fim_pad|><|fim_pad|><|fim_pad|><|fim_pad|><|fim_pad|><|fim_pad|><|fim_pad|>",
+        "prompt_tokens": 124,
+        "site": "fim_pad_slots"
+      },
+      "item": 1309,
+      "pc1_payload": {
+        "gold_continuation_tokens": 60,
+        "l2_raw": 64.9508056640625,
+        "source": "receiver's OWN block-19 state, gold-teacher-forced, LAST span token",
+        "span_note": "capture.span records [gold_len-1, gold_len) — the single row that IS the payload",
+        "transform": "identity"
+      },
+      "sender_first_pass": {
+        "not_applicable": "PC1 is a same-model self-pair; no sender model is loaded or run"
+      }
+    },
+    {
+      "aligned_answer_tail": "fore, the total amount of money Harriett found is:\n#### 3.40",
+      "capture": {
+        "aligned_l2_raw": 64.6013412475586,
+        "hidden_size": 1536,
+        "injected_l2": 52.49596405029297,
+        "injection_mode": "fuse",
+        "natural_inject_block_norms": {
+          "max": 11046.880859375,
+          "mean": 138.20408630371094,
+          "median": 52.49592208862305,
+          "min": 40.70705795288086,
+          "n": 129,
+          "p25": 49.849735260009766,
+          "p75": 55.498435974121094
+        },
+        "pooled_l2_raw": 64.6013412475586,
+        "span": [
+          146,
+          147
+        ],
+        "variant": "pc1-identity-L19-lasttoken-goldteacherforced"
+      },
+      "conditions": {
+        "aligned_real": {
+          "correct": false,
+          "nll_gold": 1.9052139520645142
+        },
+        "baseline_uninjected": {
+          "correct": false,
+          "nll_gold": 1.5481958389282227
+        },
+        "random": {
+          "correct": false,
+          "nll_gold": 1.6498870849609375
+        },
+        "zerovec_injected": {
+          "correct": false,
+          "nll_gold": 1.5481958389282227
+        }
+      },
+      "generated_chars": {
+        "aligned_real": 698,
+        "baseline_uninjected": 698,
+        "random": 698,
+        "zerovec_injected": 698
+      },
+      "gold": "3",
+      "injection_site": {
+        "position_token_ids": [
+          151662,
+          151662,
+          151662,
+          151662,
+          151662,
+          151662,
+          151662,
+          151662
+        ],
+        "positions": [
+          73,
+          74,
+          75,
+          76,
+          77,
+          78,
+          79,
+          80
+        ],
+        "positions_decoded": "<|fim_pad|><|fim_pad|><|fim_pad|><|fim_pad|><|fim_pad|><|fim_pad|><|fim_pad|><|fim_pad|>",
+        "prompt_tokens": 129,
+        "site": "fim_pad_slots"
+      },
+      "item": 1435,
+      "pc1_payload": {
+        "gold_continuation_tokens": 147,
+        "l2_raw": 64.6013412475586,
+        "source": "receiver's OWN block-19 state, gold-teacher-forced, LAST span token",
+        "span_note": "capture.span records [gold_len-1, gold_len) — the single row that IS the payload",
+        "transform": "identity"
+      },
+      "sender_first_pass": {
+        "not_applicable": "PC1 is a same-model self-pair; no sender model is loaded or run"
+      }
+    },
+    {
+      "aligned_answer_tail": "f hours Oliver worked out during these four days is:\n#### 18",
+      "capture": {
+        "aligned_l2_raw": 67.36542510986328,
+        "hidden_size": 1536,
+        "injected_l2": 52.14876174926758,
+        "injection_mode": "fuse",
+        "natural_inject_block_norms": {
+          "max": 11046.880859375,
+          "mean": 118.40746307373047,
+          "median": 52.14871597290039,
+          "min": 41.41735076904297,
+          "n": 167,
+          "p25": 50.018856048583984,
+          "p75": 54.88539505004883
+        },
+        "pooled_l2_raw": 67.36542510986328,
+        "span": [
+          95,
+          96
+        ],
+        "variant": "pc1-identity-L19-lasttoken-goldteacherforced"
+      },
+      "conditions": {
+        "aligned_real": {
+          "correct": true,
+          "nll_gold": 1.4842352867126465
+        },
+        "baseline_uninjected": {
+          "correct": true,
+          "nll_gold": 1.4380736351013184
+        },
+        "random": {
+          "correct": true,
+          "nll_gold": 1.5064265727996826
+        },
+        "zerovec_injected": {
+          "correct": true,
+          "nll_gold": 1.4380736351013184
+        }
+      },
+      "generated_chars": {
+        "aligned_real": 749,
+        "baseline_uninjected": 971,
+        "random": 749,
+        "zerovec_injected": 971
+      },
+      "gold": "18",
+      "injection_site": {
+        "position_token_ids": [
+          151662,
+          151662,
+          151662,
+          151662,
+          151662,
+          151662,
+          151662,
+          151662
+        ],
+        "positions": [
+          111,
+          112,
+          113,
+          114,
+          115,
+          116,
+          117,
+          118
+        ],
+        "positions_decoded": "<|fim_pad|><|fim_pad|><|fim_pad|><|fim_pad|><|fim_pad|><|fim_pad|><|fim_pad|><|fim_pad|>",
+        "prompt_tokens": 167,
+        "site": "fim_pad_slots"
+      },
+      "item": 1573,
+      "pc1_payload": {
+        "gold_continuation_tokens": 96,
+        "l2_raw": 67.36542510986328,
+        "source": "receiver's OWN block-19 state, gold-teacher-forced, LAST span token",
+        "span_note": "capture.span records [gold_len-1, gold_len) — the single row that IS the payload",
+        "transform": "identity"
+      },
+      "sender_first_pass": {
+        "not_applicable": "PC1 is a same-model self-pair; no sender model is loaded or run"
+      }
+    },
+    {
+      "aligned_answer_tail": "till has to drive to make it across the country is: #### 636",
+      "capture": {
+        "aligned_l2_raw": 69.28448486328125,
+        "hidden_size": 1536,
+        "injected_l2": 53.075748443603516,
+        "injection_mode": "fuse",
+        "natural_inject_block_norms": {
+          "max": 11046.880859375,
+          "mean": 132.75770568847656,
+          "median": 53.07569122314453,
+          "min": 41.032371520996094,
+          "n": 138,
+          "p25": 50.27724075317383,
+          "p75": 55.82862091064453
+        },
+        "pooled_l2_raw": 69.28448486328125,
+        "span": [
+          60,
+          61
+        ],
+        "variant": "pc1-identity-L19-lasttoken-goldteacherforced"
+      },
+      "conditions": {
+        "aligned_real": {
+          "correct": false,
+          "nll_gold": 3.548582077026367
+        },
+        "baseline_uninjected": {
+          "correct": false,
+          "nll_gold": 4.103189468383789
+        },
+        "random": {
+          "correct": false,
+          "nll_gold": 4.184473514556885
+        },
+        "zerovec_injected": {
+          "correct": false,
+          "nll_gold": 4.103189468383789
+        }
+      },
+      "generated_chars": {
+        "aligned_real": 677,
+        "baseline_uninjected": 677,
+        "random": 620,
+        "zerovec_injected": 677
+      },
+      "gold": "6716",
+      "injection_site": {
+        "position_token_ids": [
+          151662,
+          151662,
+          151662,
+          151662,
+          151662,
+          151662,
+          151662,
+          151662
+        ],
+        "positions": [
+          82,
+          83,
+          84,
+          85,
+          86,
+          87,
+          88,
+          89
+        ],
+        "positions_decoded": "<|fim_pad|><|fim_pad|><|fim_pad|><|fim_pad|><|fim_pad|><|fim_pad|><|fim_pad|><|fim_pad|>",
+        "prompt_tokens": 138,
+        "site": "fim_pad_slots"
+      },
+      "item": 1602,
+      "pc1_payload": {
+        "gold_continuation_tokens": 61,
+        "l2_raw": 69.28448486328125,
+        "source": "receiver's OWN block-19 state, gold-teacher-forced, LAST span token",
+        "span_note": "capture.span records [gold_len-1, gold_len) — the single row that IS the payload",
+        "transform": "identity"
+      },
+      "sender_first_pass": {
+        "not_applicable": "PC1 is a same-model self-pair; no sender model is loaded or run"
+      }
+    },
+    {
+      "aligned_answer_tail": "= 8552 \\]\n\nSo, the year of the second dig site is:\n#### 8552",
+      "capture": {
+        "aligned_l2_raw": 68.58734893798828,
+        "hidden_size": 1536,
+        "injected_l2": 52.65801239013672,
+        "injection_mode": "fuse",
+        "natural_inject_block_norms": {
+          "max": 11046.8759765625,
+          "mean": 110.76591491699219,
+          "median": 52.657958984375,
+          "min": 41.999908447265625,
+          "n": 191,
+          "p25": 50.586917877197266,
+          "p75": 55.735042572021484
+        },
+        "pooled_l2_raw": 68.58734893798828,
+        "span": [
+          93,
+          94
+        ],
+        "variant": "pc1-identity-L19-lasttoken-goldteacherforced"
+      },
+      "conditions": {
+        "aligned_real": {
+          "correct": false,
+          "nll_gold": 2.56432843208313
+        },
+        "baseline_uninjected": {
+          "correct": false,
+          "nll_gold": 2.4731993675231934
+        },
+        "random": {
+          "correct": false,
+          "nll_gold": 2.5810046195983887
+        },
+        "zerovec_injected": {
+          "correct": false,
+          "nll_gold": 2.4731993675231934
+        }
+      },
+      "generated_chars": {
+        "aligned_real": 750,
+        "baseline_uninjected": 750,
+        "random": 1009,
+        "zerovec_injected": 750
+      },
+      "gold": "852",
+      "injection_site": {
+        "position_token_ids": [
+          151662,
+          151662,
+          151662,
+          151662,
+          151662,
+          151662,
+          151662,
+          151662
+        ],
+        "positions": [
+          135,
+          136,
+          137,
+          138,
+          139,
+          140,
+          141,
+          142
+        ],
+        "positions_decoded": "<|fim_pad|><|fim_pad|><|fim_pad|><|fim_pad|><|fim_pad|><|fim_pad|><|fim_pad|><|fim_pad|>",
+        "prompt_tokens": 191,
+        "site": "fim_pad_slots"
+      },
+      "item": 2365,
+      "pc1_payload": {
+        "gold_continuation_tokens": 94,
+        "l2_raw": 68.58734893798828,
+        "source": "receiver's OWN block-19 state, gold-teacher-forced, LAST span token",
+        "span_note": "capture.span records [gold_len-1, gold_len) — the single row that IS the payload",
+        "transform": "identity"
+      },
+      "sender_first_pass": {
+        "not_applicable": "PC1 is a same-model self-pair; no sender model is loaded or run"
+      }
+    },
+    {
+      "aligned_answer_tail": "erefore, the amount left on Lyra's weekly budget is:\n#### 73",
+      "capture": {
+        "aligned_l2_raw": 69.38677978515625,
+        "hidden_size": 1536,
+        "injected_l2": 52.5987434387207,
+        "injection_mode": "fuse",
+        "natural_inject_block_norms": {
+          "max": 11046.880859375,
+          "mean": 132.05601501464844,
+          "median": 52.59870910644531,
+          "min": 40.578372955322266,
+          "n": 138,
+          "p25": 49.61911392211914,
+          "p75": 54.8867073059082
+        },
+        "pooled_l2_raw": 69.38677978515625,
+        "span": [
+          57,
+          58
+        ],
+        "variant": "pc1-identity-L19-lasttoken-goldteacherforced"
+      },
+      "conditions": {
+        "aligned_real": {
+          "correct": false,
+          "nll_gold": 2.608522891998291
+        },
+        "baseline_uninjected": {
+          "correct": false,
+          "nll_gold": 2.5601677894592285
+        },
+        "random": {
+          "correct": false,
+          "nll_gold": 2.551252603530884
+        },
+        "zerovec_injected": {
+          "correct": false,
+          "nll_gold": 2.5601677894592285
+        }
+      },
+      "generated_chars": {
+        "aligned_real": 747,
+        "baseline_uninjected": 656,
+        "random": 734,
+        "zerovec_injected": 656
+      },
+      "gold": "53",
+      "injection_site": {
+        "position_token_ids": [
+          151662,
+          151662,
+          151662,
+          151662,
+          151662,
+          151662,
+          151662,
+          151662
+        ],
+        "positions": [
+          82,
+          83,
+          84,
+          85,
+          86,
+          87,
+          88,
+          89
+        ],
+        "positions_decoded": "<|fim_pad|><|fim_pad|><|fim_pad|><|fim_pad|><|fim_pad|><|fim_pad|><|fim_pad|><|fim_pad|>",
+        "prompt_tokens": 138,
+        "site": "fim_pad_slots"
+      },
+      "item": 2418,
+      "pc1_payload": {
+        "gold_continuation_tokens": 58,
+        "l2_raw": 69.38677978515625,
+        "source": "receiver's OWN block-19 state, gold-teacher-forced, LAST span token",
+        "span_note": "capture.span records [gold_len-1, gold_len) — the single row that IS the payload",
+        "transform": "identity"
+      },
+      "sender_first_pass": {
+        "not_applicable": "PC1 is a same-model self-pair; no sender model is loaded or run"
+      }
+    },
+    {
+      "aligned_answer_tail": "000}{1000} = 5\n   \\]\n\nTherefore, the final answer is:\n#### 5",
+      "capture": {
+        "aligned_l2_raw": 66.3024673461914,
+        "hidden_size": 1536,
+        "injected_l2": 53.23819351196289,
+        "injection_mode": "fuse",
+        "natural_inject_block_norms": {
+          "max": 11046.880859375,
+          "mean": 137.24183654785156,
+          "median": 53.23817825317383,
+          "min": 41.310943603515625,
+          "n": 131,
+          "p25": 50.327049255371094,
+          "p75": 55.84040451049805
+        },
+        "pooled_l2_raw": 66.3024673461914,
+        "span": [
+          45,
+          46
+        ],
+        "variant": "pc1-identity-L19-lasttoken-goldteacherforced"
+      },
+      "conditions": {
+        "aligned_real": {
+          "correct": true,
+          "nll_gold": 2.8167247772216797
+        },
+        "baseline_uninjected": {
+          "correct": true,
+          "nll_gold": 2.435922622680664
+        },
+        "random": {
+          "correct": true,
+          "nll_gold": 2.60149884223938
+        },
+        "zerovec_injected": {
+          "correct": true,
+          "nll_gold": 2.435922622680664
+        }
+      },
+      "generated_chars": {
+        "aligned_real": 641,
+        "baseline_uninjected": 641,
+        "random": 641,
+        "zerovec_injected": 641
+      },
+      "gold": "5",
+      "injection_site": {
+        "position_token_ids": [
+          151662,
+          151662,
+          151662,
+          151662,
+          151662,
+          151662,
+          151662,
+          151662
+        ],
+        "positions": [
+          75,
+          76,
+          77,
+          78,
+          79,
+          80,
+          81,
+          82
+        ],
+        "positions_decoded": "<|fim_pad|><|fim_pad|><|fim_pad|><|fim_pad|><|fim_pad|><|fim_pad|><|fim_pad|><|fim_pad|>",
+        "prompt_tokens": 131,
+        "site": "fim_pad_slots"
+      },
+      "item": 2436,
+      "pc1_payload": {
+        "gold_continuation_tokens": 46,
+        "l2_raw": 66.3024673461914,
+        "source": "receiver's OWN block-19 state, gold-teacher-forced, LAST span token",
+        "span_note": "capture.span records [gold_len-1, gold_len) — the single row that IS the payload",
+        "transform": "identity"
+      },
+      "sender_first_pass": {
+        "not_applicable": "PC1 is a same-model self-pair; no sender model is loaded or run"
+      }
+    },
+    {
+      "aligned_answer_tail": " number of alligators Samara and her friends saw is:\n#### 50",
+      "capture": {
+        "aligned_l2_raw": 67.41556549072266,
+        "hidden_size": 1536,
+        "injected_l2": 52.63793182373047,
+        "injection_mode": "fuse",
+        "natural_inject_block_norms": {
+          "max": 11046.880859375,
+          "mean": 121.00978088378906,
+          "median": 52.63791275024414,
+          "min": 42.21157455444336,
+          "n": 161,
+          "p25": 49.8380126953125,
+          "p75": 55.27376937866211
+        },
+        "pooled_l2_raw": 67.41556549072266,
+        "span": [
+          56,
+          57
+        ],
+        "variant": "pc1-identity-L19-lasttoken-goldteacherforced"
+      },
+      "conditions": {
+        "aligned_real": {
+          "correct": true,
+          "nll_gold": 1.5262326002120972
+        },
+        "baseline_uninjected": {
+          "correct": true,
+          "nll_gold": 1.3018739223480225
+        },
+        "random": {
+          "correct": true,
+          "nll_gold": 1.3684111833572388
+        },
+        "zerovec_injected": {
+          "correct": true,
+          "nll_gold": 1.3018739223480225
+        }
+      },
+      "generated_chars": {
+        "aligned_real": 674,
+        "baseline_uninjected": 674,
+        "random": 674,
+        "zerovec_injected": 674
+      },
+      "gold": "50",
+      "injection_site": {
+        "position_token_ids": [
+          151662,
+          151662,
+          151662,
+          151662,
+          151662,
+          151662,
+          151662,
+          151662
+        ],
+        "positions": [
+          105,
+          106,
+          107,
+          108,
+          109,
+          110,
+          111,
+          112
+        ],
+        "positions_decoded": "<|fim_pad|><|fim_pad|><|fim_pad|><|fim_pad|><|fim_pad|><|fim_pad|><|fim_pad|><|fim_pad|>",
+        "prompt_tokens": 161,
+        "site": "fim_pad_slots"
+      },
+      "item": 2489,
+      "pc1_payload": {
+        "gold_continuation_tokens": 57,
+        "l2_raw": 67.41556549072266,
+        "source": "receiver's OWN block-19 state, gold-teacher-forced, LAST span token",
+        "span_note": "capture.span records [gold_len-1, gold_len) — the single row that IS the payload",
+        "transform": "identity"
+      },
+      "sender_first_pass": {
+        "not_applicable": "PC1 is a same-model self-pair; no sender model is loaded or run"
+      }
+    },
+    {
+      "aligned_answer_tail": "from the future value: $120000 - $4000 = $16000.\n\n#### 16000",
+      "capture": {
+        "aligned_l2_raw": 68.08879089355469,
+        "hidden_size": 1536,
+        "injected_l2": 52.63074493408203,
+        "injection_mode": "fuse",
+        "natural_inject_block_norms": {
+          "max": 11056.958984375,
+          "mean": 138.92950439453125,
+          "median": 52.630714416503906,
+          "min": 41.21894454956055,
+          "n": 128,
+          "p25": 50.190528869628906,
+          "p75": 54.99297332763672
+        },
+        "pooled_l2_raw": 68.08879089355469,
+        "span": [
+          82,
+          83
+        ],
+        "variant": "pc1-identity-L19-lasttoken-goldteacherforced"
+      },
+      "conditions": {
+        "aligned_real": {
+          "correct": false,
+          "nll_gold": 1.4295390844345093
+        },
+        "baseline_uninjected": {
+          "correct": false,
+          "nll_gold": 1.3244729042053223
+        },
+        "random": {
+          "correct": true,
+          "nll_gold": 1.3555994033813477
+        },
+        "zerovec_injected": {
+          "correct": false,
+          "nll_gold": 1.3244729042053223
+        }
+      },
+      "generated_chars": {
+        "aligned_real": 522,
+        "baseline_uninjected": 522,
+        "random": 604,
+        "zerovec_injected": 522
+      },
+      "gold": "8000",
+      "injection_site": {
+        "position_token_ids": [
+          151662,
+          151662,
+          151662,
+          151662,
+          151662,
+          151662,
+          151662,
+          151662
+        ],
+        "positions": [
+          72,
+          73,
+          74,
+          75,
+          76,
+          77,
+          78,
+          79
+        ],
+        "positions_decoded": "<|fim_pad|><|fim_pad|><|fim_pad|><|fim_pad|><|fim_pad|><|fim_pad|><|fim_pad|><|fim_pad|>",
+        "prompt_tokens": 128,
+        "site": "fim_pad_slots"
+      },
+      "item": 2540,
+      "pc1_payload": {
+        "gold_continuation_tokens": 83,
+        "l2_raw": 68.08879089355469,
+        "source": "receiver's OWN block-19 state, gold-teacher-forced, LAST span token",
+        "span_note": "capture.span records [gold_len-1, gold_len) — the single row that IS the payload",
+        "transform": "identity"
+      },
+      "sender_first_pass": {
+        "not_applicable": "PC1 is a same-model self-pair; no sender model is loaded or run"
+      }
+    },
+    {
+      "aligned_answer_tail": "o, the length of the straight part of the river is:\n\n#### 20",
+      "capture": {
+        "aligned_l2_raw": 67.35250854492188,
+        "hidden_size": 1536,
+        "injected_l2": 52.889793395996094,
+        "injection_mode": "fuse",
+        "natural_inject_block_norms": {
+          "max": 11056.958984375,
+          "mean": 141.2401580810547,
+          "median": 52.88973617553711,
+          "min": 40.83546829223633,
+          "n": 125,
+          "p25": 50.370765686035156,
+          "p75": 56.28302764892578
+        },
+        "pooled_l2_raw": 67.35250854492188,
+        "span": [
+          93,
+          94
+        ],
+        "variant": "pc1-identity-L19-lasttoken-goldteacherforced"
+      },
+      "conditions": {
+        "aligned_real": {
+          "correct": true,
+          "nll_gold": 0.9742692708969116
+        },
+        "baseline_uninjected": {
+          "correct": true,
+          "nll_gold": 0.9043369293212891
+        },
+        "random": {
+          "correct": true,
+          "nll_gold": 0.8771723508834839
+        },
+        "zerovec_injected": {
+          "correct": true,
+          "nll_gold": 0.9043369293212891
+        }
+      },
+      "generated_chars": {
+        "aligned_real": 601,
+        "baseline_uninjected": 601,
+        "random": 601,
+        "zerovec_injected": 601
+      },
+      "gold": "20",
+      "injection_site": {
+        "position_token_ids": [
+          151662,
+          151662,
+          151662,
+          151662,
+          151662,
+          151662,
+          151662,
+          151662
+        ],
+        "positions": [
+          69,
+          70,
+          71,
+          72,
+          73,
+          74,
+          75,
+          76
+        ],
+        "positions_decoded": "<|fim_pad|><|fim_pad|><|fim_pad|><|fim_pad|><|fim_pad|><|fim_pad|><|fim_pad|><|fim_pad|>",
+        "prompt_tokens": 125,
+        "site": "fim_pad_slots"
+      },
+      "item": 2723,
+      "pc1_payload": {
+        "gold_continuation_tokens": 94,
+        "l2_raw": 67.35250854492188,
+        "source": "receiver's OWN block-19 state, gold-teacher-forced, LAST span token",
+        "span_note": "capture.span records [gold_len-1, gold_len) — the single row that IS the payload",
+        "transform": "identity"
+      },
+      "sender_first_pass": {
+        "not_applicable": "PC1 is a same-model self-pair; no sender model is loaded or run"
+      }
+    },
+    {
+      "aligned_answer_tail": "white homes that do not have a fireplace is \\(\\boxed{240}\\).",
+      "capture": {
+        "aligned_l2_raw": 65.61669158935547,
+        "hidden_size": 1536,
+        "injected_l2": 52.896114349365234,
+        "injection_mode": "fuse",
+        "natural_inject_block_norms": {
+          "max": 11046.880859375,
+          "mean": 137.19728088378906,
+          "median": 52.896087646484375,
+          "min": 41.38924026489258,
+          "n": 131,
+          "p25": 50.31737518310547,
+          "p75": 55.821590423583984
+        },
+        "pooled_l2_raw": 65.61669158935547,
+        "span": [
+          87,
+          88
+        ],
+        "variant": "pc1-identity-L19-lasttoken-goldteacherforced"
+      },
+      "conditions": {
+        "aligned_real": {
+          "correct": true,
+          "nll_gold": 1.6809251308441162
+        },
+        "baseline_uninjected": {
+          "correct": true,
+          "nll_gold": 1.563247799873352
+        },
+        "random": {
+          "correct": true,
+          "nll_gold": 1.6087843179702759
+        },
+        "zerovec_injected": {
+          "correct": true,
+          "nll_gold": 1.563247799873352
+        }
+      },
+      "generated_chars": {
+        "aligned_real": 953,
+        "baseline_uninjected": 953,
+        "random": 953,
+        "zerovec_injected": 953
+      },
+      "gold": "240",
+      "injection_site": {
+        "position_token_ids": [
+          151662,
+          151662,
+          151662,
+          151662,
+          151662,
+          151662,
+          151662,
+          151662
+        ],
+        "positions": [
+          75,
+          76,
+          77,
+          78,
+          79,
+          80,
+          81,
+          82
+        ],
+        "positions_decoded": "<|fim_pad|><|fim_pad|><|fim_pad|><|fim_pad|><|fim_pad|><|fim_pad|><|fim_pad|><|fim_pad|>",
+        "prompt_tokens": 131,
+        "site": "fim_pad_slots"
+      },
+      "item": 2958,
+      "pc1_payload": {
+        "gold_continuation_tokens": 88,
+        "l2_raw": 65.61669158935547,
+        "source": "receiver's OWN block-19 state, gold-teacher-forced, LAST span token",
+        "span_note": "capture.span records [gold_len-1, gold_len) — the single row that IS the payload",
+        "transform": "identity"
+      },
+      "sender_first_pass": {
+        "not_applicable": "PC1 is a same-model self-pair; no sender model is loaded or run"
+      }
+    },
+    {
+      "aligned_answer_tail": "{1}{4} = 10\\). Therefore, Janet got \\(\\boxed{10}\\) stuffies.",
+      "capture": {
+        "aligned_l2_raw": 65.16004943847656,
+        "hidden_size": 1536,
+        "injected_l2": 52.29954147338867,
+        "injection_mode": "fuse",
+        "natural_inject_block_norms": {
+          "max": 11046.880859375,
+          "mean": 133.139892578125,
+          "median": 52.29951477050781,
+          "min": 40.04020690917969,
+          "n": 136,
+          "p25": 49.19815444946289,
+          "p75": 54.79808807373047
+        },
+        "pooled_l2_raw": 65.16004943847656,
+        "span": [
+          47,
+          48
+        ],
+        "variant": "pc1-identity-L19-lasttoken-goldteacherforced"
+      },
+      "conditions": {
+        "aligned_real": {
+          "correct": true,
+          "nll_gold": 1.879751443862915
+        },
+        "baseline_uninjected": {
+          "correct": true,
+          "nll_gold": 1.7319550514221191
+        },
+        "random": {
+          "correct": true,
+          "nll_gold": 1.849562406539917
+        },
+        "zerovec_injected": {
+          "correct": true,
+          "nll_gold": 1.7319550514221191
+        }
+      },
+      "generated_chars": {
+        "aligned_real": 281,
+        "baseline_uninjected": 281,
+        "random": 281,
+        "zerovec_injected": 281
+      },
+      "gold": "10",
+      "injection_site": {
+        "position_token_ids": [
+          151662,
+          151662,
+          151662,
+          151662,
+          151662,
+          151662,
+          151662,
+          151662
+        ],
+        "positions": [
+          80,
+          81,
+          82,
+          83,
+          84,
+          85,
+          86,
+          87
+        ],
+        "positions_decoded": "<|fim_pad|><|fim_pad|><|fim_pad|><|fim_pad|><|fim_pad|><|fim_pad|><|fim_pad|><|fim_pad|>",
+        "prompt_tokens": 136,
+        "site": "fim_pad_slots"
+      },
+      "item": 2973,
+      "pc1_payload": {
+        "gold_continuation_tokens": 48,
+        "l2_raw": 65.16004943847656,
+        "source": "receiver's OWN block-19 state, gold-teacher-forced, LAST span token",
+        "span_note": "capture.span records [gold_len-1, gold_len) — the single row that IS the payload",
+        "transform": "identity"
+      },
+      "sender_first_pass": {
+        "not_applicable": "PC1 is a same-model self-pair; no sender model is loaded or run"
+      }
+    },
+    {
+      "aligned_answer_tail": " group\n   - Total strawberries picked = 12 * 4 = 48\n\n#### 48",
+      "capture": {
+        "aligned_l2_raw": 65.37596130371094,
+        "hidden_size": 1536,
+        "injected_l2": 51.36143493652344,
+        "injection_mode": "fuse",
+        "natural_inject_block_norms": {
+          "max": 11046.880859375,
+          "mean": 130.05795288085938,
+          "median": 51.36140060424805,
+          "min": 41.0392951965332,
+          "n": 140,
+          "p25": 48.97831726074219,
+          "p75": 53.619789123535156
+        },
+        "pooled_l2_raw": 65.37596130371094,
+        "span": [
+          99,
+          100
+        ],
+        "variant": "pc1-identity-L19-lasttoken-goldteacherforced"
+      },
+      "conditions": {
+        "aligned_real": {
+          "correct": false,
+          "nll_gold": 2.866758108139038
+        },
+        "baseline_uninjected": {
+          "correct": false,
+          "nll_gold": 2.8630530834198
+        },
+        "random": {
+          "correct": false,
+          "nll_gold": 2.8695859909057617
+        },
+        "zerovec_injected": {
+          "correct": false,
+          "nll_gold": 2.8630530834198
+        }
+      },
+      "generated_chars": {
+        "aligned_real": 1092,
+        "baseline_uninjected": 1092,
+        "random": 767,
+        "zerovec_injected": 1092
+      },
+      "gold": "75",
+      "injection_site": {
+        "position_token_ids": [
+          151662,
+          151662,
+          151662,
+          151662,
+          151662,
+          151662,
+          151662,
+          151662
+        ],
+        "positions": [
+          84,
+          85,
+          86,
+          87,
+          88,
+          89,
+          90,
+          91
+        ],
+        "positions_decoded": "<|fim_pad|><|fim_pad|><|fim_pad|><|fim_pad|><|fim_pad|><|fim_pad|><|fim_pad|><|fim_pad|>",
+        "prompt_tokens": 140,
+        "site": "fim_pad_slots"
+      },
+      "item": 3084,
+      "pc1_payload": {
+        "gold_continuation_tokens": 100,
+        "l2_raw": 65.37596130371094,
+        "source": "receiver's OWN block-19 state, gold-teacher-forced, LAST span token",
+        "span_note": "capture.span records [gold_len-1, gold_len) — the single row that IS the payload",
+        "transform": "identity"
+      },
+      "sender_first_pass": {
+        "not_applicable": "PC1 is a same-model self-pair; no sender model is loaded or run"
+      }
+    },
+    {
+      "aligned_answer_tail": " - 3 = 36\\) years old.\n\n#### 36\nTherefore, the answer is 36.",
+      "capture": {
+        "aligned_l2_raw": 68.99884796142578,
+        "hidden_size": 1536,
+        "injected_l2": 53.2614631652832,
+        "injection_mode": "fuse",
+        "natural_inject_block_norms": {
+          "max": 11046.880859375,
+          "mean": 125.71651458740234,
+          "median": 53.26142501831055,
+          "min": 39.83434295654297,
+          "n": 152,
+          "p25": 50.24033737182617,
+          "p75": 56.49971008300781
+        },
+        "pooled_l2_raw": 68.99884796142578,
+        "span": [
+          102,
+          103
+        ],
+        "variant": "pc1-identity-L19-lasttoken-goldteacherforced"
+      },
+      "conditions": {
+        "aligned_real": {
+          "correct": true,
+          "nll_gold": 2.504838466644287
+        },
+        "baseline_uninjected": {
+          "correct": true,
+          "nll_gold": 2.9988443851470947
+        },
+        "random": {
+          "correct": false,
+          "nll_gold": 2.996833324432373
+        },
+        "zerovec_injected": {
+          "correct": true,
+          "nll_gold": 2.9988443851470947
+        }
+      },
+      "generated_chars": {
+        "aligned_real": 792,
+        "baseline_uninjected": 678,
+        "random": 771,
+        "zerovec_injected": 678
+      },
+      "gold": "36",
+      "injection_site": {
+        "position_token_ids": [
+          151662,
+          151662,
+          151662,
+          151662,
+          151662,
+          151662,
+          151662,
+          151662
+        ],
+        "positions": [
+          96,
+          97,
+          98,
+          99,
+          100,
+          101,
+          102,
+          103
+        ],
+        "positions_decoded": "<|fim_pad|><|fim_pad|><|fim_pad|><|fim_pad|><|fim_pad|><|fim_pad|><|fim_pad|><|fim_pad|>",
+        "prompt_tokens": 152,
+        "site": "fim_pad_slots"
+      },
+      "item": 3165,
+      "pc1_payload": {
+        "gold_continuation_tokens": 103,
+        "l2_raw": 68.99884796142578,
+        "source": "receiver's OWN block-19 state, gold-teacher-forced, LAST span token",
+        "span_note": "capture.span records [gold_len-1, gold_len) — the single row that IS the payload",
+        "transform": "identity"
+      },
+      "sender_first_pass": {
+        "not_applicable": "PC1 is a same-model self-pair; no sender model is loaded or run"
+      }
+    },
+    {
+      "aligned_answer_tail": "oxed{150}\\) minutes to reach his daily goal of 10,000 steps.",
+      "capture": {
+        "aligned_l2_raw": 64.82951354980469,
+        "hidden_size": 1536,
+        "injected_l2": 52.08225631713867,
+        "injection_mode": "fuse",
+        "natural_inject_block_norms": {
+          "max": 11046.880859375,
+          "mean": 128.87551879882812,
+          "median": 52.08220291137695,
+          "min": 40.75791931152344,
+          "n": 144,
+          "p25": 49.928871154785156,
+          "p75": 55.0253791809082
+        },
+        "pooled_l2_raw": 64.82951354980469,
+        "span": [
+          56,
+          57
+        ],
+        "variant": "pc1-identity-L19-lasttoken-goldteacherforced"
+      },
+      "conditions": {
+        "aligned_real": {
+          "correct": false,
+          "nll_gold": 2.0281786918640137
+        },
+        "baseline_uninjected": {
+          "correct": false,
+          "nll_gold": 2.1443257331848145
+        },
+        "random": {
+          "correct": false,
+          "nll_gold": 1.9579893350601196
+        },
+        "zerovec_injected": {
+          "correct": false,
+          "nll_gold": 2.1443257331848145
+        }
+      },
+      "generated_chars": {
+        "aligned_real": 907,
+        "baseline_uninjected": 813,
+        "random": 814,
+        "zerovec_injected": 813
+      },
+      "gold": "150",
+      "injection_site": {
+        "position_token_ids": [
+          151662,
+          151662,
+          151662,
+          151662,
+          151662,
+          151662,
+          151662,
+          151662
+        ],
+        "positions": [
+          88,
+          89,
+          90,
+          91,
+          92,
+          93,
+          94,
+          95
+        ],
+        "positions_decoded": "<|fim_pad|><|fim_pad|><|fim_pad|><|fim_pad|><|fim_pad|><|fim_pad|><|fim_pad|><|fim_pad|>",
+        "prompt_tokens": 144,
+        "site": "fim_pad_slots"
+      },
+      "item": 3741,
+      "pc1_payload": {
+        "gold_continuation_tokens": 57,
+        "l2_raw": 64.82951354980469,
+        "source": "receiver's OWN block-19 state, gold-teacher-forced, LAST span token",
+        "span_note": "capture.span records [gold_len-1, gold_len) — the single row that IS the payload",
+        "transform": "identity"
+      },
+      "sender_first_pass": {
+        "not_applicable": "PC1 is a same-model self-pair; no sender model is loaded or run"
+      }
+    },
+    {
+      "aligned_answer_tail": "f Beast of War: Armoured Command is \\(\\boxed{100}\\) minutes.",
+      "capture": {
+        "aligned_l2_raw": 67.78555297851562,
+        "hidden_size": 1536,
+        "injected_l2": 53.28350830078125,
+        "injection_mode": "fuse",
+        "natural_inject_block_norms": {
+          "max": 11046.880859375,
+          "mean": 129.0301513671875,
+          "median": 53.28345489501953,
+          "min": 41.37049865722656,
+          "n": 146,
+          "p25": 49.98970413208008,
+          "p75": 56.7739372253418
+        },
+        "pooled_l2_raw": 67.78555297851562,
+        "span": [
+          101,
+          102
+        ],
+        "variant": "pc1-identity-L19-lasttoken-goldteacherforced"
+      },
+      "conditions": {
+        "aligned_real": {
+          "correct": true,
+          "nll_gold": 1.1792938709259033
+        },
+        "baseline_uninjected": {
+          "correct": true,
+          "nll_gold": 1.226447343826294
+        },
+        "random": {
+          "correct": true,
+          "nll_gold": 1.2451196908950806
+        },
+        "zerovec_injected": {
+          "correct": true,
+          "nll_gold": 1.226447343826294
+        }
+      },
+      "generated_chars": {
+        "aligned_real": 884,
+        "baseline_uninjected": 884,
+        "random": 884,
+        "zerovec_injected": 884
+      },
+      "gold": "100",
+      "injection_site": {
+        "position_token_ids": [
+          151662,
+          151662,
+          151662,
+          151662,
+          151662,
+          151662,
+          151662,
+          151662
+        ],
+        "positions": [
+          90,
+          91,
+          92,
+          93,
+          94,
+          95,
+          96,
+          97
+        ],
+        "positions_decoded": "<|fim_pad|><|fim_pad|><|fim_pad|><|fim_pad|><|fim_pad|><|fim_pad|><|fim_pad|><|fim_pad|>",
+        "prompt_tokens": 146,
+        "site": "fim_pad_slots"
+      },
+      "item": 3772,
+      "pc1_payload": {
+        "gold_continuation_tokens": 102,
+        "l2_raw": 67.78555297851562,
+        "source": "receiver's OWN block-19 state, gold-teacher-forced, LAST span token",
+        "span_note": "capture.span records [gold_len-1, gold_len) — the single row that IS the payload",
+        "transform": "identity"
+      },
+      "sender_first_pass": {
+        "not_applicable": "PC1 is a same-model self-pair; no sender model is loaded or run"
+      }
+    },
+    {
+      "aligned_answer_tail": "the final number of jellybeans in the jar is \\(\\boxed{23}\\).",
+      "capture": {
+        "aligned_l2_raw": 68.31990814208984,
+        "hidden_size": 1536,
+        "injected_l2": 52.00839614868164,
+        "injection_mode": "fuse",
+        "natural_inject_block_norms": {
+          "max": 11046.880859375,
+          "mean": 133.86351013183594,
+          "median": 52.00836944580078,
+          "min": 41.20509338378906,
+          "n": 135,
+          "p25": 49.924583435058594,
+          "p75": 54.8874397277832
+        },
+        "pooled_l2_raw": 68.31990814208984,
+        "span": [
+          77,
+          78
+        ],
+        "variant": "pc1-identity-L19-lasttoken-goldteacherforced"
+      },
+      "conditions": {
+        "aligned_real": {
+          "correct": true,
+          "nll_gold": 1.921142339706421
+        },
+        "baseline_uninjected": {
+          "correct": true,
+          "nll_gold": 1.9409360885620117
+        },
+        "random": {
+          "correct": true,
+          "nll_gold": 2.1582908630371094
+        },
+        "zerovec_injected": {
+          "correct": true,
+          "nll_gold": 1.9409360885620117
+        }
+      },
+      "generated_chars": {
+        "aligned_real": 321,
+        "baseline_uninjected": 321,
+        "random": 320,
+        "zerovec_injected": 321
+      },
+      "gold": "23",
+      "injection_site": {
+        "position_token_ids": [
+          151662,
+          151662,
+          151662,
+          151662,
+          151662,
+          151662,
+          151662,
+          151662
+        ],
+        "positions": [
+          79,
+          80,
+          81,
+          82,
+          83,
+          84,
+          85,
+          86
+        ],
+        "positions_decoded": "<|fim_pad|><|fim_pad|><|fim_pad|><|fim_pad|><|fim_pad|><|fim_pad|><|fim_pad|><|fim_pad|>",
+        "prompt_tokens": 135,
+        "site": "fim_pad_slots"
+      },
+      "item": 3825,
+      "pc1_payload": {
+        "gold_continuation_tokens": 78,
+        "l2_raw": 68.31990814208984,
+        "source": "receiver's OWN block-19 state, gold-teacher-forced, LAST span token",
+        "span_note": "capture.span records [gold_len-1, gold_len) — the single row that IS the payload",
+        "transform": "identity"
+      },
+      "sender_first_pass": {
+        "not_applicable": "PC1 is a same-model self-pair; no sender model is loaded or run"
+      }
+    },
+    {
+      "aligned_answer_tail": "fore, the cost of each single steak knife is \\(\\boxed{20}\\).",
+      "capture": {
+        "aligned_l2_raw": 64.61945343017578,
+        "hidden_size": 1536,
+        "injected_l2": 52.191566467285156,
+        "injection_mode": "fuse",
+        "natural_inject_block_norms": {
+          "max": 11046.880859375,
+          "mean": 126.94627380371094,
+          "median": 52.19149398803711,
+          "min": 40.74544143676758,
+          "n": 148,
+          "p25": 49.708457946777344,
+          "p75": 55.26982879638672
+        },
+        "pooled_l2_raw": 64.61945343017578,
+        "span": [
+          104,
+          105
+        ],
+        "variant": "pc1-identity-L19-lasttoken-goldteacherforced"
+      },
+      "conditions": {
+        "aligned_real": {
+          "correct": true,
+          "nll_gold": 1.9082155227661133
+        },
+        "baseline_uninjected": {
+          "correct": true,
+          "nll_gold": 1.7454819679260254
+        },
+        "random": {
+          "correct": true,
+          "nll_gold": 1.7789398431777954
+        },
+        "zerovec_injected": {
+          "correct": true,
+          "nll_gold": 1.7454819679260254
+        }
+      },
+      "generated_chars": {
+        "aligned_real": 660,
+        "baseline_uninjected": 976,
+        "random": 916,
+        "zerovec_injected": 976
+      },
+      "gold": "20",
+      "injection_site": {
+        "position_token_ids": [
+          151662,
+          151662,
+          151662,
+          151662,
+          151662,
+          151662,
+          151662,
+          151662
+        ],
+        "positions": [
+          92,
+          93,
+          94,
+          95,
+          96,
+          97,
+          98,
+          99
+        ],
+        "positions_decoded": "<|fim_pad|><|fim_pad|><|fim_pad|><|fim_pad|><|fim_pad|><|fim_pad|><|fim_pad|><|fim_pad|>",
+        "prompt_tokens": 148,
+        "site": "fim_pad_slots"
+      },
+      "item": 3844,
+      "pc1_payload": {
+        "gold_continuation_tokens": 105,
+        "l2_raw": 64.61945343017578,
+        "source": "receiver's OWN block-19 state, gold-teacher-forced, LAST span token",
+        "span_note": "capture.span records [gold_len-1, gold_len) — the single row that IS the payload",
+        "transform": "identity"
+      },
+      "sender_first_pass": {
+        "not_applicable": "PC1 is a same-model self-pair; no sender model is loaded or run"
+      }
+    },
+    {
+      "aligned_answer_tail": "ext{ boxes}\n     \\]\n\nThus, Marissa tied \\(\\boxed{5}\\) boxes.",
+      "capture": {
+        "aligned_l2_raw": 66.4845199584961,
+        "hidden_size": 1536,
+        "injected_l2": 52.56703567504883,
+        "injection_mode": "fuse",
+        "natural_inject_block_norms": {
+          "max": 11046.880859375,
+          "mean": 132.49781799316406,
+          "median": 52.567012786865234,
+          "min": 40.068668365478516,
+          "n": 138,
+          "p25": 49.849735260009766,
+          "p75": 55.458683013916016
+        },
+        "pooled_l2_raw": 66.4845199584961,
+        "span": [
+          44,
+          45
+        ],
+        "variant": "pc1-identity-L19-lasttoken-goldteacherforced"
+      },
+      "conditions": {
+        "aligned_real": {
+          "correct": true,
+          "nll_gold": 2.062077283859253
+        },
+        "baseline_uninjected": {
+          "correct": true,
+          "nll_gold": 1.823097825050354
+        },
+        "random": {
+          "correct": true,
+          "nll_gold": 1.9379234313964844
+        },
+        "zerovec_injected": {
+          "correct": true,
+          "nll_gold": 1.823097825050354
+        }
+      },
+      "generated_chars": {
+        "aligned_real": 704,
+        "baseline_uninjected": 704,
+        "random": 676,
+        "zerovec_injected": 704
+      },
+      "gold": "5",
+      "injection_site": {
+        "position_token_ids": [
+          151662,
+          151662,
+          151662,
+          151662,
+          151662,
+          151662,
+          151662,
+          151662
+        ],
+        "positions": [
+          82,
+          83,
+          84,
+          85,
+          86,
+          87,
+          88,
+          89
+        ],
+        "positions_decoded": "<|fim_pad|><|fim_pad|><|fim_pad|><|fim_pad|><|fim_pad|><|fim_pad|><|fim_pad|><|fim_pad|>",
+        "prompt_tokens": 138,
+        "site": "fim_pad_slots"
+      },
+      "item": 3877,
+      "pc1_payload": {
+        "gold_continuation_tokens": 45,
+        "l2_raw": 66.4845199584961,
+        "source": "receiver's OWN block-19 state, gold-teacher-forced, LAST span token",
+        "span_note": "capture.span records [gold_len-1, gold_len) — the single row that IS the payload",
+        "transform": "identity"
+      },
+      "sender_first_pass": {
+        "not_applicable": "PC1 is a same-model self-pair; no sender model is loaded or run"
+      }
+    },
+    {
+      "aligned_answer_tail": "ore, the total time Jeannie's hike took is #### 0.833 hours.",
+      "capture": {
+        "aligned_l2_raw": 65.50518798828125,
+        "hidden_size": 1536,
+        "injected_l2": 52.57939529418945,
+        "injection_mode": "fuse",
+        "natural_inject_block_norms": {
+          "max": 11046.880859375,
+          "mean": 136.7063446044922,
+          "median": 52.579349517822266,
+          "min": 41.306522369384766,
+          "n": 131,
+          "p25": 49.95872497558594,
+          "p75": 55.54620361328125
+        },
+        "pooled_l2_raw": 65.50518798828125,
+        "span": [
+          37,
+          38
+        ],
+        "variant": "pc1-identity-L19-lasttoken-goldteacherforced"
+      },
+      "conditions": {
+        "aligned_real": {
+          "correct": false,
+          "nll_gold": 1.9841495752334595
+        },
+        "baseline_uninjected": {
+          "correct": false,
+          "nll_gold": 1.8419979810714722
+        },
+        "random": {
+          "correct": false,
+          "nll_gold": 1.7407169342041016
+        },
+        "zerovec_injected": {
+          "correct": false,
+          "nll_gold": 1.8419979810714722
+        }
+      },
+      "generated_chars": {
+        "aligned_real": 662,
+        "baseline_uninjected": 599,
+        "random": 692,
+        "zerovec_injected": 599
+      },
+      "gold": "5",
+      "injection_site": {
+        "position_token_ids": [
+          151662,
+          151662,
+          151662,
+          151662,
+          151662,
+          151662,
+          151662,
+          151662
+        ],
+        "positions": [
+          75,
+          76,
+          77,
+          78,
+          79,
+          80,
+          81,
+          82
+        ],
+        "positions_decoded": "<|fim_pad|><|fim_pad|><|fim_pad|><|fim_pad|><|fim_pad|><|fim_pad|><|fim_pad|><|fim_pad|>",
+        "prompt_tokens": 131,
+        "site": "fim_pad_slots"
+      },
+      "item": 4255,
+      "pc1_payload": {
+        "gold_continuation_tokens": 38,
+        "l2_raw": 65.50518798828125,
+        "source": "receiver's OWN block-19 state, gold-teacher-forced, LAST span token",
+        "span_note": "capture.span records [gold_len-1, gold_len) — the single row that IS the payload",
+        "transform": "identity"
+      },
+      "sender_first_pass": {
+        "not_applicable": "PC1 is a same-model self-pair; no sender model is loaded or run"
+      }
+    },
+    {
+      "aligned_answer_tail": "crates\n\nTotal crates sold = \\(5 + 10 + 8 + 5 = 28\\)\n\n#### 28",
+      "capture": {
+        "aligned_l2_raw": 65.33494567871094,
+        "hidden_size": 1536,
+        "injected_l2": 51.87165832519531,
+        "injection_mode": "fuse",
+        "natural_inject_block_norms": {
+          "max": 11046.880859375,
+          "mean": 121.49589538574219,
+          "median": 51.87165069580078,
+          "min": 41.47922897338867,
+          "n": 159,
+          "p25": 49.91453170776367,
+          "p75": 54.53752136230469
+        },
+        "pooled_l2_raw": 65.33494567871094,
+        "span": [
+          89,
+          90
+        ],
+        "variant": "pc1-identity-L19-lasttoken-goldteacherforced"
+      },
+      "conditions": {
+        "aligned_real": {
+          "correct": true,
+          "nll_gold": 2.0474791526794434
+        },
+        "baseline_uninjected": {
+          "correct": true,
+          "nll_gold": 2.085714817047119
+        },
+        "random": {
+          "correct": true,
+          "nll_gold": 2.1170499324798584
+        },
+        "zerovec_injected": {
+          "correct": true,
+          "nll_gold": 2.085714817047119
+        }
+      },
+      "generated_chars": {
+        "aligned_real": 671,
+        "baseline_uninjected": 671,
+        "random": 735,
+        "zerovec_injected": 671
+      },
+      "gold": "28",
+      "injection_site": {
+        "position_token_ids": [
+          151662,
+          151662,
+          151662,
+          151662,
+          151662,
+          151662,
+          151662,
+          151662
+        ],
+        "positions": [
+          103,
+          104,
+          105,
+          106,
+          107,
+          108,
+          109,
+          110
+        ],
+        "positions_decoded": "<|fim_pad|><|fim_pad|><|fim_pad|><|fim_pad|><|fim_pad|><|fim_pad|><|fim_pad|><|fim_pad|>",
+        "prompt_tokens": 159,
+        "site": "fim_pad_slots"
+      },
+      "item": 4305,
+      "pc1_payload": {
+        "gold_continuation_tokens": 90,
+        "l2_raw": 65.33494567871094,
+        "source": "receiver's OWN block-19 state, gold-teacher-forced, LAST span token",
+        "span_note": "capture.span records [gold_len-1, gold_len) — the single row that IS the payload",
+        "transform": "identity"
+      },
+      "sender_first_pass": {
+        "not_applicable": "PC1 is a same-model self-pair; no sender model is loaded or run"
+      }
+    },
+    {
+      "aligned_answer_tail": "s is worth $0.5.\n\n#### 0.5\nSo, the final answer is: #### 0.5",
+      "capture": {
+        "aligned_l2_raw": 63.801944732666016,
+        "hidden_size": 1536,
+        "injected_l2": 51.919700622558594,
+        "injection_mode": "fuse",
+        "natural_inject_block_norms": {
+          "max": 11046.880859375,
+          "mean": 134.1837615966797,
+          "median": 51.91965866088867,
+          "min": 40.72663116455078,
+          "n": 134,
+          "p25": 49.111690521240234,
+          "p75": 55.04064178466797
+        },
+        "pooled_l2_raw": 63.801944732666016,
+        "span": [
+          73,
+          74
+        ],
+        "variant": "pc1-identity-L19-lasttoken-goldteacherforced"
+      },
+      "conditions": {
+        "aligned_real": {
+          "correct": false,
+          "nll_gold": 2.899787187576294
+        },
+        "baseline_uninjected": {
+          "correct": false,
+          "nll_gold": 2.5301830768585205
+        },
+        "random": {
+          "correct": false,
+          "nll_gold": 2.5518429279327393
+        },
+        "zerovec_injected": {
+          "correct": false,
+          "nll_gold": 2.5301830768585205
+        }
+      },
+      "generated_chars": {
+        "aligned_real": 701,
+        "baseline_uninjected": 701,
+        "random": 701,
+        "zerovec_injected": 701
+      },
+      "gold": "5",
+      "injection_site": {
+        "position_token_ids": [
+          151662,
+          151662,
+          151662,
+          151662,
+          151662,
+          151662,
+          151662,
+          151662
+        ],
+        "positions": [
+          78,
+          79,
+          80,
+          81,
+          82,
+          83,
+          84,
+          85
+        ],
+        "positions_decoded": "<|fim_pad|><|fim_pad|><|fim_pad|><|fim_pad|><|fim_pad|><|fim_pad|><|fim_pad|><|fim_pad|>",
+        "prompt_tokens": 134,
+        "site": "fim_pad_slots"
+      },
+      "item": 4344,
+      "pc1_payload": {
+        "gold_continuation_tokens": 74,
+        "l2_raw": 63.801944732666016,
+        "source": "receiver's OWN block-19 state, gold-teacher-forced, LAST span token",
+        "span_note": "capture.span records [gold_len-1, gold_len) — the single row that IS the payload",
+        "transform": "identity"
+      },
+      "sender_first_pass": {
+        "not_applicable": "PC1 is a same-model self-pair; no sender model is loaded or run"
+      }
+    },
+    {
+      "aligned_answer_tail": " second set: 12\n- Total broken marbles: 5 + 12 = 17\n\n#### 17",
+      "capture": {
+        "aligned_l2_raw": 67.02056884765625,
+        "hidden_size": 1536,
+        "injected_l2": 52.14474105834961,
+        "injection_mode": "fuse",
+        "natural_inject_block_norms": {
+          "max": 11046.880859375,
+          "mean": 123.04320526123047,
+          "median": 52.14472579956055,
+          "min": 41.47252655029297,
+          "n": 156,
+          "p25": 49.849735260009766,
+          "p75": 55.009735107421875
+        },
+        "pooled_l2_raw": 67.02056884765625,
+        "span": [
+          71,
+          72
+        ],
+        "variant": "pc1-identity-L19-lasttoken-goldteacherforced"
+      },
+      "conditions": {
+        "aligned_real": {
+          "correct": true,
+          "nll_gold": 1.7167811393737793
+        },
+        "baseline_uninjected": {
+          "correct": true,
+          "nll_gold": 1.8171968460083008
+        },
+        "random": {
+          "correct": true,
+          "nll_gold": 1.847011685371399
+        },
+        "zerovec_injected": {
+          "correct": true,
+          "nll_gold": 1.8171968460083008
+        }
+      },
+      "generated_chars": {
+        "aligned_real": 505,
+        "baseline_uninjected": 459,
+        "random": 505,
+        "zerovec_injected": 459
+      },
+      "gold": "17",
+      "injection_site": {
+        "position_token_ids": [
+          151662,
+          151662,
+          151662,
+          151662,
+          151662,
+          151662,
+          151662,
+          151662
+        ],
+        "positions": [
+          100,
+          101,
+          102,
+          103,
+          104,
+          105,
+          106,
+          107
+        ],
+        "positions_decoded": "<|fim_pad|><|fim_pad|><|fim_pad|><|fim_pad|><|fim_pad|><|fim_pad|><|fim_pad|><|fim_pad|>",
+        "prompt_tokens": 156,
+        "site": "fim_pad_slots"
+      },
+      "item": 4746,
+      "pc1_payload": {
+        "gold_continuation_tokens": 72,
+        "l2_raw": 67.02056884765625,
+        "source": "receiver's OWN block-19 state, gold-teacher-forced, LAST span token",
+        "span_note": "capture.span records [gold_len-1, gold_len) — the single row that IS the payload",
+        "transform": "identity"
+      },
+      "sender_first_pass": {
+        "not_applicable": "PC1 is a same-model self-pair; no sender model is loaded or run"
+      }
+    },
+    {
+      "aligned_answer_tail": "iend, he has $75 - $50 = -$45. The final answer is: #### -45",
+      "capture": {
+        "aligned_l2_raw": 65.61590576171875,
+        "hidden_size": 1536,
+        "injected_l2": 52.45628356933594,
+        "injection_mode": "fuse",
+        "natural_inject_block_norms": {
+          "max": 11056.958984375,
+          "mean": 139.86224365234375,
+          "median": 52.45625686645508,
+          "min": 39.97791290283203,
+          "n": 126,
+          "p25": 49.848609924316406,
+          "p75": 55.0240592956543
+        },
+        "pooled_l2_raw": 65.61590576171875,
+        "span": [
+          42,
+          43
+        ],
+        "variant": "pc1-identity-L19-lasttoken-goldteacherforced"
+      },
+      "conditions": {
+        "aligned_real": {
+          "correct": false,
+          "nll_gold": 1.680992841720581
+        },
+        "baseline_uninjected": {
+          "correct": false,
+          "nll_gold": 1.478162169456482
+        },
+        "random": {
+          "correct": false,
+          "nll_gold": 1.6131447553634644
+        },
+        "zerovec_injected": {
+          "correct": false,
+          "nll_gold": 1.478162169456482
+        }
+      },
+      "generated_chars": {
+        "aligned_real": 157,
+        "baseline_uninjected": 157,
+        "random": 227,
+        "zerovec_injected": 157
+      },
+      "gold": "25",
+      "injection_site": {
+        "position_token_ids": [
+          151662,
+          151662,
+          151662,
+          151662,
+          151662,
+          151662,
+          151662,
+          151662
+        ],
+        "positions": [
+          70,
+          71,
+          72,
+          73,
+          74,
+          75,
+          76,
+          77
+        ],
+        "positions_decoded": "<|fim_pad|><|fim_pad|><|fim_pad|><|fim_pad|><|fim_pad|><|fim_pad|><|fim_pad|><|fim_pad|>",
+        "prompt_tokens": 126,
+        "site": "fim_pad_slots"
+      },
+      "item": 4888,
+      "pc1_payload": {
+        "gold_continuation_tokens": 43,
+        "l2_raw": 65.61590576171875,
+        "source": "receiver's OWN block-19 state, gold-teacher-forced, LAST span token",
+        "span_note": "capture.span records [gold_len-1, gold_len) — the single row that IS the payload",
+        "transform": "identity"
+      },
+      "sender_first_pass": {
+        "not_applicable": "PC1 is a same-model self-pair; no sender model is loaded or run"
+      }
+    },
+    {
+      "aligned_answer_tail": "t to say the sum is 15, the correct answer would be:\n\n#### 2",
+      "capture": {
+        "aligned_l2_raw": 66.69766998291016,
+        "hidden_size": 1536,
+        "injected_l2": 52.82475662231445,
+        "injection_mode": "fuse",
+        "natural_inject_block_norms": {
+          "max": 11056.98046875,
+          "mean": 147.9623565673828,
+          "median": 52.82474899291992,
+          "min": 40.87361145019531,
+          "n": 116,
+          "p25": 50.08302307128906,
+          "p75": 55.88361740112305
+        },
+        "pooled_l2_raw": 66.69766998291016,
+        "span": [
+          73,
+          74
+        ],
+        "variant": "pc1-identity-L19-lasttoken-goldteacherforced"
+      },
+      "conditions": {
+        "aligned_real": {
+          "correct": false,
+          "nll_gold": 2.905059814453125
+        },
+        "baseline_uninjected": {
+          "correct": false,
+          "nll_gold": 2.590533971786499
+        },
+        "random": {
+          "correct": true,
+          "nll_gold": 2.380385637283325
+        },
+        "zerovec_injected": {
+          "correct": false,
+          "nll_gold": 2.590533971786499
+        }
+      },
+      "generated_chars": {
+        "aligned_real": 980,
+        "baseline_uninjected": 1157,
+        "random": 1158,
+        "zerovec_injected": 1157
+      },
+      "gold": "7",
+      "injection_site": {
+        "position_token_ids": [
+          151662,
+          151662,
+          151662,
+          151662,
+          151662,
+          151662,
+          151662,
+          151662
+        ],
+        "positions": [
+          60,
+          61,
+          62,
+          63,
+          64,
+          65,
+          66,
+          67
+        ],
+        "positions_decoded": "<|fim_pad|><|fim_pad|><|fim_pad|><|fim_pad|><|fim_pad|><|fim_pad|><|fim_pad|><|fim_pad|>",
+        "prompt_tokens": 116,
+        "site": "fim_pad_slots"
+      },
+      "item": 5422,
+      "pc1_payload": {
+        "gold_continuation_tokens": 74,
+        "l2_raw": 66.69766998291016,
+        "source": "receiver's OWN block-19 state, gold-teacher-forced, LAST span token",
+        "span_note": "capture.span records [gold_len-1, gold_len) — the single row that IS the payload",
+        "transform": "identity"
+      },
+      "sender_first_pass": {
+        "not_applicable": "PC1 is a same-model self-pair; no sender model is loaded or run"
+      }
+    },
+    {
+      "aligned_answer_tail": "\nTherefore, the youngest brother is \\(\\boxed{3}\\) years old.",
+      "capture": {
+        "aligned_l2_raw": 66.88533782958984,
+        "hidden_size": 1536,
+        "injected_l2": 52.75352478027344,
+        "injection_mode": "fuse",
+        "natural_inject_block_norms": {
+          "max": 11046.880859375,
+          "mean": 123.99488067626953,
+          "median": 52.753509521484375,
+          "min": 41.42026901245117,
+          "n": 155,
+          "p25": 50.222511291503906,
+          "p75": 55.70454406738281
+        },
+        "pooled_l2_raw": 66.88533782958984,
+        "span": [
+          77,
+          78
+        ],
+        "variant": "pc1-identity-L19-lasttoken-goldteacherforced"
+      },
+      "conditions": {
+        "aligned_real": {
+          "correct": true,
+          "nll_gold": 1.8685593605041504
+        },
+        "baseline_uninjected": {
+          "correct": true,
+          "nll_gold": 1.877097487449646
+        },
+        "random": {
+          "correct": true,
+          "nll_gold": 1.7161048650741577
+        },
+        "zerovec_injected": {
+          "correct": true,
+          "nll_gold": 1.877097487449646
+        }
+      },
+      "generated_chars": {
+        "aligned_real": 806,
+        "baseline_uninjected": 806,
+        "random": 806,
+        "zerovec_injected": 806
+      },
+      "gold": "3",
+      "injection_site": {
+        "position_token_ids": [
+          151662,
+          151662,
+          151662,
+          151662,
+          151662,
+          151662,
+          151662,
+          151662
+        ],
+        "positions": [
+          99,
+          100,
+          101,
+          102,
+          103,
+          104,
+          105,
+          106
+        ],
+        "positions_decoded": "<|fim_pad|><|fim_pad|><|fim_pad|><|fim_pad|><|fim_pad|><|fim_pad|><|fim_pad|><|fim_pad|>",
+        "prompt_tokens": 155,
+        "site": "fim_pad_slots"
+      },
+      "item": 5610,
+      "pc1_payload": {
+        "gold_continuation_tokens": 78,
+        "l2_raw": 66.88533782958984,
+        "source": "receiver's OWN block-19 state, gold-teacher-forced, LAST span token",
+        "span_note": "capture.span records [gold_len-1, gold_len) — the single row that IS the payload",
+        "transform": "identity"
+      },
+      "sender_first_pass": {
+        "not_applicable": "PC1 is a same-model self-pair; no sender model is loaded or run"
+      }
+    },
+    {
+      "aligned_answer_tail": "ac{1}{2} \\times 36 \\]\n\\[ S = 18 \\]\n\nSo, Sam is 18 years old.",
+      "capture": {
+        "aligned_l2_raw": 61.9234733581543,
+        "hidden_size": 1536,
+        "injected_l2": 52.736488342285156,
+        "injection_mode": "fuse",
+        "natural_inject_block_norms": {
+          "max": 11056.98046875,
+          "mean": 152.2140655517578,
+          "median": 52.7364387512207,
+          "min": 41.16202926635742,
+          "n": 111,
+          "p25": 49.923667907714844,
+          "p75": 55.418235778808594
+        },
+        "pooled_l2_raw": 61.9234733581543,
+        "span": [
+          62,
+          63
+        ],
+        "variant": "pc1-identity-L19-lasttoken-goldteacherforced"
+      },
+      "conditions": {
+        "aligned_real": {
+          "correct": true,
+          "nll_gold": 1.6379938125610352
+        },
+        "baseline_uninjected": {
+          "correct": true,
+          "nll_gold": 1.5272310972213745
+        },
+        "random": {
+          "correct": true,
+          "nll_gold": 1.5411611795425415
+        },
+        "zerovec_injected": {
+          "correct": true,
+          "nll_gold": 1.5272310972213745
+        }
+      },
+      "generated_chars": {
+        "aligned_real": 783,
+        "baseline_uninjected": 783,
+        "random": 715,
+        "zerovec_injected": 783
+      },
+      "gold": "18",
+      "injection_site": {
+        "position_token_ids": [
+          151662,
+          151662,
+          151662,
+          151662,
+          151662,
+          151662,
+          151662,
+          151662
+        ],
+        "positions": [
+          55,
+          56,
+          57,
+          58,
+          59,
+          60,
+          61,
+          62
+        ],
+        "positions_decoded": "<|fim_pad|><|fim_pad|><|fim_pad|><|fim_pad|><|fim_pad|><|fim_pad|><|fim_pad|><|fim_pad|>",
+        "prompt_tokens": 111,
+        "site": "fim_pad_slots"
+      },
+      "item": 6031,
+      "pc1_payload": {
+        "gold_continuation_tokens": 63,
+        "l2_raw": 61.9234733581543,
+        "source": "receiver's OWN block-19 state, gold-teacher-forced, LAST span token",
+        "span_note": "capture.span records [gold_len-1, gold_len) — the single row that IS the payload",
+        "transform": "identity"
+      },
+      "sender_first_pass": {
+        "not_applicable": "PC1 is a same-model self-pair; no sender model is loaded or run"
+      }
+    },
+    {
+      "aligned_answer_tail": "e left after buying their mother a gift and cake is:\n#### 50",
+      "capture": {
+        "aligned_l2_raw": 67.61582946777344,
+        "hidden_size": 1536,
+        "injected_l2": 52.569522857666016,
+        "injection_mode": "fuse",
+        "natural_inject_block_norms": {
+          "max": 11046.880859375,
+          "mean": 119.1249771118164,
+          "median": 52.56947708129883,
+          "min": 40.89020538330078,
+          "n": 166,
+          "p25": 50.23146438598633,
+          "p75": 55.418121337890625
+        },
+        "pooled_l2_raw": 67.61582946777344,
+        "span": [
+          101,
+          102
+        ],
+        "variant": "pc1-identity-L19-lasttoken-goldteacherforced"
+      },
+      "conditions": {
+        "aligned_real": {
+          "correct": false,
+          "nll_gold": 1.7370682954788208
+        },
+        "baseline_uninjected": {
+          "correct": false,
+          "nll_gold": 1.547318458557129
+        },
+        "random": {
+          "correct": false,
+          "nll_gold": 1.4263105392456055
+        },
+        "zerovec_injected": {
+          "correct": false,
+          "nll_gold": 1.547318458557129
+        }
+      },
+      "generated_chars": {
+        "aligned_real": 628,
+        "baseline_uninjected": 630,
+        "random": 605,
+        "zerovec_injected": 630
+      },
+      "gold": "5",
+      "injection_site": {
+        "position_token_ids": [
+          151662,
+          151662,
+          151662,
+          151662,
+          151662,
+          151662,
+          151662,
+          151662
+        ],
+        "positions": [
+          110,
+          111,
+          112,
+          113,
+          114,
+          115,
+          116,
+          117
+        ],
+        "positions_decoded": "<|fim_pad|><|fim_pad|><|fim_pad|><|fim_pad|><|fim_pad|><|fim_pad|><|fim_pad|><|fim_pad|>",
+        "prompt_tokens": 166,
+        "site": "fim_pad_slots"
+      },
+      "item": 6146,
+      "pc1_payload": {
+        "gold_continuation_tokens": 102,
+        "l2_raw": 67.61582946777344,
+        "source": "receiver's OWN block-19 state, gold-teacher-forced, LAST span token",
+        "span_note": "capture.span records [gold_len-1, gold_len) — the single row that IS the payload",
+        "transform": "identity"
+      },
+      "sender_first_pass": {
+        "not_applicable": "PC1 is a same-model self-pair; no sender model is loaded or run"
+      }
+    },
+    {
+      "aligned_answer_tail": "t Grant approximately $1.74 per tooth after his first tooth.",
+      "capture": {
+        "aligned_l2_raw": 65.73612976074219,
+        "hidden_size": 1536,
+        "injected_l2": 51.889076232910156,
+        "injection_mode": "fuse",
+        "natural_inject_block_norms": {
+          "max": 11046.8759765625,
+          "mean": 111.44664764404297,
+          "median": 51.889034271240234,
+          "min": 41.775733947753906,
+          "n": 187,
+          "p25": 50.02832794189453,
+          "p75": 55.221923828125
+        },
+        "pooled_l2_raw": 65.73612976074219,
+        "span": [
+          100,
+          101
+        ],
+        "variant": "pc1-identity-L19-lasttoken-goldteacherforced"
+      },
+      "conditions": {
+        "aligned_real": {
+          "correct": false,
+          "nll_gold": 2.2934255599975586
+        },
+        "baseline_uninjected": {
+          "correct": false,
+          "nll_gold": 2.1800057888031006
+        },
+        "random": {
+          "correct": false,
+          "nll_gold": 2.1645047664642334
+        },
+        "zerovec_injected": {
+          "correct": false,
+          "nll_gold": 2.1800057888031006
+        }
+      },
+      "generated_chars": {
+        "aligned_real": 1149,
+        "baseline_uninjected": 1136,
+        "random": 1088,
+        "zerovec_injected": 1136
+      },
+      "gold": "2",
+      "injection_site": {
+        "position_token_ids": [
+          151662,
+          151662,
+          151662,
+          151662,
+          151662,
+          151662,
+          151662,
+          151662
+        ],
+        "positions": [
+          131,
+          132,
+          133,
+          134,
+          135,
+          136,
+          137,
+          138
+        ],
+        "positions_decoded": "<|fim_pad|><|fim_pad|><|fim_pad|><|fim_pad|><|fim_pad|><|fim_pad|><|fim_pad|><|fim_pad|>",
+        "prompt_tokens": 187,
+        "site": "fim_pad_slots"
+      },
+      "item": 6378,
+      "pc1_payload": {
+        "gold_continuation_tokens": 101,
+        "l2_raw": 65.73612976074219,
+        "source": "receiver's OWN block-19 state, gold-teacher-forced, LAST span token",
+        "span_note": "capture.span records [gold_len-1, gold_len) — the single row that IS the payload",
+        "transform": "identity"
+      },
+      "sender_first_pass": {
+        "not_applicable": "PC1 is a same-model self-pair; no sender model is loaded or run"
+      }
+    },
+    {
+      "aligned_answer_tail": "umber of stickers she uses is \\(7 \\times 3 = 21\\). \n\n#### 21",
+      "capture": {
+        "aligned_l2_raw": 67.03656768798828,
+        "hidden_size": 1536,
+        "injected_l2": 51.99550247192383,
+        "injection_mode": "fuse",
+        "natural_inject_block_norms": {
+          "max": 11046.880859375,
+          "mean": 124.56620025634766,
+          "median": 51.99546813964844,
+          "min": 40.57081985473633,
+          "n": 152,
+          "p25": 49.661014556884766,
+          "p75": 54.80020523071289
+        },
+        "pooled_l2_raw": 67.03656768798828,
+        "span": [
+          33,
+          34
+        ],
+        "variant": "pc1-identity-L19-lasttoken-goldteacherforced"
+      },
+      "conditions": {
+        "aligned_real": {
+          "correct": true,
+          "nll_gold": 2.4852705001831055
+        },
+        "baseline_uninjected": {
+          "correct": true,
+          "nll_gold": 2.4542384147644043
+        },
+        "random": {
+          "correct": true,
+          "nll_gold": 2.48508882522583
+        },
+        "zerovec_injected": {
+          "correct": true,
+          "nll_gold": 2.4542384147644043
+        }
+      },
+      "generated_chars": {
+        "aligned_real": 354,
+        "baseline_uninjected": 354,
+        "random": 354,
+        "zerovec_injected": 354
+      },
+      "gold": "21",
+      "injection_site": {
+        "position_token_ids": [
+          151662,
+          151662,
+          151662,
+          151662,
+          151662,
+          151662,
+          151662,
+          151662
+        ],
+        "positions": [
+          96,
+          97,
+          98,
+          99,
+          100,
+          101,
+          102,
+          103
+        ],
+        "positions_decoded": "<|fim_pad|><|fim_pad|><|fim_pad|><|fim_pad|><|fim_pad|><|fim_pad|><|fim_pad|><|fim_pad|>",
+        "prompt_tokens": 152,
+        "site": "fim_pad_slots"
+      },
+      "item": 6452,
+      "pc1_payload": {
+        "gold_continuation_tokens": 34,
+        "l2_raw": 67.03656768798828,
+        "source": "receiver's OWN block-19 state, gold-teacher-forced, LAST span token",
+        "span_note": "capture.span records [gold_len-1, gold_len) — the single row that IS the payload",
+        "transform": "identity"
+      },
+      "sender_first_pass": {
+        "not_applicable": "PC1 is a same-model self-pair; no sender model is loaded or run"
+      }
+    },
+    {
+      "aligned_answer_tail": " number of jars of strawberry jelly sold is \\( \\boxed{1} \\).",
+      "capture": {
+        "aligned_l2_raw": 65.29644775390625,
+        "hidden_size": 1536,
+        "injected_l2": 52.94625473022461,
+        "injection_mode": "fuse",
+        "natural_inject_block_norms": {
+          "max": 11046.880859375,
+          "mean": 126.0242691040039,
+          "median": 52.94618225097656,
+          "min": 41.16984176635742,
+          "n": 151,
+          "p25": 50.432952880859375,
+          "p75": 55.70454406738281
+        },
+        "pooled_l2_raw": 65.29644775390625,
+        "span": [
+          95,
+          96
+        ],
+        "variant": "pc1-identity-L19-lasttoken-goldteacherforced"
+      },
+      "conditions": {
+        "aligned_real": {
+          "correct": false,
+          "nll_gold": 3.345299482345581
+        },
+        "baseline_uninjected": {
+          "correct": false,
+          "nll_gold": 2.832852602005005
+        },
+        "random": {
+          "correct": false,
+          "nll_gold": 2.800355911254883
+        },
+        "zerovec_injected": {
+          "correct": false,
+          "nll_gold": 2.832852602005005
+        }
+      },
+      "generated_chars": {
+        "aligned_real": 1100,
+        "baseline_uninjected": 1221,
+        "random": 1224,
+        "zerovec_injected": 1221
+      },
+      "gold": "18",
+      "injection_site": {
+        "position_token_ids": [
+          151662,
+          151662,
+          151662,
+          151662,
+          151662,
+          151662,
+          151662,
+          151662
+        ],
+        "positions": [
+          95,
+          96,
+          97,
+          98,
+          99,
+          100,
+          101,
+          102
+        ],
+        "positions_decoded": "<|fim_pad|><|fim_pad|><|fim_pad|><|fim_pad|><|fim_pad|><|fim_pad|><|fim_pad|><|fim_pad|>",
+        "prompt_tokens": 151,
+        "site": "fim_pad_slots"
+      },
+      "item": 6552,
+      "pc1_payload": {
+        "gold_continuation_tokens": 96,
+        "l2_raw": 65.29644775390625,
+        "source": "receiver's OWN block-19 state, gold-teacher-forced, LAST span token",
+        "span_note": "capture.span records [gold_len-1, gold_len) — the single row that IS the payload",
+        "transform": "identity"
+      },
+      "sender_first_pass": {
+        "not_applicable": "PC1 is a same-model self-pair; no sender model is loaded or run"
+      }
+    },
+    {
+      "aligned_answer_tail": ", the total number of questions Cameron answered is:\n#### 46",
+      "capture": {
+        "aligned_l2_raw": 63.69032669067383,
+        "hidden_size": 1536,
+        "injected_l2": 52.42943572998047,
+        "injection_mode": "fuse",
+        "natural_inject_block_norms": {
+          "max": 11046.8759765625,
+          "mean": 114.375,
+          "median": 52.42940902709961,
+          "min": 41.29051208496094,
+          "n": 178,
+          "p25": 50.070980072021484,
+          "p75": 54.82401657104492
+        },
+        "pooled_l2_raw": 63.69032669067383,
+        "span": [
+          149,
+          150
+        ],
+        "variant": "pc1-identity-L19-lasttoken-goldteacherforced"
+      },
+      "conditions": {
+        "aligned_real": {
+          "correct": false,
+          "nll_gold": 3.486579418182373
+        },
+        "baseline_uninjected": {
+          "correct": false,
+          "nll_gold": 3.4991326332092285
+        },
+        "random": {
+          "correct": false,
+          "nll_gold": 3.59663724899292
+        },
+        "zerovec_injected": {
+          "correct": false,
+          "nll_gold": 3.4991326332092285
+        }
+      },
+      "generated_chars": {
+        "aligned_real": 927,
+        "baseline_uninjected": 927,
+        "random": 1067,
+        "zerovec_injected": 927
+      },
+      "gold": "68",
+      "injection_site": {
+        "position_token_ids": [
+          151662,
+          151662,
+          151662,
+          151662,
+          151662,
+          151662,
+          151662,
+          151662
+        ],
+        "positions": [
+          122,
+          123,
+          124,
+          125,
+          126,
+          127,
+          128,
+          129
+        ],
+        "positions_decoded": "<|fim_pad|><|fim_pad|><|fim_pad|><|fim_pad|><|fim_pad|><|fim_pad|><|fim_pad|><|fim_pad|>",
+        "prompt_tokens": 178,
+        "site": "fim_pad_slots"
+      },
+      "item": 6629,
+      "pc1_payload": {
+        "gold_continuation_tokens": 150,
+        "l2_raw": 63.69032669067383,
+        "source": "receiver's OWN block-19 state, gold-teacher-forced, LAST span token",
+        "span_note": "capture.span records [gold_len-1, gold_len) — the single row that IS the payload",
+        "transform": "identity"
+      },
+      "sender_first_pass": {
+        "not_applicable": "PC1 is a same-model self-pair; no sender model is loaded or run"
+      }
+    },
+    {
+      "aligned_answer_tail": "{3} \\]\n\\[ C = 7 \\]\n\nSo, Brenda needs to spay 7 cats.\n\n#### 7",
+      "capture": {
+        "aligned_l2_raw": 67.91028594970703,
+        "hidden_size": 1536,
+        "injected_l2": 52.281089782714844,
+        "injection_mode": "fuse",
+        "natural_inject_block_norms": {
+          "max": 11056.958984375,
+          "mean": 138.50611877441406,
+          "median": 52.28106689453125,
+          "min": 41.28638458251953,
+          "n": 128,
+          "p25": 49.607826232910156,
+          "p75": 54.884925842285156
+        },
+        "pooled_l2_raw": 67.91028594970703,
+        "span": [
+          91,
+          92
+        ],
+        "variant": "pc1-identity-L19-lasttoken-goldteacherforced"
+      },
+      "conditions": {
+        "aligned_real": {
+          "correct": true,
+          "nll_gold": 1.8686615228652954
+        },
+        "baseline_uninjected": {
+          "correct": true,
+          "nll_gold": 1.9697812795639038
+        },
+        "random": {
+          "correct": true,
+          "nll_gold": 2.0599639415740967
+        },
+        "zerovec_injected": {
+          "correct": true,
+          "nll_gold": 1.9697812795639038
+        }
+      },
+      "generated_chars": {
+        "aligned_real": 588,
+        "baseline_uninjected": 588,
+        "random": 588,
+        "zerovec_injected": 588
+      },
+      "gold": "7",
+      "injection_site": {
+        "position_token_ids": [
+          151662,
+          151662,
+          151662,
+          151662,
+          151662,
+          151662,
+          151662,
+          151662
+        ],
+        "positions": [
+          72,
+          73,
+          74,
+          75,
+          76,
+          77,
+          78,
+          79
+        ],
+        "positions_decoded": "<|fim_pad|><|fim_pad|><|fim_pad|><|fim_pad|><|fim_pad|><|fim_pad|><|fim_pad|><|fim_pad|>",
+        "prompt_tokens": 128,
+        "site": "fim_pad_slots"
+      },
+      "item": 7293,
+      "pc1_payload": {
+        "gold_continuation_tokens": 92,
+        "l2_raw": 67.91028594970703,
+        "source": "receiver's OWN block-19 state, gold-teacher-forced, LAST span token",
+        "span_note": "capture.span records [gold_len-1, gold_len) — the single row that IS the payload",
+        "transform": "identity"
+      },
+      "sender_first_pass": {
+        "not_applicable": "PC1 is a same-model self-pair; no sender model is loaded or run"
+      }
+    },
+    {
+      "aligned_answer_tail": "us, the total time Carlos spends on his laundry is:\n#### 165",
+      "capture": {
+        "aligned_l2_raw": 67.08675384521484,
+        "hidden_size": 1536,
+        "injected_l2": 51.673133850097656,
+        "injection_mode": "fuse",
+        "natural_inject_block_norms": {
+          "max": 11046.880859375,
+          "mean": 134.1980743408203,
+          "median": 51.67307662963867,
+          "min": 40.72987747192383,
+          "n": 134,
+          "p25": 49.13151168823242,
+          "p75": 54.672393798828125
+        },
+        "pooled_l2_raw": 67.08675384521484,
+        "span": [
+          67,
+          68
+        ],
+        "variant": "pc1-identity-L19-lasttoken-goldteacherforced"
+      },
+      "conditions": {
+        "aligned_real": {
+          "correct": true,
+          "nll_gold": 2.814563274383545
+        },
+        "baseline_uninjected": {
+          "correct": true,
+          "nll_gold": 3.3636462688446045
+        },
+        "random": {
+          "correct": true,
+          "nll_gold": 3.555199384689331
+        },
+        "zerovec_injected": {
+          "correct": true,
+          "nll_gold": 3.3636462688446045
+        }
+      },
+      "generated_chars": {
+        "aligned_real": 736,
+        "baseline_uninjected": 311,
+        "random": 311,
+        "zerovec_injected": 311
+      },
+      "gold": "165",
+      "injection_site": {
+        "position_token_ids": [
+          151662,
+          151662,
+          151662,
+          151662,
+          151662,
+          151662,
+          151662,
+          151662
+        ],
+        "positions": [
+          78,
+          79,
+          80,
+          81,
+          82,
+          83,
+          84,
+          85
+        ],
+        "positions_decoded": "<|fim_pad|><|fim_pad|><|fim_pad|><|fim_pad|><|fim_pad|><|fim_pad|><|fim_pad|><|fim_pad|>",
+        "prompt_tokens": 134,
+        "site": "fim_pad_slots"
+      },
+      "item": 7375,
+      "pc1_payload": {
+        "gold_continuation_tokens": 68,
+        "l2_raw": 67.08675384521484,
+        "source": "receiver's OWN block-19 state, gold-teacher-forced, LAST span token",
+        "span_note": "capture.span records [gold_len-1, gold_len) — the single row that IS the payload",
+        "transform": "identity"
+      },
+      "sender_first_pass": {
+        "not_applicable": "PC1 is a same-model self-pair; no sender model is loaded or run"
+      }
+    },
+    {
+      "aligned_answer_tail": "fore, Patricia and Geoffrey can feed \\(\\boxed{22}\\) campers.",
+      "capture": {
+        "aligned_l2_raw": 68.00463104248047,
+        "hidden_size": 1536,
+        "injected_l2": 52.39487075805664,
+        "injection_mode": "fuse",
+        "natural_inject_block_norms": {
+          "max": 11046.880859375,
+          "mean": 133.56492614746094,
+          "median": 52.39483642578125,
+          "min": 40.686031341552734,
+          "n": 136,
+          "p25": 49.775604248046875,
+          "p75": 55.4903564453125
+        },
+        "pooled_l2_raw": 68.00463104248047,
+        "span": [
+          90,
+          91
+        ],
+        "variant": "pc1-identity-L19-lasttoken-goldteacherforced"
+      },
+      "conditions": {
+        "aligned_real": {
+          "correct": true,
+          "nll_gold": 1.977661371231079
+        },
+        "baseline_uninjected": {
+          "correct": true,
+          "nll_gold": 2.0937864780426025
+        },
+        "random": {
+          "correct": true,
+          "nll_gold": 2.2740910053253174
+        },
+        "zerovec_injected": {
+          "correct": true,
+          "nll_gold": 2.0937864780426025
+        }
+      },
+      "generated_chars": {
+        "aligned_real": 662,
+        "baseline_uninjected": 662,
+        "random": 662,
+        "zerovec_injected": 662
+      },
+      "gold": "22",
+      "injection_site": {
+        "position_token_ids": [
+          151662,
+          151662,
+          151662,
+          151662,
+          151662,
+          151662,
+          151662,
+          151662
+        ],
+        "positions": [
+          80,
+          81,
+          82,
+          83,
+          84,
+          85,
+          86,
+          87
+        ],
+        "positions_decoded": "<|fim_pad|><|fim_pad|><|fim_pad|><|fim_pad|><|fim_pad|><|fim_pad|><|fim_pad|><|fim_pad|>",
+        "prompt_tokens": 136,
+        "site": "fim_pad_slots"
+      },
+      "item": 7431,
+      "pc1_payload": {
+        "gold_continuation_tokens": 91,
+        "l2_raw": 68.00463104248047,
+        "source": "receiver's OWN block-19 state, gold-teacher-forced, LAST span token",
+        "span_note": "capture.span records [gold_len-1, gold_len) — the single row that IS the payload",
+        "transform": "identity"
+      },
+      "sender_first_pass": {
+        "not_applicable": "PC1 is a same-model self-pair; no sender model is loaded or run"
+      }
+    },
+    {
+      "aligned_answer_tail": " of Steve's 4 friends will get 20 gold bars when he returns.",
+      "capture": {
+        "aligned_l2_raw": 68.19839477539062,
+        "hidden_size": 1536,
+        "injected_l2": 52.239227294921875,
+        "injection_mode": "fuse",
+        "natural_inject_block_norms": {
+          "max": 11046.880859375,
+          "mean": 128.89593505859375,
+          "median": 52.239200592041016,
+          "min": 41.40227127075195,
+          "n": 144,
+          "p25": 49.85445785522461,
+          "p75": 55.1324577331543
+        },
+        "pooled_l2_raw": 68.19839477539062,
+        "span": [
+          49,
+          50
+        ],
+        "variant": "pc1-identity-L19-lasttoken-goldteacherforced"
+      },
+      "conditions": {
+        "aligned_real": {
+          "correct": true,
+          "nll_gold": 1.60390305519104
+        },
+        "baseline_uninjected": {
+          "correct": true,
+          "nll_gold": 1.4886395931243896
+        },
+        "random": {
+          "correct": true,
+          "nll_gold": 1.6268199682235718
+        },
+        "zerovec_injected": {
+          "correct": true,
+          "nll_gold": 1.4886395931243896
+        }
+      },
+      "generated_chars": {
+        "aligned_real": 670,
+        "baseline_uninjected": 670,
+        "random": 608,
+        "zerovec_injected": 670
+      },
+      "gold": "20",
+      "injection_site": {
+        "position_token_ids": [
+          151662,
+          151662,
+          151662,
+          151662,
+          151662,
+          151662,
+          151662,
+          151662
+        ],
+        "positions": [
+          88,
+          89,
+          90,
+          91,
+          92,
+          93,
+          94,
+          95
+        ],
+        "positions_decoded": "<|fim_pad|><|fim_pad|><|fim_pad|><|fim_pad|><|fim_pad|><|fim_pad|><|fim_pad|><|fim_pad|>",
+        "prompt_tokens": 144,
+        "site": "fim_pad_slots"
+      },
+      "item": 7462,
+      "pc1_payload": {
+        "gold_continuation_tokens": 50,
+        "l2_raw": 68.19839477539062,
+        "source": "receiver's OWN block-19 state, gold-teacher-forced, LAST span token",
+        "span_note": "capture.span records [gold_len-1, gold_len) — the single row that IS the payload",
+        "transform": "identity"
+      },
+      "sender_first_pass": {
+        "not_applicable": "PC1 is a same-model self-pair; no sender model is loaded or run"
+      }
+    }
+  ],
+  "manifold_precheck_run_before_this_draw": {
+    "candidate_label": "pc1-payload-receiver-L19-lasttoken-goldteacherforced",
+    "classification": "item-invariant-but-on-manifold",
+    "expected": "on-manifold-item-varying — trivially, because the payload IS a real receiver state",
+    "gating": "NONE — ORDERING ONLY, per ADR-024's M4f framing.",
+    "if_surprised": "a finding about the PIPELINE (the pre-check's reference metric), not about PC1 — see the pre-check receipt's registered_metric_caveat.",
+    "payload_sha_matches_this_probe": true,
+    "receipt": "receipts/run2-pc1-manifold-precheck-receipt.json",
+    "row": {
+      "classification": "item-invariant-but-on-manifold",
+      "entropy_nats": {
+        "plain_lens_mean": 8.679642449084438,
+        "rmsnorm_lens_mean": 4.241291275801191,
+        "uniform": 11.931214658529283
+      },
+      "family": "pc1-identity-no-adapter",
+      "gold_answer_tokens": {
+        "mean_best_rank_rmsnorm": 18382.65,
+        "mean_rank_rmsnorm": 84223.73000000001,
+        "vocab_percentile_rmsnorm": 0.5543368918491998
+      },
+      "item_invariance": {
+        "max": 0.9702067571707698,
+        "mean_pairwise_cosine_between_emitted_vectors": 0.8564937118156659,
+        "mean_resultant_length_of_unit_vectors": 0.927405719747443,
+        "min": 0.7328149665945032
+      },
+      "label": "pc1-payload-receiver-L19-lasttoken-goldteacherforced",
+      "manifold": {
+        "emitted_l2": {
+          "max": 69.38677978515625,
+          "mean": 66.59450826644897,
+          "min": 61.9234733581543
+        },
+        "mean_cosine_to_same_item_natural_receiver_L14_pooled": 0.6868619808689835
+      },
+      "output_token_support_rmsnorm_lens": {
+        "distinct_tokens_in_union_of_40_top10_sets": 98,
+        "dominant_tokens": [
+          {
+            "decoded": "️",
+            "in_top10_of_n_items": 40,
+            "token_id": 30543
+          },
+          {
+            "decoded": "返回搜狐",
+            "in_top10_of_n_items": 39,
+            "token_id": 109073
+          },
+          {
+            "decoded": "<|endoftext|>",
+            "in_top10_of_n_items": 38,
+            "token_id": 151643
+          },
+          {
+            "decoded": "逯",
+            "in_top10_of_n_items": 33,
+            "token_id": 120812
+          },
+          {
+            "decoded": "″",
+            "in_top10_of_n_items": 19,
+            "token_id": 21580
+          },
+          {
+            "decoded": " ​​",
+            "in_top10_of_n_items": 15,
+            "token_id": 72363
+          },
+          {
+            "decoded": "@stop",
+            "in_top10_of_n_items": 12,
+            "token_id": 47079
+          },
+          {
+            "decoded": " Mitar",
+            "in_top10_of_n_items": 10,
+            "token_id": 78722
+          }
+        ],
+        "max_possible": 400
+      },
+      "training": "NONE — identity; this vector IS a captured receiver state"
+    },
+    "surprise_flag": true
+  },
+  "pre_committed": true,
+  "registered_outcome_rule_before_the_run": {
+    "fail": "the more consequential branch, not to be softened: every null since S1a (S2b x4, M3 x2, M4 x3, M4c, M4d, M4g, M4h S1, M4i) needs an explicit caveat that current mechanics were never shown capable of carrying signal even from a model to itself; S1a's PASS gains a footnote scoping it to mechanics no longer in use; and ADR-024's 'adapters improved, so discordance fell' explanation acquires an unruled-out rival — fuse + de-pooling + site may suppress discordance MECHANICALLY, independent of adapter quality.",
+    "gamed_pass": "docs/research/045 §3: a control that passes because the injection collapses the receiver toward a degenerate output is not evidence the pathway is USEFULLY live. Flagged below and reported as gamed, not clean.",
+    "pass": "the current mechanics demonstrably carry signal in the maximally favourable same-model case, and every subsequent null becomes interpretable as being about TRANSFER rather than about PLUMBING."
+  },
+  "stage": "run2-PC1-positive-control-probe",
+  "summary": {
+    "accuracy": {
+      "aligned_real": 22,
+      "baseline_uninjected": 22,
+      "random": 23,
+      "zerovec_injected": 22
+    },
+    "aligned_vs_baseline": {
+      "losses": 0,
+      "mid_p_one_sided": 1.0,
+      "p_one_sided": 1.0,
+      "wins": 0
+    },
+    "aligned_vs_zerovec": {
+      "losses": 0,
+      "mid_p_one_sided": 1.0,
+      "p_one_sided": 1.0,
+      "wins": 0
+    },
+    "fuse_zero_is_noop_vs_baseline": {
+      "accuracy_disagreements": 0,
+      "expected": "EXACT identity — under fuse the zerovec condition is h += 0",
+      "gating": "NONE — operator-correctness diagnostic only",
+      "max_abs_nll_delta": 0.0,
+      "n_items": 40,
+      "nll_bit_identical_items": 40,
+      "pass": true,
+      "tolerance": 9.999999974752427e-7
+    },
+    "gaming_guard_research_045_section_3": {
+      "degenerate_output_signature": false,
+      "degenerate_short_items": 0,
+      "gaming_signature": false,
+      "mean_aligned_nll": 2.1538729667663574,
+      "mean_aligned_over_baseline_generated_char_ratio": 1.0255431239230426,
+      "nll_collapse_reading": "For a GOLD-derived payload a large NLL drop is the expected direction — the payload encodes the answer. §3 requires it be FLAGGED rather than excused: an NLL collapsed below the threshold means the receiver was handed the answer, not that it computed it, and any accuracy PASS resting on that is a liveness result about the CHANNEL's bandwidth, still never about transfer.",
+      "nll_collapse_signature": false,
+      "thresholds_pre_committed": {
+        "degenerate_item_fraction": 0.25,
+        "degenerate_len_ratio": 0.25,
+        "nll_collapse_nats": 0.10000000149011612
+      },
+      "why": "ITI (arXiv:2306.03341) documents an intervention that appears to restore the answer while merely collapsing the model into a degenerate response ('it is trivial to attain a perfect truthfulness score simply by answering \"no comment\"'). docs/research/045 §3 makes this check mandatory on EVERY positive-control draw, including one 'supposed to' pass."
+    },
+    "n_evaluated": 40,
+    "nll_aligned_vs_baseline": {
+      "losses": 25,
+      "mid_p_one_sided": 0.9413623970212983,
+      "p_one_sided": 0.9596547661240082,
+      "wins": 15
+    },
+    "nll_aligned_vs_random": {
+      "losses": 22,
+      "mid_p_one_sided": 0.7336453723819466,
+      "p_one_sided": 0.7852047460783107,
+      "wins": 18
+    },
+    "nll_aligned_vs_zerovec": {
+      "losses": 25,
+      "mid_p_one_sided": 0.9413623970212983,
+      "p_one_sided": 0.9596547661240082,
+      "wins": 15
+    },
+    "nll_harm_accounting": {
+      "items_where_aligned_nll_is_WORSE_than_baseline": 25,
+      "items_where_aligned_nll_is_WORSE_than_random": 22,
+      "items_where_aligned_nll_is_WORSE_than_zerovec": 25,
+      "ladder_context": "ADR-024's MAJOR CORRECTION: the unanimous 0/40 NLL inversion occurs ONLY in the three OFF-MANIFOLD task-loss rungs (M4c/M4d/M4g); every ON-MANIFOLD rung sits within ~0.004 nats of the 2.1288 baseline. PC1's payload is a real receiver state, so it belongs to the on-manifold family by construction.",
+      "n_items": 40,
+      "unanimously_worse_than_baseline": false
+    },
+    "nll_mean": {
+      "aligned_real": 2.1538729667663574,
+      "baseline_uninjected": 2.1288259029388428,
+      "random": 2.1637661457061768,
+      "zerovec_injected": 2.1288259029388428
+    },
+    "nll_zerovec_vs_baseline": {
+      "losses": 0,
+      "mid_p_one_sided": 1.0,
+      "p_one_sided": 1.0,
+      "wins": 0
+    },
+    "power": {
+      "alpha": 0.05,
+      "ladder_context": "S1a n_disc=5 (5W/0L, p=0.03125 — the ladder's only PASS); M4d n_disc=7; M4g n_disc=3 (power-limited).",
+      "min_attainable_one_sided_p": 0.125,
+      "n_discordant_primary": 3,
+      "power_limited": true,
+      "reading": "POWER-LIMITED: at this many discordant pairs the smallest attainable one-sided p is >= alpha, so this draw was STRUCTURALLY INCAPABLE of rejecting regardless of outcome. Same category as M4g (n_disc=3). A null here is weak evidence about the accuracy question; read the NLL numbers."
+    },
+    "primary_aligned_vs_random": {
+      "alpha": 0.05,
+      "gate_pass_computed_from": "p_one_sided (exact sign test — S1a's own statistic, for direct comparability)",
+      "losses": 2,
+      "mid_p_one_sided": 0.6875,
+      "mid_p_pass": false,
+      "min_attainable_p_at_this_n_disc": 0.125,
+      "n_discordant": 3,
+      "p_one_sided": 0.875,
+      "pass": false,
+      "wins": 1
+    },
+    "zerovec_vs_baseline": {
+      "baseline_wins": 0,
+      "criterion": "2 x zerovec_correct >= baseline_correct",
+      "degenerate_under_fuse": true,
+      "note": "trivially satisfied because zerovec == baseline under fuse; no evidential weight",
+      "pass": true,
+      "zerovec_wins": 0
+    }
+  },
+  "variant": "pc1-identity-L19lasttoken-goldteacherforced-fuse",
+  "verdict": "FAIL — the positive control did not move the receiver's answers under current mechanics. This is the more consequential branch (ADR-024's registered FAIL rule) and is reported without softening.",
+  "wall_clock_s": 265.51812744140625,
+  "what_this_rung_answers": {
+    "ordering": "ADR-024 registers PC1 to run BEFORE M5X (ADR-037, ~1.3-1.4 GPU-h) and M4b (ADR-035, ~1-2 GPU-h): spending hours on rungs whose nulls would be uninterpretable is the wrong order.",
+    "question": "Under the mechanics the ladder has used since M4c — fuse delivery, de-pooled payload, <|fim_pad|> slots, the L18->L14 cell's receiver site, rescale-to-natural-median — can the injection pathway move the receiver's answers AT ALL, given the easiest constructible payload?",
+    "why_it_was_never_asked": "S1a, the ladder's only PASS, ran under overwrite + pooled + inject-at-block-19. Nothing since M4c uses those mechanics, so no positive control has ever been run under the current ones."
+  }
+}

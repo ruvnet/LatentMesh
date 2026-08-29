@@ -28,7 +28,7 @@ mod common;
 
 use latentmesh_runtime::{
     capture::{forward_capture, forward_unpatched, logits_bit_identical},
-    inject::{prefill_with_injection, InjectionSpec},
+    inject::{prefill_with_injection, InjectionMode, InjectionSpec},
     norms, QwenRuntime,
 };
 
@@ -177,6 +177,7 @@ fn run_item(
         positions: positions.clone(),
         vector: r_cap.pooled.clone(),
         scale: Some(natural.median / pooled_l2),
+        mode: InjectionMode::Overwrite,
     };
     let injected =
         prefill_with_injection(&mut receiver.model, &r_tokens, Some(&spec), device).map_err(e)?;

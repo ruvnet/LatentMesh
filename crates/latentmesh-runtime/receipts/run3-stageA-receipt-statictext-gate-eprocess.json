@@ -1,0 +1,2370 @@
+{
+  "adjudication_note": "this label is the mechanical outcome of the registered rule. It is NOT the verdict; the coordinator adjudicates against the numbers above.",
+  "adr": "docs/adr/030-run3-causally-gated-text-pre-registration.md",
+  "compute_cost_seconds": {
+    "note": "ADR-030's secondary compute criterion: GPU-seconds and wall clock per condition, measured here rather than re-derived.",
+    "receiver_gated_text": 45.232271282999996,
+    "receiver_mismatched": 81.04472319800001,
+    "receiver_random": 66.28377520699999,
+    "receiver_self_generated": 47.599793991,
+    "receiver_zero": 79.454131701,
+    "sender_generation": 139.15818618400002,
+    "wall_clock_s": 463.1748962402344
+  },
+  "config": {
+    "controls": {
+      "mismatched": "the real sender message from the PREVIOUS item in the stream — content-shaped, wrong task. No lookahead is used anywhere, so early stopping stays honest; stream order 0 is primed from a designated eligible item outside the drawn stream.",
+      "random": "length-matched in the receiver's OWN tokens to the real message, drawn uniformly from ordinary ids [0, first_special) with per-item ChaCha8 seed RANDTOK_SEED_BASE + item index, then decoded to text and placed in the identical message block.",
+      "self_generated": "the receiver's own zero-condition greedy output, fed back to itself as the message. Reuses that generation rather than recomputing it.",
+      "text_equivalent_dropped": "ADR-030: degenerate when the channel under test is already text — it would compare text against itself.",
+      "zero": "no message reaches the receiver: the bare question prompt. STRUCTURALLY DIFFERENT from the message-bearing conditions (it has no message block) — that is ADR-003's own definition of the control, disclosed rather than smoothed over."
+    },
+    "decoding": "greedy, batch=1, max_new_tokens=400, both models, all five conditions",
+    "greedy_justification": "ADR-030 grants the deterministic exception for self_generated, which requires the receiver's own prior deterministic output to be well-defined; greedy is also the witness arm every prior rung drew under, and deterministic per-item outcomes maximise paired-test power.",
+    "message_content": "the sender's own greedy generated solution text, verbatim, with nothing added between the two agents (ADR-023's StaticText = 'fixed hand-designed 2-agent pipeline, text channel')",
+    "mismatched_priming_item": 7441,
+    "nll_not_computed": "ADR-030 explicitly rejects gold-token NLL as a co-primary or replacement statistic (docs/research/031 §2.4: it is blind to the one real effect the ladder produced). Spending decode on it would spend it on a statistic the pre-registration already ruled out.",
+    "random_control_vocabulary": {
+      "ordinary_ids_below": 151643
+    },
+    "randtok_seed_base": 540016640,
+    "receiver": "Qwen/Qwen2.5-1.5B-Instruct",
+    "receiver_prompt_template": "chat_prompt(system, '{question}\\n\\nA message from a previous solver:\\n{message}\\n\\n{ANSWER_FORMAT}'); the zero control uses '{question}\\n\\n{ANSWER_FORMAT}'",
+    "sender": "Qwen/Qwen2.5-3B-Instruct"
+  },
+  "design": "ADR-030 StaticText / StaticText+Gate. ADR-003's four applicable controls on a TEXT channel; text_equivalent dropped per ADR-030's stated degeneracy argument.",
+  "e_process": {
+    "alpha": 0.05,
+    "best_control_requirement_implemented_as": "an INTERSECTION-UNION test: four wealth processes run in parallel, one per control, and PASS requires min_k W_k >= 1/alpha. That is exactly ADR-030's 'greater than the best (most favorable to the null) of the four controls' in sequential form; it is valid at alpha without correction because a PASS requires every component null to be rejected; and it is conservative in the same direction ADR-030 section 5 already discloses.",
+    "degenerate_item_rule": "an item whose sender pass produces no tokens yields no pair and therefore no wealth update (identical in effect to a concordant item), but it still CONSUMES one of the N_max budget items. Registered here, not chosen after seeing the data.",
+    "lambda": 0.3,
+    "n_max": 300,
+    "never_restarted": "the e-process is never restarted, re-parametrised, or re-run against this stage after seeing W_t. This is the one and only draw.",
+    "no_p_value_translation": "no exact-sign or mid-p value is offered as the e-process's own outcome. The sequential result is reported on its own scale (crossing item count, or final wealth at N_max); the fixed-sample statistics below are reported on the accumulated pairs, as ADR-030 requires, and answer a different question.",
+    "registered_source": "ADR-030 section 'Confirmatory scale', quoted verbatim in the ADR",
+    "rule": "W_0 = 1. Concordant item: W_i = W_{i-1}. Discordant item: W_i = W_{i-1} * (1 + lambda*(X_i - 0.5)), X_i = 1 iff the gated-text condition wins the pair.",
+    "stopping": "the draw stops at the first item where min_k W_k >= the threshold; otherwise it runs the full N_max.",
+    "trajectory_is_complete": "the full W_t path for all four controls is committed regardless of outcome.",
+    "wealth_threshold": 20.0
+  },
+  "env": {
+    "crate": "latentmesh-runtime 0.1.0 (vendored candle-transformers 0.9.2 qwen2)",
+    "evidence_label": "live-model, single-host, simulation-free",
+    "git_commit": "f4381a931a9a645fd1aaa09f839d121f5b73b146",
+    "gpu": "NVIDIA GeForce RTX 5080, 580.126.09, 16303 MiB",
+    "nvcc": "nvcc 12.8 (build-time 12.8)",
+    "nvcc_at_build": "12.8",
+    "unix_time": 1787999790
+  },
+  "item_supply": {
+    "adr030_rule_superseded": "ADR-030 §'Sampler, dataset and split discipline' names the frozen 40-item probe as the e-process's starting population on the premise that it is 'a subset of adaptation-512 by construction'. ADR-036 Decision 2 verified that premise FALSE by direct set intersection (the probe meets adaptation-512 in exactly one item, index 1153) and ruled that the stream is drawn entirely from adaptation-512 in index order. This stage follows ADR-036's correction, disclosed here rather than silently resolved.",
+    "consumption_order": "the file's own fixed ascending index order, sequential, never shuffled and never re-seeded",
+    "eligible_pool_size": 512,
+    "eval_holdout_lock": "eval-200 / holdout-100 untouched and still mechanically locked (no genome-frozen receipt exists, and this stage does not write one)",
+    "leakage_exclusion": {
+      "excluded_item_indices": [
+        150,
+        1309,
+        1573,
+        2365,
+        2418,
+        2540,
+        2958,
+        2973,
+        3084,
+        3825,
+        3844,
+        3877,
+        4746
+      ],
+      "measured_not_assumed": true,
+      "no_mechanism_in_this_stage": "nothing here is trained, so the exclusion has no mechanism to bite; it is kept for protocol identity, not because it does work.",
+      "of_those_present_in_adaptation_512": [],
+      "rule": "ADR-024's 13 probe-overlap items, kept in force by ADR-036 Decision 2(2)"
+    },
+    "n_max": 300,
+    "side_benefit": "this stage's zero control therefore runs on the IDENTICAL item population as run2-m4i's baseline_uninjected, making that a like-for-like comparator.",
+    "source": "../../harness/latentmesh-live/data/adaptation-512.json",
+    "source_sha256_of_train_jsonl": "17f347dc51477c50d4efb83959dbb7c56297aba886e5544ee2aaed3024813465",
+    "source_split": "adaptation-512"
+  },
+  "items": [
+    {
+      "conditions": {
+        "gated_text": true,
+        "mismatched": false,
+        "random": false,
+        "self_generated": false,
+        "zero": false
+      },
+      "gold": "624",
+      "item": 4,
+      "mismatched_message_from_item": 7441,
+      "sender_message_tokens": 229
+    },
+    {
+      "conditions": {
+        "gated_text": true,
+        "mismatched": false,
+        "random": false,
+        "self_generated": false,
+        "zero": false
+      },
+      "gold": "38",
+      "item": 20,
+      "mismatched_message_from_item": 4,
+      "sender_message_tokens": 219
+    },
+    {
+      "conditions": {
+        "gated_text": false,
+        "mismatched": false,
+        "random": true,
+        "self_generated": false,
+        "zero": false
+      },
+      "gold": "5",
+      "item": 23,
+      "mismatched_message_from_item": 20,
+      "sender_message_tokens": 318
+    },
+    {
+      "conditions": {
+        "gated_text": true,
+        "mismatched": false,
+        "random": false,
+        "self_generated": false,
+        "zero": false
+      },
+      "gold": "15",
+      "item": 39,
+      "mismatched_message_from_item": 23,
+      "sender_message_tokens": 279
+    },
+    {
+      "conditions": {
+        "gated_text": true,
+        "mismatched": false,
+        "random": false,
+        "self_generated": false,
+        "zero": false
+      },
+      "gold": "99",
+      "item": 42,
+      "mismatched_message_from_item": 39,
+      "sender_message_tokens": 302
+    },
+    {
+      "conditions": {
+        "gated_text": true,
+        "mismatched": true,
+        "random": false,
+        "self_generated": false,
+        "zero": false
+      },
+      "gold": "15",
+      "item": 100,
+      "mismatched_message_from_item": 42,
+      "sender_message_tokens": 225
+    },
+    {
+      "conditions": {
+        "gated_text": true,
+        "mismatched": false,
+        "random": false,
+        "self_generated": false,
+        "zero": false
+      },
+      "gold": "258",
+      "item": 103,
+      "mismatched_message_from_item": 100,
+      "sender_message_tokens": 324
+    },
+    {
+      "conditions": {
+        "gated_text": true,
+        "mismatched": true,
+        "random": true,
+        "self_generated": true,
+        "zero": true
+      },
+      "gold": "15",
+      "item": 114,
+      "mismatched_message_from_item": 103,
+      "sender_message_tokens": 194
+    },
+    {
+      "conditions": {
+        "gated_text": true,
+        "mismatched": true,
+        "random": true,
+        "self_generated": true,
+        "zero": true
+      },
+      "gold": "2",
+      "item": 145,
+      "mismatched_message_from_item": 114,
+      "sender_message_tokens": 282
+    },
+    {
+      "conditions": {
+        "gated_text": true,
+        "mismatched": true,
+        "random": true,
+        "self_generated": true,
+        "zero": true
+      },
+      "gold": "4",
+      "item": 185,
+      "mismatched_message_from_item": 145,
+      "sender_message_tokens": 110
+    },
+    {
+      "conditions": {
+        "gated_text": false,
+        "mismatched": true,
+        "random": false,
+        "self_generated": false,
+        "zero": false
+      },
+      "gold": "670",
+      "item": 192,
+      "mismatched_message_from_item": 185,
+      "sender_message_tokens": 372
+    },
+    {
+      "conditions": {
+        "gated_text": true,
+        "mismatched": false,
+        "random": true,
+        "self_generated": false,
+        "zero": false
+      },
+      "gold": "18",
+      "item": 240,
+      "mismatched_message_from_item": 192,
+      "sender_message_tokens": 269
+    },
+    {
+      "conditions": {
+        "gated_text": true,
+        "mismatched": false,
+        "random": false,
+        "self_generated": false,
+        "zero": false
+      },
+      "gold": "2280",
+      "item": 245,
+      "mismatched_message_from_item": 240,
+      "sender_message_tokens": 282
+    },
+    {
+      "conditions": {
+        "gated_text": true,
+        "mismatched": true,
+        "random": false,
+        "self_generated": false,
+        "zero": false
+      },
+      "gold": "40",
+      "item": 252,
+      "mismatched_message_from_item": 245,
+      "sender_message_tokens": 228
+    },
+    {
+      "conditions": {
+        "gated_text": false,
+        "mismatched": false,
+        "random": false,
+        "self_generated": true,
+        "zero": true
+      },
+      "gold": "108",
+      "item": 256,
+      "mismatched_message_from_item": 252,
+      "sender_message_tokens": 400
+    },
+    {
+      "conditions": {
+        "gated_text": true,
+        "mismatched": false,
+        "random": false,
+        "self_generated": false,
+        "zero": false
+      },
+      "gold": "3",
+      "item": 262,
+      "mismatched_message_from_item": 256,
+      "sender_message_tokens": 246
+    },
+    {
+      "conditions": {
+        "gated_text": true,
+        "mismatched": true,
+        "random": true,
+        "self_generated": true,
+        "zero": true
+      },
+      "gold": "18",
+      "item": 280,
+      "mismatched_message_from_item": 262,
+      "sender_message_tokens": 258
+    },
+    {
+      "conditions": {
+        "gated_text": true,
+        "mismatched": false,
+        "random": true,
+        "self_generated": false,
+        "zero": false
+      },
+      "gold": "22",
+      "item": 298,
+      "mismatched_message_from_item": 280,
+      "sender_message_tokens": 265
+    },
+    {
+      "conditions": {
+        "gated_text": true,
+        "mismatched": false,
+        "random": false,
+        "self_generated": false,
+        "zero": false
+      },
+      "gold": "16",
+      "item": 301,
+      "mismatched_message_from_item": 298,
+      "sender_message_tokens": 338
+    },
+    {
+      "conditions": {
+        "gated_text": false,
+        "mismatched": false,
+        "random": false,
+        "self_generated": false,
+        "zero": false
+      },
+      "gold": "50",
+      "item": 303,
+      "mismatched_message_from_item": 301,
+      "sender_message_tokens": 393
+    },
+    {
+      "conditions": {
+        "gated_text": true,
+        "mismatched": false,
+        "random": false,
+        "self_generated": false,
+        "zero": false
+      },
+      "gold": "41",
+      "item": 358,
+      "mismatched_message_from_item": 303,
+      "sender_message_tokens": 259
+    },
+    {
+      "conditions": {
+        "gated_text": true,
+        "mismatched": false,
+        "random": true,
+        "self_generated": true,
+        "zero": true
+      },
+      "gold": "6",
+      "item": 377,
+      "mismatched_message_from_item": 358,
+      "sender_message_tokens": 186
+    },
+    {
+      "conditions": {
+        "gated_text": true,
+        "mismatched": false,
+        "random": false,
+        "self_generated": false,
+        "zero": false
+      },
+      "gold": "3600",
+      "item": 388,
+      "mismatched_message_from_item": 377,
+      "sender_message_tokens": 242
+    },
+    {
+      "conditions": {
+        "gated_text": true,
+        "mismatched": true,
+        "random": false,
+        "self_generated": false,
+        "zero": false
+      },
+      "gold": "5",
+      "item": 410,
+      "mismatched_message_from_item": 388,
+      "sender_message_tokens": 268
+    },
+    {
+      "conditions": {
+        "gated_text": true,
+        "mismatched": false,
+        "random": false,
+        "self_generated": true,
+        "zero": true
+      },
+      "gold": "58",
+      "item": 411,
+      "mismatched_message_from_item": 410,
+      "sender_message_tokens": 228
+    },
+    {
+      "conditions": {
+        "gated_text": true,
+        "mismatched": false,
+        "random": false,
+        "self_generated": false,
+        "zero": false
+      },
+      "gold": "6",
+      "item": 454,
+      "mismatched_message_from_item": 411,
+      "sender_message_tokens": 213
+    },
+    {
+      "conditions": {
+        "gated_text": true,
+        "mismatched": false,
+        "random": false,
+        "self_generated": false,
+        "zero": false
+      },
+      "gold": "2250",
+      "item": 462,
+      "mismatched_message_from_item": 454,
+      "sender_message_tokens": 303
+    },
+    {
+      "conditions": {
+        "gated_text": true,
+        "mismatched": true,
+        "random": true,
+        "self_generated": true,
+        "zero": true
+      },
+      "gold": "20",
+      "item": 471,
+      "mismatched_message_from_item": 462,
+      "sender_message_tokens": 274
+    },
+    {
+      "conditions": {
+        "gated_text": true,
+        "mismatched": true,
+        "random": true,
+        "self_generated": true,
+        "zero": true
+      },
+      "gold": "18",
+      "item": 521,
+      "mismatched_message_from_item": 471,
+      "sender_message_tokens": 135
+    },
+    {
+      "conditions": {
+        "gated_text": true,
+        "mismatched": false,
+        "random": false,
+        "self_generated": true,
+        "zero": true
+      },
+      "gold": "4",
+      "item": 523,
+      "mismatched_message_from_item": 521,
+      "sender_message_tokens": 236
+    },
+    {
+      "conditions": {
+        "gated_text": true,
+        "mismatched": false,
+        "random": false,
+        "self_generated": false,
+        "zero": false
+      },
+      "gold": "15",
+      "item": 544,
+      "mismatched_message_from_item": 523,
+      "sender_message_tokens": 298
+    },
+    {
+      "conditions": {
+        "gated_text": true,
+        "mismatched": false,
+        "random": false,
+        "self_generated": false,
+        "zero": false
+      },
+      "gold": "864",
+      "item": 560,
+      "mismatched_message_from_item": 544,
+      "sender_message_tokens": 340
+    },
+    {
+      "conditions": {
+        "gated_text": true,
+        "mismatched": true,
+        "random": true,
+        "self_generated": true,
+        "zero": true
+      },
+      "gold": "180",
+      "item": 575,
+      "mismatched_message_from_item": 560,
+      "sender_message_tokens": 196
+    },
+    {
+      "conditions": {
+        "gated_text": true,
+        "mismatched": false,
+        "random": false,
+        "self_generated": false,
+        "zero": false
+      },
+      "gold": "5",
+      "item": 579,
+      "mismatched_message_from_item": 575,
+      "sender_message_tokens": 196
+    },
+    {
+      "conditions": {
+        "gated_text": true,
+        "mismatched": true,
+        "random": false,
+        "self_generated": true,
+        "zero": true
+      },
+      "gold": "2",
+      "item": 591,
+      "mismatched_message_from_item": 579,
+      "sender_message_tokens": 380
+    },
+    {
+      "conditions": {
+        "gated_text": true,
+        "mismatched": false,
+        "random": false,
+        "self_generated": false,
+        "zero": false
+      },
+      "gold": "88",
+      "item": 606,
+      "mismatched_message_from_item": 591,
+      "sender_message_tokens": 326
+    },
+    {
+      "conditions": {
+        "gated_text": true,
+        "mismatched": false,
+        "random": true,
+        "self_generated": true,
+        "zero": true
+      },
+      "gold": "375000",
+      "item": 607,
+      "mismatched_message_from_item": 606,
+      "sender_message_tokens": 337
+    },
+    {
+      "conditions": {
+        "gated_text": true,
+        "mismatched": false,
+        "random": true,
+        "self_generated": true,
+        "zero": true
+      },
+      "gold": "640",
+      "item": 610,
+      "mismatched_message_from_item": 607,
+      "sender_message_tokens": 207
+    },
+    {
+      "conditions": {
+        "gated_text": true,
+        "mismatched": false,
+        "random": true,
+        "self_generated": true,
+        "zero": true
+      },
+      "gold": "1000",
+      "item": 613,
+      "mismatched_message_from_item": 610,
+      "sender_message_tokens": 235
+    },
+    {
+      "conditions": {
+        "gated_text": true,
+        "mismatched": false,
+        "random": false,
+        "self_generated": false,
+        "zero": false
+      },
+      "gold": "60",
+      "item": 620,
+      "mismatched_message_from_item": 613,
+      "sender_message_tokens": 261
+    },
+    {
+      "conditions": {
+        "gated_text": true,
+        "mismatched": false,
+        "random": false,
+        "self_generated": true,
+        "zero": true
+      },
+      "gold": "117",
+      "item": 651,
+      "mismatched_message_from_item": 620,
+      "sender_message_tokens": 318
+    },
+    {
+      "conditions": {
+        "gated_text": true,
+        "mismatched": false,
+        "random": true,
+        "self_generated": true,
+        "zero": true
+      },
+      "gold": "6",
+      "item": 667,
+      "mismatched_message_from_item": 651,
+      "sender_message_tokens": 219
+    },
+    {
+      "conditions": {
+        "gated_text": true,
+        "mismatched": true,
+        "random": false,
+        "self_generated": false,
+        "zero": false
+      },
+      "gold": "6",
+      "item": 687,
+      "mismatched_message_from_item": 667,
+      "sender_message_tokens": 334
+    }
+  ],
+  "multiplicity": {
+    "between_rung_correction": "none needed — the ladder's ordering is a fixed-sequence gatekeeping procedure (docs/research/031 section 4.3); this stage was authored and run after M3/M4's outcomes were on record.",
+    "disclosure_required_whatever_the_outcome": "this result must be reported as draw #11 in a family of N channel/architecture tests, never as if it were the only test ever run.",
+    "family": "ADR-030's multiplicity section: this is draw #11 in the family of architecture/channel tests the frozen protocol lineage has produced (1 same-model mechanics check that passed, 9 cross-model transfer tests that all failed, then this one).",
+    "within_rung_correction": "none needed — this stage has no parallel variants competing for the same draw. The four control comparisons are an intersection-union test of ONE hypothesis, not four separate hypotheses, so they take no Holm-Bonferroni correction."
+  },
+  "no_latent_path_involved": "no adapter, no alignment transform, no injection, no capture. The channel is text consumed in the receiver's own prompt.",
+  "not_run_in_this_stage": {
+    "condition": "CausalDynamicText",
+    "consequences_deliberately_not_taken": "no Darwin loop, no genome freeze, no receipts/genome-frozen.json written, and therefore NO unlock of eval-200/holdout-100. The mechanical lock in harness/latentmesh-live/src/gsm8k.rs remains fully engaged after this stage.",
+    "darwin_seed_registered_by_adr030_but_unused_here": 11796393239420137246,
+    "reason": "ADR-030's primary test is explicitly scored against EITHER CausalDynamicText's frozen-genome evaluation OR StaticText+Gate's fixed-pipeline evaluation. This stage is the latter path and reaches the frozen primary endpoint without a Darwin loop."
+  },
+  "power_statement_registered_before_the_draw": {
+    "contrast_with_the_ladder": "the 9 cross-model latent draws had n_disc in {3,3,3,4,4,4,4,5,5}; 6 of 9 sat in the dead zone where the exact test could not reject at any effect size. That regime arose because Delta was ~0 by construction (m4i: aligned 128 vs random 132). Run 3's Delta is bounded below by a measured capability gap instead.",
+    "drift_identity": "wins - losses = n*(p_text - p_control) pins the log-wealth drift exactly: ln(W_n)/n = 0.15114*Delta - 0.01138*d, with Delta the accuracy gap and d the discordance rate.",
+    "expected_crossing": "Delta=0.32, d=0.42 gives drift 0.0436/item and a crossing near item 69; Delta=0.15, d=0.35 gives item 160; Delta=0.10, d=0.30 gives item 256.",
+    "measured_inputs": {
+      "noise_floor_discordance_two_near_equal_conditions": "66/300",
+      "noise_floor_source_field": "run2-m4i receipt summary.e_process.n_discordant",
+      "receiver_no_message_on_this_exact_population": "140/300",
+      "receiver_no_message_source_field": "run2-m4i receipt summary.accuracy.baseline_uninjected / summary.n_evaluated",
+      "sender_greedy_first_pass_on_the_frozen_40": "37/40",
+      "sender_source_field": "s2b-receipt-cellL18toL14-slots8-poolfull-rescaletrue-n40.json items[].sender_first_pass.correct"
+    },
+    "min_attainable_p_floors": "mid-p McNemar can reject at alpha=0.05 only from n_disc >= 4 (min 0.5*2^-n_disc = 0.03125); the exact sign test needs n_disc >= 5. Both floors are reported against this draw's OWN observed n_disc per control, above.",
+    "requirement": "ADR-040's standing rule: expected discordant-pair count and minimum attainable p stated from MEASURED rates before any item is consumed.",
+    "structural_capability_threshold": "crossing ln(20)=2.9957 within N_max=300 needs drift >= 0.0099857, i.e. Delta >= ~0.089 taking d ~ Delta + 0.22 (the measured noise floor). The measured sender-vs-receiver capability gap is 0.925 - 0.467 = 0.458, so the text channel would have to carry under a fifth of that gap for this endpoint to be structurally incapable."
+  },
+  "pre_committed": true,
+  "registered_outcome_label_not_an_adjudication": "E-PROCESS CROSSED: min_k W_k reached 1/alpha within N_max under the registered intersection-union rule.",
+  "smoke_mechanics_check": null,
+  "stage": "run3-stageA-static-text-gate",
+  "summary": {
+    "best_control_selection_timing": "post-hoc from this draw, as ADR-030 section 5 registers; the control with the LOWEST final wealth is the hardest bar the text condition had to clear.",
+    "e_process_crossed": true,
+    "e_process_crossed_at_item": 43,
+    "gated_text_accuracy": 0.9069767441860465,
+    "gated_text_correct": 39,
+    "items_drawn": 43,
+    "min_wealth_across_controls": 21.157738923872348,
+    "n_degenerate_sender_pass": 0,
+    "n_evaluated": 43,
+    "per_control": [
+      {
+        "accuracy": 0.3953488372093023,
+        "control": "zero",
+        "correct": 17,
+        "e_process": {
+          "crossed": true,
+          "final_wealth": 21.157738923872348,
+          "losses_text": 1,
+          "max_wealth_reached": 21.157738923872348,
+          "n_discordant": 24,
+          "wins_text": 23
+        },
+        "exact_sign_one_sided": 1.4901161193847724e-6,
+        "mid_p_mcnemar_one_sided": 7.748603820800815e-7,
+        "min_attainable_exact_p_at_this_n_disc": 5.960464477539072e-8,
+        "min_attainable_mid_p_at_this_n_disc": 2.980232238769536e-8,
+        "structurally_capable_at_alpha_0_05": true
+      },
+      {
+        "accuracy": 0.3488372093023256,
+        "control": "random",
+        "correct": 15,
+        "e_process": {
+          "crossed": true,
+          "final_wealth": 27.981109726821177,
+          "losses_text": 1,
+          "max_wealth_reached": 27.981109726821177,
+          "n_discordant": 26,
+          "wins_text": 25
+        },
+        "exact_sign_one_sided": 4.023313522338878e-7,
+        "mid_p_mcnemar_one_sided": 2.0861625671386772e-7,
+        "min_attainable_exact_p_at_this_n_disc": 1.4901161193847676e-8,
+        "min_attainable_mid_p_at_this_n_disc": 7.450580596923838e-9,
+        "structurally_capable_at_alpha_0_05": true
+      },
+      {
+        "accuracy": 0.3023255813953488,
+        "control": "mismatched",
+        "correct": 13,
+        "e_process": {
+          "crossed": true,
+          "final_wealth": 37.005017613721,
+          "losses_text": 1,
+          "max_wealth_reached": 37.005017613721,
+          "n_discordant": 28,
+          "wins_text": 27
+        },
+        "exact_sign_one_sided": 1.0803341865539547e-7,
+        "mid_p_mcnemar_one_sided": 5.587935447692869e-8,
+        "min_attainable_exact_p_at_this_n_disc": 3.725290298461918e-9,
+        "min_attainable_mid_p_at_this_n_disc": 1.862645149230959e-9,
+        "structurally_capable_at_alpha_0_05": true
+      },
+      {
+        "accuracy": 0.3953488372093023,
+        "control": "self_generated",
+        "correct": 17,
+        "e_process": {
+          "crossed": true,
+          "final_wealth": 21.157738923872348,
+          "losses_text": 1,
+          "max_wealth_reached": 21.157738923872348,
+          "n_discordant": 24,
+          "wins_text": 23
+        },
+        "exact_sign_one_sided": 1.4901161193847724e-6,
+        "mid_p_mcnemar_one_sided": 7.748603820800815e-7,
+        "min_attainable_exact_p_at_this_n_disc": 5.960464477539072e-8,
+        "min_attainable_mid_p_at_this_n_disc": 2.980232238769536e-8,
+        "structurally_capable_at_alpha_0_05": true
+      }
+    ],
+    "realised_best_control_most_favorable_to_null": "zero",
+    "sender_greedy_first_pass_correct": 41,
+    "uplift_vs_best_control": {
+      "best_control": {
+        "control": "zero",
+        "correct": 17,
+        "exact_95_ci": [
+          0.24976778864759108,
+          0.5559004755343042
+        ],
+        "n": 43
+      },
+      "gated_text": {
+        "correct": 39,
+        "exact_95_ci": [
+          0.7786465546186134,
+          0.9740687097336767
+        ],
+        "n": 43
+      },
+      "note": "ADR-030's secondary criterion: reported regardless of whether the primary gate passes.",
+      "raw_delta": 0.5116279069767442
+    },
+    "zero_control_vs_m4i_like_for_like": {
+      "comparability": "identical population and consumption order; prompts differ only in that this stage's zero condition carries no placeholder slots (m4i's baseline was also uninjected but drawn under the question-tail prompt).",
+      "m4i_baseline_uninjected": 140,
+      "m4i_n": 300,
+      "this_stage_n": 43,
+      "this_stage_zero_correct": 17
+    }
+  },
+  "trajectories": [
+    {
+      "control": "zero",
+      "steps": [
+        {
+          "control_correct": false,
+          "discordant": true,
+          "item": 4,
+          "order": 1,
+          "text_correct": true,
+          "wealth": 1.15,
+          "x": 1
+        },
+        {
+          "control_correct": false,
+          "discordant": true,
+          "item": 20,
+          "order": 2,
+          "text_correct": true,
+          "wealth": 1.3224999999999998,
+          "x": 1
+        },
+        {
+          "control_correct": false,
+          "discordant": false,
+          "item": 23,
+          "order": 3,
+          "text_correct": false,
+          "wealth": 1.3224999999999998,
+          "x": null
+        },
+        {
+          "control_correct": false,
+          "discordant": true,
+          "item": 39,
+          "order": 4,
+          "text_correct": true,
+          "wealth": 1.5208749999999995,
+          "x": 1
+        },
+        {
+          "control_correct": false,
+          "discordant": true,
+          "item": 42,
+          "order": 5,
+          "text_correct": true,
+          "wealth": 1.7490062499999994,
+          "x": 1
+        },
+        {
+          "control_correct": false,
+          "discordant": true,
+          "item": 100,
+          "order": 6,
+          "text_correct": true,
+          "wealth": 2.0113571874999994,
+          "x": 1
+        },
+        {
+          "control_correct": false,
+          "discordant": true,
+          "item": 103,
+          "order": 7,
+          "text_correct": true,
+          "wealth": 2.313060765624999,
+          "x": 1
+        },
+        {
+          "control_correct": true,
+          "discordant": false,
+          "item": 114,
+          "order": 8,
+          "text_correct": true,
+          "wealth": 2.313060765624999,
+          "x": null
+        },
+        {
+          "control_correct": true,
+          "discordant": false,
+          "item": 145,
+          "order": 9,
+          "text_correct": true,
+          "wealth": 2.313060765624999,
+          "x": null
+        },
+        {
+          "control_correct": true,
+          "discordant": false,
+          "item": 185,
+          "order": 10,
+          "text_correct": true,
+          "wealth": 2.313060765624999,
+          "x": null
+        },
+        {
+          "control_correct": false,
+          "discordant": false,
+          "item": 192,
+          "order": 11,
+          "text_correct": false,
+          "wealth": 2.313060765624999,
+          "x": null
+        },
+        {
+          "control_correct": false,
+          "discordant": true,
+          "item": 240,
+          "order": 12,
+          "text_correct": true,
+          "wealth": 2.6600198804687487,
+          "x": 1
+        },
+        {
+          "control_correct": false,
+          "discordant": true,
+          "item": 245,
+          "order": 13,
+          "text_correct": true,
+          "wealth": 3.0590228625390607,
+          "x": 1
+        },
+        {
+          "control_correct": false,
+          "discordant": true,
+          "item": 252,
+          "order": 14,
+          "text_correct": true,
+          "wealth": 3.5178762919199196,
+          "x": 1
+        },
+        {
+          "control_correct": true,
+          "discordant": true,
+          "item": 256,
+          "order": 15,
+          "text_correct": false,
+          "wealth": 2.9901948481319316,
+          "x": 0
+        },
+        {
+          "control_correct": false,
+          "discordant": true,
+          "item": 262,
+          "order": 16,
+          "text_correct": true,
+          "wealth": 3.438724075351721,
+          "x": 1
+        },
+        {
+          "control_correct": true,
+          "discordant": false,
+          "item": 280,
+          "order": 17,
+          "text_correct": true,
+          "wealth": 3.438724075351721,
+          "x": null
+        },
+        {
+          "control_correct": false,
+          "discordant": true,
+          "item": 298,
+          "order": 18,
+          "text_correct": true,
+          "wealth": 3.954532686654479,
+          "x": 1
+        },
+        {
+          "control_correct": false,
+          "discordant": true,
+          "item": 301,
+          "order": 19,
+          "text_correct": true,
+          "wealth": 4.547712589652651,
+          "x": 1
+        },
+        {
+          "control_correct": false,
+          "discordant": false,
+          "item": 303,
+          "order": 20,
+          "text_correct": false,
+          "wealth": 4.547712589652651,
+          "x": null
+        },
+        {
+          "control_correct": false,
+          "discordant": true,
+          "item": 358,
+          "order": 21,
+          "text_correct": true,
+          "wealth": 5.229869478100548,
+          "x": 1
+        },
+        {
+          "control_correct": true,
+          "discordant": false,
+          "item": 377,
+          "order": 22,
+          "text_correct": true,
+          "wealth": 5.229869478100548,
+          "x": null
+        },
+        {
+          "control_correct": false,
+          "discordant": true,
+          "item": 388,
+          "order": 23,
+          "text_correct": true,
+          "wealth": 6.01434989981563,
+          "x": 1
+        },
+        {
+          "control_correct": false,
+          "discordant": true,
+          "item": 410,
+          "order": 24,
+          "text_correct": true,
+          "wealth": 6.916502384787974,
+          "x": 1
+        },
+        {
+          "control_correct": true,
+          "discordant": false,
+          "item": 411,
+          "order": 25,
+          "text_correct": true,
+          "wealth": 6.916502384787974,
+          "x": null
+        },
+        {
+          "control_correct": false,
+          "discordant": true,
+          "item": 454,
+          "order": 26,
+          "text_correct": true,
+          "wealth": 7.9539777425061695,
+          "x": 1
+        },
+        {
+          "control_correct": false,
+          "discordant": true,
+          "item": 462,
+          "order": 27,
+          "text_correct": true,
+          "wealth": 9.147074403882094,
+          "x": 1
+        },
+        {
+          "control_correct": true,
+          "discordant": false,
+          "item": 471,
+          "order": 28,
+          "text_correct": true,
+          "wealth": 9.147074403882094,
+          "x": null
+        },
+        {
+          "control_correct": true,
+          "discordant": false,
+          "item": 521,
+          "order": 29,
+          "text_correct": true,
+          "wealth": 9.147074403882094,
+          "x": null
+        },
+        {
+          "control_correct": true,
+          "discordant": false,
+          "item": 523,
+          "order": 30,
+          "text_correct": true,
+          "wealth": 9.147074403882094,
+          "x": null
+        },
+        {
+          "control_correct": false,
+          "discordant": true,
+          "item": 544,
+          "order": 31,
+          "text_correct": true,
+          "wealth": 10.519135564464408,
+          "x": 1
+        },
+        {
+          "control_correct": false,
+          "discordant": true,
+          "item": 560,
+          "order": 32,
+          "text_correct": true,
+          "wealth": 12.097005899134068,
+          "x": 1
+        },
+        {
+          "control_correct": true,
+          "discordant": false,
+          "item": 575,
+          "order": 33,
+          "text_correct": true,
+          "wealth": 12.097005899134068,
+          "x": null
+        },
+        {
+          "control_correct": false,
+          "discordant": true,
+          "item": 579,
+          "order": 34,
+          "text_correct": true,
+          "wealth": 13.911556784004176,
+          "x": 1
+        },
+        {
+          "control_correct": true,
+          "discordant": false,
+          "item": 591,
+          "order": 35,
+          "text_correct": true,
+          "wealth": 13.911556784004176,
+          "x": null
+        },
+        {
+          "control_correct": false,
+          "discordant": true,
+          "item": 606,
+          "order": 36,
+          "text_correct": true,
+          "wealth": 15.998290301604802,
+          "x": 1
+        },
+        {
+          "control_correct": true,
+          "discordant": false,
+          "item": 607,
+          "order": 37,
+          "text_correct": true,
+          "wealth": 15.998290301604802,
+          "x": null
+        },
+        {
+          "control_correct": true,
+          "discordant": false,
+          "item": 610,
+          "order": 38,
+          "text_correct": true,
+          "wealth": 15.998290301604802,
+          "x": null
+        },
+        {
+          "control_correct": true,
+          "discordant": false,
+          "item": 613,
+          "order": 39,
+          "text_correct": true,
+          "wealth": 15.998290301604802,
+          "x": null
+        },
+        {
+          "control_correct": false,
+          "discordant": true,
+          "item": 620,
+          "order": 40,
+          "text_correct": true,
+          "wealth": 18.39803384684552,
+          "x": 1
+        },
+        {
+          "control_correct": true,
+          "discordant": false,
+          "item": 651,
+          "order": 41,
+          "text_correct": true,
+          "wealth": 18.39803384684552,
+          "x": null
+        },
+        {
+          "control_correct": true,
+          "discordant": false,
+          "item": 667,
+          "order": 42,
+          "text_correct": true,
+          "wealth": 18.39803384684552,
+          "x": null
+        },
+        {
+          "control_correct": false,
+          "discordant": true,
+          "item": 687,
+          "order": 43,
+          "text_correct": true,
+          "wealth": 21.157738923872348,
+          "x": 1
+        }
+      ]
+    },
+    {
+      "control": "random",
+      "steps": [
+        {
+          "control_correct": false,
+          "discordant": true,
+          "item": 4,
+          "order": 1,
+          "text_correct": true,
+          "wealth": 1.15,
+          "x": 1
+        },
+        {
+          "control_correct": false,
+          "discordant": true,
+          "item": 20,
+          "order": 2,
+          "text_correct": true,
+          "wealth": 1.3224999999999998,
+          "x": 1
+        },
+        {
+          "control_correct": true,
+          "discordant": true,
+          "item": 23,
+          "order": 3,
+          "text_correct": false,
+          "wealth": 1.1241249999999998,
+          "x": 0
+        },
+        {
+          "control_correct": false,
+          "discordant": true,
+          "item": 39,
+          "order": 4,
+          "text_correct": true,
+          "wealth": 1.2927437499999996,
+          "x": 1
+        },
+        {
+          "control_correct": false,
+          "discordant": true,
+          "item": 42,
+          "order": 5,
+          "text_correct": true,
+          "wealth": 1.4866553124999995,
+          "x": 1
+        },
+        {
+          "control_correct": false,
+          "discordant": true,
+          "item": 100,
+          "order": 6,
+          "text_correct": true,
+          "wealth": 1.7096536093749992,
+          "x": 1
+        },
+        {
+          "control_correct": false,
+          "discordant": true,
+          "item": 103,
+          "order": 7,
+          "text_correct": true,
+          "wealth": 1.966101650781249,
+          "x": 1
+        },
+        {
+          "control_correct": true,
+          "discordant": false,
+          "item": 114,
+          "order": 8,
+          "text_correct": true,
+          "wealth": 1.966101650781249,
+          "x": null
+        },
+        {
+          "control_correct": true,
+          "discordant": false,
+          "item": 145,
+          "order": 9,
+          "text_correct": true,
+          "wealth": 1.966101650781249,
+          "x": null
+        },
+        {
+          "control_correct": true,
+          "discordant": false,
+          "item": 185,
+          "order": 10,
+          "text_correct": true,
+          "wealth": 1.966101650781249,
+          "x": null
+        },
+        {
+          "control_correct": false,
+          "discordant": false,
+          "item": 192,
+          "order": 11,
+          "text_correct": false,
+          "wealth": 1.966101650781249,
+          "x": null
+        },
+        {
+          "control_correct": true,
+          "discordant": false,
+          "item": 240,
+          "order": 12,
+          "text_correct": true,
+          "wealth": 1.966101650781249,
+          "x": null
+        },
+        {
+          "control_correct": false,
+          "discordant": true,
+          "item": 245,
+          "order": 13,
+          "text_correct": true,
+          "wealth": 2.2610168983984362,
+          "x": 1
+        },
+        {
+          "control_correct": false,
+          "discordant": true,
+          "item": 252,
+          "order": 14,
+          "text_correct": true,
+          "wealth": 2.6001694331582015,
+          "x": 1
+        },
+        {
+          "control_correct": false,
+          "discordant": false,
+          "item": 256,
+          "order": 15,
+          "text_correct": false,
+          "wealth": 2.6001694331582015,
+          "x": null
+        },
+        {
+          "control_correct": false,
+          "discordant": true,
+          "item": 262,
+          "order": 16,
+          "text_correct": true,
+          "wealth": 2.9901948481319316,
+          "x": 1
+        },
+        {
+          "control_correct": true,
+          "discordant": false,
+          "item": 280,
+          "order": 17,
+          "text_correct": true,
+          "wealth": 2.9901948481319316,
+          "x": null
+        },
+        {
+          "control_correct": true,
+          "discordant": false,
+          "item": 298,
+          "order": 18,
+          "text_correct": true,
+          "wealth": 2.9901948481319316,
+          "x": null
+        },
+        {
+          "control_correct": false,
+          "discordant": true,
+          "item": 301,
+          "order": 19,
+          "text_correct": true,
+          "wealth": 3.438724075351721,
+          "x": 1
+        },
+        {
+          "control_correct": false,
+          "discordant": false,
+          "item": 303,
+          "order": 20,
+          "text_correct": false,
+          "wealth": 3.438724075351721,
+          "x": null
+        },
+        {
+          "control_correct": false,
+          "discordant": true,
+          "item": 358,
+          "order": 21,
+          "text_correct": true,
+          "wealth": 3.954532686654479,
+          "x": 1
+        },
+        {
+          "control_correct": true,
+          "discordant": false,
+          "item": 377,
+          "order": 22,
+          "text_correct": true,
+          "wealth": 3.954532686654479,
+          "x": null
+        },
+        {
+          "control_correct": false,
+          "discordant": true,
+          "item": 388,
+          "order": 23,
+          "text_correct": true,
+          "wealth": 4.547712589652651,
+          "x": 1
+        },
+        {
+          "control_correct": false,
+          "discordant": true,
+          "item": 410,
+          "order": 24,
+          "text_correct": true,
+          "wealth": 5.229869478100548,
+          "x": 1
+        },
+        {
+          "control_correct": false,
+          "discordant": true,
+          "item": 411,
+          "order": 25,
+          "text_correct": true,
+          "wealth": 6.01434989981563,
+          "x": 1
+        },
+        {
+          "control_correct": false,
+          "discordant": true,
+          "item": 454,
+          "order": 26,
+          "text_correct": true,
+          "wealth": 6.916502384787974,
+          "x": 1
+        },
+        {
+          "control_correct": false,
+          "discordant": true,
+          "item": 462,
+          "order": 27,
+          "text_correct": true,
+          "wealth": 7.9539777425061695,
+          "x": 1
+        },
+        {
+          "control_correct": true,
+          "discordant": false,
+          "item": 471,
+          "order": 28,
+          "text_correct": true,
+          "wealth": 7.9539777425061695,
+          "x": null
+        },
+        {
+          "control_correct": true,
+          "discordant": false,
+          "item": 521,
+          "order": 29,
+          "text_correct": true,
+          "wealth": 7.9539777425061695,
+          "x": null
+        },
+        {
+          "control_correct": false,
+          "discordant": true,
+          "item": 523,
+          "order": 30,
+          "text_correct": true,
+          "wealth": 9.147074403882094,
+          "x": 1
+        },
+        {
+          "control_correct": false,
+          "discordant": true,
+          "item": 544,
+          "order": 31,
+          "text_correct": true,
+          "wealth": 10.519135564464408,
+          "x": 1
+        },
+        {
+          "control_correct": false,
+          "discordant": true,
+          "item": 560,
+          "order": 32,
+          "text_correct": true,
+          "wealth": 12.097005899134068,
+          "x": 1
+        },
+        {
+          "control_correct": true,
+          "discordant": false,
+          "item": 575,
+          "order": 33,
+          "text_correct": true,
+          "wealth": 12.097005899134068,
+          "x": null
+        },
+        {
+          "control_correct": false,
+          "discordant": true,
+          "item": 579,
+          "order": 34,
+          "text_correct": true,
+          "wealth": 13.911556784004176,
+          "x": 1
+        },
+        {
+          "control_correct": false,
+          "discordant": true,
+          "item": 591,
+          "order": 35,
+          "text_correct": true,
+          "wealth": 15.998290301604802,
+          "x": 1
+        },
+        {
+          "control_correct": false,
+          "discordant": true,
+          "item": 606,
+          "order": 36,
+          "text_correct": true,
+          "wealth": 18.39803384684552,
+          "x": 1
+        },
+        {
+          "control_correct": true,
+          "discordant": false,
+          "item": 607,
+          "order": 37,
+          "text_correct": true,
+          "wealth": 18.39803384684552,
+          "x": null
+        },
+        {
+          "control_correct": true,
+          "discordant": false,
+          "item": 610,
+          "order": 38,
+          "text_correct": true,
+          "wealth": 18.39803384684552,
+          "x": null
+        },
+        {
+          "control_correct": true,
+          "discordant": false,
+          "item": 613,
+          "order": 39,
+          "text_correct": true,
+          "wealth": 18.39803384684552,
+          "x": null
+        },
+        {
+          "control_correct": false,
+          "discordant": true,
+          "item": 620,
+          "order": 40,
+          "text_correct": true,
+          "wealth": 21.157738923872348,
+          "x": 1
+        },
+        {
+          "control_correct": false,
+          "discordant": true,
+          "item": 651,
+          "order": 41,
+          "text_correct": true,
+          "wealth": 24.3313997624532,
+          "x": 1
+        },
+        {
+          "control_correct": true,
+          "discordant": false,
+          "item": 667,
+          "order": 42,
+          "text_correct": true,
+          "wealth": 24.3313997624532,
+          "x": null
+        },
+        {
+          "control_correct": false,
+          "discordant": true,
+          "item": 687,
+          "order": 43,
+          "text_correct": true,
+          "wealth": 27.981109726821177,
+          "x": 1
+        }
+      ]
+    },
+    {
+      "control": "mismatched",
+      "steps": [
+        {
+          "control_correct": false,
+          "discordant": true,
+          "item": 4,
+          "order": 1,
+          "text_correct": true,
+          "wealth": 1.15,
+          "x": 1
+        },
+        {
+          "control_correct": false,
+          "discordant": true,
+          "item": 20,
+          "order": 2,
+          "text_correct": true,
+          "wealth": 1.3224999999999998,
+          "x": 1
+        },
+        {
+          "control_correct": false,
+          "discordant": false,
+          "item": 23,
+          "order": 3,
+          "text_correct": false,
+          "wealth": 1.3224999999999998,
+          "x": null
+        },
+        {
+          "control_correct": false,
+          "discordant": true,
+          "item": 39,
+          "order": 4,
+          "text_correct": true,
+          "wealth": 1.5208749999999995,
+          "x": 1
+        },
+        {
+          "control_correct": false,
+          "discordant": true,
+          "item": 42,
+          "order": 5,
+          "text_correct": true,
+          "wealth": 1.7490062499999994,
+          "x": 1
+        },
+        {
+          "control_correct": true,
+          "discordant": false,
+          "item": 100,
+          "order": 6,
+          "text_correct": true,
+          "wealth": 1.7490062499999994,
+          "x": null
+        },
+        {
+          "control_correct": false,
+          "discordant": true,
+          "item": 103,
+          "order": 7,
+          "text_correct": true,
+          "wealth": 2.0113571874999994,
+          "x": 1
+        },
+        {
+          "control_correct": true,
+          "discordant": false,
+          "item": 114,
+          "order": 8,
+          "text_correct": true,
+          "wealth": 2.0113571874999994,
+          "x": null
+        },
+        {
+          "control_correct": true,
+          "discordant": false,
+          "item": 145,
+          "order": 9,
+          "text_correct": true,
+          "wealth": 2.0113571874999994,
+          "x": null
+        },
+        {
+          "control_correct": true,
+          "discordant": false,
+          "item": 185,
+          "order": 10,
+          "text_correct": true,
+          "wealth": 2.0113571874999994,
+          "x": null
+        },
+        {
+          "control_correct": true,
+          "discordant": true,
+          "item": 192,
+          "order": 11,
+          "text_correct": false,
+          "wealth": 1.7096536093749994,
+          "x": 0
+        },
+        {
+          "control_correct": false,
+          "discordant": true,
+          "item": 240,
+          "order": 12,
+          "text_correct": true,
+          "wealth": 1.9661016507812492,
+          "x": 1
+        },
+        {
+          "control_correct": false,
+          "discordant": true,
+          "item": 245,
+          "order": 13,
+          "text_correct": true,
+          "wealth": 2.2610168983984362,
+          "x": 1
+        },
+        {
+          "control_correct": true,
+          "discordant": false,
+          "item": 252,
+          "order": 14,
+          "text_correct": true,
+          "wealth": 2.2610168983984362,
+          "x": null
+        },
+        {
+          "control_correct": false,
+          "discordant": false,
+          "item": 256,
+          "order": 15,
+          "text_correct": false,
+          "wealth": 2.2610168983984362,
+          "x": null
+        },
+        {
+          "control_correct": false,
+          "discordant": true,
+          "item": 262,
+          "order": 16,
+          "text_correct": true,
+          "wealth": 2.6001694331582015,
+          "x": 1
+        },
+        {
+          "control_correct": true,
+          "discordant": false,
+          "item": 280,
+          "order": 17,
+          "text_correct": true,
+          "wealth": 2.6001694331582015,
+          "x": null
+        },
+        {
+          "control_correct": false,
+          "discordant": true,
+          "item": 298,
+          "order": 18,
+          "text_correct": true,
+          "wealth": 2.9901948481319316,
+          "x": 1
+        },
+        {
+          "control_correct": false,
+          "discordant": true,
+          "item": 301,
+          "order": 19,
+          "text_correct": true,
+          "wealth": 3.438724075351721,
+          "x": 1
+        },
+        {
+          "control_correct": false,
+          "discordant": false,
+          "item": 303,
+          "order": 20,
+          "text_correct": false,
+          "wealth": 3.438724075351721,
+          "x": null
+        },
+        {
+          "control_correct": false,
+          "discordant": true,
+          "item": 358,
+          "order": 21,
+          "text_correct": true,
+          "wealth": 3.954532686654479,
+          "x": 1
+        },
+        {
+          "control_correct": false,
+          "discordant": true,
+          "item": 377,
+          "order": 22,
+          "text_correct": true,
+          "wealth": 4.547712589652651,
+          "x": 1
+        },
+        {
+          "control_correct": false,
+          "discordant": true,
+          "item": 388,
+          "order": 23,
+          "text_correct": true,
+          "wealth": 5.229869478100548,
+          "x": 1
+        },
+        {
+          "control_correct": true,
+          "discordant": false,
+          "item": 410,
+          "order": 24,
+          "text_correct": true,
+          "wealth": 5.229869478100548,
+          "x": null
+        },
+        {
+          "control_correct": false,
+          "discordant": true,
+          "item": 411,
+          "order": 25,
+          "text_correct": true,
+          "wealth": 6.01434989981563,
+          "x": 1
+        },
+        {
+          "control_correct": false,
+          "discordant": true,
+          "item": 454,
+          "order": 26,
+          "text_correct": true,
+          "wealth": 6.916502384787974,
+          "x": 1
+        },
+        {
+          "control_correct": false,
+          "discordant": true,
+          "item": 462,
+          "order": 27,
+          "text_correct": true,
+          "wealth": 7.9539777425061695,
+          "x": 1
+        },
+        {
+          "control_correct": true,
+          "discordant": false,
+          "item": 471,
+          "order": 28,
+          "text_correct": true,
+          "wealth": 7.9539777425061695,
+          "x": null
+        },
+        {
+          "control_correct": true,
+          "discordant": false,
+          "item": 521,
+          "order": 29,
+          "text_correct": true,
+          "wealth": 7.9539777425061695,
+          "x": null
+        },
+        {
+          "control_correct": false,
+          "discordant": true,
+          "item": 523,
+          "order": 30,
+          "text_correct": true,
+          "wealth": 9.147074403882094,
+          "x": 1
+        },
+        {
+          "control_correct": false,
+          "discordant": true,
+          "item": 544,
+          "order": 31,
+          "text_correct": true,
+          "wealth": 10.519135564464408,
+          "x": 1
+        },
+        {
+          "control_correct": false,
+          "discordant": true,
+          "item": 560,
+          "order": 32,
+          "text_correct": true,
+          "wealth": 12.097005899134068,
+          "x": 1
+        },
+        {
+          "control_correct": true,
+          "discordant": false,
+          "item": 575,
+          "order": 33,
+          "text_correct": true,
+          "wealth": 12.097005899134068,
+          "x": null
+        },
+        {
+          "control_correct": false,
+          "discordant": true,
+          "item": 579,
+          "order": 34,
+          "text_correct": true,
+          "wealth": 13.911556784004176,
+          "x": 1
+        },
+        {
+          "control_correct": true,
+          "discordant": false,
+          "item": 591,
+          "order": 35,
+          "text_correct": true,
+          "wealth": 13.911556784004176,
+          "x": null
+        },
+        {
+          "control_correct": false,
+          "discordant": true,
+          "item": 606,
+          "order": 36,
+          "text_correct": true,
+          "wealth": 15.998290301604802,
+          "x": 1
+        },
+        {
+          "control_correct": false,
+          "discordant": true,
+          "item": 607,
+          "order": 37,
+          "text_correct": true,
+          "wealth": 18.39803384684552,
+          "x": 1
+        },
+        {
+          "control_correct": false,
+          "discordant": true,
+          "item": 610,
+          "order": 38,
+          "text_correct": true,
+          "wealth": 21.157738923872348,
+          "x": 1
+        },
+        {
+          "control_correct": false,
+          "discordant": true,
+          "item": 613,
+          "order": 39,
+          "text_correct": true,
+          "wealth": 24.3313997624532,
+          "x": 1
+        },
+        {
+          "control_correct": false,
+          "discordant": true,
+          "item": 620,
+          "order": 40,
+          "text_correct": true,
+          "wealth": 27.981109726821177,
+          "x": 1
+        },
+        {
+          "control_correct": false,
+          "discordant": true,
+          "item": 651,
+          "order": 41,
+          "text_correct": true,
+          "wealth": 32.178276185844354,
+          "x": 1
+        },
+        {
+          "control_correct": false,
+          "discordant": true,
+          "item": 667,
+          "order": 42,
+          "text_correct": true,
+          "wealth": 37.005017613721,
+          "x": 1
+        },
+        {
+          "control_correct": true,
+          "discordant": false,
+          "item": 687,
+          "order": 43,
+          "text_correct": true,
+          "wealth": 37.005017613721,
+          "x": null
+        }
+      ]
+    },
+    {
+      "control": "self_generated",
+      "steps": [
+        {
+          "control_correct": false,
+          "discordant": true,
+          "item": 4,
+          "order": 1,
+          "text_correct": true,
+          "wealth": 1.15,
+          "x": 1
+        },
+        {
+          "control_correct": false,
+          "discordant": true,
+          "item": 20,
+          "order": 2,
+          "text_correct": true,
+          "wealth": 1.3224999999999998,
+          "x": 1
+        },
+        {
+          "control_correct": false,
+          "discordant": false,
+          "item": 23,
+          "order": 3,
+          "text_correct": false,
+          "wealth": 1.3224999999999998,
+          "x": null
+        },
+        {
+          "control_correct": false,
+          "discordant": true,
+          "item": 39,
+          "order": 4,
+          "text_correct": true,
+          "wealth": 1.5208749999999995,
+          "x": 1
+        },
+        {
+          "control_correct": false,
+          "discordant": true,
+          "item": 42,
+          "order": 5,
+          "text_correct": true,
+          "wealth": 1.7490062499999994,
+          "x": 1
+        },
+        {
+          "control_correct": false,
+          "discordant": true,
+          "item": 100,
+          "order": 6,
+          "text_correct": true,
+          "wealth": 2.0113571874999994,
+          "x": 1
+        },
+        {
+          "control_correct": false,
+          "discordant": true,
+          "item": 103,
+          "order": 7,
+          "text_correct": true,
+          "wealth": 2.313060765624999,
+          "x": 1
+        },
+        {
+          "control_correct": true,
+          "discordant": false,
+          "item": 114,
+          "order": 8,
+          "text_correct": true,
+          "wealth": 2.313060765624999,
+          "x": null
+        },
+        {
+          "control_correct": true,
+          "discordant": false,
+          "item": 145,
+          "order": 9,
+          "text_correct": true,
+          "wealth": 2.313060765624999,
+          "x": null
+        },
+        {
+          "control_correct": true,
+          "discordant": false,
+          "item": 185,
+          "order": 10,
+          "text_correct": true,
+          "wealth": 2.313060765624999,
+          "x": null
+        },
+        {
+          "control_correct": false,
+          "discordant": false,
+          "item": 192,
+          "order": 11,
+          "text_correct": false,
+          "wealth": 2.313060765624999,
+          "x": null
+        },
+        {
+          "control_correct": false,
+          "discordant": true,
+          "item": 240,
+          "order": 12,
+          "text_correct": true,
+          "wealth": 2.6600198804687487,
+          "x": 1
+        },
+        {
+          "control_correct": false,
+          "discordant": true,
+          "item": 245,
+          "order": 13,
+          "text_correct": true,
+          "wealth": 3.0590228625390607,
+          "x": 1
+        },
+        {
+          "control_correct": false,
+          "discordant": true,
+          "item": 252,
+          "order": 14,
+          "text_correct": true,
+          "wealth": 3.5178762919199196,
+          "x": 1
+        },
+        {
+          "control_correct": true,
+          "discordant": true,
+          "item": 256,
+          "order": 15,
+          "text_correct": false,
+          "wealth": 2.9901948481319316,
+          "x": 0
+        },
+        {
+          "control_correct": false,
+          "discordant": true,
+          "item": 262,
+          "order": 16,
+          "text_correct": true,
+          "wealth": 3.438724075351721,
+          "x": 1
+        },
+        {
+          "control_correct": true,
+          "discordant": false,
+          "item": 280,
+          "order": 17,
+          "text_correct": true,
+          "wealth": 3.438724075351721,
+          "x": null
+        },
+        {
+          "control_correct": false,
+          "discordant": true,
+          "item": 298,
+          "order": 18,
+          "text_correct": true,
+          "wealth": 3.954532686654479,
+          "x": 1
+        },
+        {
+          "control_correct": false,
+          "discordant": true,
+          "item": 301,
+          "order": 19,
+          "text_correct": true,
+          "wealth": 4.547712589652651,
+          "x": 1
+        },
+        {
+          "control_correct": false,
+          "discordant": false,
+          "item": 303,
+          "order": 20,
+          "text_correct": false,
+          "wealth": 4.547712589652651,
+          "x": null
+        },
+        {
+          "control_correct": false,
+          "discordant": true,
+          "item": 358,
+          "order": 21,
+          "text_correct": true,
+          "wealth": 5.229869478100548,
+          "x": 1
+        },
+        {
+          "control_correct": true,
+          "discordant": false,
+          "item": 377,
+          "order": 22,
+          "text_correct": true,
+          "wealth": 5.229869478100548,
+          "x": null
+        },
+        {
+          "control_correct": false,
+          "discordant": true,
+          "item": 388,
+          "order": 23,
+          "text_correct": true,
+          "wealth": 6.01434989981563,
+          "x": 1
+        },
+        {
+          "control_correct": false,
+          "discordant": true,
+          "item": 410,
+          "order": 24,
+          "text_correct": true,
+          "wealth": 6.916502384787974,
+          "x": 1
+        },
+        {
+          "control_correct": true,
+          "discordant": false,
+          "item": 411,
+          "order": 25,
+          "text_correct": true,
+          "wealth": 6.916502384787974,
+          "x": null
+        },
+        {
+          "control_correct": false,
+          "discordant": true,
+          "item": 454,
+          "order": 26,
+          "text_correct": true,
+          "wealth": 7.9539777425061695,
+          "x": 1
+        },
+        {
+          "control_correct": false,
+          "discordant": true,
+          "item": 462,
+          "order": 27,
+          "text_correct": true,
+          "wealth": 9.147074403882094,
+          "x": 1
+        },
+        {
+          "control_correct": true,
+          "discordant": false,
+          "item": 471,
+          "order": 28,
+          "text_correct": true,
+          "wealth": 9.147074403882094,
+          "x": null
+        },
+        {
+          "control_correct": true,
+          "discordant": false,
+          "item": 521,
+          "order": 29,
+          "text_correct": true,
+          "wealth": 9.147074403882094,
+          "x": null
+        },
+        {
+          "control_correct": true,
+          "discordant": false,
+          "item": 523,
+          "order": 30,
+          "text_correct": true,
+          "wealth": 9.147074403882094,
+          "x": null
+        },
+        {
+          "control_correct": false,
+          "discordant": true,
+          "item": 544,
+          "order": 31,
+          "text_correct": true,
+          "wealth": 10.519135564464408,
+          "x": 1
+        },
+        {
+          "control_correct": false,
+          "discordant": true,
+          "item": 560,
+          "order": 32,
+          "text_correct": true,
+          "wealth": 12.097005899134068,
+          "x": 1
+        },
+        {
+          "control_correct": true,
+          "discordant": false,
+          "item": 575,
+          "order": 33,
+          "text_correct": true,
+          "wealth": 12.097005899134068,
+          "x": null
+        },
+        {
+          "control_correct": false,
+          "discordant": true,
+          "item": 579,
+          "order": 34,
+          "text_correct": true,
+          "wealth": 13.911556784004176,
+          "x": 1
+        },
+        {
+          "control_correct": true,
+          "discordant": false,
+          "item": 591,
+          "order": 35,
+          "text_correct": true,
+          "wealth": 13.911556784004176,
+          "x": null
+        },
+        {
+          "control_correct": false,
+          "discordant": true,
+          "item": 606,
+          "order": 36,
+          "text_correct": true,
+          "wealth": 15.998290301604802,
+          "x": 1
+        },
+        {
+          "control_correct": true,
+          "discordant": false,
+          "item": 607,
+          "order": 37,
+          "text_correct": true,
+          "wealth": 15.998290301604802,
+          "x": null
+        },
+        {
+          "control_correct": true,
+          "discordant": false,
+          "item": 610,
+          "order": 38,
+          "text_correct": true,
+          "wealth": 15.998290301604802,
+          "x": null
+        },
+        {
+          "control_correct": true,
+          "discordant": false,
+          "item": 613,
+          "order": 39,
+          "text_correct": true,
+          "wealth": 15.998290301604802,
+          "x": null
+        },
+        {
+          "control_correct": false,
+          "discordant": true,
+          "item": 620,
+          "order": 40,
+          "text_correct": true,
+          "wealth": 18.39803384684552,
+          "x": 1
+        },
+        {
+          "control_correct": true,
+          "discordant": false,
+          "item": 651,
+          "order": 41,
+          "text_correct": true,
+          "wealth": 18.39803384684552,
+          "x": null
+        },
+        {
+          "control_correct": true,
+          "discordant": false,
+          "item": 667,
+          "order": 42,
+          "text_correct": true,
+          "wealth": 18.39803384684552,
+          "x": null
+        },
+        {
+          "control_correct": false,
+          "discordant": true,
+          "item": 687,
+          "order": 43,
+          "text_correct": true,
+          "wealth": 21.157738923872348,
+          "x": 1
+        }
+      ]
+    }
+  ]
+}

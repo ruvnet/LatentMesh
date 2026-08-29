@@ -13,8 +13,14 @@
 //!       Read the runtime S2 dump (default:
 //!       crates/latentmesh-runtime/target/latentmesh-runs/s2), fit the 3x3
 //!       depth sweep, gate A6, write the calibration receipt.
+//!   latentmesh-live permnull [--gold-dump-dir DIR] [--gen-dump-dir DIR]
+//!                            [--perms N] [--threads N] [--out FILE]
+//!       ADR-024's registered A6 permutation-null analysis: re-fit the same
+//!       affine machinery over item-shuffled sender/receiver pairings on both
+//!       calibration datasets and report where the recorded A6 residuals fall
+//!       against chance. CPU-only, no probe drawn, no recorded number changed.
 
-use latentmesh_live::{calibrate, calibrate_gen, gsm8k};
+use latentmesh_live::{calibrate, calibrate_gen, gsm8k, permnull};
 use std::path::PathBuf;
 
 fn main() -> anyhow::Result<()> {
@@ -86,9 +92,43 @@ fn main() -> anyhow::Result<()> {
             }
             Ok(())
         }
+        Some("permnull") => {
+            let runs =
+                gsm8k::crate_dir().join("../../crates/latentmesh-runtime/target/latentmesh-runs");
+            let mut gold_dir = runs.join("s2");
+            let mut gen_dir = runs.join("s2c");
+            let mut out: Option<PathBuf> = None;
+            let mut n_perm = permnull::DEFAULT_PERMUTATIONS;
+            let mut threads = permnull::DEFAULT_THREADS;
+            let mut i = 2;
+            while i + 1 < args.len() {
+                match args[i].as_str() {
+                    "--gold-dump-dir" => gold_dir = PathBuf::from(&args[i + 1]),
+                    "--gen-dump-dir" => gen_dir = PathBuf::from(&args[i + 1]),
+                    "--out" => out = Some(PathBuf::from(&args[i + 1])),
+                    "--perms" => n_perm = args[i + 1].parse()?,
+                    "--threads" => threads = args[i + 1].parse()?,
+                    other => anyhow::bail!("unknown arg {other}"),
+                }
+                i += 2;
+            }
+            anyhow::ensure!(
+                n_perm >= permnull::DEFAULT_PERMUTATIONS,
+                "ADR-024 registers >= {} permutations per cell; got {n_perm}",
+                permnull::DEFAULT_PERMUTATIONS
+            );
+            let receipt = permnull::run(&gold_dir, &gen_dir, n_perm, threads)?;
+            let out = out.unwrap_or_else(|| {
+                gsm8k::crate_dir()
+                    .join("../../crates/latentmesh-runtime/receipts/run2-a6-permnull-receipt.json")
+            });
+            std::fs::write(&out, serde_json::to_string_pretty(&receipt)?)?;
+            println!("permutation-null receipt: {}", out.display());
+            Ok(())
+        }
         _ => {
             eprintln!(
-                "usage: latentmesh-live <make-splits | calibrate [--dump-dir DIR] [--out FILE] | calibrate-generated [--dump-dir DIR] [--out FILE]>"
+                "usage: latentmesh-live <make-splits | calibrate [--dump-dir DIR] [--out FILE] | calibrate-generated [--dump-dir DIR] [--out FILE] | permnull [--gold-dump-dir DIR] [--gen-dump-dir DIR] [--perms N] [--threads N] [--out FILE]>"
             );
             std::process::exit(2);
         }

@@ -1,0 +1,2439 @@
+{
+  "commitments": [
+    {
+      "decoy": 1248,
+      "gold": 624,
+      "item": 4,
+      "perturbation": "2g",
+      "redraws_before_acceptance": 0,
+      "stream_order": 1
+    },
+    {
+      "decoy": 48,
+      "gold": 38,
+      "item": 20,
+      "perturbation": "g+10",
+      "redraws_before_acceptance": 0,
+      "stream_order": 2
+    },
+    {
+      "decoy": 15,
+      "gold": 5,
+      "item": 23,
+      "perturbation": "g+10",
+      "redraws_before_acceptance": 0,
+      "stream_order": 3
+    },
+    {
+      "decoy": 25,
+      "gold": 15,
+      "item": 39,
+      "perturbation": "g+10",
+      "redraws_before_acceptance": 0,
+      "stream_order": 4
+    },
+    {
+      "decoy": 198,
+      "gold": 99,
+      "item": 42,
+      "perturbation": "2g",
+      "redraws_before_acceptance": 0,
+      "stream_order": 5
+    },
+    {
+      "decoy": 16,
+      "gold": 15,
+      "item": 100,
+      "perturbation": "g+1",
+      "redraws_before_acceptance": 0,
+      "stream_order": 6
+    },
+    {
+      "decoy": 268,
+      "gold": 258,
+      "item": 103,
+      "perturbation": "g+10",
+      "redraws_before_acceptance": 0,
+      "stream_order": 7
+    },
+    {
+      "decoy": 16,
+      "gold": 15,
+      "item": 114,
+      "perturbation": "g+1",
+      "redraws_before_acceptance": 0,
+      "stream_order": 8
+    },
+    {
+      "decoy": 12,
+      "gold": 2,
+      "item": 145,
+      "perturbation": "g+10",
+      "redraws_before_acceptance": 0,
+      "stream_order": 9
+    },
+    {
+      "decoy": 14,
+      "gold": 4,
+      "item": 185,
+      "perturbation": "g+10",
+      "redraws_before_acceptance": 0,
+      "stream_order": 10
+    },
+    {
+      "decoy": 1340,
+      "gold": 670,
+      "item": 192,
+      "perturbation": "2g",
+      "redraws_before_acceptance": 0,
+      "stream_order": 11
+    },
+    {
+      "decoy": 17,
+      "gold": 18,
+      "item": 240,
+      "perturbation": "g-1",
+      "redraws_before_acceptance": 0,
+      "stream_order": 12
+    },
+    {
+      "decoy": 4560,
+      "gold": 2280,
+      "item": 245,
+      "perturbation": "2g",
+      "redraws_before_acceptance": 0,
+      "stream_order": 13
+    },
+    {
+      "decoy": 39,
+      "gold": 40,
+      "item": 252,
+      "perturbation": "g-1",
+      "redraws_before_acceptance": 0,
+      "stream_order": 14
+    },
+    {
+      "decoy": 107,
+      "gold": 108,
+      "item": 256,
+      "perturbation": "g-1",
+      "redraws_before_acceptance": 0,
+      "stream_order": 15
+    },
+    {
+      "decoy": 4,
+      "gold": 3,
+      "item": 262,
+      "perturbation": "g+1",
+      "redraws_before_acceptance": 0,
+      "stream_order": 16
+    },
+    {
+      "decoy": 28,
+      "gold": 18,
+      "item": 280,
+      "perturbation": "g+10",
+      "redraws_before_acceptance": 0,
+      "stream_order": 17
+    },
+    {
+      "decoy": 23,
+      "gold": 22,
+      "item": 298,
+      "perturbation": "g+1",
+      "redraws_before_acceptance": 0,
+      "stream_order": 18
+    },
+    {
+      "decoy": 26,
+      "gold": 16,
+      "item": 301,
+      "perturbation": "g+10",
+      "redraws_before_acceptance": 0,
+      "stream_order": 19
+    },
+    {
+      "decoy": 49,
+      "gold": 50,
+      "item": 303,
+      "perturbation": "g-1",
+      "redraws_before_acceptance": 0,
+      "stream_order": 20
+    },
+    {
+      "decoy": 82,
+      "gold": 41,
+      "item": 358,
+      "perturbation": "2g",
+      "redraws_before_acceptance": 0,
+      "stream_order": 21
+    },
+    {
+      "decoy": 7,
+      "gold": 6,
+      "item": 377,
+      "perturbation": "g+1",
+      "redraws_before_acceptance": 0,
+      "stream_order": 22
+    },
+    {
+      "decoy": 3610,
+      "gold": 3600,
+      "item": 388,
+      "perturbation": "g+10",
+      "redraws_before_acceptance": 0,
+      "stream_order": 23
+    },
+    {
+      "decoy": 4,
+      "gold": 5,
+      "item": 410,
+      "perturbation": "g-1",
+      "redraws_before_acceptance": 0,
+      "stream_order": 24
+    },
+    {
+      "decoy": 116,
+      "gold": 58,
+      "item": 411,
+      "perturbation": "2g",
+      "redraws_before_acceptance": 0,
+      "stream_order": 25
+    },
+    {
+      "decoy": 7,
+      "gold": 6,
+      "item": 454,
+      "perturbation": "g+1",
+      "redraws_before_acceptance": 0,
+      "stream_order": 26
+    },
+    {
+      "decoy": 2251,
+      "gold": 2250,
+      "item": 462,
+      "perturbation": "g+1",
+      "redraws_before_acceptance": 0,
+      "stream_order": 27
+    },
+    {
+      "decoy": 30,
+      "gold": 20,
+      "item": 471,
+      "perturbation": "g+10",
+      "redraws_before_acceptance": 0,
+      "stream_order": 28
+    },
+    {
+      "decoy": 19,
+      "gold": 18,
+      "item": 521,
+      "perturbation": "g+1",
+      "redraws_before_acceptance": 0,
+      "stream_order": 29
+    },
+    {
+      "decoy": 3,
+      "gold": 4,
+      "item": 523,
+      "perturbation": "g-1",
+      "redraws_before_acceptance": 0,
+      "stream_order": 30
+    },
+    {
+      "decoy": 30,
+      "gold": 15,
+      "item": 544,
+      "perturbation": "2g",
+      "redraws_before_acceptance": 0,
+      "stream_order": 31
+    },
+    {
+      "decoy": 865,
+      "gold": 864,
+      "item": 560,
+      "perturbation": "g+1",
+      "redraws_before_acceptance": 0,
+      "stream_order": 32
+    },
+    {
+      "decoy": 181,
+      "gold": 180,
+      "item": 575,
+      "perturbation": "g+1",
+      "redraws_before_acceptance": 0,
+      "stream_order": 33
+    },
+    {
+      "decoy": 15,
+      "gold": 5,
+      "item": 579,
+      "perturbation": "g+10",
+      "redraws_before_acceptance": 0,
+      "stream_order": 34
+    },
+    {
+      "decoy": 3,
+      "gold": 2,
+      "item": 591,
+      "perturbation": "g+1",
+      "redraws_before_acceptance": 0,
+      "stream_order": 35
+    },
+    {
+      "decoy": 98,
+      "gold": 88,
+      "item": 606,
+      "perturbation": "g+10",
+      "redraws_before_acceptance": 0,
+      "stream_order": 36
+    },
+    {
+      "decoy": 750000,
+      "gold": 375000,
+      "item": 607,
+      "perturbation": "2g",
+      "redraws_before_acceptance": 0,
+      "stream_order": 37
+    },
+    {
+      "decoy": 639,
+      "gold": 640,
+      "item": 610,
+      "perturbation": "g-1",
+      "redraws_before_acceptance": 0,
+      "stream_order": 38
+    },
+    {
+      "decoy": 1001,
+      "gold": 1000,
+      "item": 613,
+      "perturbation": "g+1",
+      "redraws_before_acceptance": 0,
+      "stream_order": 39
+    },
+    {
+      "decoy": 59,
+      "gold": 60,
+      "item": 620,
+      "perturbation": "g-1",
+      "redraws_before_acceptance": 0,
+      "stream_order": 40
+    },
+    {
+      "decoy": 234,
+      "gold": 117,
+      "item": 651,
+      "perturbation": "2g",
+      "redraws_before_acceptance": 0,
+      "stream_order": 41
+    },
+    {
+      "decoy": 7,
+      "gold": 6,
+      "item": 667,
+      "perturbation": "g+1",
+      "redraws_before_acceptance": 0,
+      "stream_order": 42
+    },
+    {
+      "decoy": 7,
+      "gold": 6,
+      "item": 687,
+      "perturbation": "g+1",
+      "redraws_before_acceptance": 0,
+      "stream_order": 43
+    },
+    {
+      "decoy": 44,
+      "gold": 45,
+      "item": 696,
+      "perturbation": "g-1",
+      "redraws_before_acceptance": 0,
+      "stream_order": 44
+    },
+    {
+      "decoy": 220,
+      "gold": 210,
+      "item": 722,
+      "perturbation": "g+10",
+      "redraws_before_acceptance": 0,
+      "stream_order": 45
+    },
+    {
+      "decoy": 31999,
+      "gold": 32000,
+      "item": 732,
+      "perturbation": "g-1",
+      "redraws_before_acceptance": 0,
+      "stream_order": 46
+    },
+    {
+      "decoy": 8,
+      "gold": 7,
+      "item": 757,
+      "perturbation": "g+1",
+      "redraws_before_acceptance": 0,
+      "stream_order": 47
+    },
+    {
+      "decoy": 15,
+      "gold": 5,
+      "item": 767,
+      "perturbation": "g+10",
+      "redraws_before_acceptance": 0,
+      "stream_order": 48
+    },
+    {
+      "decoy": 18,
+      "gold": 8,
+      "item": 788,
+      "perturbation": "g+10",
+      "redraws_before_acceptance": 0,
+      "stream_order": 49
+    },
+    {
+      "decoy": 9,
+      "gold": 8,
+      "item": 795,
+      "perturbation": "g+1",
+      "redraws_before_acceptance": 0,
+      "stream_order": 50
+    },
+    {
+      "decoy": 16,
+      "gold": 17,
+      "item": 803,
+      "perturbation": "g-1",
+      "redraws_before_acceptance": 0,
+      "stream_order": 51
+    },
+    {
+      "decoy": 1,
+      "gold": 2,
+      "item": 818,
+      "perturbation": "g-1",
+      "redraws_before_acceptance": 0,
+      "stream_order": 52
+    },
+    {
+      "decoy": 599,
+      "gold": 600,
+      "item": 827,
+      "perturbation": "g-1",
+      "redraws_before_acceptance": 0,
+      "stream_order": 53
+    },
+    {
+      "decoy": 4,
+      "gold": 2,
+      "item": 834,
+      "perturbation": "2g",
+      "redraws_before_acceptance": 0,
+      "stream_order": 54
+    },
+    {
+      "decoy": 3,
+      "gold": 4,
+      "item": 842,
+      "perturbation": "g-1",
+      "redraws_before_acceptance": 0,
+      "stream_order": 55
+    },
+    {
+      "decoy": 2,
+      "gold": 1,
+      "item": 844,
+      "perturbation": "2g",
+      "redraws_before_acceptance": 0,
+      "stream_order": 56
+    },
+    {
+      "decoy": 7426,
+      "gold": 7425,
+      "item": 873,
+      "perturbation": "g+1",
+      "redraws_before_acceptance": 0,
+      "stream_order": 57
+    },
+    {
+      "decoy": 11,
+      "gold": 10,
+      "item": 876,
+      "perturbation": "g+1",
+      "redraws_before_acceptance": 0,
+      "stream_order": 58
+    },
+    {
+      "decoy": 6,
+      "gold": 7,
+      "item": 894,
+      "perturbation": "g-1",
+      "redraws_before_acceptance": 0,
+      "stream_order": 59
+    },
+    {
+      "decoy": 1140,
+      "gold": 570,
+      "item": 920,
+      "perturbation": "2g",
+      "redraws_before_acceptance": 0,
+      "stream_order": 60
+    },
+    {
+      "decoy": 99,
+      "gold": 100,
+      "item": 934,
+      "perturbation": "g-1",
+      "redraws_before_acceptance": 0,
+      "stream_order": 61
+    },
+    {
+      "decoy": 479,
+      "gold": 480,
+      "item": 941,
+      "perturbation": "g-1",
+      "redraws_before_acceptance": 0,
+      "stream_order": 62
+    },
+    {
+      "decoy": 30,
+      "gold": 15,
+      "item": 942,
+      "perturbation": "2g",
+      "redraws_before_acceptance": 0,
+      "stream_order": 63
+    },
+    {
+      "decoy": 29,
+      "gold": 30,
+      "item": 963,
+      "perturbation": "g-1",
+      "redraws_before_acceptance": 0,
+      "stream_order": 64
+    },
+    {
+      "decoy": 110,
+      "gold": 100,
+      "item": 977,
+      "perturbation": "g+10",
+      "redraws_before_acceptance": 0,
+      "stream_order": 65
+    },
+    {
+      "decoy": 144000,
+      "gold": 72000,
+      "item": 991,
+      "perturbation": "2g",
+      "redraws_before_acceptance": 0,
+      "stream_order": 66
+    },
+    {
+      "decoy": 226,
+      "gold": 113,
+      "item": 1002,
+      "perturbation": "2g",
+      "redraws_before_acceptance": 0,
+      "stream_order": 67
+    },
+    {
+      "decoy": 479,
+      "gold": 480,
+      "item": 1031,
+      "perturbation": "g-1",
+      "redraws_before_acceptance": 0,
+      "stream_order": 68
+    },
+    {
+      "decoy": 40,
+      "gold": 30,
+      "item": 1039,
+      "perturbation": "g+10",
+      "redraws_before_acceptance": 0,
+      "stream_order": 69
+    },
+    {
+      "decoy": 3500010,
+      "gold": 3500000,
+      "item": 1055,
+      "perturbation": "g+10",
+      "redraws_before_acceptance": 0,
+      "stream_order": 70
+    },
+    {
+      "decoy": 3284,
+      "gold": 3285,
+      "item": 1083,
+      "perturbation": "g-1",
+      "redraws_before_acceptance": 0,
+      "stream_order": 71
+    },
+    {
+      "decoy": 28,
+      "gold": 14,
+      "item": 1085,
+      "perturbation": "2g",
+      "redraws_before_acceptance": 0,
+      "stream_order": 72
+    },
+    {
+      "decoy": 300,
+      "gold": 301,
+      "item": 1102,
+      "perturbation": "g-1",
+      "redraws_before_acceptance": 0,
+      "stream_order": 73
+    },
+    {
+      "decoy": 169,
+      "gold": 170,
+      "item": 1105,
+      "perturbation": "g-1",
+      "redraws_before_acceptance": 0,
+      "stream_order": 74
+    },
+    {
+      "decoy": 58,
+      "gold": 48,
+      "item": 1115,
+      "perturbation": "g+10",
+      "redraws_before_acceptance": 0,
+      "stream_order": 75
+    },
+    {
+      "decoy": 253,
+      "gold": 254,
+      "item": 1125,
+      "perturbation": "g-1",
+      "redraws_before_acceptance": 0,
+      "stream_order": 76
+    },
+    {
+      "decoy": 416000,
+      "gold": 208000,
+      "item": 1147,
+      "perturbation": "2g",
+      "redraws_before_acceptance": 0,
+      "stream_order": 77
+    },
+    {
+      "decoy": 4100,
+      "gold": 2050,
+      "item": 1153,
+      "perturbation": "2g",
+      "redraws_before_acceptance": 0,
+      "stream_order": 78
+    },
+    {
+      "decoy": 570,
+      "gold": 285,
+      "item": 1159,
+      "perturbation": "2g",
+      "redraws_before_acceptance": 0,
+      "stream_order": 79
+    },
+    {
+      "decoy": 12,
+      "gold": 6,
+      "item": 1162,
+      "perturbation": "2g",
+      "redraws_before_acceptance": 0,
+      "stream_order": 80
+    },
+    {
+      "decoy": 8,
+      "gold": 7,
+      "item": 1170,
+      "perturbation": "g+1",
+      "redraws_before_acceptance": 0,
+      "stream_order": 81
+    },
+    {
+      "decoy": 215,
+      "gold": 205,
+      "item": 1222,
+      "perturbation": "g+10",
+      "redraws_before_acceptance": 0,
+      "stream_order": 82
+    },
+    {
+      "decoy": 458,
+      "gold": 448,
+      "item": 1231,
+      "perturbation": "g+10",
+      "redraws_before_acceptance": 0,
+      "stream_order": 83
+    },
+    {
+      "decoy": 16,
+      "gold": 17,
+      "item": 1233,
+      "perturbation": "g-1",
+      "redraws_before_acceptance": 0,
+      "stream_order": 84
+    },
+    {
+      "decoy": 11,
+      "gold": 10,
+      "item": 1236,
+      "perturbation": "g+1",
+      "redraws_before_acceptance": 0,
+      "stream_order": 85
+    },
+    {
+      "decoy": 32,
+      "gold": 33,
+      "item": 1238,
+      "perturbation": "g-1",
+      "redraws_before_acceptance": 0,
+      "stream_order": 86
+    },
+    {
+      "decoy": 24,
+      "gold": 12,
+      "item": 1242,
+      "perturbation": "2g",
+      "redraws_before_acceptance": 0,
+      "stream_order": 87
+    },
+    {
+      "decoy": 106,
+      "gold": 105,
+      "item": 1263,
+      "perturbation": "g+1",
+      "redraws_before_acceptance": 0,
+      "stream_order": 88
+    },
+    {
+      "decoy": 1060,
+      "gold": 530,
+      "item": 1272,
+      "perturbation": "2g",
+      "redraws_before_acceptance": 0,
+      "stream_order": 89
+    },
+    {
+      "decoy": 34,
+      "gold": 33,
+      "item": 1276,
+      "perturbation": "g+1",
+      "redraws_before_acceptance": 0,
+      "stream_order": 90
+    },
+    {
+      "decoy": 100,
+      "gold": 90,
+      "item": 1283,
+      "perturbation": "g+10",
+      "redraws_before_acceptance": 0,
+      "stream_order": 91
+    },
+    {
+      "decoy": 127,
+      "gold": 117,
+      "item": 1293,
+      "perturbation": "g+10",
+      "redraws_before_acceptance": 0,
+      "stream_order": 92
+    },
+    {
+      "decoy": 3,
+      "gold": 4,
+      "item": 1305,
+      "perturbation": "g-1",
+      "redraws_before_acceptance": 0,
+      "stream_order": 93
+    },
+    {
+      "decoy": 38,
+      "gold": 19,
+      "item": 1308,
+      "perturbation": "2g",
+      "redraws_before_acceptance": 0,
+      "stream_order": 94
+    },
+    {
+      "decoy": 140,
+      "gold": 70,
+      "item": 1312,
+      "perturbation": "2g",
+      "redraws_before_acceptance": 0,
+      "stream_order": 95
+    },
+    {
+      "decoy": 90,
+      "gold": 45,
+      "item": 1330,
+      "perturbation": "2g",
+      "redraws_before_acceptance": 0,
+      "stream_order": 96
+    },
+    {
+      "decoy": 46,
+      "gold": 36,
+      "item": 1335,
+      "perturbation": "g+10",
+      "redraws_before_acceptance": 0,
+      "stream_order": 97
+    },
+    {
+      "decoy": 41600,
+      "gold": 20800,
+      "item": 1344,
+      "perturbation": "2g",
+      "redraws_before_acceptance": 0,
+      "stream_order": 98
+    },
+    {
+      "decoy": 255,
+      "gold": 245,
+      "item": 1354,
+      "perturbation": "g+10",
+      "redraws_before_acceptance": 0,
+      "stream_order": 99
+    },
+    {
+      "decoy": 120,
+      "gold": 110,
+      "item": 1390,
+      "perturbation": "g+10",
+      "redraws_before_acceptance": 0,
+      "stream_order": 100
+    },
+    {
+      "decoy": 36,
+      "gold": 26,
+      "item": 1399,
+      "perturbation": "g+10",
+      "redraws_before_acceptance": 0,
+      "stream_order": 101
+    },
+    {
+      "decoy": 2,
+      "gold": 3,
+      "item": 1401,
+      "perturbation": "g-1",
+      "redraws_before_acceptance": 0,
+      "stream_order": 102
+    },
+    {
+      "decoy": 22052,
+      "gold": 11026,
+      "item": 1403,
+      "perturbation": "2g",
+      "redraws_before_acceptance": 0,
+      "stream_order": 103
+    },
+    {
+      "decoy": 30,
+      "gold": 20,
+      "item": 1455,
+      "perturbation": "g+10",
+      "redraws_before_acceptance": 0,
+      "stream_order": 104
+    },
+    {
+      "decoy": 299,
+      "gold": 300,
+      "item": 1478,
+      "perturbation": "g-1",
+      "redraws_before_acceptance": 0,
+      "stream_order": 105
+    },
+    {
+      "decoy": 80,
+      "gold": 40,
+      "item": 1514,
+      "perturbation": "2g",
+      "redraws_before_acceptance": 0,
+      "stream_order": 106
+    },
+    {
+      "decoy": 801,
+      "gold": 800,
+      "item": 1516,
+      "perturbation": "g+1",
+      "redraws_before_acceptance": 0,
+      "stream_order": 107
+    },
+    {
+      "decoy": 138,
+      "gold": 128,
+      "item": 1530,
+      "perturbation": "g+10",
+      "redraws_before_acceptance": 0,
+      "stream_order": 108
+    },
+    {
+      "decoy": 80,
+      "gold": 70,
+      "item": 1545,
+      "perturbation": "g+10",
+      "redraws_before_acceptance": 0,
+      "stream_order": 109
+    },
+    {
+      "decoy": 145,
+      "gold": 135,
+      "item": 1561,
+      "perturbation": "g+10",
+      "redraws_before_acceptance": 0,
+      "stream_order": 110
+    },
+    {
+      "decoy": 38001,
+      "gold": 38000,
+      "item": 1575,
+      "perturbation": "g+1",
+      "redraws_before_acceptance": 0,
+      "stream_order": 111
+    },
+    {
+      "decoy": 23,
+      "gold": 24,
+      "item": 1585,
+      "perturbation": "g-1",
+      "redraws_before_acceptance": 0,
+      "stream_order": 112
+    },
+    {
+      "decoy": 29,
+      "gold": 30,
+      "item": 1594,
+      "perturbation": "g-1",
+      "redraws_before_acceptance": 0,
+      "stream_order": 113
+    },
+    {
+      "decoy": 240,
+      "gold": 120,
+      "item": 1597,
+      "perturbation": "2g",
+      "redraws_before_acceptance": 0,
+      "stream_order": 114
+    },
+    {
+      "decoy": 91,
+      "gold": 90,
+      "item": 1606,
+      "perturbation": "g+1",
+      "redraws_before_acceptance": 0,
+      "stream_order": 115
+    },
+    {
+      "decoy": 95,
+      "gold": 96,
+      "item": 1615,
+      "perturbation": "g-1",
+      "redraws_before_acceptance": 0,
+      "stream_order": 116
+    },
+    {
+      "decoy": 55,
+      "gold": 56,
+      "item": 1621,
+      "perturbation": "g-1",
+      "redraws_before_acceptance": 0,
+      "stream_order": 117
+    },
+    {
+      "decoy": 1510,
+      "gold": 1500,
+      "item": 1638,
+      "perturbation": "g+10",
+      "redraws_before_acceptance": 0,
+      "stream_order": 118
+    },
+    {
+      "decoy": 96,
+      "gold": 95,
+      "item": 1639,
+      "perturbation": "g+1",
+      "redraws_before_acceptance": 0,
+      "stream_order": 119
+    },
+    {
+      "decoy": 6,
+      "gold": 3,
+      "item": 1642,
+      "perturbation": "2g",
+      "redraws_before_acceptance": 0,
+      "stream_order": 120
+    },
+    {
+      "decoy": 1249,
+      "gold": 1250,
+      "item": 1655,
+      "perturbation": "g-1",
+      "redraws_before_acceptance": 0,
+      "stream_order": 121
+    },
+    {
+      "decoy": 39,
+      "gold": 38,
+      "item": 1672,
+      "perturbation": "g+1",
+      "redraws_before_acceptance": 0,
+      "stream_order": 122
+    },
+    {
+      "decoy": 50,
+      "gold": 40,
+      "item": 1683,
+      "perturbation": "g+10",
+      "redraws_before_acceptance": 0,
+      "stream_order": 123
+    },
+    {
+      "decoy": 101,
+      "gold": 100,
+      "item": 1687,
+      "perturbation": "g+1",
+      "redraws_before_acceptance": 0,
+      "stream_order": 124
+    },
+    {
+      "decoy": 24,
+      "gold": 14,
+      "item": 1715,
+      "perturbation": "g+10",
+      "redraws_before_acceptance": 0,
+      "stream_order": 125
+    },
+    {
+      "decoy": 310,
+      "gold": 300,
+      "item": 1734,
+      "perturbation": "g+10",
+      "redraws_before_acceptance": 0,
+      "stream_order": 126
+    },
+    {
+      "decoy": 39,
+      "gold": 40,
+      "item": 1742,
+      "perturbation": "g-1",
+      "redraws_before_acceptance": 0,
+      "stream_order": 127
+    },
+    {
+      "decoy": 211,
+      "gold": 210,
+      "item": 1752,
+      "perturbation": "g+1",
+      "redraws_before_acceptance": 0,
+      "stream_order": 128
+    },
+    {
+      "decoy": 4,
+      "gold": 5,
+      "item": 1755,
+      "perturbation": "g-1",
+      "redraws_before_acceptance": 0,
+      "stream_order": 129
+    },
+    {
+      "decoy": 25,
+      "gold": 24,
+      "item": 1759,
+      "perturbation": "g+1",
+      "redraws_before_acceptance": 0,
+      "stream_order": 130
+    },
+    {
+      "decoy": 32,
+      "gold": 22,
+      "item": 1778,
+      "perturbation": "g+10",
+      "redraws_before_acceptance": 0,
+      "stream_order": 131
+    },
+    {
+      "decoy": 443,
+      "gold": 442,
+      "item": 1781,
+      "perturbation": "g+1",
+      "redraws_before_acceptance": 0,
+      "stream_order": 132
+    },
+    {
+      "decoy": 40,
+      "gold": 30,
+      "item": 1794,
+      "perturbation": "g+10",
+      "redraws_before_acceptance": 0,
+      "stream_order": 133
+    },
+    {
+      "decoy": 16,
+      "gold": 15,
+      "item": 1806,
+      "perturbation": "g+1",
+      "redraws_before_acceptance": 0,
+      "stream_order": 134
+    },
+    {
+      "decoy": 31,
+      "gold": 32,
+      "item": 1807,
+      "perturbation": "g-1",
+      "redraws_before_acceptance": 0,
+      "stream_order": 135
+    },
+    {
+      "decoy": 3381,
+      "gold": 3380,
+      "item": 1827,
+      "perturbation": "g+1",
+      "redraws_before_acceptance": 0,
+      "stream_order": 136
+    },
+    {
+      "decoy": 36600,
+      "gold": 18300,
+      "item": 1831,
+      "perturbation": "2g",
+      "redraws_before_acceptance": 0,
+      "stream_order": 137
+    },
+    {
+      "decoy": 18,
+      "gold": 17,
+      "item": 1842,
+      "perturbation": "g+1",
+      "redraws_before_acceptance": 0,
+      "stream_order": 138
+    },
+    {
+      "decoy": 24,
+      "gold": 25,
+      "item": 1845,
+      "perturbation": "g-1",
+      "redraws_before_acceptance": 0,
+      "stream_order": 139
+    },
+    {
+      "decoy": 121,
+      "gold": 120,
+      "item": 1851,
+      "perturbation": "g+1",
+      "redraws_before_acceptance": 0,
+      "stream_order": 140
+    },
+    {
+      "decoy": 81,
+      "gold": 80,
+      "item": 1898,
+      "perturbation": "g+1",
+      "redraws_before_acceptance": 0,
+      "stream_order": 141
+    },
+    {
+      "decoy": 30,
+      "gold": 20,
+      "item": 1926,
+      "perturbation": "g+10",
+      "redraws_before_acceptance": 0,
+      "stream_order": 142
+    },
+    {
+      "decoy": 571,
+      "gold": 570,
+      "item": 1953,
+      "perturbation": "g+1",
+      "redraws_before_acceptance": 0,
+      "stream_order": 143
+    },
+    {
+      "decoy": 9,
+      "gold": 8,
+      "item": 1961,
+      "perturbation": "g+1",
+      "redraws_before_acceptance": 0,
+      "stream_order": 144
+    },
+    {
+      "decoy": 9,
+      "gold": 10,
+      "item": 2009,
+      "perturbation": "g-1",
+      "redraws_before_acceptance": 0,
+      "stream_order": 145
+    },
+    {
+      "decoy": 231,
+      "gold": 230,
+      "item": 2012,
+      "perturbation": "g+1",
+      "redraws_before_acceptance": 0,
+      "stream_order": 146
+    },
+    {
+      "decoy": 13,
+      "gold": 3,
+      "item": 2014,
+      "perturbation": "g+10",
+      "redraws_before_acceptance": 0,
+      "stream_order": 147
+    },
+    {
+      "decoy": 4,
+      "gold": 2,
+      "item": 2017,
+      "perturbation": "2g",
+      "redraws_before_acceptance": 0,
+      "stream_order": 148
+    },
+    {
+      "decoy": 100,
+      "gold": 90,
+      "item": 2030,
+      "perturbation": "g+10",
+      "redraws_before_acceptance": 0,
+      "stream_order": 149
+    },
+    {
+      "decoy": 624,
+      "gold": 625,
+      "item": 2047,
+      "perturbation": "g-1",
+      "redraws_before_acceptance": 0,
+      "stream_order": 150
+    },
+    {
+      "decoy": 16,
+      "gold": 6,
+      "item": 2059,
+      "perturbation": "g+10",
+      "redraws_before_acceptance": 0,
+      "stream_order": 151
+    },
+    {
+      "decoy": 37,
+      "gold": 27,
+      "item": 2062,
+      "perturbation": "g+10",
+      "redraws_before_acceptance": 0,
+      "stream_order": 152
+    },
+    {
+      "decoy": 201,
+      "gold": 200,
+      "item": 2063,
+      "perturbation": "g+1",
+      "redraws_before_acceptance": 0,
+      "stream_order": 153
+    },
+    {
+      "decoy": 249,
+      "gold": 250,
+      "item": 2087,
+      "perturbation": "g-1",
+      "redraws_before_acceptance": 0,
+      "stream_order": 154
+    },
+    {
+      "decoy": 8,
+      "gold": 4,
+      "item": 2116,
+      "perturbation": "2g",
+      "redraws_before_acceptance": 0,
+      "stream_order": 155
+    },
+    {
+      "decoy": 259,
+      "gold": 260,
+      "item": 2139,
+      "perturbation": "g-1",
+      "redraws_before_acceptance": 0,
+      "stream_order": 156
+    },
+    {
+      "decoy": 188,
+      "gold": 94,
+      "item": 2161,
+      "perturbation": "2g",
+      "redraws_before_acceptance": 0,
+      "stream_order": 157
+    },
+    {
+      "decoy": 120,
+      "gold": 60,
+      "item": 2178,
+      "perturbation": "2g",
+      "redraws_before_acceptance": 0,
+      "stream_order": 158
+    },
+    {
+      "decoy": 2,
+      "gold": 1,
+      "item": 2179,
+      "perturbation": "g+1",
+      "redraws_before_acceptance": 0,
+      "stream_order": 159
+    },
+    {
+      "decoy": 49,
+      "gold": 50,
+      "item": 2216,
+      "perturbation": "g-1",
+      "redraws_before_acceptance": 0,
+      "stream_order": 160
+    },
+    {
+      "decoy": 503,
+      "gold": 504,
+      "item": 2220,
+      "perturbation": "g-1",
+      "redraws_before_acceptance": 0,
+      "stream_order": 161
+    },
+    {
+      "decoy": 70,
+      "gold": 60,
+      "item": 2237,
+      "perturbation": "g+10",
+      "redraws_before_acceptance": 0,
+      "stream_order": 162
+    },
+    {
+      "decoy": 31,
+      "gold": 30,
+      "item": 2265,
+      "perturbation": "g+1",
+      "redraws_before_acceptance": 0,
+      "stream_order": 163
+    },
+    {
+      "decoy": 9,
+      "gold": 8,
+      "item": 2268,
+      "perturbation": "g+1",
+      "redraws_before_acceptance": 0,
+      "stream_order": 164
+    },
+    {
+      "decoy": 22,
+      "gold": 11,
+      "item": 2279,
+      "perturbation": "2g",
+      "redraws_before_acceptance": 0,
+      "stream_order": 165
+    },
+    {
+      "decoy": 30,
+      "gold": 20,
+      "item": 2315,
+      "perturbation": "g+10",
+      "redraws_before_acceptance": 0,
+      "stream_order": 166
+    },
+    {
+      "decoy": 100,
+      "gold": 50,
+      "item": 2336,
+      "perturbation": "2g",
+      "redraws_before_acceptance": 0,
+      "stream_order": 167
+    },
+    {
+      "decoy": 380,
+      "gold": 190,
+      "item": 2383,
+      "perturbation": "2g",
+      "redraws_before_acceptance": 0,
+      "stream_order": 168
+    },
+    {
+      "decoy": 600,
+      "gold": 300,
+      "item": 2387,
+      "perturbation": "2g",
+      "redraws_before_acceptance": 0,
+      "stream_order": 169
+    },
+    {
+      "decoy": 16,
+      "gold": 6,
+      "item": 2389,
+      "perturbation": "g+10",
+      "redraws_before_acceptance": 0,
+      "stream_order": 170
+    },
+    {
+      "decoy": 2701,
+      "gold": 2700,
+      "item": 2403,
+      "perturbation": "g+1",
+      "redraws_before_acceptance": 0,
+      "stream_order": 171
+    },
+    {
+      "decoy": 450,
+      "gold": 225,
+      "item": 2407,
+      "perturbation": "2g",
+      "redraws_before_acceptance": 0,
+      "stream_order": 172
+    },
+    {
+      "decoy": 261,
+      "gold": 260,
+      "item": 2427,
+      "perturbation": "g+1",
+      "redraws_before_acceptance": 0,
+      "stream_order": 173
+    },
+    {
+      "decoy": 10,
+      "gold": 5,
+      "item": 2433,
+      "perturbation": "2g",
+      "redraws_before_acceptance": 0,
+      "stream_order": 174
+    },
+    {
+      "decoy": 42,
+      "gold": 21,
+      "item": 2447,
+      "perturbation": "2g",
+      "redraws_before_acceptance": 0,
+      "stream_order": 175
+    },
+    {
+      "decoy": 8,
+      "gold": 7,
+      "item": 2451,
+      "perturbation": "g+1",
+      "redraws_before_acceptance": 0,
+      "stream_order": 176
+    },
+    {
+      "decoy": 71,
+      "gold": 70,
+      "item": 2504,
+      "perturbation": "g+1",
+      "redraws_before_acceptance": 0,
+      "stream_order": 177
+    },
+    {
+      "decoy": 4,
+      "gold": 3,
+      "item": 2505,
+      "perturbation": "g+1",
+      "redraws_before_acceptance": 0,
+      "stream_order": 178
+    },
+    {
+      "decoy": 2,
+      "gold": 3,
+      "item": 2509,
+      "perturbation": "g-1",
+      "redraws_before_acceptance": 0,
+      "stream_order": 179
+    },
+    {
+      "decoy": 901,
+      "gold": 900,
+      "item": 2536,
+      "perturbation": "g+1",
+      "redraws_before_acceptance": 0,
+      "stream_order": 180
+    },
+    {
+      "decoy": 16,
+      "gold": 15,
+      "item": 2541,
+      "perturbation": "g+1",
+      "redraws_before_acceptance": 0,
+      "stream_order": 181
+    },
+    {
+      "decoy": 2,
+      "gold": 1,
+      "item": 2551,
+      "perturbation": "g+1",
+      "redraws_before_acceptance": 0,
+      "stream_order": 182
+    },
+    {
+      "decoy": 90,
+      "gold": 45,
+      "item": 2554,
+      "perturbation": "2g",
+      "redraws_before_acceptance": 0,
+      "stream_order": 183
+    },
+    {
+      "decoy": 16,
+      "gold": 17,
+      "item": 2568,
+      "perturbation": "g-1",
+      "redraws_before_acceptance": 0,
+      "stream_order": 184
+    },
+    {
+      "decoy": 496,
+      "gold": 248,
+      "item": 2596,
+      "perturbation": "2g",
+      "redraws_before_acceptance": 0,
+      "stream_order": 185
+    },
+    {
+      "decoy": 129,
+      "gold": 130,
+      "item": 2604,
+      "perturbation": "g-1",
+      "redraws_before_acceptance": 0,
+      "stream_order": 186
+    },
+    {
+      "decoy": 24,
+      "gold": 25,
+      "item": 2627,
+      "perturbation": "g-1",
+      "redraws_before_acceptance": 0,
+      "stream_order": 187
+    },
+    {
+      "decoy": 1599,
+      "gold": 1600,
+      "item": 2661,
+      "perturbation": "g-1",
+      "redraws_before_acceptance": 0,
+      "stream_order": 188
+    },
+    {
+      "decoy": 28,
+      "gold": 14,
+      "item": 2672,
+      "perturbation": "2g",
+      "redraws_before_acceptance": 0,
+      "stream_order": 189
+    },
+    {
+      "decoy": 11,
+      "gold": 10,
+      "item": 2690,
+      "perturbation": "g+1",
+      "redraws_before_acceptance": 0,
+      "stream_order": 190
+    },
+    {
+      "decoy": 316,
+      "gold": 306,
+      "item": 2724,
+      "perturbation": "g+10",
+      "redraws_before_acceptance": 0,
+      "stream_order": 191
+    },
+    {
+      "decoy": 30,
+      "gold": 20,
+      "item": 2730,
+      "perturbation": "g+10",
+      "redraws_before_acceptance": 0,
+      "stream_order": 192
+    },
+    {
+      "decoy": 71,
+      "gold": 61,
+      "item": 2737,
+      "perturbation": "g+10",
+      "redraws_before_acceptance": 0,
+      "stream_order": 193
+    },
+    {
+      "decoy": 35200,
+      "gold": 17600,
+      "item": 2739,
+      "perturbation": "2g",
+      "redraws_before_acceptance": 0,
+      "stream_order": 194
+    },
+    {
+      "decoy": 107,
+      "gold": 106,
+      "item": 2770,
+      "perturbation": "g+1",
+      "redraws_before_acceptance": 0,
+      "stream_order": 195
+    },
+    {
+      "decoy": 81,
+      "gold": 80,
+      "item": 2786,
+      "perturbation": "g+1",
+      "redraws_before_acceptance": 0,
+      "stream_order": 196
+    },
+    {
+      "decoy": 6319,
+      "gold": 6318,
+      "item": 2832,
+      "perturbation": "g+1",
+      "redraws_before_acceptance": 0,
+      "stream_order": 197
+    },
+    {
+      "decoy": 24,
+      "gold": 12,
+      "item": 2875,
+      "perturbation": "2g",
+      "redraws_before_acceptance": 0,
+      "stream_order": 198
+    },
+    {
+      "decoy": 12,
+      "gold": 11,
+      "item": 2880,
+      "perturbation": "g+1",
+      "redraws_before_acceptance": 0,
+      "stream_order": 199
+    },
+    {
+      "decoy": 71,
+      "gold": 72,
+      "item": 2894,
+      "perturbation": "g-1",
+      "redraws_before_acceptance": 0,
+      "stream_order": 200
+    },
+    {
+      "decoy": 27,
+      "gold": 28,
+      "item": 2901,
+      "perturbation": "g-1",
+      "redraws_before_acceptance": 0,
+      "stream_order": 201
+    },
+    {
+      "decoy": 30,
+      "gold": 29,
+      "item": 2905,
+      "perturbation": "g+1",
+      "redraws_before_acceptance": 0,
+      "stream_order": 202
+    },
+    {
+      "decoy": 160,
+      "gold": 80,
+      "item": 2917,
+      "perturbation": "2g",
+      "redraws_before_acceptance": 0,
+      "stream_order": 203
+    },
+    {
+      "decoy": 269,
+      "gold": 270,
+      "item": 2919,
+      "perturbation": "g-1",
+      "redraws_before_acceptance": 0,
+      "stream_order": 204
+    },
+    {
+      "decoy": 9001,
+      "gold": 9000,
+      "item": 2942,
+      "perturbation": "g+1",
+      "redraws_before_acceptance": 0,
+      "stream_order": 205
+    },
+    {
+      "decoy": 439,
+      "gold": 440,
+      "item": 2954,
+      "perturbation": "g-1",
+      "redraws_before_acceptance": 0,
+      "stream_order": 206
+    },
+    {
+      "decoy": 51,
+      "gold": 50,
+      "item": 2957,
+      "perturbation": "g+1",
+      "redraws_before_acceptance": 0,
+      "stream_order": 207
+    },
+    {
+      "decoy": 299,
+      "gold": 300,
+      "item": 2972,
+      "perturbation": "g-1",
+      "redraws_before_acceptance": 0,
+      "stream_order": 208
+    },
+    {
+      "decoy": 5,
+      "gold": 4,
+      "item": 2975,
+      "perturbation": "g+1",
+      "redraws_before_acceptance": 0,
+      "stream_order": 209
+    },
+    {
+      "decoy": 27,
+      "gold": 26,
+      "item": 2976,
+      "perturbation": "g+1",
+      "redraws_before_acceptance": 0,
+      "stream_order": 210
+    },
+    {
+      "decoy": 122,
+      "gold": 61,
+      "item": 2991,
+      "perturbation": "2g",
+      "redraws_before_acceptance": 0,
+      "stream_order": 211
+    },
+    {
+      "decoy": 24,
+      "gold": 25,
+      "item": 3006,
+      "perturbation": "g-1",
+      "redraws_before_acceptance": 0,
+      "stream_order": 212
+    },
+    {
+      "decoy": 250,
+      "gold": 240,
+      "item": 3039,
+      "perturbation": "g+10",
+      "redraws_before_acceptance": 0,
+      "stream_order": 213
+    },
+    {
+      "decoy": 27,
+      "gold": 28,
+      "item": 3043,
+      "perturbation": "g-1",
+      "redraws_before_acceptance": 0,
+      "stream_order": 214
+    },
+    {
+      "decoy": 219999,
+      "gold": 220000,
+      "item": 3133,
+      "perturbation": "g-1",
+      "redraws_before_acceptance": 0,
+      "stream_order": 215
+    },
+    {
+      "decoy": 9049,
+      "gold": 9050,
+      "item": 3134,
+      "perturbation": "g-1",
+      "redraws_before_acceptance": 0,
+      "stream_order": 216
+    },
+    {
+      "decoy": 330,
+      "gold": 320,
+      "item": 3151,
+      "perturbation": "g+10",
+      "redraws_before_acceptance": 0,
+      "stream_order": 217
+    },
+    {
+      "decoy": 52,
+      "gold": 26,
+      "item": 3152,
+      "perturbation": "2g",
+      "redraws_before_acceptance": 0,
+      "stream_order": 218
+    },
+    {
+      "decoy": 160,
+      "gold": 80,
+      "item": 3157,
+      "perturbation": "2g",
+      "redraws_before_acceptance": 0,
+      "stream_order": 219
+    },
+    {
+      "decoy": 451,
+      "gold": 450,
+      "item": 3164,
+      "perturbation": "g+1",
+      "redraws_before_acceptance": 0,
+      "stream_order": 220
+    },
+    {
+      "decoy": 70,
+      "gold": 60,
+      "item": 3170,
+      "perturbation": "g+10",
+      "redraws_before_acceptance": 0,
+      "stream_order": 221
+    },
+    {
+      "decoy": 1920,
+      "gold": 960,
+      "item": 3182,
+      "perturbation": "2g",
+      "redraws_before_acceptance": 0,
+      "stream_order": 222
+    },
+    {
+      "decoy": 63,
+      "gold": 62,
+      "item": 3186,
+      "perturbation": "g+1",
+      "redraws_before_acceptance": 0,
+      "stream_order": 223
+    },
+    {
+      "decoy": 24,
+      "gold": 12,
+      "item": 3199,
+      "perturbation": "2g",
+      "redraws_before_acceptance": 0,
+      "stream_order": 224
+    },
+    {
+      "decoy": 1575010,
+      "gold": 1575000,
+      "item": 3206,
+      "perturbation": "g+10",
+      "redraws_before_acceptance": 0,
+      "stream_order": 225
+    },
+    {
+      "decoy": 341,
+      "gold": 340,
+      "item": 3213,
+      "perturbation": "g+1",
+      "redraws_before_acceptance": 0,
+      "stream_order": 226
+    },
+    {
+      "decoy": 275,
+      "gold": 265,
+      "item": 3227,
+      "perturbation": "g+10",
+      "redraws_before_acceptance": 0,
+      "stream_order": 227
+    },
+    {
+      "decoy": 70,
+      "gold": 35,
+      "item": 3291,
+      "perturbation": "2g",
+      "redraws_before_acceptance": 0,
+      "stream_order": 228
+    },
+    {
+      "decoy": 11859,
+      "gold": 11860,
+      "item": 3297,
+      "perturbation": "g-1",
+      "redraws_before_acceptance": 0,
+      "stream_order": 229
+    },
+    {
+      "decoy": 2,
+      "gold": 1,
+      "item": 3366,
+      "perturbation": "2g",
+      "redraws_before_acceptance": 0,
+      "stream_order": 230
+    },
+    {
+      "decoy": 3,
+      "gold": 2,
+      "item": 3395,
+      "perturbation": "g+1",
+      "redraws_before_acceptance": 0,
+      "stream_order": 231
+    },
+    {
+      "decoy": 56,
+      "gold": 55,
+      "item": 3420,
+      "perturbation": "g+1",
+      "redraws_before_acceptance": 0,
+      "stream_order": 232
+    },
+    {
+      "decoy": 71,
+      "gold": 70,
+      "item": 3430,
+      "perturbation": "g+1",
+      "redraws_before_acceptance": 0,
+      "stream_order": 233
+    },
+    {
+      "decoy": 7,
+      "gold": 8,
+      "item": 3432,
+      "perturbation": "g-1",
+      "redraws_before_acceptance": 0,
+      "stream_order": 234
+    },
+    {
+      "decoy": 311,
+      "gold": 310,
+      "item": 3485,
+      "perturbation": "g+1",
+      "redraws_before_acceptance": 0,
+      "stream_order": 235
+    },
+    {
+      "decoy": 15,
+      "gold": 5,
+      "item": 3519,
+      "perturbation": "g+10",
+      "redraws_before_acceptance": 0,
+      "stream_order": 236
+    },
+    {
+      "decoy": 70,
+      "gold": 35,
+      "item": 3549,
+      "perturbation": "2g",
+      "redraws_before_acceptance": 0,
+      "stream_order": 237
+    },
+    {
+      "decoy": 29,
+      "gold": 19,
+      "item": 3558,
+      "perturbation": "g+10",
+      "redraws_before_acceptance": 0,
+      "stream_order": 238
+    },
+    {
+      "decoy": 107,
+      "gold": 108,
+      "item": 3612,
+      "perturbation": "g-1",
+      "redraws_before_acceptance": 0,
+      "stream_order": 239
+    },
+    {
+      "decoy": 23,
+      "gold": 24,
+      "item": 3620,
+      "perturbation": "g-1",
+      "redraws_before_acceptance": 0,
+      "stream_order": 240
+    },
+    {
+      "decoy": 10,
+      "gold": 5,
+      "item": 3632,
+      "perturbation": "2g",
+      "redraws_before_acceptance": 0,
+      "stream_order": 241
+    },
+    {
+      "decoy": 128,
+      "gold": 118,
+      "item": 3645,
+      "perturbation": "g+10",
+      "redraws_before_acceptance": 0,
+      "stream_order": 242
+    },
+    {
+      "decoy": 3473,
+      "gold": 3472,
+      "item": 3646,
+      "perturbation": "g+1",
+      "redraws_before_acceptance": 0,
+      "stream_order": 243
+    },
+    {
+      "decoy": 30,
+      "gold": 20,
+      "item": 3667,
+      "perturbation": "g+10",
+      "redraws_before_acceptance": 0,
+      "stream_order": 244
+    },
+    {
+      "decoy": 4,
+      "gold": 2,
+      "item": 3692,
+      "perturbation": "2g",
+      "redraws_before_acceptance": 0,
+      "stream_order": 245
+    },
+    {
+      "decoy": 17,
+      "gold": 16,
+      "item": 3745,
+      "perturbation": "g+1",
+      "redraws_before_acceptance": 0,
+      "stream_order": 246
+    },
+    {
+      "decoy": 210,
+      "gold": 200,
+      "item": 3766,
+      "perturbation": "g+10",
+      "redraws_before_acceptance": 0,
+      "stream_order": 247
+    },
+    {
+      "decoy": 19,
+      "gold": 18,
+      "item": 3767,
+      "perturbation": "g+1",
+      "redraws_before_acceptance": 0,
+      "stream_order": 248
+    },
+    {
+      "decoy": 380,
+      "gold": 190,
+      "item": 3782,
+      "perturbation": "2g",
+      "redraws_before_acceptance": 0,
+      "stream_order": 249
+    },
+    {
+      "decoy": 190,
+      "gold": 95,
+      "item": 3785,
+      "perturbation": "2g",
+      "redraws_before_acceptance": 0,
+      "stream_order": 250
+    },
+    {
+      "decoy": 1650,
+      "gold": 1640,
+      "item": 3805,
+      "perturbation": "g+10",
+      "redraws_before_acceptance": 0,
+      "stream_order": 251
+    },
+    {
+      "decoy": 14,
+      "gold": 4,
+      "item": 3829,
+      "perturbation": "g+10",
+      "redraws_before_acceptance": 0,
+      "stream_order": 252
+    },
+    {
+      "decoy": 40,
+      "gold": 20,
+      "item": 3836,
+      "perturbation": "2g",
+      "redraws_before_acceptance": 0,
+      "stream_order": 253
+    },
+    {
+      "decoy": 119,
+      "gold": 120,
+      "item": 3842,
+      "perturbation": "g-1",
+      "redraws_before_acceptance": 0,
+      "stream_order": 254
+    },
+    {
+      "decoy": 850,
+      "gold": 840,
+      "item": 3863,
+      "perturbation": "g+10",
+      "redraws_before_acceptance": 0,
+      "stream_order": 255
+    },
+    {
+      "decoy": 234,
+      "gold": 117,
+      "item": 3898,
+      "perturbation": "2g",
+      "redraws_before_acceptance": 0,
+      "stream_order": 256
+    },
+    {
+      "decoy": 16,
+      "gold": 8,
+      "item": 3902,
+      "perturbation": "2g",
+      "redraws_before_acceptance": 0,
+      "stream_order": 257
+    },
+    {
+      "decoy": 359,
+      "gold": 360,
+      "item": 3906,
+      "perturbation": "g-1",
+      "redraws_before_acceptance": 0,
+      "stream_order": 258
+    },
+    {
+      "decoy": 76,
+      "gold": 66,
+      "item": 3910,
+      "perturbation": "g+10",
+      "redraws_before_acceptance": 0,
+      "stream_order": 259
+    },
+    {
+      "decoy": 91,
+      "gold": 90,
+      "item": 3933,
+      "perturbation": "g+1",
+      "redraws_before_acceptance": 0,
+      "stream_order": 260
+    },
+    {
+      "decoy": 60,
+      "gold": 30,
+      "item": 3953,
+      "perturbation": "2g",
+      "redraws_before_acceptance": 0,
+      "stream_order": 261
+    },
+    {
+      "decoy": 31,
+      "gold": 21,
+      "item": 3963,
+      "perturbation": "g+10",
+      "redraws_before_acceptance": 0,
+      "stream_order": 262
+    },
+    {
+      "decoy": 34,
+      "gold": 24,
+      "item": 3965,
+      "perturbation": "g+10",
+      "redraws_before_acceptance": 0,
+      "stream_order": 263
+    },
+    {
+      "decoy": 9,
+      "gold": 8,
+      "item": 3968,
+      "perturbation": "g+1",
+      "redraws_before_acceptance": 0,
+      "stream_order": 264
+    },
+    {
+      "decoy": 94,
+      "gold": 47,
+      "item": 3969,
+      "perturbation": "2g",
+      "redraws_before_acceptance": 0,
+      "stream_order": 265
+    },
+    {
+      "decoy": 13,
+      "gold": 12,
+      "item": 3975,
+      "perturbation": "g+1",
+      "redraws_before_acceptance": 0,
+      "stream_order": 266
+    },
+    {
+      "decoy": 31,
+      "gold": 30,
+      "item": 3985,
+      "perturbation": "g+1",
+      "redraws_before_acceptance": 0,
+      "stream_order": 267
+    },
+    {
+      "decoy": 100,
+      "gold": 90,
+      "item": 3991,
+      "perturbation": "g+10",
+      "redraws_before_acceptance": 0,
+      "stream_order": 268
+    },
+    {
+      "decoy": 4810,
+      "gold": 4800,
+      "item": 3998,
+      "perturbation": "g+10",
+      "redraws_before_acceptance": 0,
+      "stream_order": 269
+    },
+    {
+      "decoy": 19,
+      "gold": 9,
+      "item": 4025,
+      "perturbation": "g+10",
+      "redraws_before_acceptance": 0,
+      "stream_order": 270
+    },
+    {
+      "decoy": 9,
+      "gold": 8,
+      "item": 4050,
+      "perturbation": "g+1",
+      "redraws_before_acceptance": 0,
+      "stream_order": 271
+    },
+    {
+      "decoy": 52,
+      "gold": 51,
+      "item": 4078,
+      "perturbation": "g+1",
+      "redraws_before_acceptance": 0,
+      "stream_order": 272
+    },
+    {
+      "decoy": 521,
+      "gold": 520,
+      "item": 4110,
+      "perturbation": "g+1",
+      "redraws_before_acceptance": 0,
+      "stream_order": 273
+    },
+    {
+      "decoy": 61,
+      "gold": 60,
+      "item": 4112,
+      "perturbation": "g+1",
+      "redraws_before_acceptance": 0,
+      "stream_order": 274
+    },
+    {
+      "decoy": 11000,
+      "gold": 5500,
+      "item": 4119,
+      "perturbation": "2g",
+      "redraws_before_acceptance": 0,
+      "stream_order": 275
+    },
+    {
+      "decoy": 21,
+      "gold": 20,
+      "item": 4167,
+      "perturbation": "g+1",
+      "redraws_before_acceptance": 0,
+      "stream_order": 276
+    },
+    {
+      "decoy": 51,
+      "gold": 50,
+      "item": 4172,
+      "perturbation": "g+1",
+      "redraws_before_acceptance": 0,
+      "stream_order": 277
+    },
+    {
+      "decoy": 69,
+      "gold": 68,
+      "item": 4188,
+      "perturbation": "g+1",
+      "redraws_before_acceptance": 0,
+      "stream_order": 278
+    },
+    {
+      "decoy": 34,
+      "gold": 35,
+      "item": 4211,
+      "perturbation": "g-1",
+      "redraws_before_acceptance": 0,
+      "stream_order": 279
+    },
+    {
+      "decoy": 20,
+      "gold": 10,
+      "item": 4234,
+      "perturbation": "2g",
+      "redraws_before_acceptance": 0,
+      "stream_order": 280
+    },
+    {
+      "decoy": 4,
+      "gold": 2,
+      "item": 4247,
+      "perturbation": "2g",
+      "redraws_before_acceptance": 0,
+      "stream_order": 281
+    },
+    {
+      "decoy": 19,
+      "gold": 9,
+      "item": 4252,
+      "perturbation": "g+10",
+      "redraws_before_acceptance": 0,
+      "stream_order": 282
+    },
+    {
+      "decoy": 1340,
+      "gold": 670,
+      "item": 4273,
+      "perturbation": "2g",
+      "redraws_before_acceptance": 0,
+      "stream_order": 283
+    },
+    {
+      "decoy": 816,
+      "gold": 817,
+      "item": 4280,
+      "perturbation": "g-1",
+      "redraws_before_acceptance": 0,
+      "stream_order": 284
+    },
+    {
+      "decoy": 49,
+      "gold": 50,
+      "item": 4286,
+      "perturbation": "g-1",
+      "redraws_before_acceptance": 0,
+      "stream_order": 285
+    },
+    {
+      "decoy": 110,
+      "gold": 100,
+      "item": 4300,
+      "perturbation": "g+10",
+      "redraws_before_acceptance": 0,
+      "stream_order": 286
+    },
+    {
+      "decoy": 120,
+      "gold": 60,
+      "item": 4304,
+      "perturbation": "2g",
+      "redraws_before_acceptance": 0,
+      "stream_order": 287
+    },
+    {
+      "decoy": 600,
+      "gold": 300,
+      "item": 4348,
+      "perturbation": "2g",
+      "redraws_before_acceptance": 0,
+      "stream_order": 288
+    },
+    {
+      "decoy": 9,
+      "gold": 10,
+      "item": 4353,
+      "perturbation": "g-1",
+      "redraws_before_acceptance": 0,
+      "stream_order": 289
+    },
+    {
+      "decoy": 80,
+      "gold": 40,
+      "item": 4355,
+      "perturbation": "2g",
+      "redraws_before_acceptance": 0,
+      "stream_order": 290
+    },
+    {
+      "decoy": 17,
+      "gold": 16,
+      "item": 4363,
+      "perturbation": "g+1",
+      "redraws_before_acceptance": 0,
+      "stream_order": 291
+    },
+    {
+      "decoy": 6,
+      "gold": 7,
+      "item": 4364,
+      "perturbation": "g-1",
+      "redraws_before_acceptance": 0,
+      "stream_order": 292
+    },
+    {
+      "decoy": 18,
+      "gold": 9,
+      "item": 4377,
+      "perturbation": "2g",
+      "redraws_before_acceptance": 0,
+      "stream_order": 293
+    },
+    {
+      "decoy": 41,
+      "gold": 40,
+      "item": 4382,
+      "perturbation": "g+1",
+      "redraws_before_acceptance": 0,
+      "stream_order": 294
+    },
+    {
+      "decoy": 199,
+      "gold": 200,
+      "item": 4404,
+      "perturbation": "g-1",
+      "redraws_before_acceptance": 0,
+      "stream_order": 295
+    },
+    {
+      "decoy": 59,
+      "gold": 49,
+      "item": 4421,
+      "perturbation": "g+10",
+      "redraws_before_acceptance": 0,
+      "stream_order": 296
+    },
+    {
+      "decoy": 15,
+      "gold": 16,
+      "item": 4430,
+      "perturbation": "g-1",
+      "redraws_before_acceptance": 0,
+      "stream_order": 297
+    },
+    {
+      "decoy": 106,
+      "gold": 105,
+      "item": 4457,
+      "perturbation": "g+1",
+      "redraws_before_acceptance": 0,
+      "stream_order": 298
+    },
+    {
+      "decoy": 5951,
+      "gold": 5950,
+      "item": 4464,
+      "perturbation": "g+1",
+      "redraws_before_acceptance": 0,
+      "stream_order": 299
+    },
+    {
+      "decoy": 18,
+      "gold": 17,
+      "item": 4465,
+      "perturbation": "g+1",
+      "redraws_before_acceptance": 0,
+      "stream_order": 300
+    }
+  ],
+  "design": "docs/adr/039-pc2-steering-control-pre-registration.md § 'Decoy construction (pre-committed, to foreclose gaming)'.",
+  "env": {
+    "crate": "latentmesh-runtime 0.1.0 (vendored candle-transformers 0.9.2 qwen2)",
+    "evidence_label": "live-model, single-host, simulation-free",
+    "git_commit": "a2a5c30db7d7fe5d33d6b501fce22a0892446505",
+    "gpu": "NVIDIA GeForce RTX 5080, 580.126.09, 16303 MiB",
+    "nvcc": "nvcc 12.8 (build-time 12.8)",
+    "nvcc_at_build": "12.8",
+    "unix_time": 1787989269
+  },
+  "implementation": {
+    "draw": "k = rng.gen_range(0..4); d = menu[k](g); accept iff d != g and d > 0, else redraw",
+    "menu": [
+      "g+1",
+      "g-1",
+      "g+10",
+      "2g"
+    ],
+    "menu_histogram": {
+      "2g": 73,
+      "g+1": 87,
+      "g+10": 70,
+      "g-1": 70
+    },
+    "seed": 22322,
+    "seed_hex": "0x5732",
+    "stream": "ONE ChaCha8 stream seeded at 0x5732, consumed in the committed item-stream order — the ADR names 0x5732 as THE seed, so the seed is not re-derived per item. The consumption order is itself pre-committed (adaptation-512 fixed index order, gated identical to M4i's stream), so every draw is reproducible; `stream_order` and `redraws_before_acceptance` are recorded per item so the whole stream can be replayed by hand.",
+    "total_redraws": 0
+  },
+  "item_stream_source": "adaptation-512, fixed ascending index order, ADR-024's 13-item leakage exclusion, N_max = 300; gated equal to M4i's committed stream (read from items[*].item) and to PC1b's",
+  "n": 300,
+  "pre_committed": true,
+  "rule_verbatim_from_adr_039": "d is derived deterministically from the gold answer g — not sampled, and never equal to g: a fixed per-item ChaCha8 stream (seed 0x5732) selects a perturbation from {g+1, g-1, g+10, 2g}, re-drawing on collision with g or on a non-positive result.",
+  "stage": "run2-PC2-decoy-commitment",
+  "written_before": "any payload forward pass. The full (item, gold, decoy) table below is a pure function of the committed item stream and the registered seed; no measurement of any kind precedes it."
+}

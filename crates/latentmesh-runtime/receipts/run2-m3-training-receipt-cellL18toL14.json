@@ -1,0 +1,473 @@
+{
+  "artifact": {
+    "content_hash_sha256": "a864e518cdfb09429988862775278bd7734e4342f8c6445fc6081f5ed9d73c91",
+    "file": "run2-m3-mlp-cellL18toL14.f32bin",
+    "golden_file": "run2-m3-golden-mlp-cellL18toL14.json",
+    "golden_file_sha256": "b6fd5de41088116454c9dab5a25f091dca9d3b0637aa908b3daa49ff7659671f",
+    "golden_input_seed_chacha8": 1295212573,
+    "golden_pairs": 8,
+    "layout": "little-endian f32: w1[2048x512 row-major, x@W convention] || b1[512] || w2[512x1536 row-major] || b2[1536]"
+  },
+  "cell": "L18->L14",
+  "curves": {
+    "per_epoch": [
+      {
+        "epoch": 0,
+        "holdout_mse": 0.19363525038654647,
+        "holdout_rel_residual_vs_fit_mean": 0.47925520812659406,
+        "train_mse_mean": 0.216234250170992,
+        "wall_s": 5.2010626792907715
+      },
+      {
+        "epoch": 1,
+        "holdout_mse": 0.19567387177159828,
+        "holdout_rel_residual_vs_fit_mean": 0.4817714385368067,
+        "train_mse_mean": 0.1749693079940505,
+        "wall_s": 3.2114548683166504
+      },
+      {
+        "epoch": 2,
+        "holdout_mse": 0.18854660197051268,
+        "holdout_rel_residual_vs_fit_mean": 0.47291597574239747,
+        "train_mse_mean": 0.1721232957184084,
+        "wall_s": 3.294962167739868
+      },
+      {
+        "epoch": 3,
+        "holdout_mse": 0.18186313849673819,
+        "holdout_rel_residual_vs_fit_mean": 0.4644585598353618,
+        "train_mse_mean": 0.17058362280122272,
+        "wall_s": 3.3584742546081543
+      },
+      {
+        "epoch": 4,
+        "holdout_mse": 0.18132537456491687,
+        "holdout_rel_residual_vs_fit_mean": 0.46377135632397554,
+        "train_mse_mean": 0.16959461707337495,
+        "wall_s": 3.214078187942505
+      },
+      {
+        "epoch": 5,
+        "holdout_mse": 0.18586883490548425,
+        "holdout_rel_residual_vs_fit_mean": 0.46954575511795704,
+        "train_mse_mean": 0.1689572290839545,
+        "wall_s": 3.319782018661499
+      },
+      {
+        "epoch": 6,
+        "holdout_mse": 0.1847401299506842,
+        "holdout_rel_residual_vs_fit_mean": 0.4681179050473161,
+        "train_mse_mean": 0.16843419639429116,
+        "wall_s": 3.269810676574707
+      },
+      {
+        "epoch": 7,
+        "holdout_mse": 0.18242471224211707,
+        "holdout_rel_residual_vs_fit_mean": 0.4651751060620445,
+        "train_mse_mean": 0.16792315769056942,
+        "wall_s": 3.2732274532318115
+      },
+      {
+        "epoch": 8,
+        "holdout_mse": 0.17917923846202288,
+        "holdout_rel_residual_vs_fit_mean": 0.4610186276688282,
+        "train_mse_mean": 0.16764778411966674,
+        "wall_s": 3.2750680446624756
+      },
+      {
+        "epoch": 9,
+        "holdout_mse": 0.1825603457094434,
+        "holdout_rel_residual_vs_fit_mean": 0.4653480036607361,
+        "train_mse_mean": 0.16731650858149963,
+        "wall_s": 3.256002902984619
+      }
+    ],
+    "sampled_steps_every_500": [
+      {
+        "epoch": 0,
+        "step": 0,
+        "train_mse": 1.6617457866668701
+      },
+      {
+        "epoch": 0,
+        "step": 500,
+        "train_mse": 0.219386026263237
+      },
+      {
+        "epoch": 0,
+        "step": 1000,
+        "train_mse": 0.18958044052124023
+      },
+      {
+        "epoch": 0,
+        "step": 1500,
+        "train_mse": 0.17644283175468445
+      },
+      {
+        "epoch": 0,
+        "step": 2000,
+        "train_mse": 0.17793184518814087
+      },
+      {
+        "epoch": 1,
+        "step": 2500,
+        "train_mse": 0.17740511894226074
+      },
+      {
+        "epoch": 1,
+        "step": 3000,
+        "train_mse": 0.1904102861881256
+      },
+      {
+        "epoch": 1,
+        "step": 3500,
+        "train_mse": 0.17772066593170166
+      },
+      {
+        "epoch": 1,
+        "step": 4000,
+        "train_mse": 0.1863323152065277
+      },
+      {
+        "epoch": 2,
+        "step": 4500,
+        "train_mse": 0.17271727323532104
+      },
+      {
+        "epoch": 2,
+        "step": 5000,
+        "train_mse": 0.16908317804336548
+      },
+      {
+        "epoch": 2,
+        "step": 5500,
+        "train_mse": 0.17154449224472046
+      },
+      {
+        "epoch": 2,
+        "step": 6000,
+        "train_mse": 0.17190729081630707
+      },
+      {
+        "epoch": 2,
+        "step": 6500,
+        "train_mse": 0.1743437945842743
+      },
+      {
+        "epoch": 3,
+        "step": 7000,
+        "train_mse": 0.16524019837379456
+      },
+      {
+        "epoch": 3,
+        "step": 7500,
+        "train_mse": 0.17356771230697632
+      },
+      {
+        "epoch": 3,
+        "step": 8000,
+        "train_mse": 0.17525514960289001
+      },
+      {
+        "epoch": 3,
+        "step": 8500,
+        "train_mse": 0.1770819127559662
+      },
+      {
+        "epoch": 4,
+        "step": 9000,
+        "train_mse": 0.1637895107269287
+      },
+      {
+        "epoch": 4,
+        "step": 9500,
+        "train_mse": 0.15914508700370789
+      },
+      {
+        "epoch": 4,
+        "step": 10000,
+        "train_mse": 0.16474297642707825
+      },
+      {
+        "epoch": 4,
+        "step": 10500,
+        "train_mse": 0.17400889098644257
+      },
+      {
+        "epoch": 4,
+        "step": 11000,
+        "train_mse": 0.17256379127502441
+      },
+      {
+        "epoch": 5,
+        "step": 11500,
+        "train_mse": 0.17089569568634033
+      },
+      {
+        "epoch": 5,
+        "step": 12000,
+        "train_mse": 0.18295960128307343
+      },
+      {
+        "epoch": 5,
+        "step": 12500,
+        "train_mse": 0.16128523647785187
+      },
+      {
+        "epoch": 5,
+        "step": 13000,
+        "train_mse": 0.16510668396949768
+      },
+      {
+        "epoch": 6,
+        "step": 13500,
+        "train_mse": 0.16787812113761902
+      },
+      {
+        "epoch": 6,
+        "step": 14000,
+        "train_mse": 0.1540360152721405
+      },
+      {
+        "epoch": 6,
+        "step": 14500,
+        "train_mse": 0.16977831721305847
+      },
+      {
+        "epoch": 6,
+        "step": 15000,
+        "train_mse": 0.1693105697631836
+      },
+      {
+        "epoch": 6,
+        "step": 15500,
+        "train_mse": 0.162586972117424
+      },
+      {
+        "epoch": 7,
+        "step": 16000,
+        "train_mse": 0.1811678409576416
+      },
+      {
+        "epoch": 7,
+        "step": 16500,
+        "train_mse": 0.16380292177200317
+      },
+      {
+        "epoch": 7,
+        "step": 17000,
+        "train_mse": 0.17127108573913574
+      },
+      {
+        "epoch": 7,
+        "step": 17500,
+        "train_mse": 0.1691073626279831
+      },
+      {
+        "epoch": 8,
+        "step": 18000,
+        "train_mse": 0.17643563449382782
+      },
+      {
+        "epoch": 8,
+        "step": 18500,
+        "train_mse": 0.16048920154571533
+      },
+      {
+        "epoch": 8,
+        "step": 19000,
+        "train_mse": 0.15241152048110962
+      },
+      {
+        "epoch": 8,
+        "step": 19500,
+        "train_mse": 0.1641215682029724
+      },
+      {
+        "epoch": 8,
+        "step": 20000,
+        "train_mse": 0.1696135252714157
+      },
+      {
+        "epoch": 9,
+        "step": 20500,
+        "train_mse": 0.16381707787513733
+      },
+      {
+        "epoch": 9,
+        "step": 21000,
+        "train_mse": 0.16739225387573242
+      },
+      {
+        "epoch": 9,
+        "step": 21500,
+        "train_mse": 0.16987870633602142
+      },
+      {
+        "epoch": 9,
+        "step": 22000,
+        "train_mse": 0.17130780220031738
+      }
+    ]
+  },
+  "dataset": {
+    "dump_receipt": "run2-pertoken-dump-receipt.json",
+    "index_sha256": "5069580651bdfd2c2772d442096530a54f81f6629bc509170bbacc7a00313f55",
+    "n_items": 2560,
+    "receiver_file": "receiver_L14.tok.f32bin",
+    "run_dir": "/home/ruvultra/projects/LatentMesh-1/crates/latentmesh-runtime/target/latentmesh-runs/run2",
+    "sender_file": "sender_L18.tok.f32bin",
+    "total_tokens": 719115,
+    "verified_before_training": [
+      {
+        "bytes": 4418242560,
+        "file": "receiver_L14.tok.f32bin",
+        "pass": true,
+        "sha256": "e528e37ec0e3aa766989cc80f2feffeee71eb73c7b84a8c9a15dab6a2795e263"
+      },
+      {
+        "bytes": 4418242560,
+        "file": "receiver_L19.tok.f32bin",
+        "pass": true,
+        "sha256": "ba656d81f3774279b1faf1fa3503245cf63771a41bfe1d6add8cd9862110c452"
+      },
+      {
+        "bytes": 5890990080,
+        "file": "sender_L18.tok.f32bin",
+        "pass": true,
+        "sha256": "44574f9e38bbbe8e2f5b5955cd1cccae0d399b48ed87b5270d1564ab85069c04"
+      },
+      {
+        "bytes": 5890990080,
+        "file": "sender_L24.tok.f32bin",
+        "pass": true,
+        "sha256": "b0c1a3b7abb686639a3da15d669e897a7133fb39f005db365e89c69bacbe900d"
+      }
+    ]
+  },
+  "design": "docs/adr/024-run2-trained-thought-adapter-ladder.md M3 (frozen architecture 2048->512->1536 ReLU, AdamW; leakage rule per section 'Leakage discipline')",
+  "env": {
+    "crate": "latentmesh-train 0.1.0 (candle 0.9.2, lockfile copied from latentmesh-runtime)",
+    "evidence_label": "seeded deterministic GPU training (candle 0.9.2 AdamW) over captured per-token pairs; the pairs are live-model capture output (run2-pertoken-dump-receipt.json, evidence label live-model, single-host, simulation-free)",
+    "git_commit": "403071c0627aef67507bd48568fed7db6083df08",
+    "gpu": "NVIDIA GeForce RTX 5080, 580.126.09, 16303 MiB",
+    "nvcc": "nvcc 12.8 (build-time 12.8)",
+    "unix_time": 1787957414
+  },
+  "eval_plan_frozen": {
+    "cell_scope": "S2-winner cell L18->L14 only; ADR-024's M3 gate names variants, not cells — an anchor-cell (L24->L19) M3 run has no ADR-024 registration and would be an extra unregistered draw against the frozen probe; escalation on failure is M4 (next architecture), not another cell (coordinator decision if ever wanted)",
+    "gate": "aligned_real (MLP output) > random, one-sided exact sign test, p < 0.05, per variant separately",
+    "probe": "ADR-023 frozen 40-item S1a/S2b protocol, inherited unchanged (item_seed_chacha8 20897 == 0x51A1, one-sided exact sign test alpha=0.05, 8 slots, rescale-to-natural-median, greedy/batch=1/max 400 tokens)",
+    "variants": [
+      "(i) per-token translator: MLP per generated-span token state, then the existing mean-pooling + 8-slot injection on the TRANSLATED stream",
+      "(ii) pooled-in/pooled-out: pool sender per-token states first (run-1 pipeline shape), then the SAME per-token-trained MLP on the pooled vector (ADR-024 authorial choice; confound disclosed there)"
+    ]
+  },
+  "results": {
+    "best_epoch": 8,
+    "best_holdout_mse": 0.17917923846202288,
+    "best_holdout_rel_residual_vs_fit_mean": 0.4610186276688282,
+    "holdout_mean_predictor_mse_variance_baseline": 0.84304496551465,
+    "rel_residual_formula": "sqrt(sum ||pred-y||^2 / sum ||y-mu_r||^2) over holdout tokens, mu_r = fit-side per-dim mean (S2 A6 formula shape, for run-1 comparability)"
+  },
+  "split": {
+    "excluded_probe_overlap_rows": [
+      {
+        "item": 150,
+        "row": 69,
+        "side": "fit"
+      },
+      {
+        "item": 1309,
+        "row": 683,
+        "side": "fit"
+      },
+      {
+        "item": 1573,
+        "row": 824,
+        "side": "fit"
+      },
+      {
+        "item": 2365,
+        "row": 1258,
+        "side": "fit"
+      },
+      {
+        "item": 2418,
+        "row": 1281,
+        "side": "fit"
+      },
+      {
+        "item": 2540,
+        "row": 1346,
+        "side": "holdout"
+      },
+      {
+        "item": 2958,
+        "row": 1577,
+        "side": "fit"
+      },
+      {
+        "item": 2973,
+        "row": 1586,
+        "side": "holdout"
+      },
+      {
+        "item": 3084,
+        "row": 1647,
+        "side": "fit"
+      },
+      {
+        "item": 3825,
+        "row": 2052,
+        "side": "fit"
+      },
+      {
+        "item": 3844,
+        "row": 2058,
+        "side": "fit"
+      },
+      {
+        "item": 3877,
+        "row": 2078,
+        "side": "fit"
+      },
+      {
+        "item": 4746,
+        "row": 2529,
+        "side": "fit"
+      }
+    ],
+    "fit_rows_sha256_comma_joined": "10b47b863e82641722e146b37f8d6b0ef79b00405013ba8b5ae32a778133607e",
+    "fit_split_seed": 616619523,
+    "fit_token_pairs": 572424,
+    "holdout_rows_sha256_comma_joined": "02c1bf502244db56a2159a275e90917d465c7184d5bf981f574eddb58800e5a4",
+    "holdout_token_pairs": 143121,
+    "n_fit": 2037,
+    "n_fit_pre_exclusion": 2048,
+    "n_holdout": 510,
+    "n_holdout_pre_exclusion": 512,
+    "rule": "fit_holdout_split(2560, FIT_SPLIT_SEED) BY ITEM first (replica of harness/latentmesh-live/src/calibrate.rs:115, replica==harness ground truth pinned by unit test), THEN the 13 probe-overlap rows dropped from whichever side they landed in (ADR-024 frozen leakage rule); token-level shuffling happens only WITHIN the fit side for SGD batches"
+  },
+  "stage": "run2-m3-mlp-training",
+  "training": {
+    "architecture": "MLP 2048->512->1536, ReLU, x@W convention",
+    "batch": 256,
+    "epochs": 10,
+    "loss": "MSE",
+    "note_no_discarded_runs": "single training run; no restarts, no hyperparameter retries",
+    "optimizer": {
+      "beta1": 0.9,
+      "beta2": 0.999,
+      "eps": 1e-8,
+      "lr": 0.001,
+      "name": "AdamW (candle-nn 0.9.2, the only Adam variant shipped — ADR-024 frozen optimizer constraint)",
+      "weight_decay": 0.01
+    },
+    "param_count": 1837056,
+    "runs_performed": 1,
+    "stopping_rule": "fixed 10-epoch budget; artifact = epoch checkpoint with lowest holdout MSE (frozen in this receipt before any frozen-probe invocation — ADR-024: the probe-invocation order is the freeze point)",
+    "train_seed_chacha8": 1295187969
+  },
+  "wall_clock_s": 47.10836054
+}

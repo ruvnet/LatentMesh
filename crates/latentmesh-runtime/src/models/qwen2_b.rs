@@ -54,6 +54,18 @@ pub enum LayerEdit<'a> {
         positions: &'a [usize],
         vectors: &'a Tensor,
     },
+    /// ADR-024 M4g: **residual ADD** at `positions` — `h[pos] += v_row`,
+    /// preserving the receiver's own state at those rows instead of
+    /// discarding it. Mirrors Cache-to-Cache's fuser equation
+    /// `C_F = C_n(X) + F_n(...)` (arXiv:2510.03215 Eq. 3). A deliberately
+    /// SEPARATE variant rather than a flag on `Inject`, so the overwrite
+    /// arm's executed op sequence is untouched and every receipt produced
+    /// through it stays reproducible. Same empty-`positions` no-op rule.
+    Fuse {
+        after_block: usize,
+        positions: &'a [usize],
+        vectors: &'a Tensor,
+    },
 }
 
 fn apply_edit(xs: Tensor, blocks_run: usize, edit: &mut LayerEdit<'_>) -> Result<Tensor> {
@@ -83,6 +95,29 @@ fn apply_edit(xs: Tensor, blocks_run: usize, edit: &mut LayerEdit<'_>) -> Result
                     .to_dtype(xs.dtype())?
                     .to_device(xs.device())?;
                 xs = xs.slice_assign(&[0..1, pos..pos + 1, 0..hidden], &v)?;
+            }
+            Ok(xs)
+        }
+        LayerEdit::Fuse {
+            after_block,
+            positions,
+            vectors,
+        } if *after_block == blocks_run => {
+            if positions.is_empty() {
+                return Ok(xs);
+            }
+            let hidden = xs.dim(2)?;
+            let mut xs = xs;
+            for (row, &pos) in positions.iter().enumerate() {
+                let v = vectors
+                    .narrow(0, row, 1)?
+                    .reshape((1, 1, hidden))?
+                    .to_dtype(xs.dtype())?
+                    .to_device(xs.device())?;
+                // The one difference from `Inject`: read the receiver's own
+                // row and ADD, instead of discarding it.
+                let fused = (xs.narrow(1, pos, 1)? + v)?;
+                xs = xs.slice_assign(&[0..1, pos..pos + 1, 0..hidden], &fused)?;
             }
             Ok(xs)
         }
@@ -318,5 +353,131 @@ impl ModelForCausalLM {
 
     pub fn clear_kv_cache(&mut self) {
         self.base_model.clear_kv_cache()
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    /// `(1, seq, hidden)` residual with distinct, recognisable rows.
+    fn residual(seq: usize, hidden: usize) -> Tensor {
+        let data: Vec<f32> = (0..seq * hidden).map(|i| i as f32 + 1.0).collect();
+        Tensor::from_vec(data, (1, seq, hidden), &Device::Cpu).unwrap()
+    }
+
+    fn payload(n: usize, hidden: usize, value: f32) -> Tensor {
+        Tensor::from_vec(vec![value; n * hidden], (n, hidden), &Device::Cpu).unwrap()
+    }
+
+    #[test]
+    fn inject_overwrites_and_fuse_adds() {
+        let (seq, hidden) = (4usize, 3usize);
+        let before = residual(seq, hidden).to_vec3::<f32>().unwrap();
+        let positions = [1usize, 3];
+        let v = payload(positions.len(), hidden, 100.0);
+
+        let mut over = LayerEdit::Inject {
+            after_block: 14,
+            positions: &positions,
+            vectors: &v,
+        };
+        let o = apply_edit(residual(seq, hidden), 14, &mut over)
+            .unwrap()
+            .to_vec3::<f32>()
+            .unwrap();
+        let mut fuse = LayerEdit::Fuse {
+            after_block: 14,
+            positions: &positions,
+            vectors: &v,
+        };
+        let f = apply_edit(residual(seq, hidden), 14, &mut fuse)
+            .unwrap()
+            .to_vec3::<f32>()
+            .unwrap();
+
+        for p in 0..seq {
+            for h in 0..hidden {
+                if positions.contains(&p) {
+                    // Overwrite DISCARDS the receiver's own state; fuse KEEPS it.
+                    assert_eq!(o[0][p][h], 100.0);
+                    assert_eq!(f[0][p][h], before[0][p][h] + 100.0);
+                } else {
+                    assert_eq!(o[0][p][h], before[0][p][h]);
+                    assert_eq!(f[0][p][h], before[0][p][h]);
+                }
+            }
+        }
+    }
+
+    /// The ADR-024 M4g control question: under FUSE a zero payload is a
+    /// genuine no-op (`h += 0`), whereas under OVERWRITE it zeroes the rows.
+    #[test]
+    fn zero_payload_is_a_noop_under_fuse_but_destructive_under_overwrite() {
+        let (seq, hidden) = (4usize, 3usize);
+        let before = residual(seq, hidden).to_vec3::<f32>().unwrap();
+        let positions = [0usize, 2];
+        let z = payload(positions.len(), hidden, 0.0);
+
+        let mut over = LayerEdit::Inject {
+            after_block: 1,
+            positions: &positions,
+            vectors: &z,
+        };
+        let o = apply_edit(residual(seq, hidden), 1, &mut over)
+            .unwrap()
+            .to_vec3::<f32>()
+            .unwrap();
+        let mut fuse = LayerEdit::Fuse {
+            after_block: 1,
+            positions: &positions,
+            vectors: &z,
+        };
+        let f = apply_edit(residual(seq, hidden), 1, &mut fuse)
+            .unwrap()
+            .to_vec3::<f32>()
+            .unwrap();
+
+        assert_eq!(f, before, "fuse with a zero payload must be an exact no-op");
+        for &p in &positions {
+            assert_eq!(
+                o[0][p],
+                vec![0.0; hidden],
+                "overwrite with zero must zero the row"
+            );
+        }
+    }
+
+    #[test]
+    fn fuse_at_a_different_block_or_empty_positions_is_a_noop() {
+        let (seq, hidden) = (3usize, 2usize);
+        let before = residual(seq, hidden).to_vec3::<f32>().unwrap();
+        let positions = [1usize];
+        let v = payload(1, hidden, 7.0);
+        let mut wrong_block = LayerEdit::Fuse {
+            after_block: 14,
+            positions: &positions,
+            vectors: &v,
+        };
+        assert_eq!(
+            apply_edit(residual(seq, hidden), 13, &mut wrong_block)
+                .unwrap()
+                .to_vec3::<f32>()
+                .unwrap(),
+            before
+        );
+        let empty: [usize; 0] = [];
+        let mut no_positions = LayerEdit::Fuse {
+            after_block: 13,
+            positions: &empty,
+            vectors: &v,
+        };
+        assert_eq!(
+            apply_edit(residual(seq, hidden), 13, &mut no_positions)
+                .unwrap()
+                .to_vec3::<f32>()
+                .unwrap(),
+            before
+        );
     }
 }

@@ -1,0 +1,259 @@
+# 039. PC2: the steering control — pre-registration
+
+- **Status**: Proposed (pre-registration — written before any item is drawn)
+- **Date**: 2026-08-29
+- **Gates**: [ADR-037](037-m5x-maximal-configuration-rung.md) (M5X) and
+  [ADR-035](035-m4b-scale-control-pre-registration.md) (M4b) remain **BLOCKED**
+  behind this rung
+- **Protocol**: [ADR-036](036-successor-rung-evaluation-protocol.md) e-process,
+  unchanged · **Publication**: [ADR-032](032-negative-result-publication-contract.md)
+
+## Context — why another control
+
+[PC1b](024-run2-trained-thought-adapter-ladder.md) failed at the ladder's
+highest power (n_disc 64, wealth 0.1949, never above its 1.0 start). It
+established a **dissociation**, not an absence:
+
+- **Likelihood endpoint — VALIDATED.** The payload beats a *norm-matched*
+  Gaussian through the same operator at the same 8 positions by **0.237 nats
+  on 198/300 items** (p ≈ 2e-8). The channel demonstrably carries
+  **content-dependent** information.
+- **Accuracy endpoint — UNVALIDATED.** Accuracy went 140 → **127**. **No
+  control in this repository has ever moved accuracy.**
+
+Every rung's verdict rests on the accuracy endpoint. So for the endpoint that
+decides every result, the apparatus cannot distinguish *"no effect"* from
+*"cannot detect effects"*, and **the method remains the leading explanation for
+every null in the ladder.**
+
+**PC1 and PC1b are both *restoration* controls**: they hand the receiver the
+right answer and ask whether it gets more answers right. That design has a
+weakness we can no longer ignore — a restoration null is consistent with *"the
+pathway cannot steer decisions"* **and** with *"the receiver's errors are not
+of a kind that the gold state repairs."* It cannot separate them.
+
+**Nothing here has tested steering.**
+
+## Decision — PC2, a steering control
+
+Ask the strictly easier question: **can the apparatus move the receiver's
+answer at all — in any direction, including a wrong one?**
+
+**Design.** For each item, teacher-force the receiver over its own question and
+a solution **whose final numeric answer has been replaced by a decoy `d`**,
+then tap block 19 at the last token — *identical derivation to PC1b in every
+respect except the answer value.* Inject at the same question-tail site,
+same operator (`Fuse`), same 8 slots.
+
+**Primary endpoint**: the rate at which the receiver **emits the decoy `d`**,
+`steer` vs `random`, paired per item, under ADR-036's e-process (λ = 0.30,
+α = 0.05, wealth threshold 20.0, N_max = 300, `adaptation-512` fixed order,
+ADR-024's 13-item exclusion).
+
+**Conditions** (mirroring PC1b so the two are directly comparable):
+
+| condition | payload |
+|---|---|
+| `steer` | receiver's L19 last-token state, teacher-forced over the **decoy** solution |
+| `restore` | PC1b's payload — teacher-forced over the **gold** solution |
+| `baseline` | no injection |
+| `zerovec` | `h += 0` — must be bit-identical to baseline (operator check) |
+| `random` | per-item seeded Gaussian, **norm-matched** to the effective steer vector |
+
+### Why this is the right test, and why it is *easier* than PC1b
+
+1. **It removes the confound restoration cannot.** A decoy hit is not something
+   the receiver would produce for independent reasons; **`random` hits `d` at
+   chance by construction**, giving a clean floor.
+2. **Its effect ceiling is far higher.** Restoration is bounded by the 160/300
+   items the receiver already gets wrong; steering can move **any** item.
+3. **It varies exactly one thing from PC1b** — the answer value. Same site,
+   same operator, same slots, same derivation, same stream. Any difference is
+   attributable to what the payload *says*, not to how it is delivered.
+
+### Decoy construction (pre-committed, to foreclose gaming)
+
+`d` is derived deterministically from the gold answer `g` — **not** sampled,
+and **never** equal to `g`: a fixed per-item ChaCha8 stream (seed `0x5732`)
+selects a perturbation from `{g+1, g-1, g+10, 2g}`, re-drawing on collision
+with `g` or on a non-positive result. Decoys are committed to the capture
+receipt **before** the draw. A separate check records the rate at which
+`baseline` already emits `d` (**expected ≈ 0**); if that exceeds 2%, the decoy
+construction is declared leaky and the rung is void.
+
+## Pre-registered interpretation — both branches, before any draw
+
+**PASS** (steer moves answers toward `d` with real power) — **the apparatus can
+steer decisions.** PC1b's failure is then re-read as *restoration being the
+wrong probe*, not as a dead pathway. **M5X and M4b UNBLOCK**, and the ladder's
+cross-model nulls become evidence about **transfer**, because the method has
+finally been shown capable on the endpoint every verdict uses.
+
+**FAIL with real power** — **the apparatus cannot move a decision by any
+means**, not even toward an answer it was explicitly handed. Combined with
+PC1b, that is decisive about the **method**: this injection paradigm is
+**decision-inert while remaining likelihood-live**. Consequences, accepted in
+advance:
+
+- **M5X and M4b stay blocked permanently** under this apparatus — they vary
+  the payload, and the payload is not the binding constraint.
+- **The ladder closes.** Every cross-model null is explained by the method, and
+  none of them is evidence about latent transferability.
+- **This becomes the publishable result** — a precise, powered negative about
+  activation-injection as a mechanism for cross-model reasoning transfer, with
+  the likelihood/decision dissociation as its central finding. Per ADR-032 it
+  is reported **without softening**.
+
+**Underpowered** (n_disc too small to separate the arms) — reported as
+uninformative. **It is not spun as either outcome**, and the power floor is
+stated on its own scale per ADR-036 Decision 3.
+
+## Firewall — inherited and extended
+
+PC2 is **same-model, same-item, identity-transform** with gold-adjacent
+content. It tests **the apparatus, never transfer**. A PASS proves the pathway
+can steer a decision; it says **nothing** about whether a cross-model,
+learned-alignment payload can carry reasoning. **A FAIL may not be cited as
+transfer evidence either** — the symmetric rule added after PC1b.
+
+## ⛔ Do NOT inherit PC1b's FAIL-branch wording
+
+PC1b's registered FAIL branch said a powered failure would make the ladder
+nulls *"evidence about TRANSFER rather than about plumbing."* **That is
+logically inverted** and is quarantined at the head of ADR-024. A failed
+positive control makes the **method** the leading explanation; ruling plumbing
+out requires a **PASS**. The branches above are written to avoid re-inheriting
+it.
+
+## Single-owner rule (ADR-034, reinforced)
+
+**This rung has exactly one implementing agent.** Coordinator error #11 put two
+agents on PC1b, producing a duplicate process, concurrent edits to the running
+example's source, and message identities that could not be told apart. **Claim
+the rung before launching; do not resume an agent and start a workflow for the
+same work.**
+
+## AMENDMENT — the 2% leakage gate's *rationale* is wrong (written mid-draw, outcome unknown)
+
+**Timestamp discipline**: written while the draw was at **item 9 of 300**, with
+`steer` and `random` both at 1 hit and the primary undecided. I do not know the
+outcome. Recording it later would be indistinguishable from protocol-shopping,
+which [ADR-032](032-negative-result-publication-contract.md) forbids.
+
+**The registered claim was**: *"`random` hits the decoy at chance by
+construction, giving a clean floor."* **That is false, and the decoy rule above
+is why.**
+
+Decoys are drawn from `{g+1, g-1, g+10, 2g}` — precisely the space of **natural
+arithmetic slips**: off-by-one, off-by-ten, and forgetting to halve. A model
+that errs on a GSM8K item does not land uniformly over the integers; it lands
+disproportionately on exactly these. So the baseline decoy-emission rate is
+**structurally above chance**, and the observed early hit — item 20, gold 38,
+decoy 48 (`g+10`), where **all five conditions** including `baseline` and
+`zerovec` emitted 48 — is the predicted behaviour of a well-formed decoy set,
+not a bug. The detector is sound: it compares the **extracted final answer**
+under numeric equality (`extract_answer` → `answers_equal`), not a substring.
+
+**What this does and does not invalidate:**
+
+- **The primary comparison stands.** It is **paired `steer` vs `random`**, and
+  both arms carry the identical baseline propensity toward natural slips. If
+  `steer` reaches the decoy *more often than* `random`, that difference is
+  attributable to the payload's content. The floor being elevated costs
+  **power**, not validity.
+- **The 2% threshold is miscalibrated**, because it was derived from the false
+  "chance floor" premise. A baseline rate of, say, 8% would reflect the model's
+  natural error distribution — not a leaky decoy construction.
+
+**The gate is NOT being relaxed.** It was pre-registered and it will be
+**reported exactly as it falls**: if baseline decoy-emission exceeds 2%, that
+is recorded as *the registered gate tripping*. What this amendment changes is
+only the **interpretation** of a trip — from *"the decoy construction is leaky
+and the rung is void"* to *"the registered threshold was derived from a false
+premise about the floor."*
+
+**Deciding which reading applies is deferred to a stated, pre-committed test**,
+so it cannot be chosen to suit the result: the rung is void **only if
+`baseline` and `steer` are statistically indistinguishable on decoy-emission**
+— i.e. the payload adds nothing over the model's own error propensity. If
+`steer` separates from `random` while baseline is merely elevated, the rung is
+**valid with reduced power** and is reported that way.
+
+**A successor rung should use decoys drawn AWAY from natural-slip space** (a
+random integer of similar magnitude, not an arithmetic perturbation of `g`) to
+recover a genuine chance floor. Registered as a design note for PC3, not as a
+change to this rung.
+
+## COORDINATOR ERROR #14 — PC2's decision endpoint is STRUCTURALLY UNDERPOWERED, and I should have computed that before registering it (written mid-draw at item 198, outcome unknown)
+
+**I repeated the ladder's single most-documented mistake.**
+[`docs/research/047`](../research/047-authoritative-power-table.md) established
+that **10 of 14** prior draws were *structurally incapable* of detecting the
+effect they were built to test. I then registered PC2 with a **rare-event
+endpoint** and never computed its expected discordant count. The calculation is
+one line and would have taken a minute.
+
+**Measured at item 198**, with the primary undecided:
+
+| condition | decoy-emission |
+|---|---|
+| steer | 5 / 198 = **2.53%** |
+| restore | 6 / 198 = 3.03% |
+| baseline | 3 / 198 = **1.52%** |
+| zerovec | 3 / 198 = 1.52% |
+| random | 2 / 198 = **1.01%** |
+
+The e-process counts only pairs where `steer` and `random` **disagree**. At
+these rates the discordance rate is **1.52%**:
+
+- **n_disc projected at N=300: ~4.5** (observed 3 at 198).
+- **Minimum attainable p ≈ 0.043.** Even a *perfect* run — every discordant
+  pair favouring `steer` — barely clears α = 0.05.
+- **N required for PC1b-level power (n_disc = 64): ~4,224 items** — **14×**
+  this draw.
+
+**The decision-level endpoint cannot answer the steering question at N=300.**
+That is a design defect, not a result, and it is mine.
+
+### The registered 2% gate will likely NOT trip — my amendment's alarm was unfounded
+
+Baseline decoy-emission is **1.52%**, below the 2% threshold. The 5.7% I saw at
+n=35 was small-sample noise (2 hits). **The methodological point in the
+amendment above still stands** — decoys drawn from natural-slip space do not
+give a literal chance floor, and `baseline` (1.52%) does sit above `random`
+(1.01%) — but the empirical concern that prompted it was not borne out. **Not
+acting on the n=9 reading was correct**; acting on it would have been coordinator
+error #13 repeated.
+
+### What the rung DOES still deliver, at full power
+
+The decision endpoint is sparse. **The likelihood endpoint is dense** — the
+probe computes the teacher-forced NLL of the **decoy string** for every
+condition on every item, 300 paired observations with no rarity problem.
+
+That yields a direct, fully-powered test of the question one level down:
+**does the payload steer the receiver's distribution toward the decoy, even
+when it cannot steer the decision?** It is the exact analogue of PC1b's
+0.237-nat result, and combined with it would establish the
+**likelihood-live / decision-inert** dissociation on *both* a restoration and a
+steering payload.
+
+**This is a salvage, and it is labelled as one.** It is *not* the registered
+primary, and a result on it **may not be reported as PC2 passing or failing**.
+The registered primary is the decision endpoint, and if it lands underpowered
+it is reported as **uninformative**, per the branch already registered above
+and ADR-036 Decision 3.
+
+### Also replicating at item 198: injection costs accuracy
+
+`baseline` **94** = `zerovec` **94** (operator no-op confirmed), `random` 86,
+`restore` 86, `steer` **84**. The same ordering as PC1b — injecting a non-zero
+vector at this site costs correct answers, and this is now the **second**
+independent stream showing it.
+
+### Registered for the successor, before this outcome is known
+
+PC3 must fix **both** defects: draw decoys away from natural-slip space *and*
+either use a **dense endpoint** or budget ~4,000 items. **A power calculation
+is now mandatory at pre-registration time for every future rung** — expected
+discordant count and minimum attainable p, stated before the draw.

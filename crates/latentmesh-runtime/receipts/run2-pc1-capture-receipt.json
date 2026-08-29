@@ -1,0 +1,688 @@
+{
+  "config": {
+    "capture_span": "the gold-continuation tokens only (prompt excluded) — the same convention the committed dump uses for its generated span",
+    "gold_rendering_rule": "GSM8K `answer` verbatim with the dataset's <<a+b=c>> calculator annotations removed; nothing added, no EOS appended, so the span's LAST row is the state at the final answer token. The gold text already ends with the '#### <n>' line ANSWER_FORMAT asks for.",
+    "item_seed_chacha8": 20897,
+    "payload_derivation": "LAST row of the block-19 span (de-pooled, per-token last-token — M4h Stage 1's derivation)",
+    "payload_tap_block": 19,
+    "receiver": "Qwen/Qwen2.5-1.5B-Instruct",
+    "reference_tap_block": 14,
+    "sender": "NONE — PC1 is a same-model self-pair; no sender is loaded",
+    "teacher_forced_over": "the item's GSM8K gold solution, rendered by the pre-committed rule below",
+    "transform": "IDENTITY — no adapter, no weights, no fitted alignment of any kind"
+  },
+  "dataset": {
+    "indices": [
+      141,
+      150,
+      850,
+      1153,
+      1309,
+      1435,
+      1573,
+      1602,
+      2365,
+      2418,
+      2436,
+      2489,
+      2540,
+      2723,
+      2958,
+      2973,
+      3084,
+      3165,
+      3741,
+      3772,
+      3825,
+      3844,
+      3877,
+      4255,
+      4305,
+      4344,
+      4746,
+      4888,
+      5422,
+      5610,
+      6031,
+      6146,
+      6378,
+      6452,
+      6552,
+      6629,
+      7293,
+      7375,
+      7431,
+      7462
+    ],
+    "s1a_indices_match": true,
+    "sha256": "17f347dc51477c50d4efb83959dbb7c56297aba886e5544ee2aaed3024813465",
+    "source": "https://raw.githubusercontent.com/openai/grade-school-math/master/grade_school_math/data/train.jsonl"
+  },
+  "declared_deviation_from_the_registered_capture_source": {
+    "direction_of_the_deviation": "TOWARD the registered design (literally gold, full registered item set), not away from it. The cost is 40 teacher-forced prefills, seconds of GPU time.",
+    "how_the_committed_dump_is_still_load_bearing": "Its sha256 is verified against run2-pertoken-dump-receipt.json, and on the 13 overlapping items THIS capture path is asserted to reproduce the committed block-19 rows from the stored token stream. That makes the fresh capture a verified extension of a receipted artifact rather than an unaudited second path.",
+    "registered_text": "docs/research/045 §5 'Capture: none new — read per-token receiver states directly from receiver_L14.tok.f32bin and receiver_L19.tok.f32bin'; ADR-024's PC1 section repeats it as 'the receiver's own gold teacher-forced per-token block-19 state — already on disk in receiver_L19.tok.f32bin'.",
+    "what_was_done_instead": "The receiver is teacher-forced over the item's ACTUAL GSM8K gold solution and block 19 is tapped — which is what docs/research/045 §2 candidate (c) literally specifies ('captured while teacher-forced on the gold solution text for the same item') — for ALL 40 of S1a's items, so the registered item set AND the registered statistic both survive.",
+    "why_it_is_not_executable_as_written": [
+      "COVERAGE: the dump covers the calibration-4000 split (2560 items, gsm8k-train indices 1..4797). Only 13 of S1a's 40 registered items appear in it; n=13 is far below docs/research/031's power floor, so the dump cannot supply the registered 40-item statistic.",
+      "SEMANTICS: the dump is NOT gold-teacher-forced. run2-pertoken-dump-receipt.json's own `spans` field reads 'sender-GENERATED tokens only' — the receiver states were captured while teacher-forced over the 3B SENDER's greedy solution, not over the GSM8K gold solution. The phrase 'gold teacher-forced ... from receiver_L19.tok.f32bin' describes an artifact that does not exist on disk."
+    ]
+  },
+  "design": "docs/adr/024-run2-trained-thought-adapter-ladder.md § 'PC1 PRE-REGISTRATION (2026-08-29) — the positive control this harness never had'; docs/research/045-positive-control-design.md §2 candidate (c) + §5",
+  "env": {
+    "crate": "latentmesh-runtime 0.1.0 (vendored candle-transformers 0.9.2 qwen2)",
+    "evidence_label": "live-model, single-host, simulation-free",
+    "git_commit": "cd259905a26ffcda625d76ce850c34858f6e4fe1",
+    "gpu": "NVIDIA GeForce RTX 5080, 580.126.09, 16303 MiB",
+    "nvcc": "nvcc 12.8 (build-time 12.8)",
+    "nvcc_at_build": "12.8",
+    "unix_time": 1787982016
+  },
+  "firewall_verbatim_research_045_section_3": "This control used a same-model, same-item, identity-transform injection with gold-adjacent content. It tests whether this repository's injection mechanics (delivery operator, payload shape, injection site, norm-rescale) are capable of carrying signal at all. It does not test, and must not be cited as evidence for or against, whether a cross-model-derived, learned-alignment payload can transfer reasoning content — that is exactly the separate question M3 through M5X exist to answer.",
+  "gate_pass": true,
+  "gates": {
+    "all_captured_states_finite": {
+      "pass": true
+    },
+    "capture_path_reproduces_the_committed_dump": {
+      "all_items_bit_identical": true,
+      "elements_compared": 5483520,
+      "items_bit_identical": 13,
+      "items_checked": 13,
+      "max_abs_diff": 0.0,
+      "pass": true,
+      "per_item": [
+        {
+          "bit_identical": true,
+          "dump_row": 69,
+          "item": 150,
+          "max_abs_diff": 0.0,
+          "span_rows": 266
+        },
+        {
+          "bit_identical": true,
+          "dump_row": 683,
+          "item": 1309,
+          "max_abs_diff": 0.0,
+          "span_rows": 301
+        },
+        {
+          "bit_identical": true,
+          "dump_row": 824,
+          "item": 1573,
+          "max_abs_diff": 0.0,
+          "span_rows": 276
+        },
+        {
+          "bit_identical": true,
+          "dump_row": 1258,
+          "item": 2365,
+          "max_abs_diff": 0.0,
+          "span_rows": 400
+        },
+        {
+          "bit_identical": true,
+          "dump_row": 1281,
+          "item": 2418,
+          "max_abs_diff": 0.0,
+          "span_rows": 271
+        },
+        {
+          "bit_identical": true,
+          "dump_row": 1346,
+          "item": 2540,
+          "max_abs_diff": 0.0,
+          "span_rows": 279
+        },
+        {
+          "bit_identical": true,
+          "dump_row": 1577,
+          "item": 2958,
+          "max_abs_diff": 0.0,
+          "span_rows": 361
+        },
+        {
+          "bit_identical": true,
+          "dump_row": 1586,
+          "item": 2973,
+          "max_abs_diff": 0.0,
+          "span_rows": 230
+        },
+        {
+          "bit_identical": true,
+          "dump_row": 1647,
+          "item": 3084,
+          "max_abs_diff": 0.0,
+          "span_rows": 295
+        },
+        {
+          "bit_identical": true,
+          "dump_row": 2052,
+          "item": 3825,
+          "max_abs_diff": 0.0,
+          "span_rows": 176
+        },
+        {
+          "bit_identical": true,
+          "dump_row": 2058,
+          "item": 3844,
+          "max_abs_diff": 0.0,
+          "span_rows": 244
+        },
+        {
+          "bit_identical": true,
+          "dump_row": 2078,
+          "item": 3877,
+          "max_abs_diff": 0.0,
+          "span_rows": 220
+        },
+        {
+          "bit_identical": true,
+          "dump_row": 2529,
+          "item": 4746,
+          "max_abs_diff": 0.0,
+          "span_rows": 251
+        }
+      ],
+      "tolerance": 0.0010000000474974513,
+      "tolerance_rationale": "Fixed before the run. Bit-identity is the expectation and is reported unconditionally above; the numeric bound keeps the gate from being brittle to a sub-BF16 float difference. These states have L2 ~30 over 1536 dims (per-element magnitudes ~1) where BF16's own resolution is ~1e-2, so a 1e-3 bound sits an order of magnitude BELOW the storage granularity and cannot hide a real divergence.",
+      "why_it_matters": "It is what licenses using this capture path for the 27 registered items the committed dump does not cover."
+    },
+    "dump_coverage_of_the_s1a_item_set": {
+      "covered": 13,
+      "gating": "NONE — disclosed. This is the measurement that forced the declared deviation above.",
+      "items": [
+        150,
+        1309,
+        1573,
+        2365,
+        2418,
+        2540,
+        2958,
+        2973,
+        3084,
+        3825,
+        3844,
+        3877,
+        4746
+      ],
+      "of": 40
+    },
+    "identity_transform_no_adapter_weights_loaded": {
+      "note": "No MlpTransform / FastGrnnTransform / AffineTransform is constructed anywhere in this binary; the payload IS a captured receiver state, byte-for-byte.",
+      "pass": true
+    },
+    "pertoken_index_sha256_verified": {
+      "measured": "5069580651bdfd2c2772d442096530a54f81f6629bc509170bbacc7a00313f55",
+      "pass": true
+    },
+    "receiver_L19_dump_sha256_verified": {
+      "measured": "ba656d81f3774279b1faf1fa3503245cf63771a41bfe1d6add8cd9862110c452",
+      "pass": true,
+      "pinned_by": "receipts/run2-pertoken-dump-receipt.json",
+      "tokens": 719115
+    },
+    "s1a_item_set_reproduced": {
+      "n": 40,
+      "pass": true
+    },
+    "streams_sha256_verified": {
+      "measured": "ad5713116cb5acf663fe9c33ac58aaedb1fd64fcf629dd78b21439d244958539",
+      "pass": true
+    }
+  },
+  "items": [
+    {
+      "gold": "72",
+      "gold_continuation_tail": "60 + 12 = 72 minutes per day on his dog.\n#### 72",
+      "gold_continuation_tokens": 62,
+      "item": 141,
+      "payload_l19_last_l2": 68.99002838134766,
+      "prompt_tokens": 103,
+      "reference_l14_last_l2": 46.78470230102539,
+      "reference_l14_pooled_l2": 33.855125427246094,
+      "reference_l19_pooled_l2": 44.36393737792969
+    },
+    {
+      "gold": "3",
+      "gold_continuation_tail": "27\nDividing both sides by 9, we get m = 3\n#### 3",
+      "gold_continuation_tokens": 90,
+      "item": 150,
+      "payload_l19_last_l2": 67.1517333984375,
+      "prompt_tokens": 105,
+      "reference_l14_last_l2": 48.22358322143555,
+      "reference_l14_pooled_l2": 34.992130279541016,
+      "reference_l19_pooled_l2": 48.40430450439453
+    },
+    {
+      "gold": "90",
+      "gold_continuation_tail": "ips.\nTogether they have 35+55 = 90 chips\n#### 90",
+      "gold_continuation_tokens": 103,
+      "item": 850,
+      "payload_l19_last_l2": 67.2040786743164,
+      "prompt_tokens": 118,
+      "reference_l14_last_l2": 45.666988372802734,
+      "reference_l14_pooled_l2": 35.171512603759766,
+      "reference_l19_pooled_l2": 45.754817962646484
+    },
+    {
+      "gold": "2050",
+      "gold_continuation_tail": "00\nSo in total, he pays 1650+400=$2050\n#### 2050",
+      "gold_continuation_tokens": 111,
+      "item": 1153,
+      "payload_l19_last_l2": 66.5480728149414,
+      "prompt_tokens": 125,
+      "reference_l14_last_l2": 43.09722137451172,
+      "reference_l14_pooled_l2": 34.53116226196289,
+      "reference_l19_pooled_l2": 42.60031509399414
+    },
+    {
+      "gold": "4",
+      "gold_continuation_tail": ", Martin will have 18-35+21 = 4 goldfish.\n#### 4",
+      "gold_continuation_tokens": 60,
+      "item": 1309,
+      "payload_l19_last_l2": 64.9508056640625,
+      "prompt_tokens": 100,
+      "reference_l14_last_l2": 45.92204284667969,
+      "reference_l14_pooled_l2": 35.727718353271484,
+      "reference_l19_pooled_l2": 45.72304153442383
+    },
+    {
+      "gold": "3",
+      "gold_continuation_tail": " found 2.50+.30+.15+.05 = $3.00 in change\n#### 3",
+      "gold_continuation_tokens": 147,
+      "item": 1435,
+      "payload_l19_last_l2": 64.6013412475586,
+      "prompt_tokens": 105,
+      "reference_l14_last_l2": 44.501163482666016,
+      "reference_l14_pooled_l2": 36.114662170410156,
+      "reference_l19_pooled_l2": 45.63037109375
+    },
+    {
+      "gold": "18",
+      "gold_continuation_tail": "er trained for 4 + 2 + 8 + 4 = 18 hours.\n#### 18",
+      "gold_continuation_tokens": 96,
+      "item": 1573,
+      "payload_l19_last_l2": 67.36542510986328,
+      "prompt_tokens": 143,
+      "reference_l14_last_l2": 44.705081939697266,
+      "reference_l14_pooled_l2": 34.09211730957031,
+      "reference_l19_pooled_l2": 45.405982971191406
+    },
+    {
+      "gold": "6716",
+      "gold_continuation_tail": "ia still has 6716 kilometers to drive.\n#### 6716",
+      "gold_continuation_tokens": 61,
+      "item": 1602,
+      "payload_l19_last_l2": 69.28448486328125,
+      "prompt_tokens": 114,
+      "reference_l14_last_l2": 46.24937438964844,
+      "reference_l14_pooled_l2": 35.68684387207031,
+      "reference_l19_pooled_l2": 48.618919372558594
+    },
+    {
+      "gold": "852",
+      "gold_continuation_tail": "dated from the year 500 + 352 = 852 BC.\n#### 852",
+      "gold_continuation_tokens": 94,
+      "item": 2365,
+      "payload_l19_last_l2": 68.58734893798828,
+      "prompt_tokens": 167,
+      "reference_l14_last_l2": 44.125877380371094,
+      "reference_l14_pooled_l2": 33.93444061279297,
+      "reference_l19_pooled_l2": 44.98246383666992
+    },
+    {
+      "gold": "53",
+      "gold_continuation_tail": " $27 = $53 is left on her weekly budget.\n#### 53",
+      "gold_continuation_tokens": 58,
+      "item": 2418,
+      "payload_l19_last_l2": 69.38677978515625,
+      "prompt_tokens": 114,
+      "reference_l14_last_l2": 47.31309509277344,
+      "reference_l14_pooled_l2": 34.52839279174805,
+      "reference_l19_pooled_l2": 45.673065185546875
+    },
+    {
+      "gold": "5",
+      "gold_continuation_tail": "box.\nThus, 5000/1000 = 5 boxes are needed\n#### 5",
+      "gold_continuation_tokens": 46,
+      "item": 2436,
+      "payload_l19_last_l2": 66.3024673461914,
+      "prompt_tokens": 107,
+      "reference_l14_last_l2": 44.81993865966797,
+      "reference_l14_pooled_l2": 34.74550247192383,
+      "reference_l19_pooled_l2": 46.53990173339844
+    },
+    {
+      "gold": "50",
+      "gold_continuation_tail": "d her friends saw 30+20 = 50 alligators.\n#### 50",
+      "gold_continuation_tokens": 57,
+      "item": 2489,
+      "payload_l19_last_l2": 67.41556549072266,
+      "prompt_tokens": 137,
+      "reference_l14_last_l2": 45.25481414794922,
+      "reference_l14_pooled_l2": 35.4779052734375,
+      "reference_l19_pooled_l2": 46.41141128540039
+    },
+    {
+      "gold": "8000",
+      "gold_continuation_tail": " will increase by $12000-$4000 = $8000\n#### 8000",
+      "gold_continuation_tokens": 83,
+      "item": 2540,
+      "payload_l19_last_l2": 68.08879089355469,
+      "prompt_tokens": 104,
+      "reference_l14_last_l2": 43.47599411010742,
+      "reference_l14_pooled_l2": 34.08391189575195,
+      "reference_l19_pooled_l2": 47.544673919677734
+    },
+    {
+      "gold": "20",
+      "gold_continuation_tail": " part of the river is x=80/4 = 20 miles.\n#### 20",
+      "gold_continuation_tokens": 94,
+      "item": 2723,
+      "payload_l19_last_l2": 67.35250854492188,
+      "prompt_tokens": 101,
+      "reference_l14_last_l2": 45.05583190917969,
+      "reference_l14_pooled_l2": 36.16405487060547,
+      "reference_l19_pooled_l2": 48.70825958251953
+    },
+    {
+      "gold": "240",
+      "gold_continuation_tail": "ite homes that do not have a fireplace.\n#### 240",
+      "gold_continuation_tokens": 88,
+      "item": 2958,
+      "payload_l19_last_l2": 65.61669158935547,
+      "prompt_tokens": 107,
+      "reference_l14_last_l2": 42.84461212158203,
+      "reference_l14_pooled_l2": 34.8046760559082,
+      "reference_l19_pooled_l2": 45.791500091552734
+    },
+    {
+      "gold": "10",
+      "gold_continuation_tail": "0 stuffies\nSo Janet got 40/4=10 stuffies\n#### 10",
+      "gold_continuation_tokens": 48,
+      "item": 2973,
+      "payload_l19_last_l2": 65.16004943847656,
+      "prompt_tokens": 112,
+      "reference_l14_last_l2": 44.856788635253906,
+      "reference_l14_pooled_l2": 36.24420928955078,
+      "reference_l19_pooled_l2": 47.90529251098633
+    },
+    {
+      "gold": "75",
+      "gold_continuation_tail": "rry eaten per handful = 75 strawberries.\n#### 75",
+      "gold_continuation_tokens": 100,
+      "item": 3084,
+      "payload_l19_last_l2": 65.37596130371094,
+      "prompt_tokens": 116,
+      "reference_l14_last_l2": 43.5947380065918,
+      "reference_l14_pooled_l2": 33.845497131347656,
+      "reference_l19_pooled_l2": 44.483821868896484
+    },
+    {
+      "gold": "36",
+      "gold_continuation_tail": "s father is currently 39-3=36 years old.\n#### 36",
+      "gold_continuation_tokens": 103,
+      "item": 3165,
+      "payload_l19_last_l2": 68.99884796142578,
+      "prompt_tokens": 128,
+      "reference_l14_last_l2": 45.4248161315918,
+      "reference_l14_pooled_l2": 34.619529724121094,
+      "reference_l19_pooled_l2": 46.3397102355957
+    },
+    {
+      "gold": "150",
+      "gold_continuation_tail": "0000 steps he'll take 0.015*10000 = 150\n#### 150",
+      "gold_continuation_tokens": 57,
+      "item": 3741,
+      "payload_l19_last_l2": 64.82951354980469,
+      "prompt_tokens": 120,
+      "reference_l14_last_l2": 44.68659591674805,
+      "reference_l14_pooled_l2": 35.29564666748047,
+      "reference_l19_pooled_l2": 44.439414978027344
+    },
+    {
+      "gold": "100",
+      "gold_continuation_tail": "Alpha Epsilon hence 90+10 = 100 minutes\n#### 100",
+      "gold_continuation_tokens": 102,
+      "item": 3772,
+      "payload_l19_last_l2": 67.78555297851562,
+      "prompt_tokens": 122,
+      "reference_l14_last_l2": 44.74610900878906,
+      "reference_l14_pooled_l2": 34.1411018371582,
+      "reference_l19_pooled_l2": 47.46809005737305
+    },
+    {
+      "gold": "23",
+      "gold_continuation_tail": "were 27-4=23 jellybeans left in the jar.\n#### 23",
+      "gold_continuation_tokens": 78,
+      "item": 3825,
+      "payload_l19_last_l2": 68.31990814208984,
+      "prompt_tokens": 111,
+      "reference_l14_last_l2": 46.983821868896484,
+      "reference_l14_pooled_l2": 35.55987548828125,
+      "reference_l19_pooled_l2": 47.9328727722168
+    },
+    {
+      "gold": "20",
+      "gold_continuation_tail": " so each knife costs 160/8 = $20.00 each\n#### 20",
+      "gold_continuation_tokens": 105,
+      "item": 3844,
+      "payload_l19_last_l2": 64.61945343017578,
+      "prompt_tokens": 124,
+      "reference_l14_last_l2": 43.14900207519531,
+      "reference_l14_pooled_l2": 34.77672576904297,
+      "reference_l19_pooled_l2": 46.41913604736328
+    },
+    {
+      "gold": "5",
+      "gold_continuation_tail": "oxes.\nThus, there were 3.5/0.7 = 5 boxes.\n#### 5",
+      "gold_continuation_tokens": 45,
+      "item": 3877,
+      "payload_l19_last_l2": 66.4845199584961,
+      "prompt_tokens": 114,
+      "reference_l14_last_l2": 44.49501037597656,
+      "reference_l14_pooled_l2": 33.62683868408203,
+      "reference_l19_pooled_l2": 46.252933502197266
+    },
+    {
+      "gold": "5",
+      "gold_continuation_tail": "12/6=2 hours.\nTotal time was 3+2=5 hours.\n#### 5",
+      "gold_continuation_tokens": 38,
+      "item": 4255,
+      "payload_l19_last_l2": 65.50518798828125,
+      "prompt_tokens": 107,
+      "reference_l14_last_l2": 45.87718200683594,
+      "reference_l14_pooled_l2": 35.7930793762207,
+      "reference_l19_pooled_l2": 46.94868850708008
+    },
+    {
+      "gold": "28",
+      "gold_continuation_tail": "8 crates + 5 crates = 28 crates of eggs.\n#### 28",
+      "gold_continuation_tokens": 90,
+      "item": 4305,
+      "payload_l19_last_l2": 65.33494567871094,
+      "prompt_tokens": 135,
+      "reference_l14_last_l2": 45.17705535888672,
+      "reference_l14_pooled_l2": 34.799983978271484,
+      "reference_l19_pooled_l2": 46.607906341552734
+    },
+    {
+      "gold": "5",
+      "gold_continuation_tail": "e of the other toys is worth 40 / 8 = $5.\n#### 5",
+      "gold_continuation_tokens": 74,
+      "item": 4344,
+      "payload_l19_last_l2": 63.801944732666016,
+      "prompt_tokens": 110,
+      "reference_l14_last_l2": 46.375221252441406,
+      "reference_l14_pooled_l2": 32.78910446166992,
+      "reference_l19_pooled_l2": 45.0694694519043
+    },
+    {
+      "gold": "17",
+      "gold_continuation_tail": "ken marbles in total because 5 + 12 = 17\n#### 17",
+      "gold_continuation_tokens": 72,
+      "item": 4746,
+      "payload_l19_last_l2": 67.02056884765625,
+      "prompt_tokens": 132,
+      "reference_l14_last_l2": 45.74323272705078,
+      "reference_l14_pooled_l2": 35.59632110595703,
+      "reference_l19_pooled_l2": 46.90151596069336
+    },
+    {
+      "gold": "25",
+      "gold_continuation_tail": "y that Patrick has now is 75 – 50 = $25.\n#### 25",
+      "gold_continuation_tokens": 43,
+      "item": 4888,
+      "payload_l19_last_l2": 65.61590576171875,
+      "prompt_tokens": 102,
+      "reference_l14_last_l2": 51.1126708984375,
+      "reference_l14_pooled_l2": 34.86494064331055,
+      "reference_l19_pooled_l2": 47.043983459472656
+    },
+    {
+      "gold": "7",
+      "gold_continuation_tail": "18\n3N = 15\nN = 5\nThe largest number is 7.\n#### 7",
+      "gold_continuation_tokens": 74,
+      "item": 5422,
+      "payload_l19_last_l2": 66.69766998291016,
+      "prompt_tokens": 92,
+      "reference_l14_last_l2": 46.70096969604492,
+      "reference_l14_pooled_l2": 37.73312759399414,
+      "reference_l19_pooled_l2": 50.767066955566406
+    },
+    {
+      "gold": "3",
+      "gold_continuation_tail": "other is 5 years – 2 years = 3 years old.\n#### 3",
+      "gold_continuation_tokens": 78,
+      "item": 5610,
+      "payload_l19_last_l2": 66.88533782958984,
+      "prompt_tokens": 131,
+      "reference_l14_last_l2": 45.48439025878906,
+      "reference_l14_pooled_l2": 34.40787887573242,
+      "reference_l19_pooled_l2": 47.206668853759766
+    },
+    {
+      "gold": "18",
+      "gold_continuation_tail": "=54\n3x=108\nx=36\nSam is 36/2=18 years old\n#### 18",
+      "gold_continuation_tokens": 63,
+      "item": 6031,
+      "payload_l19_last_l2": 61.9234733581543,
+      "prompt_tokens": 87,
+      "reference_l14_last_l2": 44.71422576904297,
+      "reference_l14_pooled_l2": 36.5464973449707,
+      "reference_l19_pooled_l2": 48.58905792236328
+    },
+    {
+      "gold": "5",
+      "gold_continuation_tail": "al savings, we get $280 - $275 = $5 left.\n#### 5",
+      "gold_continuation_tokens": 102,
+      "item": 6146,
+      "payload_l19_last_l2": 67.61582946777344,
+      "prompt_tokens": 142,
+      "reference_l14_last_l2": 43.20771789550781,
+      "reference_l14_pooled_l2": 34.262271881103516,
+      "reference_l19_pooled_l2": 45.54278564453125
+    },
+    {
+      "gold": "2",
+      "gold_continuation_tail": " $2 for each tooth after his first tooth.\n#### 2",
+      "gold_continuation_tokens": 101,
+      "item": 6378,
+      "payload_l19_last_l2": 65.73612976074219,
+      "prompt_tokens": 163,
+      "reference_l14_last_l2": 44.637535095214844,
+      "reference_l14_pooled_l2": 33.54691696166992,
+      "reference_l19_pooled_l2": 44.450592041015625
+    },
+    {
+      "gold": "21",
+      "gold_continuation_tail": "ttles\nElizabeth uses 7 * 3 = 21 stickers\n#### 21",
+      "gold_continuation_tokens": 34,
+      "item": 6452,
+      "payload_l19_last_l2": 67.03656768798828,
+      "prompt_tokens": 128,
+      "reference_l14_last_l2": 44.88771438598633,
+      "reference_l14_pooled_l2": 35.875064849853516,
+      "reference_l19_pooled_l2": 48.22144317626953
+    },
+    {
+      "gold": "18",
+      "gold_continuation_tail": "/ 2 = 18 jars of strawberry jelly today.\n#### 18",
+      "gold_continuation_tokens": 96,
+      "item": 6552,
+      "payload_l19_last_l2": 65.29644775390625,
+      "prompt_tokens": 127,
+      "reference_l14_last_l2": 47.28162384033203,
+      "reference_l14_pooled_l2": 33.688968658447266,
+      "reference_l19_pooled_l2": 44.99490737915039
+    },
+    {
+      "gold": "68",
+      "gold_continuation_tail": "swered 12 + 22 + 20 + 14 = 68 questions.\n#### 68",
+      "gold_continuation_tokens": 150,
+      "item": 6629,
+      "payload_l19_last_l2": 63.69032669067383,
+      "prompt_tokens": 154,
+      "reference_l14_last_l2": 44.13743209838867,
+      "reference_l14_pooled_l2": 34.30301284790039,
+      "reference_l19_pooled_l2": 44.00946044921875
+    },
+    {
+      "gold": "7",
+      "gold_continuation_tail": "21\nDividing both sides by 3, we get c = 7\n#### 7",
+      "gold_continuation_tokens": 92,
+      "item": 7293,
+      "payload_l19_last_l2": 67.91028594970703,
+      "prompt_tokens": 104,
+      "reference_l14_last_l2": 47.90885543823242,
+      "reference_l14_pooled_l2": 34.350528717041016,
+      "reference_l19_pooled_l2": 46.534175872802734
+    },
+    {
+      "gold": "165",
+      "gold_continuation_tail": ": 90 minutes + 75 minutes = 165 minutes\n#### 165",
+      "gold_continuation_tokens": 68,
+      "item": 7375,
+      "payload_l19_last_l2": 67.08675384521484,
+      "prompt_tokens": 110,
+      "reference_l14_last_l2": 46.585689544677734,
+      "reference_l14_pooled_l2": 35.171302795410156,
+      "reference_l19_pooled_l2": 47.50138473510742
+    },
+    {
+      "gold": "22",
+      "gold_continuation_tail": "nd Jeffrey can feed 44 / 2 = 22 campers.\n#### 22",
+      "gold_continuation_tokens": 91,
+      "item": 7431,
+      "payload_l19_last_l2": 68.00463104248047,
+      "prompt_tokens": 112,
+      "reference_l14_last_l2": 47.72146224975586,
+      "reference_l14_pooled_l2": 34.82945251464844,
+      "reference_l19_pooled_l2": 45.89282989501953
+    },
+    {
+      "gold": "20",
+      "gold_continuation_tail": "ch of his friends 80 ÷ 4 = 20 gold bars.\n#### 20",
+      "gold_continuation_tokens": 50,
+      "item": 7462,
+      "payload_l19_last_l2": 68.19839477539062,
+      "prompt_tokens": 120,
+      "reference_l14_last_l2": 42.714752197265625,
+      "reference_l14_pooled_l2": 34.02674865722656,
+      "reference_l19_pooled_l2": 44.26539611816406
+    }
+  ],
+  "liveness_not_transfer": "A PASS on this rung proves LIVENESS ONLY, NEVER TRANSFER, and may never be cited as evidence for the transfer claim.",
+  "payload_file": {
+    "dim": 1536,
+    "layout": "40 items in ascending index order; per item three contiguous f32 vectors of 1536, row-major little-endian: [L19_last (THE PAYLOAD) | L14_pooled (on-manifold reference) | L14_last (un-pooled on-manifold reference)]",
+    "n_items": 40,
+    "path": "/home/ruvultra/projects/LatentMesh-1/crates/latentmesh-runtime/target/latentmesh-runs/run2-pc1/run2-pc1-payloads.f32bin",
+    "sha256": "ab250350163b0739a1beec6d50264bd6e792965bc6116b1ea33178e23430d8ab",
+    "vecs_per_item": 3
+  },
+  "pre_committed": true,
+  "stage": "run2-PC1-capture",
+  "wall_clock_s": 4.650918960571289
+}

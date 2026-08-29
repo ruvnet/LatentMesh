@@ -1,0 +1,106 @@
+{
+  "gating": "NONE. This receipt annotates the instrument; it decides nothing about PC1, PC1b, or any rung's verdict.",
+  "matched_n_comparison": {
+    "flip_is_an_n_artifact": true,
+    "pc1_classification": "item-invariant-but-on-manifold",
+    "pc1_n": 40,
+    "pc1_token_union": 98,
+    "pc1b_classification_at_full_n": "on-manifold-item-varying",
+    "pc1b_classification_at_matched_n": "item-invariant-but-on-manifold",
+    "pc1b_item_invariance_first_40": 0.8696089675520641,
+    "pc1b_manifold_cosine_first_40": 0.6970664428919999,
+    "pc1b_token_union_first_40_items": 86,
+    "pc1b_token_union_full_n": 219,
+    "reading": "ARTIFACT: at matched N, PC1b's payload classifies exactly as PC1's did. The two payloads are the same geometric family and the classification flip carries no information about payload quality. PC1's surprise flag is NOT resolved by PC1b, and classify()'s label must not be compared across draws of different N."
+  },
+  "method": "Recompute the pre-check's own top-10-token-union metric over the FIRST 40 items of PC1b's stream — matched to PC1's N — and re-run the same classify() on the matched-N triple. The full union-vs-n curve is reported so the saturation shape is visible rather than inferred.",
+  "payload_source": {
+    "capture_receipt": "receipts/run2-pc1b-capture-receipt.json",
+    "payload_file": "/home/ruvultra/projects/LatentMesh-1/crates/latentmesh-runtime/target/latentmesh-runs/run2-pc1b/run2-pc1b-payloads.f32bin",
+    "sha256": "237f7bf408c13017bf401cf82e1673d45a7b4e47cfea11ea464f05ff3feb2cde"
+  },
+  "question": "PC1's payload classified item-invariant-but-on-manifold (surprise=TRUE); PC1b's SAME-derivation payload classified on-manifold-item-varying (surprise=FALSE). Is that flip a real geometric difference, or an artifact of measuring 300 items instead of 40?",
+  "stage": "run2-PC1b-precheck-N-invariance-diagnostic",
+  "the_mechanism_under_test": {
+    "ceiling_at_n300": 3000,
+    "ceiling_at_n40": 400,
+    "consequence": "a fixed absolute threshold encodes a different strictness at every N; it can only be tripped by a small-N draw",
+    "form": "ABSOLUTE count, compared against a union whose ceiling is n * TOPK",
+    "threshold": "COLLAPSE_TOKEN_UNION",
+    "value": 120
+  },
+  "thresholds_registered": {
+    "collapse_mean_pairwise_cosine_at_or_above": 0.95,
+    "collapse_top10_token_union_at_or_below": 120,
+    "off_manifold_mean_cosine_to_natural_below": 0.2,
+    "source": "common/lens.rs — unmodified; this diagnostic reuses classify() rather than reimplementing it"
+  },
+  "token_union_vs_n_curve": [
+    {
+      "fraction_of_max": 0.4,
+      "max_possible": 100,
+      "n_items": 10,
+      "top10_token_union": 40,
+      "trips_collapse_rule_at_absolute_threshold": true
+    },
+    {
+      "fraction_of_max": 0.29,
+      "max_possible": 200,
+      "n_items": 20,
+      "top10_token_union": 58,
+      "trips_collapse_rule_at_absolute_threshold": true
+    },
+    {
+      "fraction_of_max": 0.215,
+      "max_possible": 400,
+      "n_items": 40,
+      "top10_token_union": 86,
+      "trips_collapse_rule_at_absolute_threshold": true
+    },
+    {
+      "fraction_of_max": 0.18833333333333332,
+      "max_possible": 600,
+      "n_items": 60,
+      "top10_token_union": 113,
+      "trips_collapse_rule_at_absolute_threshold": true
+    },
+    {
+      "fraction_of_max": 0.139,
+      "max_possible": 1000,
+      "n_items": 100,
+      "top10_token_union": 139,
+      "trips_collapse_rule_at_absolute_threshold": false
+    },
+    {
+      "fraction_of_max": 0.11,
+      "max_possible": 1500,
+      "n_items": 150,
+      "top10_token_union": 165,
+      "trips_collapse_rule_at_absolute_threshold": false
+    },
+    {
+      "fraction_of_max": 0.094,
+      "max_possible": 2000,
+      "n_items": 200,
+      "top10_token_union": 188,
+      "trips_collapse_rule_at_absolute_threshold": false
+    },
+    {
+      "fraction_of_max": 0.0844,
+      "max_possible": 2500,
+      "n_items": 250,
+      "top10_token_union": 211,
+      "trips_collapse_rule_at_absolute_threshold": false
+    },
+    {
+      "fraction_of_max": 0.073,
+      "max_possible": 3000,
+      "n_items": 300,
+      "top10_token_union": 219,
+      "trips_collapse_rule_at_absolute_threshold": false
+    }
+  ],
+  "wall_clock_s": 8.867854118347168,
+  "what_this_is": "An INSTRUMENT diagnostic, not a rung. It changes no verdict, gates nothing, and does not touch the pre-draw pre-check receipt. Run AFTER the PC1b draw so the pre-check ordering discipline stays clean.",
+  "why_it_matters": "If it is an artifact, then (a) PC1's surprise flag is NOT resolved by PC1b, and (b) classify()'s verdict is not comparable across any two draws of different N — which affects every cross-rung use of that label in ADR-024."
+}

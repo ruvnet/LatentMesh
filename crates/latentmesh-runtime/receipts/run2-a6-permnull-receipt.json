@@ -1,0 +1,643 @@
+{
+  "analysis": "docs/research/029-a6-permutation-null.md",
+  "datasets": [
+    {
+      "cells": [
+        {
+          "cell": "L18->L14",
+          "null": {
+            "A6_pass_count_under_null": 0,
+            "empirical_percentile_of_real": 0.0,
+            "max": 1.0235040187835693,
+            "mean": 1.0223583102226257,
+            "min": 1.0209574699401855,
+            "n_below_or_equal_real": 0,
+            "n_permutations": 20,
+            "p_one_sided_plus_one_corrected": 0.047619047619047616,
+            "sd": 0.0006875975112258096,
+            "z_of_real_vs_null": -744.3409384696233
+          },
+          "permutations": [
+            {
+              "fixed_points": 1,
+              "held_out_relative_residual": 1.0231919288635254,
+              "k": 0,
+              "seed_chacha8": 46760193851654145
+            },
+            {
+              "fixed_points": 2,
+              "held_out_relative_residual": 1.0222806930541992,
+              "k": 1,
+              "seed_chacha8": 46760193851654146
+            },
+            {
+              "fixed_points": 2,
+              "held_out_relative_residual": 1.022986888885498,
+              "k": 2,
+              "seed_chacha8": 46760193851654147
+            },
+            {
+              "fixed_points": 2,
+              "held_out_relative_residual": 1.0209574699401855,
+              "k": 3,
+              "seed_chacha8": 46760193851654148
+            },
+            {
+              "fixed_points": 3,
+              "held_out_relative_residual": 1.0211466550827026,
+              "k": 4,
+              "seed_chacha8": 46760193851654149
+            },
+            {
+              "fixed_points": 2,
+              "held_out_relative_residual": 1.021648645401001,
+              "k": 5,
+              "seed_chacha8": 46760193851654150
+            },
+            {
+              "fixed_points": 1,
+              "held_out_relative_residual": 1.0232056379318237,
+              "k": 6,
+              "seed_chacha8": 46760193851654151
+            },
+            {
+              "fixed_points": 3,
+              "held_out_relative_residual": 1.0218350887298584,
+              "k": 7,
+              "seed_chacha8": 46760193851654152
+            },
+            {
+              "fixed_points": 2,
+              "held_out_relative_residual": 1.0229436159133911,
+              "k": 8,
+              "seed_chacha8": 46760193851654153
+            },
+            {
+              "fixed_points": 4,
+              "held_out_relative_residual": 1.0235040187835693,
+              "k": 9,
+              "seed_chacha8": 46760193851654154
+            },
+            {
+              "fixed_points": 3,
+              "held_out_relative_residual": 1.0227419137954712,
+              "k": 10,
+              "seed_chacha8": 46760193851654155
+            },
+            {
+              "fixed_points": 4,
+              "held_out_relative_residual": 1.0224956274032593,
+              "k": 11,
+              "seed_chacha8": 46760193851654156
+            },
+            {
+              "fixed_points": 1,
+              "held_out_relative_residual": 1.0223392248153687,
+              "k": 12,
+              "seed_chacha8": 46760193851654157
+            },
+            {
+              "fixed_points": 8,
+              "held_out_relative_residual": 1.0220931768417358,
+              "k": 13,
+              "seed_chacha8": 46760193851654158
+            },
+            {
+              "fixed_points": 5,
+              "held_out_relative_residual": 1.022265911102295,
+              "k": 14,
+              "seed_chacha8": 46760193851654159
+            },
+            {
+              "fixed_points": 0,
+              "held_out_relative_residual": 1.0216234922409058,
+              "k": 15,
+              "seed_chacha8": 46760193851654160
+            },
+            {
+              "fixed_points": 0,
+              "held_out_relative_residual": 1.0221701860427856,
+              "k": 16,
+              "seed_chacha8": 46760193851654161
+            },
+            {
+              "fixed_points": 0,
+              "held_out_relative_residual": 1.0230516195297241,
+              "k": 17,
+              "seed_chacha8": 46760193851654162
+            },
+            {
+              "fixed_points": 2,
+              "held_out_relative_residual": 1.0223878622055054,
+              "k": 18,
+              "seed_chacha8": 46760193851654163
+            },
+            {
+              "fixed_points": 3,
+              "held_out_relative_residual": 1.0222965478897095,
+              "k": 19,
+              "seed_chacha8": 46760193851654164
+            }
+          ],
+          "real_A6_pass": true,
+          "real_held_out_relative_residual": 0.5105513334274292,
+          "real_transform_content_hash": "eb3f42edde853824642a2b811577e2c767f73c2c179fe03a05ac8dac23704457",
+          "receiver_layer": 14,
+          "sender_layer": 18
+        },
+        {
+          "cell": "L24->L19",
+          "null": {
+            "A6_pass_count_under_null": 0,
+            "empirical_percentile_of_real": 0.0,
+            "max": 1.02634859085083,
+            "mean": 1.0247874855995178,
+            "min": 1.0234204530715942,
+            "n_below_or_equal_real": 0,
+            "n_permutations": 20,
+            "p_one_sided_plus_one_corrected": 0.047619047619047616,
+            "sd": 0.0007558647107904755,
+            "z_of_real_vs_null": -614.9301416861327
+          },
+          "permutations": [
+            {
+              "fixed_points": 1,
+              "held_out_relative_residual": 1.0250825881958008,
+              "k": 0,
+              "seed_chacha8": 46760193851654145
+            },
+            {
+              "fixed_points": 2,
+              "held_out_relative_residual": 1.0245490074157715,
+              "k": 1,
+              "seed_chacha8": 46760193851654146
+            },
+            {
+              "fixed_points": 2,
+              "held_out_relative_residual": 1.0255616903305054,
+              "k": 2,
+              "seed_chacha8": 46760193851654147
+            },
+            {
+              "fixed_points": 2,
+              "held_out_relative_residual": 1.0234204530715942,
+              "k": 3,
+              "seed_chacha8": 46760193851654148
+            },
+            {
+              "fixed_points": 3,
+              "held_out_relative_residual": 1.023624300956726,
+              "k": 4,
+              "seed_chacha8": 46760193851654149
+            },
+            {
+              "fixed_points": 2,
+              "held_out_relative_residual": 1.0239629745483398,
+              "k": 5,
+              "seed_chacha8": 46760193851654150
+            },
+            {
+              "fixed_points": 1,
+              "held_out_relative_residual": 1.0250605344772339,
+              "k": 6,
+              "seed_chacha8": 46760193851654151
+            },
+            {
+              "fixed_points": 3,
+              "held_out_relative_residual": 1.0244855880737305,
+              "k": 7,
+              "seed_chacha8": 46760193851654152
+            },
+            {
+              "fixed_points": 2,
+              "held_out_relative_residual": 1.0251983404159546,
+              "k": 8,
+              "seed_chacha8": 46760193851654153
+            },
+            {
+              "fixed_points": 4,
+              "held_out_relative_residual": 1.0249300003051758,
+              "k": 9,
+              "seed_chacha8": 46760193851654154
+            },
+            {
+              "fixed_points": 3,
+              "held_out_relative_residual": 1.0248945951461792,
+              "k": 10,
+              "seed_chacha8": 46760193851654155
+            },
+            {
+              "fixed_points": 4,
+              "held_out_relative_residual": 1.0250194072723389,
+              "k": 11,
+              "seed_chacha8": 46760193851654156
+            },
+            {
+              "fixed_points": 1,
+              "held_out_relative_residual": 1.0260100364685059,
+              "k": 12,
+              "seed_chacha8": 46760193851654157
+            },
+            {
+              "fixed_points": 8,
+              "held_out_relative_residual": 1.024629831314087,
+              "k": 13,
+              "seed_chacha8": 46760193851654158
+            },
+            {
+              "fixed_points": 5,
+              "held_out_relative_residual": 1.0244570970535278,
+              "k": 14,
+              "seed_chacha8": 46760193851654159
+            },
+            {
+              "fixed_points": 0,
+              "held_out_relative_residual": 1.0235532522201538,
+              "k": 15,
+              "seed_chacha8": 46760193851654160
+            },
+            {
+              "fixed_points": 0,
+              "held_out_relative_residual": 1.025102138519287,
+              "k": 16,
+              "seed_chacha8": 46760193851654161
+            },
+            {
+              "fixed_points": 0,
+              "held_out_relative_residual": 1.02634859085083,
+              "k": 17,
+              "seed_chacha8": 46760193851654162
+            },
+            {
+              "fixed_points": 2,
+              "held_out_relative_residual": 1.0251054763793945,
+              "k": 18,
+              "seed_chacha8": 46760193851654163
+            },
+            {
+              "fixed_points": 3,
+              "held_out_relative_residual": 1.0247538089752197,
+              "k": 19,
+              "seed_chacha8": 46760193851654164
+            }
+          ],
+          "real_A6_pass": true,
+          "real_held_out_relative_residual": 0.559983491897583,
+          "real_transform_content_hash": "e892cfb7034012c3fb3f9fa1979e5a7fedfbb2adfd3e11fe575c40c2835cc801",
+          "receiver_layer": 19,
+          "sender_layer": 24
+        }
+      ],
+      "dump": {
+        "dir": "/home/ruvultra/projects/LatentMesh-1/harness/latentmesh-live/../../crates/latentmesh-runtime/target/latentmesh-runs/s2",
+        "manifest_sha256": "c7908949d6bff34d9568527d005b4b6f61220253cb42b14210c832873496cca3",
+        "n_rows": 4000,
+        "receiver": {
+          "hidden_size": 1536,
+          "model": "Qwen/Qwen2.5-1.5B-Instruct"
+        },
+        "sender": {
+          "hidden_size": 2048,
+          "model": "Qwen/Qwen2.5-3B-Instruct"
+        }
+      },
+      "label": "gold-s2",
+      "source_receipt_stage": "S2-calibration-fit",
+      "split": {
+        "n_fit_rows": 3200,
+        "n_holdout_rows": 800,
+        "seed_chacha8": 616619523
+      }
+    },
+    {
+      "cells": [
+        {
+          "cell": "L18->L14",
+          "null": {
+            "A6_pass_count_under_null": 0,
+            "empirical_percentile_of_real": 0.0,
+            "max": 1.0270687341690063,
+            "mean": 1.0258215367794037,
+            "min": 1.0247726440429688,
+            "n_below_or_equal_real": 0,
+            "n_permutations": 20,
+            "p_one_sided_plus_one_corrected": 0.047619047619047616,
+            "sd": 0.0006561865512314702,
+            "z_of_real_vs_null": -884.9884273529665
+          },
+          "permutations": [
+            {
+              "fixed_points": 2,
+              "held_out_relative_residual": 1.0257703065872192,
+              "k": 0,
+              "seed_chacha8": 46760193851654145
+            },
+            {
+              "fixed_points": 4,
+              "held_out_relative_residual": 1.025052547454834,
+              "k": 1,
+              "seed_chacha8": 46760193851654146
+            },
+            {
+              "fixed_points": 1,
+              "held_out_relative_residual": 1.026430606842041,
+              "k": 2,
+              "seed_chacha8": 46760193851654147
+            },
+            {
+              "fixed_points": 0,
+              "held_out_relative_residual": 1.0247726440429688,
+              "k": 3,
+              "seed_chacha8": 46760193851654148
+            },
+            {
+              "fixed_points": 1,
+              "held_out_relative_residual": 1.0249605178833008,
+              "k": 4,
+              "seed_chacha8": 46760193851654149
+            },
+            {
+              "fixed_points": 4,
+              "held_out_relative_residual": 1.026506781578064,
+              "k": 5,
+              "seed_chacha8": 46760193851654150
+            },
+            {
+              "fixed_points": 1,
+              "held_out_relative_residual": 1.0263105630874634,
+              "k": 6,
+              "seed_chacha8": 46760193851654151
+            },
+            {
+              "fixed_points": 3,
+              "held_out_relative_residual": 1.0268876552581787,
+              "k": 7,
+              "seed_chacha8": 46760193851654152
+            },
+            {
+              "fixed_points": 0,
+              "held_out_relative_residual": 1.025381088256836,
+              "k": 8,
+              "seed_chacha8": 46760193851654153
+            },
+            {
+              "fixed_points": 5,
+              "held_out_relative_residual": 1.0252174139022827,
+              "k": 9,
+              "seed_chacha8": 46760193851654154
+            },
+            {
+              "fixed_points": 0,
+              "held_out_relative_residual": 1.0257928371429443,
+              "k": 10,
+              "seed_chacha8": 46760193851654155
+            },
+            {
+              "fixed_points": 2,
+              "held_out_relative_residual": 1.0260891914367676,
+              "k": 11,
+              "seed_chacha8": 46760193851654156
+            },
+            {
+              "fixed_points": 1,
+              "held_out_relative_residual": 1.026171326637268,
+              "k": 12,
+              "seed_chacha8": 46760193851654157
+            },
+            {
+              "fixed_points": 5,
+              "held_out_relative_residual": 1.0270687341690063,
+              "k": 13,
+              "seed_chacha8": 46760193851654158
+            },
+            {
+              "fixed_points": 1,
+              "held_out_relative_residual": 1.0258721113204956,
+              "k": 14,
+              "seed_chacha8": 46760193851654159
+            },
+            {
+              "fixed_points": 1,
+              "held_out_relative_residual": 1.0251003503799438,
+              "k": 15,
+              "seed_chacha8": 46760193851654160
+            },
+            {
+              "fixed_points": 2,
+              "held_out_relative_residual": 1.0251643657684326,
+              "k": 16,
+              "seed_chacha8": 46760193851654161
+            },
+            {
+              "fixed_points": 4,
+              "held_out_relative_residual": 1.0256198644638062,
+              "k": 17,
+              "seed_chacha8": 46760193851654162
+            },
+            {
+              "fixed_points": 3,
+              "held_out_relative_residual": 1.0260018110275269,
+              "k": 18,
+              "seed_chacha8": 46760193851654163
+            },
+            {
+              "fixed_points": 4,
+              "held_out_relative_residual": 1.0262600183486938,
+              "k": 19,
+              "seed_chacha8": 46760193851654164
+            }
+          ],
+          "real_A6_pass": true,
+          "real_held_out_relative_residual": 0.44510403275489807,
+          "real_transform_content_hash": "a5a3f54987571a6a76dbd774dd4c77703b6fc2918da81bbf3d0111a0314210d7",
+          "receiver_layer": 14,
+          "sender_layer": 18
+        },
+        {
+          "cell": "L24->L19",
+          "null": {
+            "A6_pass_count_under_null": 0,
+            "empirical_percentile_of_real": 0.0,
+            "max": 1.0287801027297974,
+            "mean": 1.0274035453796386,
+            "min": 1.0252012014389038,
+            "n_below_or_equal_real": 0,
+            "n_permutations": 20,
+            "p_one_sided_plus_one_corrected": 0.047619047619047616,
+            "sd": 0.0010178487015703886,
+            "z_of_real_vs_null": -549.4248036480849
+          },
+          "permutations": [
+            {
+              "fixed_points": 2,
+              "held_out_relative_residual": 1.0271600484848022,
+              "k": 0,
+              "seed_chacha8": 46760193851654145
+            },
+            {
+              "fixed_points": 4,
+              "held_out_relative_residual": 1.0257633924484253,
+              "k": 1,
+              "seed_chacha8": 46760193851654146
+            },
+            {
+              "fixed_points": 1,
+              "held_out_relative_residual": 1.0287801027297974,
+              "k": 2,
+              "seed_chacha8": 46760193851654147
+            },
+            {
+              "fixed_points": 0,
+              "held_out_relative_residual": 1.0252012014389038,
+              "k": 3,
+              "seed_chacha8": 46760193851654148
+            },
+            {
+              "fixed_points": 1,
+              "held_out_relative_residual": 1.0272196531295776,
+              "k": 4,
+              "seed_chacha8": 46760193851654149
+            },
+            {
+              "fixed_points": 4,
+              "held_out_relative_residual": 1.0281407833099365,
+              "k": 5,
+              "seed_chacha8": 46760193851654150
+            },
+            {
+              "fixed_points": 1,
+              "held_out_relative_residual": 1.0278791189193726,
+              "k": 6,
+              "seed_chacha8": 46760193851654151
+            },
+            {
+              "fixed_points": 3,
+              "held_out_relative_residual": 1.0281620025634766,
+              "k": 7,
+              "seed_chacha8": 46760193851654152
+            },
+            {
+              "fixed_points": 0,
+              "held_out_relative_residual": 1.0269923210144043,
+              "k": 8,
+              "seed_chacha8": 46760193851654153
+            },
+            {
+              "fixed_points": 5,
+              "held_out_relative_residual": 1.0262237787246704,
+              "k": 9,
+              "seed_chacha8": 46760193851654154
+            },
+            {
+              "fixed_points": 0,
+              "held_out_relative_residual": 1.0270283222198486,
+              "k": 10,
+              "seed_chacha8": 46760193851654155
+            },
+            {
+              "fixed_points": 2,
+              "held_out_relative_residual": 1.027736783027649,
+              "k": 11,
+              "seed_chacha8": 46760193851654156
+            },
+            {
+              "fixed_points": 1,
+              "held_out_relative_residual": 1.0283098220825195,
+              "k": 12,
+              "seed_chacha8": 46760193851654157
+            },
+            {
+              "fixed_points": 5,
+              "held_out_relative_residual": 1.0287727117538452,
+              "k": 13,
+              "seed_chacha8": 46760193851654158
+            },
+            {
+              "fixed_points": 1,
+              "held_out_relative_residual": 1.0280667543411255,
+              "k": 14,
+              "seed_chacha8": 46760193851654159
+            },
+            {
+              "fixed_points": 1,
+              "held_out_relative_residual": 1.0264403820037842,
+              "k": 15,
+              "seed_chacha8": 46760193851654160
+            },
+            {
+              "fixed_points": 2,
+              "held_out_relative_residual": 1.0262653827667236,
+              "k": 16,
+              "seed_chacha8": 46760193851654161
+            },
+            {
+              "fixed_points": 4,
+              "held_out_relative_residual": 1.027397871017456,
+              "k": 17,
+              "seed_chacha8": 46760193851654162
+            },
+            {
+              "fixed_points": 3,
+              "held_out_relative_residual": 1.0285428762435913,
+              "k": 18,
+              "seed_chacha8": 46760193851654163
+            },
+            {
+              "fixed_points": 4,
+              "held_out_relative_residual": 1.0279875993728638,
+              "k": 19,
+              "seed_chacha8": 46760193851654164
+            }
+          ],
+          "real_A6_pass": true,
+          "real_held_out_relative_residual": 0.46817222237586975,
+          "real_transform_content_hash": "9ef787d90659b86015176d23f2e8bedb02e49b2e34a5dc163c5f1e3cb1d0e9f1",
+          "receiver_layer": 19,
+          "sender_layer": 24
+        }
+      ],
+      "dump": {
+        "dir": "/home/ruvultra/projects/LatentMesh-1/harness/latentmesh-live/../../crates/latentmesh-runtime/target/latentmesh-runs/s2c",
+        "manifest_sha256": "844bfdbcb048b672658d2e206e8d9320b33a352433ee2999e7ff5a99c4cec6ce",
+        "n_rows": 2560,
+        "receiver": {
+          "hidden_size": 1536,
+          "model": "Qwen/Qwen2.5-1.5B-Instruct"
+        },
+        "sender": {
+          "hidden_size": 2048,
+          "model": "Qwen/Qwen2.5-3B-Instruct"
+        }
+      },
+      "label": "generated-s2c",
+      "source_receipt_stage": "S2c-generated-calibration-fit",
+      "split": {
+        "n_fit_rows": 2048,
+        "n_holdout_rows": 512,
+        "seed_chacha8": 616619523
+      }
+    }
+  ],
+  "design": "docs/adr/024 'Registered analysis (protocol-safe, no probe draw)'; annotates (never changes) the recorded A6 outcomes in s2-calibration-receipt.json and s2c-calibration-receipt.json",
+  "evidence_label": "deterministic CPU analysis over committed dumps",
+  "method": {
+    "A6_threshold_for_reference": 0.8999999761581421,
+    "analytic_anchor": "the trivial predictor 'output mu_r for every input' scores EXACTLY 1.0 on this metric: the numerator becomes sum||mu_r - y||^2 and the denominator is sum||y - mu_r||^2 over the same held-out rows and the same fit-set mu_r. 1.0, not the 0.9 gate, is the do-nothing level — so a null (or real) residual above 1.0 is worse than predicting the fit-set mean for every input",
+    "fit": "AlignmentTransform::fit_affine — the SAME machinery as S2/S2c (calibrate::fit_cell), unchanged",
+    "held_out_residual_formula": "||apply(X_h) - Y_h||_F / ||Y_h - mu_r||_F, apply(x) = mu_r + alpha*(x - mu_s)*R, mu from the 80% fit set only",
+    "permutation_family": "uniform permutation (not a derangement); fixed-point count recorded per permutation",
+    "seeds": {
+      "base_chacha8": 46760193851654145,
+      "rule": "permutation k uses PERM_SEED_BASE + k"
+    },
+    "shuffle": "ITEM-LEVEL: each dump row is one GSM8K item (item_indices is a bijection onto rows — asserted at load), so a row permutation IS an item permutation; applied WITHIN the fit block and WITHIN the held-out block so row memberships, marginals and evaluation rows are identical to the real fit and only the pairing changes",
+    "shuffle_rejected_alternative": "global (cross-split) permutation — it lets a held-out receiver row also appear in the fit set, which can only help the null and would make the test anti-conservative",
+    "split": "calibrate::fit_holdout_split with the recorded FIT_SPLIT_SEED — identical 80/20 rows as the real fits",
+    "statistics": "null mean/sd/min/max; z = (real - null_mean)/null_sd (lower residual is better, so a large NEGATIVE z means the real pairing beats chance); empirical percentile = #{null <= real}/N; p = (#{null <= real} + 1)/(N + 1)"
+  },
+  "n_permutations_per_cell": 20,
+  "stage": "run2-A6-permutation-null",
+  "threads": 8,
+  "unix_time": 1787968238,
+  "wall_clock_s": 260.454435888
+}

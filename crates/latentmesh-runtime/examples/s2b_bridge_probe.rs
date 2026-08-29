@@ -55,11 +55,15 @@ mod common;
 
 use latentmesh_runtime::{
     capture::forward_capture,
-    inject::{teacher_forced_nll, InjectionSpec},
+    inject::{teacher_forced_nll, InjectionMode, InjectionSpec},
     norms,
     sampler::{Sampler, Sampling},
     QwenRuntime,
 };
+// The run-1 affine bridge apply lives in `common/affine.rs` so the frozen
+// probe and any later re-projection diagnostic share ONE implementation
+// (golden-verified against latentmesh-align's own apply at startup).
+use common::affine::{verify_against_golden, AffineTransform};
 use rand::SeedableRng;
 use rand_chacha::ChaCha8Rng;
 use std::path::{Path, PathBuf};
@@ -168,91 +172,6 @@ fn parse_args() -> ProbeConfig {
     cfg
 }
 
-/// Hand-rolled mirror of `latentmesh_align::AlignmentTransform`'s serialized
-/// shape and affine apply `y = μ_r + α·(z − μ_s)·R` — verified against
-/// golden pairs from the crate's own apply before any model runs.
-#[derive(serde::Deserialize)]
-struct AffineTransform {
-    r: Vec<Vec<f32>>,
-    alpha: f32,
-    dim_sender: usize,
-    dim_receiver: usize,
-    #[serde(default)]
-    mu_s: Vec<f32>,
-    #[serde(default)]
-    mu_r: Vec<f32>,
-    confidence: f32,
-}
-
-impl AffineTransform {
-    fn apply(&self, z: &[f32]) -> Vec<f32> {
-        assert_eq!(z.len(), self.dim_sender, "input dimension mismatch");
-        let mut out = vec![0f32; self.dim_receiver];
-        for (i, row) in self.r.iter().enumerate() {
-            let c = if self.mu_s.is_empty() {
-                z[i]
-            } else {
-                z[i] - self.mu_s[i]
-            };
-            for (o, rij) in out.iter_mut().zip(row) {
-                *o += c * rij;
-            }
-        }
-        for (j, o) in out.iter_mut().enumerate() {
-            *o *= self.alpha;
-            if !self.mu_r.is_empty() {
-                *o += self.mu_r[j];
-            }
-        }
-        out
-    }
-}
-
-#[derive(serde::Deserialize)]
-struct GoldenFile {
-    transform_file_sha256: String,
-    input_seed_chacha8: u64,
-    n_pairs: usize,
-    inputs: Vec<Vec<f32>>,
-    outputs: Vec<Vec<f32>>,
-}
-
-/// Verify the hand-rolled apply against the align-crate golden pairs.
-/// Returns (n_pairs, max relative L2 error, golden input seed).
-fn verify_against_golden(
-    t: &AffineTransform,
-    golden_path: &Path,
-    transform_file_sha: &str,
-) -> anyhow::Result<(usize, f32, u64)> {
-    let g: GoldenFile = serde_json::from_slice(&std::fs::read(golden_path)?)?;
-    anyhow::ensure!(
-        g.transform_file_sha256 == transform_file_sha,
-        "golden file was produced for transform {} but this run loads {transform_file_sha}",
-        g.transform_file_sha256
-    );
-    anyhow::ensure!(
-        g.n_pairs >= 8 && g.inputs.len() == g.n_pairs && g.outputs.len() == g.n_pairs,
-        "golden file must carry >=8 input/output pairs"
-    );
-    let mut max_rel = 0f32;
-    for (x, y_gold) in g.inputs.iter().zip(&g.outputs) {
-        let y = t.apply(x);
-        let diff_l2 = norms::l2(
-            &y.iter()
-                .zip(y_gold)
-                .map(|(a, b)| a - b)
-                .collect::<Vec<f32>>(),
-        );
-        let rel = diff_l2 / norms::l2(y_gold).max(1e-12);
-        max_rel = max_rel.max(rel);
-        anyhow::ensure!(
-            rel <= GOLDEN_REL_TOL,
-            "hand-rolled apply diverges from latentmesh-align apply: relative L2 error {rel} > {GOLDEN_REL_TOL}"
-        );
-    }
-    Ok((g.n_pairs, max_rel, g.input_seed_chacha8))
-}
-
 fn main() -> anyhow::Result<()> {
     let t0 = std::time::Instant::now();
     let cfg = parse_args();
@@ -279,7 +198,7 @@ fn main() -> anyhow::Result<()> {
         transform.dim_receiver
     );
     let (golden_n, golden_max_rel, golden_seed) =
-        verify_against_golden(&transform, &cfg.golden, &t_sha)?;
+        verify_against_golden(&transform, &cfg.golden, &t_sha, GOLDEN_REL_TOL)?;
     println!(
         "transform {} (content_hash {t_sha}): hand-rolled affine apply verified against \
          {golden_n} latentmesh-align golden pairs, max relative L2 error {golden_max_rel:.3e} <= {GOLDEN_REL_TOL:.0e}",
@@ -596,6 +515,7 @@ fn run_item(
         positions: positions.clone(),
         vector: aligned.clone(),
         scale: Some(natural.median / aligned_l2),
+        mode: InjectionMode::Overwrite,
     };
     let target_l2 = norms::l2(&real.effective_vector());
     // Random control: per-item seeded gaussian, norm-matched (as S1a).
@@ -606,6 +526,7 @@ fn run_item(
         positions: positions.clone(),
         vector: gauss.clone(),
         scale: Some(target_l2 / norms::l2(&gauss)),
+        mode: InjectionMode::Overwrite,
     };
     // A7(c) control: TRUE zero vector through the real 8-slot path.
     let zerovec = InjectionSpec {
@@ -613,6 +534,7 @@ fn run_item(
         positions,
         vector: vec![0f32; aligned.len()],
         scale: None,
+        mode: InjectionMode::Overwrite,
     };
 
     // 5) Paired conditions.

@@ -45,7 +45,7 @@ mod common;
 
 use latentmesh_runtime::{
     capture::forward_capture,
-    inject::{teacher_forced_nll, InjectionSpec},
+    inject::{teacher_forced_nll, InjectionMode, InjectionSpec},
     norms,
     sampler::{Sampler, Sampling},
     QwenRuntime,
@@ -314,6 +314,7 @@ fn run_item(
         positions: positions.clone(),
         vector: cap.pooled.clone(),
         scale,
+        mode: InjectionMode::Overwrite,
     };
     let target_l2 = norms::l2(&real.effective_vector());
     // Random control: per-item seeded gaussian, norm-matched to the real vector.
@@ -324,6 +325,7 @@ fn run_item(
         positions,
         vector: gauss.clone(),
         scale: Some(target_l2 / norms::l2(&gauss)),
+        mode: InjectionMode::Overwrite,
     };
 
     // 3) Paired conditions: real / zero (slots unreplaced) / random.

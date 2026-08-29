@@ -1,0 +1,577 @@
+{
+  "candidates": [
+    {
+      "classification": "on-manifold-item-varying",
+      "entropy_nats": {
+        "plain_lens_mean": 8.542269644928014,
+        "rmsnorm_lens_mean": 3.9022114648981203,
+        "uniform": 11.931214658529285
+      },
+      "family": "pc1b-identity-no-adapter",
+      "gold_answer_tokens": {
+        "mean_best_rank_rmsnorm": 15096.133333333333,
+        "mean_rank_rmsnorm": 78805.89177248681,
+        "vocab_percentile_rmsnorm": 0.518678205115883
+      },
+      "item_invariance": {
+        "max": 0.9837776105003687,
+        "mean_pairwise_cosine_between_emitted_vectors": 0.8696230290657531,
+        "mean_resultant_length_of_unit_vectors": 0.932768791806882,
+        "min": 0.6836273407758613
+      },
+      "label": "pc1b-payload-receiver-L19-lasttoken-goldteacherforced",
+      "manifold": {
+        "emitted_l2": {
+          "max": 71.41204833984375,
+          "mean": 66.7129304631551,
+          "min": 59.86707305908203
+        },
+        "mean_cosine_to_same_item_natural_receiver_L14_pooled": 0.6905392037057461
+      },
+      "output_token_support_rmsnorm_lens": {
+        "distinct_tokens_in_union_of_all_item_top10_sets": 219,
+        "dominant_tokens": [
+          {
+            "decoded": "️",
+            "in_top10_of_n_items": 297,
+            "token_id": 30543
+          },
+          {
+            "decoded": "<|endoftext|>",
+            "in_top10_of_n_items": 294,
+            "token_id": 151643
+          },
+          {
+            "decoded": "返回搜狐",
+            "in_top10_of_n_items": 290,
+            "token_id": 109073
+          },
+          {
+            "decoded": "逯",
+            "in_top10_of_n_items": 256,
+            "token_id": 120812
+          },
+          {
+            "decoded": "�",
+            "in_top10_of_n_items": 122,
+            "token_id": 99158
+          },
+          {
+            "decoded": " ​​",
+            "in_top10_of_n_items": 116,
+            "token_id": 72363
+          },
+          {
+            "decoded": "″",
+            "in_top10_of_n_items": 108,
+            "token_id": 21580
+          },
+          {
+            "decoded": "@stop",
+            "in_top10_of_n_items": 87,
+            "token_id": 47079
+          }
+        ],
+        "max_possible": 3000
+      },
+      "training": "NONE — identity; this vector IS a captured receiver state"
+    },
+    {
+      "classification": "on-manifold-item-varying",
+      "entropy_nats": {
+        "plain_lens_mean": 11.263115637006003,
+        "rmsnorm_lens_mean": 9.151188281638978,
+        "uniform": 11.931214658529285
+      },
+      "family": "reference-natural-receiver-state",
+      "gold_answer_tokens": {
+        "mean_best_rank_rmsnorm": 11873.61,
+        "mean_rank_rmsnorm": 63639.48683465609,
+        "vocab_percentile_rmsnorm": 0.41885719536289023
+      },
+      "item_invariance": {
+        "max": 0.9912519402014276,
+        "mean_pairwise_cosine_between_emitted_vectors": 0.9391509827708038,
+        "mean_resultant_length_of_unit_vectors": 0.9692026686035495,
+        "min": 0.8460619730351783
+      },
+      "label": "reference-receiver-L14-pooled",
+      "manifold": {
+        "emitted_l2": {
+          "max": 36.86538314819336,
+          "mean": 34.6228705851237,
+          "min": 32.027530670166016
+        },
+        "mean_cosine_to_same_item_natural_receiver_L14_pooled": 1.0
+      },
+      "output_token_support_rmsnorm_lens": {
+        "distinct_tokens_in_union_of_all_item_top10_sets": 233,
+        "dominant_tokens": [
+          {
+            "decoded": "纪委监",
+            "in_top10_of_n_items": 286,
+            "token_id": 118614
+          },
+          {
+            "decoded": " totaling",
+            "in_top10_of_n_items": 193,
+            "token_id": 81123
+          },
+          {
+            "decoded": "_IList",
+            "in_top10_of_n_items": 174,
+            "token_id": 88431
+          },
+          {
+            "decoded": "啷",
+            "in_top10_of_n_items": 127,
+            "token_id": 120675
+          },
+          {
+            "decoded": " (\\",
+            "in_top10_of_n_items": 113,
+            "token_id": 19788
+          },
+          {
+            "decoded": "//--------------------------------------------------------------\n",
+            "in_top10_of_n_items": 99,
+            "token_id": 81042
+          },
+          {
+            "decoded": "返回搜狐",
+            "in_top10_of_n_items": 88,
+            "token_id": 109073
+          },
+          {
+            "decoded": ".toFixed",
+            "in_top10_of_n_items": 87,
+            "token_id": 43182
+          }
+        ],
+        "max_possible": 3000
+      },
+      "training": "NONE — identity; this vector IS a captured receiver state"
+    },
+    {
+      "classification": "on-manifold-item-varying",
+      "entropy_nats": {
+        "plain_lens_mean": 11.102431571730689,
+        "rmsnorm_lens_mean": 7.3345865702695425,
+        "uniform": 11.931214658529285
+      },
+      "family": "reference-natural-receiver-state",
+      "gold_answer_tokens": {
+        "mean_best_rank_rmsnorm": 25484.523333333334,
+        "mean_rank_rmsnorm": 78066.30268650794,
+        "vocab_percentile_rmsnorm": 0.5138104378587559
+      },
+      "item_invariance": {
+        "max": 0.9851851774489856,
+        "mean_pairwise_cosine_between_emitted_vectors": 0.7477935632027497,
+        "mean_resultant_length_of_unit_vectors": 0.865236529121029,
+        "min": 0.41795451976917664
+      },
+      "label": "reference-receiver-L14-single-row",
+      "manifold": {
+        "emitted_l2": {
+          "max": 51.71024703979492,
+          "mean": 44.94744707743327,
+          "min": 40.062339782714844
+        },
+        "mean_cosine_to_same_item_natural_receiver_L14_pooled": 0.7215865340653058
+      },
+      "output_token_support_rmsnorm_lens": {
+        "distinct_tokens_in_union_of_all_item_top10_sets": 524,
+        "dominant_tokens": [
+          {
+            "decoded": "″",
+            "in_top10_of_n_items": 102,
+            "token_id": 21580
+          },
+          {
+            "decoded": "acious",
+            "in_top10_of_n_items": 83,
+            "token_id": 19430
+          },
+          {
+            "decoded": " cents",
+            "in_top10_of_n_items": 78,
+            "token_id": 30191
+          },
+          {
+            "decoded": "HTTPRequestOperation",
+            "in_top10_of_n_items": 76,
+            "token_id": 93787
+          },
+          {
+            "decoded": "返回搜狐",
+            "in_top10_of_n_items": 72,
+            "token_id": 109073
+          },
+          {
+            "decoded": "AllWindows",
+            "in_top10_of_n_items": 65,
+            "token_id": 82270
+          },
+          {
+            "decoded": "th",
+            "in_top10_of_n_items": 56,
+            "token_id": 339
+          },
+          {
+            "decoded": "yo",
+            "in_top10_of_n_items": 55,
+            "token_id": 16032
+          }
+        ],
+        "max_possible": 3000
+      },
+      "training": "NONE — identity; this vector IS a captured receiver state"
+    }
+  ],
+  "dataset": {
+    "indices": [
+      4,
+      20,
+      23,
+      39,
+      42,
+      100,
+      103,
+      114,
+      145,
+      185,
+      192,
+      240,
+      245,
+      252,
+      256,
+      262,
+      280,
+      298,
+      301,
+      303,
+      358,
+      377,
+      388,
+      410,
+      411,
+      454,
+      462,
+      471,
+      521,
+      523,
+      544,
+      560,
+      575,
+      579,
+      591,
+      606,
+      607,
+      610,
+      613,
+      620,
+      651,
+      667,
+      687,
+      696,
+      722,
+      732,
+      757,
+      767,
+      788,
+      795,
+      803,
+      818,
+      827,
+      834,
+      842,
+      844,
+      873,
+      876,
+      894,
+      920,
+      934,
+      941,
+      942,
+      963,
+      977,
+      991,
+      1002,
+      1031,
+      1039,
+      1055,
+      1083,
+      1085,
+      1102,
+      1105,
+      1115,
+      1125,
+      1147,
+      1153,
+      1159,
+      1162,
+      1170,
+      1222,
+      1231,
+      1233,
+      1236,
+      1238,
+      1242,
+      1263,
+      1272,
+      1276,
+      1283,
+      1293,
+      1305,
+      1308,
+      1312,
+      1330,
+      1335,
+      1344,
+      1354,
+      1390,
+      1399,
+      1401,
+      1403,
+      1455,
+      1478,
+      1514,
+      1516,
+      1530,
+      1545,
+      1561,
+      1575,
+      1585,
+      1594,
+      1597,
+      1606,
+      1615,
+      1621,
+      1638,
+      1639,
+      1642,
+      1655,
+      1672,
+      1683,
+      1687,
+      1715,
+      1734,
+      1742,
+      1752,
+      1755,
+      1759,
+      1778,
+      1781,
+      1794,
+      1806,
+      1807,
+      1827,
+      1831,
+      1842,
+      1845,
+      1851,
+      1898,
+      1926,
+      1953,
+      1961,
+      2009,
+      2012,
+      2014,
+      2017,
+      2030,
+      2047,
+      2059,
+      2062,
+      2063,
+      2087,
+      2116,
+      2139,
+      2161,
+      2178,
+      2179,
+      2216,
+      2220,
+      2237,
+      2265,
+      2268,
+      2279,
+      2315,
+      2336,
+      2383,
+      2387,
+      2389,
+      2403,
+      2407,
+      2427,
+      2433,
+      2447,
+      2451,
+      2504,
+      2505,
+      2509,
+      2536,
+      2541,
+      2551,
+      2554,
+      2568,
+      2596,
+      2604,
+      2627,
+      2661,
+      2672,
+      2690,
+      2724,
+      2730,
+      2737,
+      2739,
+      2770,
+      2786,
+      2832,
+      2875,
+      2880,
+      2894,
+      2901,
+      2905,
+      2917,
+      2919,
+      2942,
+      2954,
+      2957,
+      2972,
+      2975,
+      2976,
+      2991,
+      3006,
+      3039,
+      3043,
+      3133,
+      3134,
+      3151,
+      3152,
+      3157,
+      3164,
+      3170,
+      3182,
+      3186,
+      3199,
+      3206,
+      3213,
+      3227,
+      3291,
+      3297,
+      3366,
+      3395,
+      3420,
+      3430,
+      3432,
+      3485,
+      3519,
+      3549,
+      3558,
+      3612,
+      3620,
+      3632,
+      3645,
+      3646,
+      3667,
+      3692,
+      3745,
+      3766,
+      3767,
+      3782,
+      3785,
+      3805,
+      3829,
+      3836,
+      3842,
+      3863,
+      3898,
+      3902,
+      3906,
+      3910,
+      3933,
+      3953,
+      3963,
+      3965,
+      3968,
+      3969,
+      3975,
+      3985,
+      3991,
+      3998,
+      4025,
+      4050,
+      4078,
+      4110,
+      4112,
+      4119,
+      4167,
+      4172,
+      4188,
+      4211,
+      4234,
+      4247,
+      4252,
+      4273,
+      4280,
+      4286,
+      4300,
+      4304,
+      4348,
+      4353,
+      4355,
+      4363,
+      4364,
+      4377,
+      4382,
+      4404,
+      4421,
+      4430,
+      4457,
+      4464,
+      4465
+    ]
+  },
+  "design": "docs/adr/024-run2-trained-thought-adapter-ladder.md § 'PC1 PRE-REGISTRATION (2026-08-29)'; docs/research/045 §5's mandatory item-invariance/entropy gate (docs/research/036's triple)",
+  "env": {
+    "evidence_label": "deterministic CPU analysis over the sha-pinned PC1b payload — no probe draw, annotates only",
+    "hidden": 1536,
+    "rms_norm_eps": 1e-6,
+    "unembedding": "Qwen/Qwen2.5-1.5B-Instruct model.embed_tokens.weight (tied), f32 on CPU",
+    "vocab": 151936
+  },
+  "firewall_verbatim_research_045_section_3": "This control used a same-model, same-item, identity-transform injection with gold-adjacent content. It tests whether this repository's injection mechanics (delivery operator, payload shape, injection site, norm-rescale) are capable of carrying signal at all. It does not test, and must not be cited as evidence for or against, whether a cross-model-derived, learned-alignment payload can transfer reasoning content — that is exactly the separate question M3 through M5X exist to answer.",
+  "gating": "NONE — ORDERING ONLY, per ADR-024's M4f framing. This receipt must EXIST and must have measured this exact payload sha before the PC1 draw; its classification decides nothing about the verdict.",
+  "liveness_not_transfer": "A PASS on PC1b proves LIVENESS ONLY, NEVER TRANSFER, and may never be cited as evidence for the transfer claim.",
+  "payload_source": {
+    "capture_receipt": "receipts/run2-pc1b-capture-receipt.json",
+    "derivation": "receiver's OWN block-19 state, gold-teacher-forced, LAST token of the span — identity transform, no adapter",
+    "payload_file": "/home/ruvultra/projects/LatentMesh-1/crates/latentmesh-runtime/target/latentmesh-runs/run2-pc1b/run2-pc1b-payloads.f32bin",
+    "sha256": "237f7bf408c13017bf401cf82e1673d45a7b4e47cfea11ea464f05ff3feb2cde"
+  },
+  "registered_expectation_stated_before_the_numbers": {
+    "expected": "on-manifold-item-varying — trivially, because the payload IS a real receiver residual-stream state rather than an adapter's output",
+    "if_it_is_not": "a finding about the PIPELINE, not about PC1b: either the registered manifold metric's reference is mis-specified for un-pooled/other-depth states, or the pre-check has been mis-reading the adapters it has classified. Reported, not waved through.",
+    "matches_expectation": true,
+    "observed": "on-manifold-item-varying",
+    "surprise_flag": false
+  },
+  "registered_metric_caveat": {
+    "like_for_like_comparators_from_the_same_capture": {
+      "mean_cosine_L14_last_to_same_item_L14_pooled": 0.7215865340653058,
+      "mean_cosine_payload_L19_last_to_same_item_L14_last": 0.7776985325423256,
+      "reading": "the second number isolates the POOLING half of the mismatch using two states the receiver genuinely produced, so the first can be read against it rather than against 1.0"
+    },
+    "metric": "mean_cosine_to_same_item_natural_receiver_L14_pooled",
+    "why_it_understates_here": "PC1b's payload is an UN-POOLED L19 state; the metric's reference is a POOLED L14 state. BOTH depth (19 vs 14) and pooling (single row vs span mean) differ. ADR-024 already records that a pooled natural state sits only ~0.667 cosine from a real un-pooled one, so this number is not a clean on/off-manifold reading for this payload."
+  },
+  "stage": "run2-PC1b-manifold-precheck",
+  "thresholds_registered": {
+    "collapse_mean_pairwise_cosine_at_or_above": 0.95,
+    "collapse_top10_token_union_at_or_below": 120,
+    "off_manifold_mean_cosine_to_natural_below": 0.2,
+    "source": "common/lens.rs — the same constants and the same classify() every prior pre-check used, reused rather than copied"
+  },
+  "wall_clock_s": 16.113845825195312
+}

@@ -6,7 +6,8 @@ resolver = "2"
 # half ^2.5 (MSRV > 1.77) which can never unify with latentmesh-core's =2.4.1
 # MSRV pin. It builds standalone (own lockfile) and is driven as a subprocess,
 # per the harness precedent. See docs/research/024 + ADR-023.
-exclude = ["crates/latentmesh-runtime"]
+# latentmesh-train is excluded for the identical half-pin reason (ADR-024).
+exclude = ["crates/latentmesh-runtime", "crates/latentmesh-train"]
 members = [
   "crates/latentmesh-core",
   "crates/latentmesh-align",
