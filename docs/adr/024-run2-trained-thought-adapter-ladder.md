@@ -439,6 +439,14 @@ the lever either way). Either way the
 M3/run-1 nulls now carry a candidate mechanistic explanation and a citable
 name, scoped alongside (not replacing) the receiver-scale confound above —
 the two confounds are independent and M4b remains mandatory.
+**Registered analysis (protocol-safe, no probe draw)**: an A6
+permutation-null baseline — compute what an uncorrelated cross-model
+mapping scores on the same held-out residual metric (row-shuffled pairs,
+same fit machinery) — because the PRH-critique literature
+(arXiv:2602.14486) shows representation-similarity metrics can be inflated
+by depth/width artifacts, and our A6 "pass" thresholds were never
+calibrated against chance. CPU-only, runs on the existing dumps; results
+annotate (never retroactively change) the recorded A6 outcomes.
 
 ## Registered confound — receiver-scale threshold (added 2026-08-28, while M3 was in flight)
 
