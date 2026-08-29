@@ -57,9 +57,11 @@ jobs:
         working-directory: crates/latentmesh-runtime
     steps:
       - uses: actions/checkout@v4
-      - uses: dtolnay/rust-toolchain@master
+      # The standalone lockfile currently contains an edition-2024 transitive
+      # manifest, which Cargo 1.81 cannot parse even though this crate's own
+      # rust-version remains 1.81. Use stable Cargo for dependency parsing.
+      - uses: dtolnay/rust-toolchain@stable
         with:
-          toolchain: 1.81.0
           components: rustfmt, clippy
       - uses: Swatinem/rust-cache@v2
         with:
