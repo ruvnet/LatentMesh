@@ -1036,6 +1036,58 @@ Open tension to settle before pre-registering: 8 slots across 2 sites is
 either 16 total or a 4+4 split, and ADR-028's slot-count discipline (already
 self-contradictory and unadjudicated) does not cover it.
 
+## PC1 PRE-REGISTRATION (2026-08-29) — the positive control this harness never had
+
+[docs/research/045](../research/045-positive-control-design.md) identifies the
+ladder's largest methodological gap: **every null since S1a is ambiguous
+between "no effect exists" and "these mechanics cannot carry signal."**
+Power analysis (ADR-036) settled whether the *statistics* could detect an
+effect; nothing has established that the *injection pathway* can.
+
+**The literature treats this as standard.** ROME's causal-tracing design
+(arXiv:2202.05262) runs clean/corrupted/restored, with restoration as the
+positive control validating the pathway *before* partial results are trusted;
+ITI (arXiv:2306.03341) runs a random-direction floor **and** a probe ceiling,
+and documents the exact gaming failure to guard against (an intervention that
+appears to "restore the answer" while merely collapsing the model into a
+degenerate response). Zhang & Nanda (arXiv:2404.15255) name unvalidated
+negative patching results as an open problem. Not universal — DAS
+(arXiv:2303.02536) runs only a floor — but the best work does it.
+
+**We have exactly one instance, and it is stale**: S1a (self-pair, identity
+transform, p = 0.03125) ran under **overwrite + pooled + the 40-item sign
+test** — mechanics **nothing since M4c uses**. No positive control has ever
+run under fuse, de-pooled payloads, or the e-process.
+
+**PC1 spec** (cheapest item on the entire cost ledger, **~7-15 minutes GPU**,
+zero training, zero new capture): inject the receiver's **own** gold
+teacher-forced per-token block-19 state — already on disk in
+`receiver_L19.tok.f32bin`, 719,115 tokens, verified — back into itself via
+**identity transform**, under the **current** mechanics (fuse, de-pooled,
+`<|fim_pad|>`, L18→L14 geometry), scored with S1a's original 40-item sign
+test for direct comparability with the ladder's only pass.
+
+**It runs BEFORE M5X (ADR-037, ~1.3-1.4 GPU-h) and M4b (ADR-035, ~1-2
+GPU-h)** — spending hours on rungs whose nulls would be uninterpretable is
+the wrong order.
+
+**Registered outcome rule, before the run:**
+- **PC1 PASSES** → the current mechanics demonstrably carry signal in the
+  maximally favourable same-model case, and every subsequent null becomes
+  interpretable as being about *transfer* rather than about *plumbing*.
+- **PC1 FAILS** → this is the more consequential branch and must not be
+  softened. Every null since S1a (S2b ×4, M3 ×2, M4 ×3, M4c, M4d, M4g,
+  M4h S1, M4i) needs an explicit caveat that current mechanics were never
+  shown capable of carrying signal even from a model to itself; **S1a's pass
+  gains a footnote scoping it to mechanics no longer in use**; and — the part
+  that corrects *my own* reasoning — ADR-024's "adapters improved, so
+  discordance fell" explanation acquires an **unruled-out rival**: fuse +
+  de-pooling + site may suppress discordance **mechanically**, independent of
+  adapter quality.
+- **Firewall**: a PC1 pass proves **liveness, not transfer**, and may never be
+  cited as evidence for the transfer claim. docs/research/045 §3 carries the
+  exact disclaimer language to reuse verbatim.
+
 ## M4i PRE-REGISTRATION (2026-08-29, before any run) — inject at ORDINARY tokens, not `<|fim_pad|>`
 
 [docs/research/043](../research/043-placeholder-token-choice.md) identifies a
