@@ -240,6 +240,62 @@ already-scoped-multi-factor rung —
 its e-process adoption, restated here: a pre-registration buys attribution clarity, it does not
 create or predict an effect.
 
+## ⛔ MANDATORY AMENDMENTS BEFORE M5X DRAWS (2026-08-29, added on unblocking)
+
+**Three things must be settled before a single item is consumed.** M5X was
+written before PC1b/PC2/PC3 existed, and two of its registered assumptions no
+longer hold.
+
+### 1. The item pool is EXHAUSTED — the stream must be re-specified
+
+This ADR registers a stream *"drawn entirely from `adaptation-512` in fixed
+index order, N_max ≈ 300."* **That is no longer available.** `adaptation-512`
+holds 512 indices; M4i/PC1b/PC2 consumed the **first 300**, and PC3 consumed
+**all 212 remaining** (indices from 4485). **Zero unused items exist.**
+
+**Ruling: M5X reuses M4i's exact committed 300-item stream, declared, not
+silently.** This is not a workaround — for this rung it is *better than a fresh
+stream*:
+
+> **M4i is M5X's single-layer counterpart.** Same site, same operator family,
+> same on-manifold payload, same items. Running M5X on M4i's identical stream
+> makes **layer count the only difference between them** — which is precisely
+> the variable C2C's Table 10 identifies as load-bearing, and precisely the
+> question that unblocked this rung.
+
+Re-evaluating previously-*evaluated* items under a new condition is not
+leakage; nothing here is trained on them. The frozen-40 probe exclusion and
+ADR-024's 13-item exclusion both still apply. **The reuse, and the fact that
+PC3's outcome informed the decision to run this rung at all, must both be
+disclosed in the receipt.**
+
+### 2. The mandatory power calculation applies (ADR-040)
+
+This ADR predates [ADR-040](040-pc3-decision-change-endpoint-pre-registration.md)'s
+standing rule. **M5X must state expected discordant-pair count and minimum
+attainable p BEFORE drawing**, derived from measured rates — M4i's own
+`n_disc = 66` on this identical stream is the natural anchor. If the endpoint
+cannot reach α = 0.05 at N = 300, say so and **do not draw**.
+
+### 3. Accuracy stays primary — but the likelihood arm is now a MANDATORY co-report
+
+PC1b/PC2/PC3 established that the accuracy endpoint can be **deaf** while the
+likelihood endpoint carries a large, content-attributable signal. A bare
+accuracy null from M5X would therefore be **uninterpretable on its own**.
+
+Accuracy remains the registered primary — *"does multi-layer restore decision
+movement?"* is genuinely an accuracy question. But M5X **must also report**, as
+a pre-registered secondary: teacher-forced NLL against **baseline, zerovec and
+the norm-matched random control**, with per-item sign tests. Beating
+norm-matched random is what makes any effect content-attributable rather than
+perturbation (ITI's floor control, arXiv:2306.03341), and it is the comparison
+that would let a null be read correctly.
+
+**M4i's numbers on this identical stream are the head-to-head baseline**:
+accuracy 128/140, `n_disc` 66, wealth 0.2578; NLL aligned −0.148 vs baseline
+(181W/119L, p = 1.7e-4) and **−0.103 vs norm-matched random (166W/134L,
+p = 0.032)**.
+
 ## Protocol: ADR-036's e-process, with the item-supply and comparability rules inherited unchanged
 
 **M5X is a successor rung under ADR-036's own default table** ("Any later rung (M4f re-scoped,
