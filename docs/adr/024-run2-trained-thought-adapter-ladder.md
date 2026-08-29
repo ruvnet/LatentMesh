@@ -428,7 +428,14 @@ known: **if M4 nulls, a task-loss ablation rung (M4c) runs before any
 conclusion that the adapter ladder is exhausted** — same or best-so-far
 architecture, trained through the receiver's next-token loss on the
 generated spans (C2C-style), single seeded run, the same frozen probe, its
-own receipt. If M4 passes, M4c is optional comparative work. Either way the
+own receipt. If M4 passes, M4c is optional comparative work. **Interpretive
+pre-commitment (also registered pre-verdict)**: M4 trains on the same
+reconstruction loss as M3, so an M4 null must NOT be read as evidence
+against sequence structure per se — the loss-function confound applies to
+M4 identically, and the parsimonious reading of a joint M3+M4 null is
+"still the loss function" (the sweep notes both externally successful
+methods are pointwise-per-token, mild evidence sequence structure is not
+the lever either way). Either way the
 M3/run-1 nulls now carry a candidate mechanistic explanation and a citable
 name, scoped alongside (not replacing) the receiver-scale confound above —
 the two confounds are independent and M4b remains mandatory.

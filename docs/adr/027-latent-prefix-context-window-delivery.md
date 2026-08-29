@@ -11,6 +11,10 @@
 
 ## Context
 
+> **Prior-art update (2026-08-28, sweep docs/research/028)**: Interlat
+> (arXiv:2511.09149) is directly relevant trained prior art for prefix-style
+> latent conditioning; consult before activating this rung.
+
 Run 1 (ADR-023 § S6) falsified mid-layer injection with a training-free linear map: a
 well-fitting, bit-verified affine transform produced a receiver-side vector statistically
 indistinguishable from norm-matched random noise, at both registered depth pairs, under both
