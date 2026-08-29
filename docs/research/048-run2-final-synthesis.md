@@ -75,6 +75,43 @@ nothing.**
 
 ---
 
+## The controlled cross-channel comparison
+
+**Run 3 stage A** ([ADR-030](../adr/030-run3-causally-gated-text-pre-registration.md),
+results appended there) ran the *same receiver* on the *same item population*
+with the *same accuracy endpoint*, differing only in **how the sender's
+information was delivered**.
+
+| channel | Δ on decisions vs best control | evidence |
+|---|---|---|
+| **Text** | **+0.512** | e-process crossed at **item 43 of 300**, `min_k W_k = 21.16`; 27W/1L vs `mismatched` |
+| **Latent injection** | **≈ 0** | 36W/32L, n_disc 68, **p = 0.72**, min attainable p 3.4e-21 |
+
+**The text channel moves decisions. The latent channel does not** — while
+demonstrably carrying semantic content into the same receiver's *likelihood*
+(−0.773 nats toward the specific answer it encodes, p = 7.5×10⁻³⁵).
+
+This is what turns an isolated null into a **localisation**. The payload is not
+the problem and the delivery is not the problem: the receiver acts decisively on
+the sender's information when it arrives as **text**, and not at all when the
+same kind of information arrives as **activations**.
+
+### Run 3's own caveat, which is where its causal force lives
+
+`gated_text` reaching **39/43 = 90.7%** is close to trivial on its own — the
+message contains the sender's final answer. **The control ordering is the
+finding:**
+
+> **`mismatched` 30.2% < `random` 34.9% < `zero` = `self_generated` 39.5%**
+
+**A wrong-but-real message is worse than random tokens, which are worse than no
+message at all.** The receiver reads the content, and misleading content harms
+it *below the noise floor*. `mismatched` — another episode's genuine message,
+carrying its own number — is the load-bearing control, and the one text beat
+hardest. That ordering is what makes this a causal claim about
+[ADR-003](../adr/003-causal-edge-verification.md)'s gate rather than a
+copy-the-answer artefact.
+
 ## What this refutes
 
 Four candidate explanations for the ladder's cross-model nulls were tested and
@@ -156,6 +193,41 @@ run — repeating the failure
 **10 of 14** prior draws.
 
 ---
+
+## Completeness of the package
+
+**What is publishable now**, on receipts, with no further compute:
+
+1. **The dissociation** — semantic at the likelihood level, non-semantic at the
+   decision level — established in-sample (PC2) and confirmed **out of sample**
+   (PC3, 212 fresh items, zero stream overlap).
+2. **The cross-channel comparison** — same receiver, same population: text
+   Δ = +0.512, latent Δ ≈ 0.
+3. **The negative control ordering** in Run 3, which supplies the causal force.
+4. **The methodological record** — 15 coordinator errors, two instrument
+   defects, and a mandatory power calculation adopted after the fact.
+
+**What is NOT claimed**: nothing here says latent content is untransferable.
+Every positive control was **same-model, same-item, identity-transform**. The
+scope is *this apparatus*, and the firewall above is not a formality.
+
+**Known gaps, stated rather than papered over**:
+- **PC1's item-invariance anomaly is unexplained.**
+  [ADR-038](../adr/038-n-invariant-manifold-classification.md) fixed the
+  *instrument* that mis-reported it across draws of different N; the underlying
+  observation — a single token dominating ~100% of items' top-10 — still has no
+  account.
+- **Run 3 stage B was not run.** The Darwin loop to genome freeze would
+  permanently unlock `eval-200`/`holdout-100` and break the committed test that
+  guards them. Stage A reaches the registered primary without it, so the
+  irreversible step was declined pending an explicit decision.
+- **Run 3 stopped at 43 items** by its registered early-stopping rule. That is
+  valid under optional stopping, but the effect size is estimated from 43 items,
+  not 300.
+- **The one-factor-at-a-time ladder design** may have been structurally
+  incapable of succeeding, since every working published method combines
+  multi-layer + continuous + task-loss *simultaneously*. Recorded as a
+  methodological finding, not excused.
 
 ## What would move this forward
 
