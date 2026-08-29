@@ -7,6 +7,7 @@ pub mod affine;
 pub mod fastgrnn;
 pub mod lens;
 pub mod m3;
+pub mod m5;
 pub mod mlp;
 
 use sha2::{Digest, Sha256};

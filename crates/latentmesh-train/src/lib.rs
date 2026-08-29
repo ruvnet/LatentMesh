@@ -46,6 +46,7 @@
 pub mod dataset;
 pub mod deploy;
 pub mod fastgrnn;
+pub mod m5receipt;
 pub mod mlp;
 pub mod qwen2_c;
 pub mod receiver_lora;
