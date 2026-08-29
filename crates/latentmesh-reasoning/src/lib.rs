@@ -31,7 +31,7 @@
 //! mutable state. ADR-041 §4.2/§4.3's split (S absorbs evidence, H computes)
 //! is enforced by the types, not merely documented.
 //!
-//! # Measured finding: this envelope does not fit a mesh frame
+//! # Measured finding: the header floor is identity, and it is uneconomic at SF11
 //!
 //! [`envelope::FIXED_HEADER_BYTES`] is **282 bytes** of fixed metadata before
 //! any payload. Against the verified Air budget (~106 B unsigned / ~42 B
