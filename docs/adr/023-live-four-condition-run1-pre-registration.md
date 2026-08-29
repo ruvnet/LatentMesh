@@ -355,6 +355,24 @@ pre-registration that only shows the run that passed is not a pre-registration.
 
 ## S6 — Results (appended 2026-08-28)
 
+> **ANNOTATION (2026-08-29, external corroboration — no verdict changed).**
+> An independent group reports the same qualitative result on the same task
+> with a different model family and a different implementation:
+> arXiv:2607.26773 ("A Causal Audit of Latent Multi-Agent LLM Communication")
+> runs an OPE/OME/CAG/SSG decomposition — structurally the same control
+> family as ADR-003's — over GSM8K with Qwen3-4B/8B and finds
+> content-attributable effect near zero, **including a sign flip across model
+> scale** (+5.17pp at 4B → −2.29pp at 8B). Our nulls are therefore not an
+> artifact of this repo's injection mechanism or model pair.
+> Task-selection context (docs/research/035): our 90-92.5% item concordance
+> is explained not by knowledge-vs-reasoning but by **difficulty being
+> correlated across model scale** — hard GSM8K items are hard for both
+> models, which structurally suppresses discordant pairs; the same paper's
+> ARC-Challenge (a knowledge task) shows the same near-zero pattern, so the
+> knowledge/reasoning split is not the operative variable. This scopes the
+> claim; it does not reopen the verdict.
+
+
 S6 per design §7: compute A1-A8 exactly as registered, append results to this ADR, state
 explicitly which ADR-009 clauses were answered statistically vs. descriptively. Run 1 stopped at
 the pre-committed Deviation-7 kill point before A1-A8 could be computed — this section reports
