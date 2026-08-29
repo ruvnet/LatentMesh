@@ -100,10 +100,32 @@ already committed to this repository, not from a simulation:
 | `run2-m4i-receipt-…-eprocess.json` | **latent, 1 layer**: accuracy 128, wealth 0.2578 — no crossing |
 | `run2-m5x-receipt-2site-…-eprocess.json` | **latent, 2 layers**: accuracy 128, wealth 0.8837 — no crossing |
 
-Scored by this fitness, the champion policy is **`channel: text`**, and the
-latent channel is **`None`** — not because latent was untried, but because it
-was tried, measured on a powered test (n_disc 64, min attainable p 5.4e-21),
-and found decision-inert.
+Scored by this fitness, the champion policy is **`channel: text`**. Latent is
+never selected — but **the reason is policy-dependent**, and the distinction
+matters more than the outcome:
+
+| under a policy requiring… | latent's outcome | why |
+|---|---|---|
+| the controls its rungs actually ran | **`Scored`, score 0, `refused`** | *"min wealth 0.2578 across required controls is below 1/alpha"* — it was measured on a powered test and did not clear its own pre-registered bar |
+| all four controls (the champion) | **`Unmeasured` → ineligible** | M4i/M5X carry `zerovec`, `random`, `baseline` only; they never ran `mismatched` or `self_generated`, which are Run 3's text controls |
+
+**Both refusals are correct, and they are not the same statement.** The first
+says *measured and inert*. The second says *not measured against this control
+set, therefore unscorable*. Collapsing them would be exactly the
+`Unmeasured` ≠ `Measured(0.0)` error §2.2 exists to prevent — so the harness
+must report which one applies, and it does.
+
+`semantic-delta` is the purely `Unmeasured` case: no committed receipt exists
+for it at all.
+
+### One cross-channel comparison the implementation refuses to make
+
+The harness records that it **does not compare the two channels' `random`
+controls to each other**: text's `random` is random *tokens*, latent's is a
+norm-matched random *vector*. Each control is only ever used against its own
+channel. This was not specified in the original design and was added during
+implementation; without it the fitness would silently compare two
+incommensurable baselines.
 
 > **A harness that falsified its own headline mechanism and routed around it.**
 > Every comparable system assumes its channel works. This one measured, found
