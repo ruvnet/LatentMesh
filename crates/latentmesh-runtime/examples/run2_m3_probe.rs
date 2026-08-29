@@ -226,6 +226,14 @@ fn main() -> anyhow::Result<()> {
     let variant_desc = match cfg.variant {
         Variant::PerToken => "(i) per-token translator: trained MLP applied to each generated-span token state, then mean-pooling over the TRANSLATED stream, then the frozen 8-slot injection",
         Variant::Pooled => "(ii) pooled-in/pooled-out: sender per-token states mean-pooled first (run-1 pipeline shape), then the SAME per-token-trained MLP on the pooled vector (ADR-024 authorial choice: shared weights; off-distribution confound disclosed in ADR-024)",
+        // Unreachable via `parse_args`, which accepts only pertoken|pooled:
+        // M3's registration names exactly two variants and this probe's
+        // committed receipts must stay reproducible. The de-pooled derivation
+        // is ADR-024 M4h Stage 1's, and it has its own probe and its own
+        // receipt (`run2_m4h_s1_probe`) rather than a third M3 receipt.
+        Variant::PerTokenLast => unreachable!(
+            "Variant::PerTokenLast is ADR-024 M4h Stage 1's derivation; run run2_m4h_s1_probe"
+        ),
     };
     let receipt = serde_json::json!({
         "stage": "run2-M3-mlp-probe",

@@ -101,6 +101,70 @@ impl MlpTransform {
         }
         acc.iter().map(|a| (*a / n_rows as f64) as f32).collect()
     }
+
+    /// Apply to the **LAST** token state of row-major `[n_rows × D_IN]` only —
+    /// ADR-024 M4h Stage 1's de-pooled payload derivation.
+    ///
+    /// This is the *only* difference from [`Self::apply_rows_then_pool`]: the
+    /// same trained weights, the same per-token forward, no mean over the
+    /// generated span. `docs/research/040` establishes that no externally
+    /// successful cross-model method pools; this is the cheapest possible
+    /// removal of the mean while keeping the 8-slot broadcast (and therefore
+    /// the frozen probe's slot count) untouched.
+    pub fn apply_last_row(&self, rows: &[f32], n_rows: usize) -> Vec<f32> {
+        assert_eq!(rows.len(), n_rows * D_IN, "rows buffer shape mismatch");
+        assert!(n_rows > 0, "cannot take the last of zero rows");
+        self.apply(&rows[(n_rows - 1) * D_IN..])
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    /// A net whose output's first component is `relu(x[0])` and whose other
+    /// components are zero — enough to tell the two payload derivations apart.
+    fn identity_on_first_component() -> MlpTransform {
+        let mut w1 = vec![0f32; D_IN * D_HID];
+        w1[0] = 1.0;
+        let mut w2 = vec![0f32; D_HID * D_OUT];
+        w2[0] = 1.0;
+        MlpTransform {
+            w1,
+            b1: vec![0f32; D_HID],
+            w2,
+            b2: vec![0f32; D_OUT],
+            content_hash: "test".into(),
+        }
+    }
+
+    /// ADR-024 M4h Stage 1's ONE changed derivation: `apply_last_row` must be
+    /// the last token's translation, NOT the mean over the span — and must
+    /// agree exactly with `apply` on that row.
+    #[test]
+    fn last_row_is_the_last_token_not_the_mean() {
+        let t = identity_on_first_component();
+        let n_rows = 3;
+        let mut rows = vec![0f32; n_rows * D_IN];
+        for (r, x) in [1.0f32, 2.0, 3.0].iter().enumerate() {
+            rows[r * D_IN] = *x;
+        }
+        let last = t.apply_last_row(&rows, n_rows);
+        let pooled = t.apply_rows_then_pool(&rows, n_rows);
+        assert_eq!(last[0], 3.0, "last-token payload must be the LAST row");
+        assert_eq!(pooled[0], 2.0, "pooled payload must be the mean of rows");
+        assert_ne!(
+            last[0], pooled[0],
+            "the two derivations must not coincide on this fixture"
+        );
+        // Identical to applying the net directly to that row.
+        assert_eq!(last, t.apply(&rows[(n_rows - 1) * D_IN..]));
+        // Single-row spans are the one case where they must agree.
+        assert_eq!(
+            t.apply_last_row(&rows[..D_IN], 1),
+            t.apply_rows_then_pool(&rows[..D_IN], 1)
+        );
+    }
 }
 
 #[derive(serde::Deserialize)]

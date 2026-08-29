@@ -37,7 +37,8 @@ pub const ALPHA: f64 = 0.05;
 pub const SYSTEM: &str = "You are a careful math tutor.";
 pub const GOLDEN_REL_TOL: f32 = 1e-5;
 
-/// The two ADR-024-registered M3 eval variants.
+/// The two ADR-024-registered M3 eval variants, plus ADR-024 M4h Stage 1's
+/// de-pooled payload derivation.
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub enum Variant {
     /// (i) MLP per generated-span token state, then mean-pooling over the
@@ -46,6 +47,12 @@ pub enum Variant {
     /// (ii) pool the sender's per-token states first (run-1 pipeline
     /// shape), then the SAME per-token-trained MLP on the pooled vector.
     Pooled,
+    /// ADR-024 M4h Stage 1: MLP per generated-span token state exactly as in
+    /// [`Variant::PerToken`], but the payload is the **LAST token's** output
+    /// instead of the mean over the span. Same 8-slot broadcast, same slot
+    /// count (protected), same trained weights — the mean is the only thing
+    /// removed (`docs/research/040`).
+    PerTokenLast,
 }
 
 impl Variant {
@@ -53,6 +60,7 @@ impl Variant {
         match self {
             Variant::PerToken => "pertoken",
             Variant::Pooled => "pooled",
+            Variant::PerTokenLast => "pertokenlast",
         }
     }
 }
@@ -163,12 +171,18 @@ pub fn run_item(
 
     // 1)+2) Sender capture pass + variant-specific trained-MLP application.
     let (aligned, sender_pass, meta) = match variant {
-        Variant::PerToken => {
+        Variant::PerToken | Variant::PerTokenLast => {
             let Some(sr) = sender_solve_capture_rows(sender, item, device)? else {
                 return Ok(None);
             };
             anyhow::ensure!(sr.hidden_size == super::mlp::D_IN);
-            let aligned = transform.apply_rows_then_pool(&sr.rows, sr.n_rows);
+            // The ONE difference M4h Stage 1 introduces: mean over the
+            // translated span, or that span's last translated token.
+            let aligned = if variant == Variant::PerTokenLast {
+                transform.apply_last_row(&sr.rows, sr.n_rows)
+            } else {
+                transform.apply_rows_then_pool(&sr.rows, sr.n_rows)
+            };
             let meta = CaptureMeta {
                 hidden_size: sr.hidden_size,
                 pooled_l2_raw: norms::l2(&sr.pooled),

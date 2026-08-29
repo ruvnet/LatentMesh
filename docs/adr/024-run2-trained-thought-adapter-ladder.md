@@ -871,6 +871,47 @@ under overwrite or under fuse — creates pressure to leave it.
   That combination is registered here as the preferred successor, before the
   verdict that would motivate it.
 
+## M4h Stage 1 OUTCOME (2026-08-29) — mechanically successful, statistically unmeasurable
+
+`run2-m4h-s1-receipt-...-pertokenlast-fuse-slots8-nopool-*.json`.
+
+**The mechanism worked.** The pre-check classifies the de-pooled payload as
+**"on-manifold-item-varying"** — the **first adapter in the ladder to be
+both**. Every prior on-manifold adapter was *item-invariant*; de-pooling
+(last-token instead of mean) fixed that, exactly as
+[docs/research/040](../research/040-the-pooling-gap.md) predicted.
+
+**And, as the MAJOR CORRECTION predicted, there is no NLL inversion**:
+aligned 2.1599 vs baseline 2.1288 — and aligned actually **beats random**
+on mean NLL (2.1599 vs 2.1680). Confirms that inversion belongs to
+off-manifold payloads only.
+
+**But the draw is uninformative, and the reason matters.** Accuracy: aligned
+**24/40** (ties the ladder's best), baseline 22, random 22, zerovec 22 — and
+**2W/0L versus baseline, no losses at all**. Yet the primary test gives
+**n_disc = 2**, where the **minimum attainable one-sided p is 0.25** — five
+times α. The receipt flags this itself (`power_limited: true`). This draw
+**could not have rejected under any effect size whatsoever.**
+
+**THE BINDING CONSTRAINT IS NOW THE INSTRUMENT, NOT THE SCIENCE.** Discordant
+counts across the ladder's recent draws: M4d **7** (the only non-limited
+one), M4g **3** (floor 0.125), M4h-S1 **2** (floor 0.25). As payloads become
+*better behaved* — on-manifold, non-destructive, item-varying — they perturb
+fewer items, so discordance **falls** and the frozen 40-item sign test loses
+what little power it had. The better our adapters get, the blinder the probe
+becomes.
+
+**Consequence, recorded now**: further rungs drawn against the frozen 40-item
+protocol are **not capable of detecting the effects we are now looking for**.
+Any future rung must either (a) report as descriptive evidence only, with the
+power floor stated, or (b) come with its own pre-registration adopting a
+higher-powered design — the anytime-valid e-process already specified in
+[ADR-030](030-run3-causally-gated-text-pre-registration.md) §3.2 is the
+ready-made instrument, and [docs/research/031](../research/031-statistical-power-and-design.md)
+carries the power tables. This is a **protocol** change and therefore
+requires its own pre-registration; it is **not** a licence to re-draw any
+completed rung.
+
 ## M4i PRE-REGISTRATION (2026-08-29, before any run) — inject at ORDINARY tokens, not `<|fim_pad|>`
 
 [docs/research/043](../research/043-placeholder-token-choice.md) identifies a

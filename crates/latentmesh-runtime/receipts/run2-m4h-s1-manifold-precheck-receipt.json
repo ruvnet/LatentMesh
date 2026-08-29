@@ -1,0 +1,1745 @@
+{
+  "candidates": [
+    {
+      "artifact": "receipts/transform-L18-to-L14.json",
+      "classification": "item-invariant-but-on-manifold",
+      "entropy_nats": {
+        "plain_lens_mean": 11.244570353474849,
+        "rmsnorm_lens_mean": 9.248288338867411,
+        "uniform": 11.931214658529285
+      },
+      "family": "affine-run1-training-free",
+      "gate": {
+        "content_hash_sha256": "eb3f42edde853824642a2b811577e2c767f73c2c179fe03a05ac8dac23704457",
+        "golden_check": {
+          "alpha": 0.7264142036437988,
+          "input_seed_chacha8": 20899,
+          "max_relative_l2_error": 0.0,
+          "on_train_confidence_OPTIMISTIC": 0.5804808139801025,
+          "pairs": 8,
+          "pass": true,
+          "tolerance": 9.999999747378752e-6
+        },
+        "golden_file": "receipts/s2b-golden-affine-L18-to-L14.json",
+        "pinned_by_receipt": "s2b-receipt-...-n40.json (gates.transform_hash_matches_registered)",
+        "verified_against_training_or_probe_receipt": true
+      },
+      "gold_answer_tokens": {
+        "mean_best_rank_rmsnorm": 12006.45,
+        "mean_rank_plain": 15076.806607142857,
+        "mean_rank_rmsnorm": 67334.47053571428,
+        "vocab_percentile_rmsnorm": 0.44317653838270243
+      },
+      "item_invariance": {
+        "max": 0.9907082414406214,
+        "mean_pairwise_cosine_between_emitted_vectors": 0.969441314069027,
+        "mean_resultant_length_of_unit_vectors": 0.9849899904147753,
+        "min": 0.9340564235959109
+      },
+      "label": "run1-affine-s2b",
+      "manifold": {
+        "emitted_l2": {
+          "max": 36.013004302978516,
+          "mean": 34.608958053588864,
+          "min": 33.63739013671875
+        },
+        "mean_cosine_to_same_item_natural_receiver_L14_pooled": 0.9821454142277734,
+        "mean_cosine_to_the_global_mean_natural_state": 0.9737821441704385
+      },
+      "output_token_support_rmsnorm_lens": {
+        "distinct_tokens_in_union_of_40_top10_sets": 65,
+        "dominant_tokens": [
+          {
+            "decoded": "どんど",
+            "in_top10_of_n_items": 39,
+            "token_id": 140951
+          },
+          {
+            "decoded": "纪委监",
+            "in_top10_of_n_items": 36,
+            "token_id": 118614
+          },
+          {
+            "decoded": "ᐈ",
+            "in_top10_of_n_items": 30,
+            "token_id": 145603
+          },
+          {
+            "decoded": " totaling",
+            "in_top10_of_n_items": 29,
+            "token_id": 81123
+          },
+          {
+            "decoded": "getOption",
+            "in_top10_of_n_items": 22,
+            "token_id": 69023
+          },
+          {
+            "decoded": "//--------------------------------------------------------------\n",
+            "in_top10_of_n_items": 21,
+            "token_id": 81042
+          },
+          {
+            "decoded": "낡",
+            "in_top10_of_n_items": 14,
+            "token_id": 144903
+          },
+          {
+            "decoded": "お互",
+            "in_top10_of_n_items": 12,
+            "token_id": 142006
+          }
+        ],
+        "max_possible": 400
+      },
+      "sender_span_tokens": {
+        "mean_rank_plain": 17952.517282025976,
+        "mean_rank_rmsnorm": 34894.5960057984,
+        "vocab_percentile_rmsnorm": 0.22966641221171016
+      },
+      "training": "training-FREE closed-form ridge/orthogonal affine fit (latentmesh-align), run-1 S2b winner cell",
+      "vs_natural_pooled_reference": {
+        "entropy_nats_delta": -0.05551408858031337,
+        "gold_vocab_percentile_delta": 0.05965727972554857,
+        "item_invariance_delta": 0.00769768178525343,
+        "top10_token_union_delta": -13
+      }
+    },
+    {
+      "artifact": "receipts/transform-gen-L18-to-L14.json",
+      "classification": "item-invariant-but-on-manifold",
+      "entropy_nats": {
+        "plain_lens_mean": 11.244044131382958,
+        "rmsnorm_lens_mean": 9.302222039768571,
+        "uniform": 11.931214658529285
+      },
+      "family": "affine-run1-training-free",
+      "gate": {
+        "content_hash_sha256": "a5a3f54987571a6a76dbd774dd4c77703b6fc2918da81bbf3d0111a0314210d7",
+        "golden_check": {
+          "alpha": 0.7541790008544922,
+          "input_seed_chacha8": 738732039,
+          "max_relative_l2_error": 0.0,
+          "on_train_confidence_OPTIMISTIC": 0.659308671951294,
+          "pairs": 8,
+          "pass": true,
+          "tolerance": 9.999999747378752e-6
+        },
+        "golden_file": "receipts/s2c-golden-affine-L18-to-L14.json",
+        "pinned_by_receipt": "s2b-receipt-...-n40-genpairs.json (gates.transform_hash_matches_registered)",
+        "verified_against_training_or_probe_receipt": true
+      },
+      "gold_answer_tokens": {
+        "mean_best_rank_rmsnorm": 9512.475,
+        "mean_rank_plain": 13033.447380952382,
+        "mean_rank_rmsnorm": 59680.95538690478,
+        "vocab_percentile_rmsnorm": 0.3928032552318396
+      },
+      "item_invariance": {
+        "max": 0.9897261645376048,
+        "mean_pairwise_cosine_between_emitted_vectors": 0.9664298497462943,
+        "mean_resultant_length_of_unit_vectors": 0.9834984003559107,
+        "min": 0.9288350414956642
+      },
+      "label": "run1-affine-s2c-genpairs",
+      "manifold": {
+        "emitted_l2": {
+          "max": 36.329193115234375,
+          "mean": 34.46351490020752,
+          "min": 33.53945541381836
+        },
+        "mean_cosine_to_same_item_natural_receiver_L14_pooled": 0.9961706224576691,
+        "mean_cosine_to_the_global_mean_natural_state": 0.9834117760752396
+      },
+      "output_token_support_rmsnorm_lens": {
+        "distinct_tokens_in_union_of_40_top10_sets": 78,
+        "dominant_tokens": [
+          {
+            "decoded": "纪委监",
+            "in_top10_of_n_items": 30,
+            "token_id": 118614
+          },
+          {
+            "decoded": "どんど",
+            "in_top10_of_n_items": 30,
+            "token_id": 140951
+          },
+          {
+            "decoded": "괌",
+            "in_top10_of_n_items": 28,
+            "token_id": 145979
+          },
+          {
+            "decoded": "responseObject",
+            "in_top10_of_n_items": 17,
+            "token_id": 86006
+          },
+          {
+            "decoded": " totaling",
+            "in_top10_of_n_items": 16,
+            "token_id": 81123
+          },
+          {
+            "decoded": "ᐈ",
+            "in_top10_of_n_items": 15,
+            "token_id": 145603
+          },
+          {
+            "decoded": "getOption",
+            "in_top10_of_n_items": 14,
+            "token_id": 69023
+          },
+          {
+            "decoded": "生产总",
+            "in_top10_of_n_items": 14,
+            "token_id": 114271
+          }
+        ],
+        "max_possible": 400
+      },
+      "sender_span_tokens": {
+        "mean_rank_plain": 17625.291264151812,
+        "mean_rank_rmsnorm": 33762.450920089985,
+        "vocab_percentile_rmsnorm": 0.22221495182241197
+      },
+      "training": "training-FREE closed-form affine refit on S2c generated-token pairs, run-1 contingency arm",
+      "vs_natural_pooled_reference": {
+        "entropy_nats_delta": -0.001580387679153361,
+        "gold_vocab_percentile_delta": 0.00928399657468576,
+        "item_invariance_delta": 0.0046862174625207365,
+        "top10_token_union_delta": 0
+      }
+    },
+    {
+      "artifact": "receipts/run2-m3-mlp-cellL18toL14.f32bin",
+      "classification": "item-invariant-but-on-manifold",
+      "entropy_nats": {
+        "plain_lens_mean": 11.248417155784516,
+        "rmsnorm_lens_mean": 9.34194457374409,
+        "uniform": 11.931214658529285
+      },
+      "family": "mlp-reconstruction",
+      "gate": {
+        "content_hash_sha256": "a864e518cdfb09429988862775278bd7734e4342f8c6445fc6081f5ed9d73c91",
+        "golden_check": {
+          "input_seed_chacha8": 1295212573,
+          "max_relative_l2_error": 4.5287788452696986e-7,
+          "pairs": 8,
+          "pass": true,
+          "tolerance": 9.999999747378752e-6
+        },
+        "golden_file": "receipts/run2-m3-golden-mlp-cellL18toL14.json",
+        "pinned_by_receipt": "run2-m3-training-receipt-cellL18toL14.json",
+        "verified_against_training_or_probe_receipt": true
+      },
+      "gold_answer_tokens": {
+        "mean_best_rank_rmsnorm": 6795.9,
+        "mean_rank_plain": 13401.539672619047,
+        "mean_rank_rmsnorm": 59804.206458333334,
+        "vocab_percentile_rmsnorm": 0.39361445910339443
+      },
+      "item_invariance": {
+        "max": 0.9914816589054503,
+        "mean_pairwise_cosine_between_emitted_vectors": 0.970168553558288,
+        "mean_resultant_length_of_unit_vectors": 0.9853498565074897,
+        "min": 0.9238489571321865
+      },
+      "label": "m3-mlp-pertoken",
+      "manifold": {
+        "emitted_l2": {
+          "max": 36.1376838684082,
+          "mean": 34.259398746490476,
+          "min": 33.126121520996094
+        },
+        "mean_cosine_to_same_item_natural_receiver_L14_pooled": 0.9889435287524441,
+        "mean_cosine_to_the_global_mean_natural_state": 0.9777312426560826
+      },
+      "output_token_support_rmsnorm_lens": {
+        "distinct_tokens_in_union_of_40_top10_sets": 70,
+        "dominant_tokens": [
+          {
+            "decoded": "どんど",
+            "in_top10_of_n_items": 38,
+            "token_id": 140951
+          },
+          {
+            "decoded": "纪委监",
+            "in_top10_of_n_items": 37,
+            "token_id": 118614
+          },
+          {
+            "decoded": " totaling",
+            "in_top10_of_n_items": 26,
+            "token_id": 81123
+          },
+          {
+            "decoded": " amount",
+            "in_top10_of_n_items": 23,
+            "token_id": 3311
+          },
+          {
+            "decoded": "괌",
+            "in_top10_of_n_items": 23,
+            "token_id": 145979
+          },
+          {
+            "decoded": " amounts",
+            "in_top10_of_n_items": 14,
+            "token_id": 14713
+          },
+          {
+            "decoded": " Amount",
+            "in_top10_of_n_items": 13,
+            "token_id": 25783
+          },
+          {
+            "decoded": "生产总",
+            "in_top10_of_n_items": 13,
+            "token_id": 114271
+          }
+        ],
+        "max_possible": 400
+      },
+      "sender_span_tokens": {
+        "mean_rank_plain": 18085.121083658752,
+        "mean_rank_rmsnorm": 34798.39155780639,
+        "vocab_percentile_rmsnorm": 0.2290332216051916
+      },
+      "training": "SGD on RECONSTRUCTION loss (per-token MSE to the receiver's own L14 state); eval variant (i): translate per token, pool after",
+      "vs_natural_pooled_reference": {
+        "entropy_nats_delta": 0.03814214629636581,
+        "gold_vocab_percentile_delta": 0.010095200446240571,
+        "item_invariance_delta": 0.00842492127451444,
+        "top10_token_union_delta": -8
+      }
+    },
+    {
+      "artifact": "receipts/run2-m3-mlp-cellL18toL14.f32bin",
+      "classification": "item-invariant-but-on-manifold",
+      "entropy_nats": {
+        "plain_lens_mean": 11.377524325248482,
+        "rmsnorm_lens_mean": 9.350005221654836,
+        "uniform": 11.931214658529285
+      },
+      "family": "mlp-reconstruction",
+      "gate": {
+        "content_hash_sha256": "a864e518cdfb09429988862775278bd7734e4342f8c6445fc6081f5ed9d73c91",
+        "golden_check": {
+          "input_seed_chacha8": 1295212573,
+          "max_relative_l2_error": 4.5287788452696986e-7,
+          "pairs": 8,
+          "pass": true,
+          "tolerance": 9.999999747378752e-6
+        },
+        "golden_file": "receipts/run2-m3-golden-mlp-cellL18toL14.json",
+        "pinned_by_receipt": "run2-m3-training-receipt-cellL18toL14.json",
+        "verified_against_training_or_probe_receipt": true
+      },
+      "gold_answer_tokens": {
+        "mean_best_rank_rmsnorm": 6272.025,
+        "mean_rank_plain": 12706.031815476188,
+        "mean_rank_rmsnorm": 63417.35788690477,
+        "vocab_percentile_rmsnorm": 0.4173952051317974
+      },
+      "item_invariance": {
+        "max": 0.9893632150270698,
+        "mean_pairwise_cosine_between_emitted_vectors": 0.9636839920162179,
+        "mean_resultant_length_of_unit_vectors": 0.982136391860017,
+        "min": 0.9086721075371639
+      },
+      "label": "m3-mlp-pooled",
+      "manifold": {
+        "emitted_l2": {
+          "max": 33.85979080200195,
+          "mean": 31.502579307556154,
+          "min": 30.50563621520996
+        },
+        "mean_cosine_to_same_item_natural_receiver_L14_pooled": 0.9749312937479553,
+        "mean_cosine_to_the_global_mean_natural_state": 0.9625265563777647
+      },
+      "output_token_support_rmsnorm_lens": {
+        "distinct_tokens_in_union_of_40_top10_sets": 63,
+        "dominant_tokens": [
+          {
+            "decoded": "getOption",
+            "in_top10_of_n_items": 39,
+            "token_id": 69023
+          },
+          {
+            "decoded": "纪委监",
+            "in_top10_of_n_items": 35,
+            "token_id": 118614
+          },
+          {
+            "decoded": "どんど",
+            "in_top10_of_n_items": 32,
+            "token_id": 140951
+          },
+          {
+            "decoded": " amount",
+            "in_top10_of_n_items": 27,
+            "token_id": 3311
+          },
+          {
+            "decoded": "GenerationStrategy",
+            "in_top10_of_n_items": 26,
+            "token_id": 76545
+          },
+          {
+            "decoded": " totaling",
+            "in_top10_of_n_items": 26,
+            "token_id": 81123
+          },
+          {
+            "decoded": "_OCCURRED",
+            "in_top10_of_n_items": 17,
+            "token_id": 35746
+          },
+          {
+            "decoded": " Amount",
+            "in_top10_of_n_items": 16,
+            "token_id": 25783
+          }
+        ],
+        "max_possible": 400
+      },
+      "sender_span_tokens": {
+        "mean_rank_plain": 18278.627923868888,
+        "mean_rank_rmsnorm": 37442.49938526201,
+        "vocab_percentile_rmsnorm": 0.24643599532212254
+      },
+      "training": "SAME artifact as m3-mlp-pertoken; eval variant (ii): pool the sender rows first, then the MLP (run-1 pipeline shape)",
+      "vs_natural_pooled_reference": {
+        "entropy_nats_delta": 0.04620279420711171,
+        "gold_vocab_percentile_delta": 0.03387594647464354,
+        "item_invariance_delta": 0.00194035973244433,
+        "top10_token_union_delta": -15
+      }
+    },
+    {
+      "artifact": "receipts/run2-m3-mlp-cellL18toL14.f32bin",
+      "classification": "on-manifold-item-varying",
+      "entropy_nats": {
+        "plain_lens_mean": 10.110251807460777,
+        "rmsnorm_lens_mean": 3.3199199027473307,
+        "uniform": 11.931214658529285
+      },
+      "family": "mlp-reconstruction",
+      "gate": {
+        "content_hash_sha256": "a864e518cdfb09429988862775278bd7734e4342f8c6445fc6081f5ed9d73c91",
+        "golden_check": {
+          "input_seed_chacha8": 1295212573,
+          "max_relative_l2_error": 4.5287788452696986e-7,
+          "pairs": 8,
+          "pass": true,
+          "tolerance": 9.999999747378752e-6
+        },
+        "golden_file": "receipts/run2-m3-golden-mlp-cellL18toL14.json",
+        "pinned_by_receipt": "run2-m3-training-receipt-cellL18toL14.json",
+        "verified_against_training_or_probe_receipt": true
+      },
+      "gold_answer_tokens": {
+        "mean_best_rank_rmsnorm": 17346.4,
+        "mean_rank_plain": 6329.620357142858,
+        "mean_rank_rmsnorm": 34870.06011904762,
+        "vocab_percentile_rmsnorm": 0.2295049239090645
+      },
+      "item_invariance": {
+        "max": 0.9991243549242297,
+        "mean_pairwise_cosine_between_emitted_vectors": 0.66695660009359,
+        "mean_resultant_length_of_unit_vectors": 0.8217558549175357,
+        "min": 0.29495678694826966
+      },
+      "label": "m4h-s1-m3-mlp-lasttoken-depooled",
+      "manifold": {
+        "emitted_l2": {
+          "max": 51.836448669433594,
+          "mean": 44.59770126342774,
+          "min": 40.8844108581543
+        },
+        "mean_cosine_to_same_item_natural_receiver_L14_pooled": 0.6813573445460819,
+        "mean_cosine_to_the_global_mean_natural_state": 0.6848188269188245
+      },
+      "output_token_support_rmsnorm_lens": {
+        "distinct_tokens_in_union_of_40_top10_sets": 133,
+        "dominant_tokens": [
+          {
+            "decoded": ".\n\n",
+            "in_top10_of_n_items": 22,
+            "token_id": 382
+          },
+          {
+            "decoded": "<|endoftext|>",
+            "in_top10_of_n_items": 22,
+            "token_id": 151643
+          },
+          {
+            "decoded": "!\n\n",
+            "in_top10_of_n_items": 20,
+            "token_id": 2219
+          },
+          {
+            "decoded": "0",
+            "in_top10_of_n_items": 15,
+            "token_id": 15
+          },
+          {
+            "decoded": " ",
+            "in_top10_of_n_items": 12,
+            "token_id": 220
+          },
+          {
+            "decoded": " \n",
+            "in_top10_of_n_items": 12,
+            "token_id": 715
+          },
+          {
+            "decoded": " This",
+            "in_top10_of_n_items": 12,
+            "token_id": 1096
+          },
+          {
+            "decoded": " \n\n",
+            "in_top10_of_n_items": 12,
+            "token_id": 4710
+          }
+        ],
+        "max_possible": 400
+      },
+      "sender_span_tokens": {
+        "mean_rank_plain": 21140.582759555204,
+        "mean_rank_rmsnorm": 38182.392383790226,
+        "vocab_percentile_rmsnorm": 0.2513057628461341
+      },
+      "training": "ADR-024 M4h Stage 1: the SAME M3 artifact and the SAME per-token forward as m3-mlp-pertoken (byte-identical weights, asserted by the shared hash gate below), with the mean over the generated span REMOVED — the payload is the LAST translated token. No new training, no new capture. docs/research/040: no externally successful cross-model method pools",
+      "vs_natural_pooled_reference": {
+        "entropy_nats_delta": -5.983882524700394,
+        "gold_vocab_percentile_delta": -0.15401433474808937,
+        "item_invariance_delta": -0.29478703219018354,
+        "top10_token_union_delta": 55
+      }
+    },
+    {
+      "artifact": "receipts/run2-m4-fastgrnn-r64-cellL18toL14.f32bin",
+      "classification": "item-invariant-but-on-manifold",
+      "entropy_nats": {
+        "plain_lens_mean": 11.301128300645466,
+        "rmsnorm_lens_mean": 9.30395207153388,
+        "uniform": 11.931214658529285
+      },
+      "family": "fastgrnn-reconstruction",
+      "gate": {
+        "content_hash_sha256": "b73702a9a743452dd09d861c006942638a60e20658152f972e86d518215d656b",
+        "golden_check": {
+          "input_seed_chacha8": 1295278109,
+          "max_relative_l2_error": 5.217698912929336e-7,
+          "pass": true,
+          "seq_len": 8,
+          "seqs": 8,
+          "tolerance": 9.999999747378752e-6
+        },
+        "golden_file": "receipts/run2-m4-golden-fastgrnn-r64-cellL18toL14.json",
+        "pinned_by_receipt": "run2-m4-training-receipt-cellL18toL14-r64.json",
+        "verified_against_training_or_probe_receipt": true
+      },
+      "gold_answer_tokens": {
+        "mean_best_rank_rmsnorm": 12324.6,
+        "mean_rank_plain": 12575.42910714286,
+        "mean_rank_rmsnorm": 67097.2650892857,
+        "vocab_percentile_rmsnorm": 0.4416153188795658
+      },
+      "item_invariance": {
+        "max": 0.9952100294165966,
+        "mean_pairwise_cosine_between_emitted_vectors": 0.979837660648397,
+        "mean_resultant_length_of_unit_vectors": 0.9901220728436393,
+        "min": 0.9381048103163536
+      },
+      "label": "m4-fastgrnn-r64",
+      "manifold": {
+        "emitted_l2": {
+          "max": 34.56587600708008,
+          "mean": 32.90203018188477,
+          "min": 31.776151657104492
+        },
+        "mean_cosine_to_same_item_natural_receiver_L14_pooled": 0.9840031593491959,
+        "mean_cosine_to_the_global_mean_natural_state": 0.9827822898360722
+      },
+      "output_token_support_rmsnorm_lens": {
+        "distinct_tokens_in_union_of_40_top10_sets": 59,
+        "dominant_tokens": [
+          {
+            "decoded": "괌",
+            "in_top10_of_n_items": 37,
+            "token_id": 145979
+          },
+          {
+            "decoded": "ᐈ",
+            "in_top10_of_n_items": 34,
+            "token_id": 145603
+          },
+          {
+            "decoded": "どんど",
+            "in_top10_of_n_items": 30,
+            "token_id": 140951
+          },
+          {
+            "decoded": " multiplied",
+            "in_top10_of_n_items": 22,
+            "token_id": 54916
+          },
+          {
+            "decoded": "纪委监",
+            "in_top10_of_n_items": 21,
+            "token_id": 118614
+          },
+          {
+            "decoded": "啷",
+            "in_top10_of_n_items": 21,
+            "token_id": 120675
+          },
+          {
+            "decoded": " (\\",
+            "in_top10_of_n_items": 19,
+            "token_id": 19788
+          },
+          {
+            "decoded": "お互",
+            "in_top10_of_n_items": 17,
+            "token_id": 142006
+          }
+        ],
+        "max_possible": 400
+      },
+      "sender_span_tokens": {
+        "mean_rank_plain": 18398.254387638674,
+        "mean_rank_rmsnorm": 40579.150406383145,
+        "vocab_percentile_rmsnorm": 0.26708054974715106
+      },
+      "training": "BPTT on RECONSTRUCTION loss, low-rank FastGRNN sequence cell, rank 64",
+      "vs_natural_pooled_reference": {
+        "entropy_nats_delta": 0.00014964408615547597,
+        "gold_vocab_percentile_delta": 0.05809606022241193,
+        "item_invariance_delta": 0.01809402836462337,
+        "top10_token_union_delta": -19
+      }
+    },
+    {
+      "artifact": "receipts/run2-m4-fastgrnn-r128-cellL18toL14.f32bin",
+      "classification": "item-invariant-but-on-manifold",
+      "entropy_nats": {
+        "plain_lens_mean": 11.344736991768459,
+        "rmsnorm_lens_mean": 9.319009251727763,
+        "uniform": 11.931214658529285
+      },
+      "family": "fastgrnn-reconstruction",
+      "gate": {
+        "content_hash_sha256": "653b1c9fc7c51a77209febc704ff9dc16403c70dcf9a7d7cd9b480625254d796",
+        "golden_check": {
+          "input_seed_chacha8": 1295278109,
+          "max_relative_l2_error": 4.5434757112161606e-7,
+          "pass": true,
+          "seq_len": 8,
+          "seqs": 8,
+          "tolerance": 9.999999747378752e-6
+        },
+        "golden_file": "receipts/run2-m4-golden-fastgrnn-r128-cellL18toL14.json",
+        "pinned_by_receipt": "run2-m4-training-receipt-cellL18toL14-r128.json",
+        "verified_against_training_or_probe_receipt": true
+      },
+      "gold_answer_tokens": {
+        "mean_best_rank_rmsnorm": 2854.925,
+        "mean_rank_plain": 11056.056428571428,
+        "mean_rank_rmsnorm": 47198.21958333334,
+        "vocab_percentile_rmsnorm": 0.3106454005853342
+      },
+      "item_invariance": {
+        "max": 0.9933364022518096,
+        "mean_pairwise_cosine_between_emitted_vectors": 0.9740508744737605,
+        "mean_resultant_length_of_unit_vectors": 0.9872687590579966,
+        "min": 0.9292973527283909
+      },
+      "label": "m4-fastgrnn-r128",
+      "manifold": {
+        "emitted_l2": {
+          "max": 32.78115463256836,
+          "mean": 31.560531425476075,
+          "min": 30.80120277404785
+        },
+        "mean_cosine_to_same_item_natural_receiver_L14_pooled": 0.9831724700591755,
+        "mean_cosine_to_the_global_mean_natural_state": 0.9774921192799617
+      },
+      "output_token_support_rmsnorm_lens": {
+        "distinct_tokens_in_union_of_40_top10_sets": 63,
+        "dominant_tokens": [
+          {
+            "decoded": "纪委监",
+            "in_top10_of_n_items": 38,
+            "token_id": 118614
+          },
+          {
+            "decoded": " \\",
+            "in_top10_of_n_items": 35,
+            "token_id": 1124
+          },
+          {
+            "decoded": "////////////////////////////////////////////////////////////////////////////////\n\n",
+            "in_top10_of_n_items": 28,
+            "token_id": 98320
+          },
+          {
+            "decoded": "ᐈ",
+            "in_top10_of_n_items": 22,
+            "token_id": 145603
+          },
+          {
+            "decoded": " totaling",
+            "in_top10_of_n_items": 21,
+            "token_id": 81123
+          },
+          {
+            "decoded": "竽",
+            "in_top10_of_n_items": 20,
+            "token_id": 120153
+          },
+          {
+            "decoded": "刬",
+            "in_top10_of_n_items": 18,
+            "token_id": 122185
+          },
+          {
+            "decoded": "どんど",
+            "in_top10_of_n_items": 18,
+            "token_id": 140951
+          }
+        ],
+        "max_possible": 400
+      },
+      "sender_span_tokens": {
+        "mean_rank_plain": 16329.707916266601,
+        "mean_rank_rmsnorm": 29225.788931149338,
+        "vocab_percentile_rmsnorm": 0.19235591914456968
+      },
+      "training": "BPTT on RECONSTRUCTION loss, low-rank FastGRNN sequence cell, rank 128",
+      "vs_natural_pooled_reference": {
+        "entropy_nats_delta": 0.015206824280038944,
+        "gold_vocab_percentile_delta": -0.07287385807181967,
+        "item_invariance_delta": 0.012307242189986911,
+        "top10_token_union_delta": -15
+      }
+    },
+    {
+      "artifact": "receipts/run2-m4-fastgrnn-r256-cellL18toL14.f32bin",
+      "classification": "item-invariant-but-on-manifold",
+      "entropy_nats": {
+        "plain_lens_mean": 11.2697465553948,
+        "rmsnorm_lens_mean": 9.398873128658284,
+        "uniform": 11.931214658529285
+      },
+      "family": "fastgrnn-reconstruction",
+      "gate": {
+        "content_hash_sha256": "22f8af09a0ddddac12a77311de0fa2174da3eb55cbc6a553815726db7ba02246",
+        "golden_check": {
+          "input_seed_chacha8": 1295278109,
+          "max_relative_l2_error": 5.540564416151028e-7,
+          "pass": true,
+          "seq_len": 8,
+          "seqs": 8,
+          "tolerance": 9.999999747378752e-6
+        },
+        "golden_file": "receipts/run2-m4-golden-fastgrnn-r256-cellL18toL14.json",
+        "pinned_by_receipt": "run2-m4-training-receipt-cellL18toL14-r256.json",
+        "verified_against_training_or_probe_receipt": true
+      },
+      "gold_answer_tokens": {
+        "mean_best_rank_rmsnorm": 3607.2,
+        "mean_rank_plain": 11972.908482142859,
+        "mean_rank_rmsnorm": 56069.423839285715,
+        "vocab_percentile_rmsnorm": 0.36903317080406034
+      },
+      "item_invariance": {
+        "max": 0.9930128669097268,
+        "mean_pairwise_cosine_between_emitted_vectors": 0.9729704097294528,
+        "mean_resultant_length_of_unit_vectors": 0.9867350959027531,
+        "min": 0.9251427114018549
+      },
+      "label": "m4-fastgrnn-r256",
+      "manifold": {
+        "emitted_l2": {
+          "max": 34.2088508605957,
+          "mean": 32.80380601882935,
+          "min": 32.023860931396484
+        },
+        "mean_cosine_to_same_item_natural_receiver_L14_pooled": 0.9847398572555124,
+        "mean_cosine_to_the_global_mean_natural_state": 0.9774230291157435
+      },
+      "output_token_support_rmsnorm_lens": {
+        "distinct_tokens_in_union_of_40_top10_sets": 65,
+        "dominant_tokens": [
+          {
+            "decoded": "纪委监",
+            "in_top10_of_n_items": 38,
+            "token_id": 118614
+          },
+          {
+            "decoded": "////////////////////////////////////////////////////////////////////////////////\n\n",
+            "in_top10_of_n_items": 35,
+            "token_id": 98320
+          },
+          {
+            "decoded": "GenerationStrategy",
+            "in_top10_of_n_items": 25,
+            "token_id": 76545
+          },
+          {
+            "decoded": "生产总",
+            "in_top10_of_n_items": 19,
+            "token_id": 114271
+          },
+          {
+            "decoded": "竽",
+            "in_top10_of_n_items": 17,
+            "token_id": 120153
+          },
+          {
+            "decoded": "_IList",
+            "in_top10_of_n_items": 16,
+            "token_id": 88431
+          },
+          {
+            "decoded": "どんど",
+            "in_top10_of_n_items": 16,
+            "token_id": 140951
+          },
+          {
+            "decoded": "괌",
+            "in_top10_of_n_items": 16,
+            "token_id": 145979
+          }
+        ],
+        "max_possible": 400
+      },
+      "sender_span_tokens": {
+        "mean_rank_plain": 16855.128981547685,
+        "mean_rank_rmsnorm": 34021.11390646785,
+        "vocab_percentile_rmsnorm": 0.22391739881573722
+      },
+      "training": "BPTT on RECONSTRUCTION loss, low-rank FastGRNN sequence cell, rank 256",
+      "vs_natural_pooled_reference": {
+        "entropy_nats_delta": 0.0950707012105596,
+        "gold_vocab_percentile_delta": -0.014486087853093521,
+        "item_invariance_delta": 0.011226777445679237,
+        "top10_token_union_delta": -13
+      }
+    },
+    {
+      "artifact": "receipts/run2-m4-fastgrnn-r64-cellL18toL14-superseded-windowzeroinit.f32bin",
+      "classification": "item-invariant-but-on-manifold",
+      "entropy_nats": {
+        "plain_lens_mean": 11.711970518996601,
+        "rmsnorm_lens_mean": 5.540097232958248,
+        "uniform": 11.931214658529285
+      },
+      "family": "fastgrnn-reconstruction",
+      "gate": {
+        "content_hash_sha256": "bfe646b6ee06b1f0b12cde1b8b14e462d9f8d57a8a3018d3431add416bd6a9c8",
+        "golden_check": {
+          "input_seed_chacha8": 1295278109,
+          "max_relative_l2_error": 5.16441559739178e-7,
+          "pass": true,
+          "seq_len": 8,
+          "seqs": 8,
+          "tolerance": 9.999999747378752e-6
+        },
+        "golden_file": "receipts/run2-m4-golden-fastgrnn-r64-cellL18toL14-superseded-windowzeroinit.json",
+        "pinned_by_receipt": "run2-m4-training-receipt-cellL18toL14-r64-superseded-windowzeroinit.json",
+        "verified_against_training_or_probe_receipt": true
+      },
+      "gold_answer_tokens": {
+        "mean_best_rank_rmsnorm": 209.225,
+        "mean_rank_plain": 30384.37285714286,
+        "mean_rank_rmsnorm": 23929.01898809524,
+        "vocab_percentile_rmsnorm": 0.15749406979317107
+      },
+      "item_invariance": {
+        "max": 0.9978670392453025,
+        "mean_pairwise_cosine_between_emitted_vectors": 0.9782489125687817,
+        "mean_resultant_length_of_unit_vectors": 0.989339521981489,
+        "min": 0.9296032626322821
+      },
+      "label": "m4-fastgrnn-r64-superseded",
+      "manifold": {
+        "emitted_l2": {
+          "max": 38.58717346191406,
+          "mean": 28.722830247879028,
+          "min": 17.674036026000977
+        },
+        "mean_cosine_to_same_item_natural_receiver_L14_pooled": 0.5107176078859395,
+        "mean_cosine_to_the_global_mean_natural_state": 0.5072630248052952
+      },
+      "output_token_support_rmsnorm_lens": {
+        "distinct_tokens_in_union_of_40_top10_sets": 22,
+        "dominant_tokens": [
+          {
+            "decoded": " \\",
+            "in_top10_of_n_items": 40,
+            "token_id": 1124
+          },
+          {
+            "decoded": "(initial",
+            "in_top10_of_n_items": 40,
+            "token_id": 34331
+          },
+          {
+            "decoded": "啷",
+            "in_top10_of_n_items": 40,
+            "token_id": 120675
+          },
+          {
+            "decoded": " totaling",
+            "in_top10_of_n_items": 39,
+            "token_id": 81123
+          },
+          {
+            "decoded": "纪委监",
+            "in_top10_of_n_items": 39,
+            "token_id": 118614
+          },
+          {
+            "decoded": "expectException",
+            "in_top10_of_n_items": 35,
+            "token_id": 87714
+          },
+          {
+            "decoded": " InvalidArgumentException",
+            "in_top10_of_n_items": 34,
+            "token_id": 80518
+          },
+          {
+            "decoded": "findOrFail",
+            "in_top10_of_n_items": 29,
+            "token_id": 54290
+          }
+        ],
+        "max_possible": 400
+      },
+      "sender_span_tokens": {
+        "mean_rank_plain": 34643.37438631755,
+        "mean_rank_rmsnorm": 19762.577355007612,
+        "vocab_percentile_rmsnorm": 0.13007172332434455
+      },
+      "training": "SUPERSEDED r=64 run (window-zero-init); an independent training run of the same architecture, included as a second sample of the reconstruction lane",
+      "vs_natural_pooled_reference": {
+        "entropy_nats_delta": -3.763705194489477,
+        "gold_vocab_percentile_delta": -0.2260251888639828,
+        "item_invariance_delta": 0.016505280285008084,
+        "top10_token_union_delta": -56
+      }
+    },
+    {
+      "artifact": "receipts/run2-m4c-mlp-taskloss-cellL18toL14.f32bin",
+      "classification": "COLLAPSED-OFF-MANIFOLD",
+      "entropy_nats": {
+        "plain_lens_mean": 6.020767112333948,
+        "rmsnorm_lens_mean": 5.943338849321079,
+        "uniform": 11.931214658529285
+      },
+      "family": "mlp-taskloss",
+      "gate": {
+        "content_hash_sha256": "fe4de15bfa79d39df2fd7f975ae20798b2a7eca03407c320666a2d034ec15141",
+        "golden_check": {
+          "input_seed_chacha8": 1295304221,
+          "max_relative_l2_error": 1.8865748074858857e-7,
+          "pairs": 8,
+          "pass": true,
+          "tolerance": 9.999999747378752e-6
+        },
+        "golden_file": "receipts/run2-m4c-golden-mlp-taskloss-cellL18toL14.json",
+        "pinned_by_receipt": "run2-m4c-training-receipt-cellL18toL14.json",
+        "verified_against_training_or_probe_receipt": true
+      },
+      "gold_answer_tokens": {
+        "mean_best_rank_rmsnorm": 46954.1,
+        "mean_rank_plain": 80557.78544642858,
+        "mean_rank_rmsnorm": 93459.67970238095,
+        "vocab_percentile_rmsnorm": 0.6151253139636488
+      },
+      "item_invariance": {
+        "max": 0.9888633874420536,
+        "mean_pairwise_cosine_between_emitted_vectors": 0.8812899728636048,
+        "mean_resultant_length_of_unit_vectors": 0.9403497878672671,
+        "min": 0.7310275077875347
+      },
+      "label": "m4c-mlp-taskloss",
+      "manifold": {
+        "emitted_l2": {
+          "max": 176.75436401367188,
+          "mean": 134.5797966003418,
+          "min": 96.99484252929688
+        },
+        "mean_cosine_to_same_item_natural_receiver_L14_pooled": -0.018448512235234162,
+        "mean_cosine_to_the_global_mean_natural_state": -0.017549845091857634
+      },
+      "output_token_support_rmsnorm_lens": {
+        "distinct_tokens_in_union_of_40_top10_sets": 77,
+        "dominant_tokens": [
+          {
+            "decoded": "DirectoryName",
+            "in_top10_of_n_items": 37,
+            "token_id": 84283
+          },
+          {
+            "decoded": "rias",
+            "in_top10_of_n_items": 35,
+            "token_id": 47831
+          },
+          {
+            "decoded": " Lanc",
+            "in_top10_of_n_items": 34,
+            "token_id": 38534
+          },
+          {
+            "decoded": " Svens",
+            "in_top10_of_n_items": 34,
+            "token_id": 86173
+          },
+          {
+            "decoded": " concession",
+            "in_top10_of_n_items": 24,
+            "token_id": 68473
+          },
+          {
+            "decoded": "上海证券",
+            "in_top10_of_n_items": 21,
+            "token_id": 117101
+          },
+          {
+            "decoded": "/testify",
+            "in_top10_of_n_items": 13,
+            "token_id": 76702
+          },
+          {
+            "decoded": "农历",
+            "in_top10_of_n_items": 13,
+            "token_id": 114679
+          }
+        ],
+        "max_possible": 400
+      },
+      "sender_span_tokens": {
+        "mean_rank_plain": 71891.86992549257,
+        "mean_rank_rmsnorm": 81154.26218818332,
+        "vocab_percentile_rmsnorm": 0.5341345184036919
+      },
+      "training": "SGD on C2C-style TASK loss (frozen receiver's teacher-forced next-token CE through the real 8-slot injection); THE ANCHOR — reproduces docs/research/033 §4",
+      "vs_natural_pooled_reference": {
+        "entropy_nats_delta": -3.3604635781266454,
+        "gold_vocab_percentile_delta": 0.23160605530649492,
+        "item_invariance_delta": -0.0804536594201688,
+        "top10_token_union_delta": -1
+      }
+    },
+    {
+      "artifact": "receipts/run2-m4c-mlp-taskloss-init-cellL18toL14.f32bin",
+      "classification": "COLLAPSED-OFF-MANIFOLD",
+      "entropy_nats": {
+        "plain_lens_mean": 11.905142256358506,
+        "rmsnorm_lens_mean": 6.309341608059802,
+        "uniform": 11.931214658529285
+      },
+      "family": "untrained-init",
+      "gate": {
+        "content_hash_sha256": "c424030ed4539b8532c5212f1e5ef13eda2242016c7056e665f8aac5886b71d1",
+        "golden_check": {
+          "input_seed_chacha8": 1295304221,
+          "max_relative_l2_error": 5.055117071606219e-7,
+          "pairs": 8,
+          "pass": true,
+          "tolerance": 9.999999747378752e-6
+        },
+        "golden_file": "receipts/run2-m4c-golden-mlp-taskloss-init-cellL18toL14.json",
+        "pinned_by_receipt": "run2-m4c-training-receipt-cellL18toL14.json",
+        "verified_against_training_or_probe_receipt": true
+      },
+      "gold_answer_tokens": {
+        "mean_best_rank_rmsnorm": 23500.725,
+        "mean_rank_plain": 64892.57824404761,
+        "mean_rank_rmsnorm": 59538.87327380952,
+        "vocab_percentile_rmsnorm": 0.3918681107427438
+      },
+      "item_invariance": {
+        "max": 0.9917724517388004,
+        "mean_pairwise_cosine_between_emitted_vectors": 0.975233391481451,
+        "mean_resultant_length_of_unit_vectors": 0.98785249743796,
+        "min": 0.9465306652172347
+      },
+      "label": "m4c-m4d-shared-init-untrained",
+      "manifold": {
+        "emitted_l2": {
+          "max": 9.592143058776855,
+          "mean": 9.296299743652344,
+          "min": 9.038336753845215
+        },
+        "mean_cosine_to_same_item_natural_receiver_L14_pooled": -0.020894700939307002,
+        "mean_cosine_to_the_global_mean_natural_state": -0.021524351287554276
+      },
+      "output_token_support_rmsnorm_lens": {
+        "distinct_tokens_in_union_of_40_top10_sets": 38,
+        "dominant_tokens": [
+          {
+            "decoded": "ManagerInterface",
+            "in_top10_of_n_items": 40,
+            "token_id": 85255
+          },
+          {
+            "decoded": " Julien",
+            "in_top10_of_n_items": 40,
+            "token_id": 87642
+          },
+          {
+            "decoded": "erate",
+            "in_top10_of_n_items": 36,
+            "token_id": 58668
+          },
+          {
+            "decoded": "igkeit",
+            "in_top10_of_n_items": 29,
+            "token_id": 50499
+          },
+          {
+            "decoded": "я",
+            "in_top10_of_n_items": 27,
+            "token_id": 4235
+          },
+          {
+            "decoded": "بع",
+            "in_top10_of_n_items": 25,
+            "token_id": 124876
+          },
+          {
+            "decoded": "ьер",
+            "in_top10_of_n_items": 23,
+            "token_id": 128012
+          },
+          {
+            "decoded": "类产品",
+            "in_top10_of_n_items": 20,
+            "token_id": 114010
+          }
+        ],
+        "max_possible": 400
+      },
+      "sender_span_tokens": {
+        "mean_rank_plain": 73790.69446531715,
+        "mean_rank_rmsnorm": 72977.16226040843,
+        "vocab_percentile_rmsnorm": 0.4803151475648196
+      },
+      "training": "THE ZERO-TRAINING CONTROL: the fresh seeded ChaCha8 initialisation M4c and M4d BOTH start from (byte-identical; both training receipts pin the same init hash, asserted below), zero optimiser steps taken. Not warm-started from M3",
+      "vs_natural_pooled_reference": {
+        "entropy_nats_delta": -2.994460819387922,
+        "gold_vocab_percentile_delta": 0.008348852085589942,
+        "item_invariance_delta": 0.013489759197677476,
+        "top10_token_union_delta": -40
+      }
+    },
+    {
+      "artifact": "receipts/run2-m4d-mlp-deploymatch-cellL18toL14.f32bin",
+      "classification": "COLLAPSED-OFF-MANIFOLD",
+      "entropy_nats": {
+        "plain_lens_mean": 5.1429882425839315,
+        "rmsnorm_lens_mean": 5.853786893803598,
+        "uniform": 11.931214658529285
+      },
+      "family": "mlp-taskloss",
+      "gate": {
+        "content_hash_sha256": "cd2a61da959a28849bc9bd0660ade033d041bb600bec43cc20f5cd6243ac7048",
+        "golden_check": {
+          "input_seed_chacha8": 1295304221,
+          "max_relative_l2_error": 2.1388800064414681e-7,
+          "pairs": 8,
+          "pass": true,
+          "tolerance": 9.999999747378752e-6
+        },
+        "golden_file": "receipts/run2-m4d-golden-mlp-deploymatch-cellL18toL14.json",
+        "pinned_by_receipt": "run2-m4d-training-receipt-cellL18toL14.json",
+        "verified_against_training_or_probe_receipt": true
+      },
+      "gold_answer_tokens": {
+        "mean_best_rank_rmsnorm": 15118.975,
+        "mean_rank_plain": 30123.928333333333,
+        "mean_rank_rmsnorm": 53321.026130952385,
+        "vocab_percentile_rmsnorm": 0.35094399043644947
+      },
+      "item_invariance": {
+        "max": 0.9912955708670136,
+        "mean_pairwise_cosine_between_emitted_vectors": 0.9071049568832786,
+        "mean_resultant_length_of_unit_vectors": 0.9536389950925857,
+        "min": 0.7599562189192267
+      },
+      "label": "m4d-mlp-taskloss-deploymatch",
+      "manifold": {
+        "emitted_l2": {
+          "max": 204.6517791748047,
+          "mean": 143.55524368286132,
+          "min": 93.35202026367188
+        },
+        "mean_cosine_to_same_item_natural_receiver_L14_pooled": 0.04766989754177443,
+        "mean_cosine_to_the_global_mean_natural_state": 0.04895809707037056
+      },
+      "output_token_support_rmsnorm_lens": {
+        "distinct_tokens_in_union_of_40_top10_sets": 52,
+        "dominant_tokens": [
+          {
+            "decoded": "ths",
+            "in_top10_of_n_items": 34,
+            "token_id": 16896
+          },
+          {
+            "decoded": " dispose",
+            "in_top10_of_n_items": 32,
+            "token_id": 27390
+          },
+          {
+            "decoded": "×\n\n",
+            "in_top10_of_n_items": 31,
+            "token_id": 78988
+          },
+          {
+            "decoded": "ient",
+            "in_top10_of_n_items": 29,
+            "token_id": 1167
+          },
+          {
+            "decoded": "dirname",
+            "in_top10_of_n_items": 28,
+            "token_id": 14434
+          },
+          {
+            "decoded": "为什么不",
+            "in_top10_of_n_items": 26,
+            "token_id": 111846
+          },
+          {
+            "decoded": "disp",
+            "in_top10_of_n_items": 24,
+            "token_id": 29795
+          },
+          {
+            "decoded": "かり",
+            "in_top10_of_n_items": 22,
+            "token_id": 124716
+          }
+        ],
+        "max_possible": 400
+      },
+      "sender_span_tokens": {
+        "mean_rank_plain": 48286.16232339408,
+        "mean_rank_rmsnorm": 60108.19665411898,
+        "vocab_percentile_rmsnorm": 0.39561523703479745
+      },
+      "training": "M4c's task loss UNCHANGED, with the deployment rescale matched between training and probe (ADR-024's registered M4d contingency)",
+      "vs_natural_pooled_reference": {
+        "entropy_nats_delta": -3.4500155336441267,
+        "gold_vocab_percentile_delta": -0.03257526822070439,
+        "item_invariance_delta": -0.05463867540049494,
+        "top10_token_union_delta": -26
+      }
+    },
+    {
+      "artifact": "receipts/run2-m4g-mlp-fuse-cellL18toL14.f32bin",
+      "classification": "COLLAPSED-OFF-MANIFOLD",
+      "entropy_nats": {
+        "plain_lens_mean": 8.960911112458737,
+        "rmsnorm_lens_mean": 5.93248323361405,
+        "uniform": 11.931214658529285
+      },
+      "family": "mlp-taskloss",
+      "gate": {
+        "content_hash_sha256": "1b2fc2876d7a6748978ed66016d945f959334e18305fb1b2465cdd37a420841a",
+        "golden_check": {
+          "input_seed_chacha8": 1295304221,
+          "max_relative_l2_error": 2.3964202000570367e-7,
+          "pairs": 8,
+          "pass": true,
+          "tolerance": 9.999999747378752e-6
+        },
+        "golden_file": "receipts/run2-m4g-golden-mlp-fuse-cellL18toL14.json",
+        "pinned_by_receipt": "run2-m4g-training-receipt-cellL18toL14.json",
+        "verified_against_training_or_probe_receipt": true
+      },
+      "gold_answer_tokens": {
+        "mean_best_rank_rmsnorm": 45599.225,
+        "mean_rank_plain": 103282.47318452383,
+        "mean_rank_rmsnorm": 101558.23556547618,
+        "vocab_percentile_rmsnorm": 0.6684277298696568
+      },
+      "item_invariance": {
+        "max": 0.980504412761605,
+        "mean_pairwise_cosine_between_emitted_vectors": 0.8689227063576126,
+        "mean_resultant_length_of_unit_vectors": 0.9339162910553981,
+        "min": 0.7096951901267028
+      },
+      "label": "m4g-mlp-taskloss-fuse",
+      "manifold": {
+        "emitted_l2": {
+          "max": 134.04156494140625,
+          "mean": 91.96015014648438,
+          "min": 62.833518981933594
+        },
+        "mean_cosine_to_same_item_natural_receiver_L14_pooled": -0.041191944520976555,
+        "mean_cosine_to_the_global_mean_natural_state": -0.04320071075819615
+      },
+      "output_token_support_rmsnorm_lens": {
+        "distinct_tokens_in_union_of_40_top10_sets": 78,
+        "dominant_tokens": [
+          {
+            "decoded": "仗",
+            "in_top10_of_n_items": 38,
+            "token_id": 102895
+          },
+          {
+            "decoded": "ument",
+            "in_top10_of_n_items": 33,
+            "token_id": 1123
+          },
+          {
+            "decoded": "UCT",
+            "in_top10_of_n_items": 30,
+            "token_id": 10610
+          },
+          {
+            "decoded": " EventArgs",
+            "in_top10_of_n_items": 24,
+            "token_id": 8124
+          },
+          {
+            "decoded": "枨",
+            "in_top10_of_n_items": 21,
+            "token_id": 119839
+          },
+          {
+            "decoded": "句子",
+            "in_top10_of_n_items": 18,
+            "token_id": 109949
+          },
+          {
+            "decoded": "讣",
+            "in_top10_of_n_items": 17,
+            "token_id": 119550
+          },
+          {
+            "decoded": "战斗力",
+            "in_top10_of_n_items": 16,
+            "token_id": 105965
+          }
+        ],
+        "max_possible": 400
+      },
+      "sender_span_tokens": {
+        "mean_rank_plain": 92808.08543916015,
+        "mean_rank_rmsnorm": 90389.9715585238,
+        "vocab_percentile_rmsnorm": 0.5949213587202756
+      },
+      "training": "M4c's task loss and M4d's deployment transform UNCHANGED, with the INJECTION OPERATOR changed from overwrite to residual add (h[slot] += c*v; ADR-024's registered M4g rung). The emitted vector this kit measures does not depend on the operator, so these numbers are directly comparable with every rung above",
+      "vs_natural_pooled_reference": {
+        "entropy_nats_delta": -3.371319193833674,
+        "gold_vocab_percentile_delta": 0.28490847121250296,
+        "item_invariance_delta": -0.09282092592616098,
+        "top10_token_union_delta": 0
+      }
+    },
+    {
+      "artifact": "receiver_L14.tok.f32bin",
+      "classification": "item-invariant-but-on-manifold",
+      "entropy_nats": {
+        "plain_lens_mean": 11.237106750533414,
+        "rmsnorm_lens_mean": 9.303802427447724,
+        "uniform": 11.931214658529285
+      },
+      "family": "reference-on-manifold",
+      "gate": {
+        "content_hash_sha256": "e528e37ec0e3aa766989cc80f2feffeee71eb73c7b84a8c9a15dab6a2795e263",
+        "golden_check": null,
+        "golden_file": null,
+        "pinned_by_receipt": "receipts/run2-pertoken-dump-receipt.json",
+        "verified_against_training_or_probe_receipt": true
+      },
+      "gold_answer_tokens": {
+        "mean_best_rank_rmsnorm": 9077.075,
+        "mean_rank_plain": 12930.020922619045,
+        "mean_rank_rmsnorm": 58270.38208333333,
+        "vocab_percentile_rmsnorm": 0.38351925865715386
+      },
+      "item_invariance": {
+        "max": 0.9876450361500545,
+        "mean_pairwise_cosine_between_emitted_vectors": 0.9617436322837736,
+        "mean_resultant_length_of_unit_vectors": 0.9811727887975079,
+        "min": 0.9156680957896659
+      },
+      "label": "reference-receiver-L14-pooled",
+      "manifold": {
+        "emitted_l2": {
+          "max": 36.12517166137695,
+          "mean": 34.50830125808716,
+          "min": 33.35699462890625
+        },
+        "mean_cosine_to_same_item_natural_receiver_L14_pooled": 1.0,
+        "mean_cosine_to_the_global_mean_natural_state": 0.981172495574872
+      },
+      "output_token_support_rmsnorm_lens": {
+        "distinct_tokens_in_union_of_40_top10_sets": 78,
+        "dominant_tokens": [
+          {
+            "decoded": "纪委监",
+            "in_top10_of_n_items": 31,
+            "token_id": 118614
+          },
+          {
+            "decoded": "どんど",
+            "in_top10_of_n_items": 30,
+            "token_id": 140951
+          },
+          {
+            "decoded": "괌",
+            "in_top10_of_n_items": 24,
+            "token_id": 145979
+          },
+          {
+            "decoded": "responseObject",
+            "in_top10_of_n_items": 16,
+            "token_id": 86006
+          },
+          {
+            "decoded": " totaling",
+            "in_top10_of_n_items": 15,
+            "token_id": 81123
+          },
+          {
+            "decoded": " multiplied",
+            "in_top10_of_n_items": 13,
+            "token_id": 54916
+          },
+          {
+            "decoded": "getOption",
+            "in_top10_of_n_items": 13,
+            "token_id": 69023
+          },
+          {
+            "decoded": "(initial",
+            "in_top10_of_n_items": 12,
+            "token_id": 34331
+          }
+        ],
+        "max_possible": 400
+      },
+      "sender_span_tokens": {
+        "mean_rank_plain": 17534.20493245463,
+        "mean_rank_rmsnorm": 33168.116522084296,
+        "vocab_percentile_rmsnorm": 0.2183032100495228
+      },
+      "training": "NO ADAPTER — the receiver's OWN block-14 residual states over the same span, mean-pooled the same way the adapters' outputs are",
+      "vs_natural_pooled_reference": {
+        "entropy_nats_delta": 0.0,
+        "gold_vocab_percentile_delta": 0.0,
+        "item_invariance_delta": 0.0,
+        "top10_token_union_delta": 0
+      }
+    },
+    {
+      "artifact": "receiver_L14.tok.f32bin",
+      "classification": "on-manifold-item-varying",
+      "entropy_nats": {
+        "plain_lens_mean": 9.887220559665947,
+        "rmsnorm_lens_mean": 3.3590166487090647,
+        "uniform": 11.931214658529285
+      },
+      "family": "reference-on-manifold",
+      "gate": {
+        "content_hash_sha256": "e528e37ec0e3aa766989cc80f2feffeee71eb73c7b84a8c9a15dab6a2795e263",
+        "golden_check": null,
+        "golden_file": null,
+        "pinned_by_receipt": "receipts/run2-pertoken-dump-receipt.json",
+        "verified_against_training_or_probe_receipt": true
+      },
+      "gold_answer_tokens": {
+        "mean_best_rank_rmsnorm": 19914.55,
+        "mean_rank_plain": 7573.1225,
+        "mean_rank_rmsnorm": 34237.559375,
+        "vocab_percentile_rmsnorm": 0.22534198198583613
+      },
+      "item_invariance": {
+        "max": 0.9944949916726393,
+        "mean_pairwise_cosine_between_emitted_vectors": 0.6350441826732641,
+        "mean_resultant_length_of_unit_vectors": 0.8026008211473699,
+        "min": 0.19862607707387078
+      },
+      "label": "reference-receiver-L14-single-row",
+      "manifold": {
+        "emitted_l2": {
+          "max": 52.671268463134766,
+          "mean": 46.56459369659424,
+          "min": 42.106109619140625
+        },
+        "mean_cosine_to_same_item_natural_receiver_L14_pooled": 0.6670369083383958,
+        "mean_cosine_to_the_global_mean_natural_state": 0.6690956309650479
+      },
+      "output_token_support_rmsnorm_lens": {
+        "distinct_tokens_in_union_of_40_top10_sets": 153,
+        "dominant_tokens": [
+          {
+            "decoded": "<|endoftext|>",
+            "in_top10_of_n_items": 23,
+            "token_id": 151643
+          },
+          {
+            "decoded": ".\n\n",
+            "in_top10_of_n_items": 22,
+            "token_id": 382
+          },
+          {
+            "decoded": "!\n\n",
+            "in_top10_of_n_items": 19,
+            "token_id": 2219
+          },
+          {
+            "decoded": "0",
+            "in_top10_of_n_items": 15,
+            "token_id": 15
+          },
+          {
+            "decoded": " \n\n",
+            "in_top10_of_n_items": 14,
+            "token_id": 4710
+          },
+          {
+            "decoded": "″",
+            "in_top10_of_n_items": 13,
+            "token_id": 21580
+          },
+          {
+            "decoded": " \n",
+            "in_top10_of_n_items": 12,
+            "token_id": 715
+          },
+          {
+            "decoded": "​\n\n",
+            "in_top10_of_n_items": 10,
+            "token_id": 33621
+          }
+        ],
+        "max_possible": 400
+      },
+      "sender_span_tokens": {
+        "mean_rank_plain": 21675.554686079202,
+        "mean_rank_rmsnorm": 38057.324409324574,
+        "vocab_percentile_rmsnorm": 0.2504826006300322
+      },
+      "training": "NO ADAPTER and NO POOLING — one genuine receiver block-14 residual state (the last row of the item's span). Included because a MEAN of states is not itself a state; this is the un-pooled manifold control",
+      "vs_natural_pooled_reference": {
+        "entropy_nats_delta": -5.94478577873866,
+        "gold_vocab_percentile_delta": -0.15817727667131773,
+        "item_invariance_delta": -0.32669944961050945,
+        "top10_token_union_delta": 75
+      }
+    }
+  ],
+  "cell": {
+    "hidden": 1536,
+    "receiver_block": 14,
+    "receiver_model": "Qwen/Qwen2.5-1.5B-Instruct",
+    "sender_block": 18,
+    "vocab": 151936
+  },
+  "design": "docs/adr/024-run2-trained-thought-adapter-ladder.md § 'DIAGNOSIS (2026-08-29): the adapter collapsed to a fixed OFF-MANIFOLD direction' — the registered M4f pre-check ('re-run the same unembedding projection on M4d's artifact and on the M3/M4 artifacts to establish whether off-manifold collapse is universal across the ladder or specific to task-loss training')",
+  "env": {
+    "crate": "latentmesh-runtime 0.1.0",
+    "cuda_feature_enabled": false,
+    "device": "CPU (Device::Cpu; cuda feature OFF — ADR-034 lane rule, GPU held by M4d)",
+    "evidence_label": "deterministic CPU analysis over committed artifacts — no probe draw, annotates only",
+    "git_commit": "3085b0a1a93e4a9a7533c6e2e340427b53023078",
+    "unix_time": 1787976091
+  },
+  "gates": {
+    "artifact_hashes_verified": {
+      "n_candidates": 15,
+      "n_pinned_by_receipt": 15,
+      "pass": true,
+      "rule": "every candidate's content hash is compared to the hash its own training receipt (or, for the run-1 affine maps, its own S2b/S2c probe receipt gate) froze; the per-candidate gate block records WHICH receipt pinned it, and any artifact no receipt pins yet is carried with verified_against_training_or_probe_receipt=false rather than silently treated as verified"
+    },
+    "cpu_only": {
+      "cuda_feature_enabled": false,
+      "device": "Cpu",
+      "pass": true
+    },
+    "hand_rolled_applies_match_trained_networks": {
+      "pass": true,
+      "rule": "every adapter's hand-rolled forward is re-verified against the golden input/output pairs the trained network itself produced (relative L2 <= 1e-5) before any projection"
+    },
+    "input_artifacts_sha256_verified": {
+      "gsm8k_train": "17f347dc51477c50d4efb83959dbb7c56297aba886e5544ee2aaed3024813465",
+      "pass": true,
+      "receiver_L14": "e528e37ec0e3aa766989cc80f2feffeee71eb73c7b84a8c9a15dab6a2795e263",
+      "sender_L18": "44574f9e38bbbe8e2f5b5955cd1cccae0d399b48ed87b5270d1564ab85069c04",
+      "token_streams": "ad5713116cb5acf663fe9c33ac58aaedb1fd64fcf629dd78b21439d244958539"
+    },
+    "shared_holdout_split_verified": {
+      "note": "M3, M4 r64/r128/r256 and M4c all pin the SAME holdout split by sha256, so the 40 sampled rows are holdout for every trained candidate. The run-1 affine maps were fit on run-1's own S2/S2c calibration pairs and are NOT held out of these rows — disclosed; the measurement here is output geometry, not generalisation.",
+      "pass": true,
+      "pinned_identically_by": [
+        "receipts/run2-m3-training-receipt-cellL18toL14.json",
+        "receipts/run2-m4-training-receipt-cellL18toL14-r64.json",
+        "receipts/run2-m4-training-receipt-cellL18toL14-r128.json",
+        "receipts/run2-m4-training-receipt-cellL18toL14-r256.json",
+        "receipts/run2-m4c-training-receipt-cellL18toL14.json"
+      ],
+      "sha256_comma_joined": "02c1bf502244db56a2159a275e90917d465c7184d5bf981f574eddb58800e5a4"
+    }
+  },
+  "method": "docs/research/033-rescale-output-alignment-diagnostic.md §4, applied unchanged (common/lens.rs is that diagnostic's own metric kit, extracted so both measure with ONE implementation): project each candidate's emitted 1536-d vector through the receiver's real readout W_U·RMSNorm(h) and the bare logit lens W_U·h, then measure top-10 token support, gold-answer and sender-span token ranks, entropy, and cross-item direction agreement.",
+  "protocol_safety": "ANNOTATES ONLY. No probe draw, no live-model forward, no probe item / control / statistic touched (ADR-028 protected list untouched). Changes no recorded outcome. Did not wait for, poll or interfere with the GPU lane.",
+  "question": "Is the item-invariant off-manifold collapse found in M4c's adapter universal across the ladder, or specific to task-loss training?",
+  "rung_status": {
+    "m4d": {
+      "final_artifact_present": true,
+      "measured_here": true,
+      "note": "M4d's trainer finished and wrote both its artifact and its training receipt while this pre-check was being written, so M4d's TRAINED adapter is measured here with its hash pinned against that receipt. M4d's probe was running on the GPU at the time; nothing in this lane touched it. M4d's own probe VERDICT is not read, used or affected here.",
+      "training_receipt_present": true
+    },
+    "m4g": {
+      "final_artifact_present": true,
+      "measured_here": true,
+      "note": "M4g (overwrite -> fuse) is measured when its trainer has written both its artifact and the training receipt that pins the hash. This kit projects the EMITTED VECTOR through the receiver's readout and is operator-independent; ADR-024's M4f framing makes it DIAGNOSTIC ONLY — it is not a gate on M4g's one frozen probe draw.",
+      "training_receipt_present": true
+    }
+  },
+  "sample": {
+    "dump_rows": [
+      494,
+      2070,
+      72,
+      589,
+      1298,
+      2549,
+      916,
+      560,
+      681,
+      170,
+      1360,
+      969,
+      465,
+      226,
+      2091,
+      2287,
+      1162,
+      2006,
+      144,
+      1365,
+      537,
+      2505,
+      1948,
+      325,
+      1259,
+      180,
+      2340,
+      1450,
+      430,
+      1971,
+      454,
+      5,
+      1630,
+      1118,
+      2044,
+      742,
+      1747,
+      1994,
+      2383,
+      905
+    ],
+    "gsm8k_items": [
+      945,
+      3866,
+      154,
+      1129,
+      2449,
+      4778,
+      1760,
+      1068,
+      1304,
+      331,
+      2569,
+      1853,
+      883,
+      447,
+      3904,
+      4269,
+      2190,
+      3748,
+      275,
+      2576,
+      1026,
+      4696,
+      3659,
+      632,
+      2366,
+      352,
+      4370,
+      2714,
+      830,
+      3696,
+      866,
+      15,
+      3053,
+      2110,
+      3811,
+      1425,
+      3281,
+      3728,
+      4444,
+      1732
+    ],
+    "n": 40,
+    "source": "first 40 rows of the holdout split shared by M3 / M4 / M4c (M4c receipt's split.holdout_rows, in receipt order)",
+    "why_not_the_probe_items": "the frozen probes' own 40 items are NOT reconstructible from committed artifacts — their sender captures are produced live inside the probe and never dumped. Reconstructing them needs a live sender forward, i.e. GPU, which ADR-034 forbids this lane. Same substitute docs/research/033 registered and used, so the M4c anchor row here is directly comparable to that receipt."
+  },
+  "stage": "run2-m4f-manifold-collapse-precheck",
+  "threshold_calibration_against_the_on_manifold_reference": {
+    "reading": "Two of the three registered arms are calibrated OUT by this row. The receiver's OWN pooled block-14 state has a high mean pairwise cosine and a small top-10 token union, and puts the gold-answer tokens near the middle of the vocabulary — so 'nearly item-invariant', 'few distinct top-10 tokens' and 'gold tokens at a middling percentile' are properties of a POOLED MID-STACK RESIDUAL STATE, not evidence of a defective adapter. The un-pooled single-row reference shows the same statistics move sharply once pooling is removed. The one arm the reference does NOT trip — cosine to the receiver's own state for the same item — is therefore the only discriminating measurement here.",
+    "reference_entropy_nats": 9.303802427447724,
+    "reference_gold_vocab_percentile": 0.38351925865715386,
+    "reference_mean_pairwise_cosine": 0.9617436322837736,
+    "reference_row": "reference-receiver-L14-pooled",
+    "reference_top10_token_union": 78,
+    "reference_trips_the_invariance_arm": true,
+    "reference_trips_the_token_union_arm": true
+  },
+  "thresholds_registered": {
+    "collapse_mean_pairwise_cosine_at_or_above": 0.95,
+    "collapse_top10_token_union_at_or_below": 120,
+    "note": "chosen to reproduce docs/research/033 §4's own characterisation of M4c (77 distinct tokens across 40 items; 'nearly item-invariant'; 'off the receiver's residual-stream manifold') and applied identically to every candidate INCLUDING the on-manifold references, which therefore act as the calibration of the thresholds rather than as an exception to them",
+    "off_manifold_mean_cosine_to_natural_below": 0.2
+  },
+  "verdict": {
+    "answer": "NEITHER, STRICTLY — and this is the informative answer. Off-manifold output is the UNTRAINED DEFAULT of this adapter architecture: the fresh, zero-optimiser-step initialisation that M4c and M4d both start from is ALREADY off-manifold (cosine ~0 to the receiver's own state), with the same low entropy and the same rare-token top-10. RECONSTRUCTION training (M3, M4 r64/r128/r256) moves the output onto the receiver's manifold; TASK-LOSS training (M4c, M4d) leaves it essentially where it started. So the collapse is not caused by the task loss and is not universal across the ladder — it is what task-loss training FAILED TO REMOVE, because nothing in that objective requires the emitted vector to resemble a receiver state. M3/M4's nulls therefore have a DIFFERENT cause: their adapters are on-manifold and still did not transfer.",
+    "corrects_docs_research_033": "docs/research/033 §4 read M4c's '77 distinct top-10 tokens across 40 items', its near-item-invariance and its middling gold-answer percentile as the signature of an off-manifold vector. Measured here against the receiver's OWN pooled block-14 state over the same spans, those three statistics are NOT diagnostic — the natural state scores comparably on all three. The off-manifold claim survives, but on one measurement only: cosine to the receiver's own state for the same item. That correction is recorded in docs/research/036.",
+    "reconstruction_trained": {
+      "collapsed": 0,
+      "n": 7
+    },
+    "task_loss_trained": {
+      "collapsed": 3,
+      "n": 3
+    },
+    "trained_adapters": {
+      "collapsed": 3,
+      "n": 10
+    },
+    "training_free_affine": {
+      "collapsed": 0,
+      "n": 2
+    },
+    "untrained_initialisation_control": {
+      "collapsed": 1,
+      "n": 1
+    }
+  },
+  "wall_clock_s": 20.360679626464844
+}

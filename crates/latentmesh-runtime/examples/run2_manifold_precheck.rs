@@ -25,7 +25,10 @@
 //! Candidates (every committed L18→L14 adapter artifact, plus references):
 //!   * run-1 affine bridges (S2b winner, S2c generated-pairs) — training-FREE
 //!     closed-form linear maps, the decisive contrast;
-//!   * M3 MLP (reconstruction loss), both registered eval variants;
+//!   * M3 MLP (reconstruction loss), both registered eval variants, plus
+//!     ADR-024 **M4h Stage 1**'s de-pooled derivation of the SAME artifact
+//!     (per-token translate, LAST token instead of the mean — the first
+//!     candidate in this kit that is not a pooled object);
 //!   * M4 FastGRNN r=64/128/256 (reconstruction loss, sequence) + the
 //!     superseded r=64 window-zero-init run;
 //!   * M4c MLP task-loss — the anchor, reproducing `docs/research/033` §4;
@@ -162,6 +165,9 @@ enum Emitter {
     MlpPerToken(Box<MlpTransform>),
     /// M3 variant (ii): pool the sender rows first, then the same MLP.
     MlpPooled(Box<MlpTransform>),
+    /// ADR-024 M4h Stage 1: MLP per generated-span token, then take the LAST
+    /// token's output instead of the mean. De-pooled (`docs/research/040`).
+    MlpLastToken(Box<MlpTransform>),
     /// M4: run the sequence from h0 = 0, pool the translated output stream.
     FastGrnn(Box<FastGrnnTransform>),
     /// Reference, no adapter: the receiver's own pooled L14 state.
@@ -177,6 +183,7 @@ impl Emitter {
             Emitter::Affine(t) => t.apply(&c.sender_pooled),
             Emitter::MlpPerToken(t) => t.apply_rows_then_pool(&c.sender_rows, c.n_rows),
             Emitter::MlpPooled(t) => t.apply(&c.sender_pooled),
+            Emitter::MlpLastToken(t) => t.apply_last_row(&c.sender_rows, c.n_rows),
             Emitter::FastGrnn(t) => t.translate_seq_then_pool(&c.sender_rows, c.n_rows),
             Emitter::NaturalPooled => c.receiver_pooled.clone(),
             Emitter::NaturalLastRow => c.receiver_last_row.clone(),
@@ -244,6 +251,18 @@ fn hash_gate(
     }))
 }
 
+/// Which of the three MLP payload derivations a candidate uses. Explicit
+/// rather than a bool, since ADR-024 M4h Stage 1 adds a third.
+#[derive(Clone, Copy, PartialEq)]
+enum MlpDerivation {
+    /// Translate per token, then mean-pool the translated stream.
+    PerTokenThenPool,
+    /// Pool the sender rows first, then translate once.
+    PoolThenTranslate,
+    /// Translate per token, then take the LAST token — no mean (M4h S1).
+    PerTokenLast,
+}
+
 fn load_mlp(
     label: &'static str,
     family: &'static str,
@@ -251,7 +270,7 @@ fn load_mlp(
     file: &str,
     golden: &str,
     expected: Option<(&str, &str)>,
-    pooled_variant: bool,
+    derivation: MlpDerivation,
 ) -> anyhow::Result<Candidate> {
     let t = MlpTransform::load(&crate_path(file))?;
     let (n, max_rel, seed) =
@@ -272,10 +291,10 @@ fn load_mlp(
         artifact: file.to_string(),
         hash,
         gate,
-        emitter: if pooled_variant {
-            Emitter::MlpPooled(Box::new(t))
-        } else {
-            Emitter::MlpPerToken(Box::new(t))
+        emitter: match derivation {
+            MlpDerivation::PoolThenTranslate => Emitter::MlpPooled(Box::new(t)),
+            MlpDerivation::PerTokenThenPool => Emitter::MlpPerToken(Box::new(t)),
+            MlpDerivation::PerTokenLast => Emitter::MlpLastToken(Box::new(t)),
         },
     })
 }
@@ -431,7 +450,7 @@ fn build_candidates() -> anyhow::Result<(Vec<Candidate>, serde_json::Value)> {
             "receipts/run2-m3-mlp-cellL18toL14.f32bin",
             "receipts/run2-m3-golden-mlp-cellL18toL14.json",
             Some(("run2-m3-training-receipt-cellL18toL14.json", &m3_h)),
-            false,
+            MlpDerivation::PerTokenThenPool,
         )?,
         load_mlp(
             "m3-mlp-pooled",
@@ -440,7 +459,16 @@ fn build_candidates() -> anyhow::Result<(Vec<Candidate>, serde_json::Value)> {
             "receipts/run2-m3-mlp-cellL18toL14.f32bin",
             "receipts/run2-m3-golden-mlp-cellL18toL14.json",
             Some(("run2-m3-training-receipt-cellL18toL14.json", &m3_h)),
-            true,
+            MlpDerivation::PoolThenTranslate,
+        )?,
+        load_mlp(
+            "m4h-s1-m3-mlp-lasttoken-depooled",
+            "mlp-reconstruction",
+            "ADR-024 M4h Stage 1: the SAME M3 artifact and the SAME per-token forward as m3-mlp-pertoken (byte-identical weights, asserted by the shared hash gate below), with the mean over the generated span REMOVED — the payload is the LAST translated token. No new training, no new capture. docs/research/040: no externally successful cross-model method pools",
+            "receipts/run2-m3-mlp-cellL18toL14.f32bin",
+            "receipts/run2-m3-golden-mlp-cellL18toL14.json",
+            Some(("run2-m3-training-receipt-cellL18toL14.json", &m3_h)),
+            MlpDerivation::PerTokenLast,
         )?,
         load_fastgrnn(
             "m4-fastgrnn-r64",
@@ -480,7 +508,7 @@ fn build_candidates() -> anyhow::Result<(Vec<Candidate>, serde_json::Value)> {
             "receipts/run2-m4c-mlp-taskloss-cellL18toL14.f32bin",
             "receipts/run2-m4c-golden-mlp-taskloss-cellL18toL14.json",
             Some(("run2-m4c-training-receipt-cellL18toL14.json", &m4c_h)),
-            false,
+            MlpDerivation::PerTokenThenPool,
         )?,
         load_mlp(
             "m4c-m4d-shared-init-untrained",
@@ -489,7 +517,7 @@ fn build_candidates() -> anyhow::Result<(Vec<Candidate>, serde_json::Value)> {
             "receipts/run2-m4c-mlp-taskloss-init-cellL18toL14.f32bin",
             "receipts/run2-m4c-golden-mlp-taskloss-init-cellL18toL14.json",
             Some(("run2-m4c-training-receipt-cellL18toL14.json", &m4c_init_h)),
-            false,
+            MlpDerivation::PerTokenThenPool,
         )?,
     ];
 
@@ -515,7 +543,7 @@ fn build_candidates() -> anyhow::Result<(Vec<Candidate>, serde_json::Value)> {
             "receipts/run2-m4d-mlp-deploymatch-cellL18toL14.f32bin",
             "receipts/run2-m4d-golden-mlp-deploymatch-cellL18toL14.json",
             Some(("run2-m4d-training-receipt-cellL18toL14.json", want)),
-            false,
+            MlpDerivation::PerTokenThenPool,
         )?);
     }
 
@@ -549,7 +577,7 @@ fn build_candidates() -> anyhow::Result<(Vec<Candidate>, serde_json::Value)> {
             "receipts/run2-m4g-mlp-fuse-cellL18toL14.f32bin",
             "receipts/run2-m4g-golden-mlp-fuse-cellL18toL14.json",
             Some(("run2-m4g-training-receipt-cellL18toL14.json", want)),
-            false,
+            MlpDerivation::PerTokenThenPool,
         )?);
     }
 
@@ -1116,10 +1144,12 @@ fn main() -> anyhow::Result<()> {
         .nth(1)
         .unwrap_or_else(|| "run2-manifold-precheck-receipt.json".to_string());
     anyhow::ensure!(
-        receipt_name.starts_with("run2-manifold-precheck")
+        (receipt_name.starts_with("run2-manifold-precheck")
+            || receipt_name.starts_with("run2-m4h-s1-manifold-precheck"))
             && receipt_name.ends_with(".json")
             && !receipt_name.contains('/'),
-        "receipt name must be a bare run2-manifold-precheck*.json filename, got {receipt_name}"
+        "receipt name must be a bare run2-manifold-precheck*.json or \
+         run2-m4h-s1-manifold-precheck*.json filename, got {receipt_name}"
     );
     common::write_receipt(&crate_path("receipts"), &receipt_name, &receipt)?;
     println!("\nVERDICT: {verdict}");
