@@ -617,9 +617,20 @@ configuration**, which is exactly what M4d isolates.
 
 ## M4d outcome (2026-08-29) — null, exactly as pre-registered
 
-`run2-m4d-receipt-cellL18toL14-mlp-deploymatch-*-n40.json`: **mid-p McNemar
-0.2266** (exact-sign 0.3438), aligned 24/40 vs random 21/40, 4W/2L vs
-baseline. All integrity gates pass, including the fused-forward transfer
+`run2-m4d-receipt-cellL18toL14-mlp-deploymatch-*-n40.json`. **Numbers
+corrected 2026-08-29 from the workflow's full report** — my first entry
+conflated two different comparisons. The **primary** gate (aligned > random)
+is **5W/2L, n_disc = 7, exact p = 0.2266, mid-p 0.1445 — FAIL**. (The 0.3438
+I originally recorded as "exact-sign" is the *aligned vs baseline*
+comparison, not the primary.) Accuracy: aligned 24/40, baseline 22, zerovec
+24, random 21.
+
+**This null is NOT a power-floor artifact — and it is the ladder's first that
+isn't.** At n_disc = 7 the minimum attainable one-sided p is 2⁻⁷ = 0.0078,
+comfortably below α = 0.05, so this draw **could have rejected** and did not.
+Every earlier null sat at n_disc ∈ {3,4,5} where rejection was wholly or
+nearly unattainable (see the power annotations above). M4d is therefore the
+first genuinely informative negative in the ladder. All integrity gates pass, including the fused-forward transfer
 check (0.2385 → 0.1562). Two honest observations:
 
 - This is the **best accuracy any rung has produced** (24/40) and the lowest
@@ -634,6 +645,16 @@ check (0.2385 → 0.1562). Two honest observations:
   transform gives training no reason to return.
 
 ## M4g PRE-REGISTRATION (2026-08-29, before any run) — fuse instead of overwrite
+
+**Further premise correction (2026-08-29, from the M4d implementer's report)**:
+the earlier correction above understated the problem. `train_m4c_taskloss.rs`
+(lines 106-124) already had **pooling, rescale-to-natural-median AND the
+8-slot placement** in its training loop — not just the rescale. M4d's actual
+delta versus M4c was therefore marginal (it sourced the rescale target from
+the probe's literal code path, gate-verified to 3.2e-07). The registered
+candidate was substantially discharged before M4d ever ran, which is
+consistent with M4d reproducing M4c's NLL inversion exactly (0W/40L against
+both controls, p = 1.0).
 
 **Coordinator decision, deviating from the scout's recommended ordering**
 (which put M4f first). Reasoning, recorded so it can be judged: M4g explains

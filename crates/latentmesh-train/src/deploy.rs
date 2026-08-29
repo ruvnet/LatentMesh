@@ -31,7 +31,7 @@
 //! enforces, and the check is what proves that rather than the argument.
 
 use candle_core::{Device, Tensor};
-use latentmesh_runtime::inject::InjectionSpec;
+use latentmesh_runtime::inject::{InjectionMode, InjectionSpec};
 use latentmesh_runtime::norms;
 use rand::{Rng, SeedableRng};
 use rand_chacha::ChaCha8Rng;
@@ -109,6 +109,7 @@ pub fn verify_deploy_matches_probe(
             positions: (0..n_slots).collect(),
             vector: pooled.clone(),
             scale: Some(natural_median / norms::l2(&pooled)),
+            mode: InjectionMode::Overwrite,
         };
         let reference = spec.effective_vector();
 

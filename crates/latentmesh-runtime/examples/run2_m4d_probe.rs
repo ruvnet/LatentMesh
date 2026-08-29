@@ -40,6 +40,7 @@ use common::m3::{
     RECEIVER, RECEIVER_BLOCK, SENDER, SENDER_BLOCK,
 };
 use common::mlp::MlpTransform;
+use latentmesh_runtime::inject::InjectionMode;
 use latentmesh_runtime::QwenRuntime;
 use rand::SeedableRng;
 use rand_chacha::ChaCha8Rng;
@@ -151,6 +152,7 @@ fn main() -> anyhow::Result<()> {
             item,
             pad_id,
             Variant::PerToken,
+            InjectionMode::Overwrite,
             &device,
         )? {
             Some((row, q)) => {

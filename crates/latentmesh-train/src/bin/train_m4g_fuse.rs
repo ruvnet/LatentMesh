@@ -1,46 +1,52 @@
-//! M4d trainer (ADR-024 § "Registered contingency — M4d, train/deploy
-//! configuration match", registered 2026-08-29 BEFORE any M4d run).
+//! M4g trainer (ADR-024 § "M4g PRE-REGISTRATION (2026-08-29, before any run)
+//! — fuse instead of overwrite", registered BEFORE any M4g run).
 //!
-//! M4d repeats M4c's task-loss training with the probe's exact deployment
-//! transform in the loop, so the trained object is the object deployed.
-//! **Exactly one thing changes from `train_m4c_taskloss.rs`** — the
-//! configuration of the deployment path. Architecture, init seed, split,
-//! exclusions, loss, optimizer, epoch budget, seq cap and stopping rule are
-//! byte-for-byte M4c's, so the M4c↔M4d comparison isolates configuration.
+//! **THE ONE CHANGED FACTOR: the injection operator.** Every rung to date
+//! (M3, M4, M4c, M4d) delivered the adapter's payload by OVERWRITING the
+//! receiver's residual rows at the 8 placeholder positions
+//! (`latentmesh_runtime::inject` -> `LayerEdit::Inject` -> `slice_assign`,
+//! mirrored in `qwen2_c::forward_span_logits`). M4g delivers it as a
+//! **residual ADD** — `h[slot] += c*v` — preserving the receiver's own state
+//! at those positions. This is Cache-to-Cache's own fuser equation
+//! `C_F = C_n(X) + F_n(...)` (arXiv:2510.03215 Eq. 3), verified from the
+//! paper's method section in `docs/research/038` §4; LatentMesh's overwrite
+//! was verified from source in the same place. The injection operator is an
+//! ADR-028 **evolvable** surface; the frozen probe is **protected**.
 //!
-//! HONEST SCOPE NOTE, recorded here and in the receipt because it corrects
-//! the ADR's own framing: ADR-024's M4d registration says "the probe applies
-//! `rescale_to_natural_median` to the injected vector, and no training rung
-//! has ever had that operator in its loop". That is **factually wrong about
-//! M4c**: `train_m4c_taskloss.rs::item_loss` already pooled → rescaled to a
-//! natural inject-block median → broadcast to 8 slots → injected before the
-//! receiver forward. The named candidate was therefore already largely
-//! discharged when M4d was registered. What M4c actually left mismatched,
-//! and what this rung removes, is narrower and is stated exactly:
+//! Everything else is byte-for-byte `train_m4d_deploymatch.rs`: the M3-shaped
+//! MLP (2048->512->1536 ReLU), the SAME `TRAIN_SEED` (so the seeded init is
+//! bit-identical to M4c's and M4d's — the artifact hash is asserted equal
+//! below, which is what makes M4c/M4d/M4g a clean three-way ablation), the
+//! same split rule and seed, the same 13 probe-overlap exclusions, the same
+//! C2C-style task loss on the sender's own generated span, the same
+//! AdamW/lr/epochs/batch/SEQ_CAP/MIN_TARGET and best-holdout stopping rule,
+//! and the same deployment transform in the loop (M4d's: rescale target from
+//! the probe's own vendored-fused `forward_capture` + `norms::stats`, in the
+//! probe's operator order, gate-verified to <= 1e-6).
 //!
-//!   1. **Rescale target source.** M4c computed each item's natural median
-//!      through the COMPOSED forward (`qwen2_c::natural_per_position_l2`) —
-//!      a disclosed deviation in its own receipt. The probe computes it
-//!      through the VENDORED FUSED forward. M4d takes the constant from the
-//!      probe's OWN code path (`QwenRuntime` + `capture::forward_capture` +
-//!      `norms::stats`), and measures the per-item composed↔fused gap it
-//!      removes.
-//!   2. **Rescale operator identity.** M4c computed `(v/‖v‖)·median`; the
-//!      probe computes `scale = median/‖v‖` then `v·scale`
-//!      (`InjectionSpec::effective_vector`). M4d uses the probe's operator
-//!      order and pins the duplication with a measured equivalence gate
-//!      against the probe's own function (`deploy::verify_deploy_matches_probe`,
-//!      ≥8 vectors, relative L2 ≤ 1e-6) before any model loads.
+//! **The control-semantics question the fuse operator forces, resolved and
+//! pre-registered here** (see `control_semantics_under_fuse` in the receipt,
+//! written BEFORE the probe is invoked): under overwrite, the registered
+//! zero-vector control ZEROED the eight rows — a destructive intervention.
+//! Under fuse the same registered payload (`vector = 0`, `scale = None`) is
+//! `h += 0`, an exact no-op, so the zero condition becomes mathematically
+//! identical to the uninjected baseline. The control's DEFINITION is
+//! unchanged (the same zero payload through the same delivery path); its
+//! SEMANTICS change as an unavoidable consequence of the one changed factor.
+//! It is NOT silently redefined, NOT replaced, and NOT dropped — it is run,
+//! and the resulting baseline-identity is measured and reported as an
+//! operator-correctness diagnostic. The random control (per-item seeded
+//! Gaussian, norm-matched to the effective aligned vector) keeps both its
+//! definition and its meaning, so the PRIMARY statistic
+//! `aligned_real > random` is unaffected.
 //!
-//! The probe protocol, controls, items and statistics are UNTOUCHED — the
-//! deployment transform is an ADR-028 *evolvable* surface, the probe is
-//! *protected*. Training receipt is written BEFORE the registered transfer
-//! check and the single frozen-probe draw (the probe invocation is the
-//! freeze point). Honest-fail path unchanged (ADR-024/ADR-032): one run, no
-//! retries, full numbers either way.
+//! Training receipt is written BEFORE the registered transfer check and the
+//! single frozen-probe draw (the probe invocation is the freeze point).
+//! Honest-fail path unchanged (ADR-024/ADR-032): one run, no retries, no
+//! protocol iteration, full numbers either way.
 //!
 //! Run: PATH=/usr/local/cuda-12.8/bin:$PATH \
-//!      cargo run --release --features cuda --bin train_m4d_deploymatch
+//!      cargo run --release --features cuda --bin train_m4g_fuse
 
 use latentmesh_train::dataset::{expected_from_receipt, open_verified, sha256_file};
 use latentmesh_train::deploy::{deploy_slot_vectors, verify_deploy_matches_probe};
@@ -66,13 +72,15 @@ const RECEIVER_FILE: &str = "receiver_L14.tok.f32bin";
 const CELL: &str = "L18->L14";
 const INJECT_AFTER_BLOCK: usize = 14;
 const N_SLOTS: usize = 8;
-/// Training RNG seed — IDENTICAL to M4c's, so M4d starts from the same
-/// seeded init and the ablation isolates the deployment configuration.
+/// Training RNG seed — IDENTICAL to M4c's and M4d's, so M4g starts from the
+/// SAME seeded init and the three-way ablation isolates the injection
+/// operator and nothing else. The init artifact hash is asserted equal to
+/// M4c's/M4d's below rather than assumed.
 const TRAIN_SEED: u64 = 0x4D34_C001;
-/// Golden-pair input seed (probe-side forward verification) — M4c's.
+/// Golden-pair input seed (probe-side forward verification) — M4c's/M4d's.
 const GOLDEN_SEED: u64 = 0x4D34_C61D;
 const GOLDEN_PAIRS: usize = 8;
-/// Deployment-equivalence input seed, frozen here (new to M4d).
+/// Deployment-equivalence input seed — M4d's, unchanged.
 const DEPLOY_EQUIV_SEED: u64 = 0x4D34_D317;
 const DEPLOY_EQUIV_VECTORS: usize = 8;
 const DEPLOY_EQUIV_TOL: f32 = 1e-6;
@@ -82,6 +90,10 @@ const EPOCHS: usize = 10;
 const SEQ_CAP: usize = 256;
 /// Minimum CE-target tokens for an item to train/evaluate — M4c's.
 const MIN_TARGET: usize = 8;
+/// **THE ONE CHANGED FACTOR** — residual ADD instead of overwrite at the
+/// 8 placeholder rows. Used in the training loop here and pinned to the same
+/// value in `run2_m4g_transfer_check` and `run2_m4g_probe`.
+const INJECT_MODE: InjectionMode = InjectionMode::Fuse;
 
 fn crate_rel(rel: &str) -> PathBuf {
     Path::new(env!("CARGO_MANIFEST_DIR")).join(rel)
@@ -114,7 +126,8 @@ fn env_info(nvcc: &str) -> serde_json::Value {
 }
 
 /// One item's task loss: rows → MLP → pool → **the probe's deployment
-/// transform** (`deploy_slot_vectors`) → inject → teacher-forced span CE.
+/// transform** (`deploy_slot_vectors`) → **FUSE** (`h[slot] += c*v`) →
+/// teacher-forced span CE. Identical to M4d's except for the operator.
 fn item_loss(
     model: &TrainReceiver,
     mlp: &Mlp,
@@ -134,7 +147,7 @@ fn item_loss(
             &vectors,
             &it.slot_positions,
             INJECT_AFTER_BLOCK,
-            InjectionMode::Overwrite,
+            INJECT_MODE,
         )),
         it.span_start,
         it.target_tokens.len(),
@@ -226,6 +239,87 @@ fn median_gap(fused: &[f32], composed: &[f32]) -> serde_json::Value {
         "abs_relative": norms::stats(rel),
         "signed_relative_composed_minus_fused": norms::stats(signed),
     })
+}
+
+/// Assert M4g's seeded init is byte-identical to M4c's and M4d's, reading
+/// both committed training receipts. This is what licenses the three-way
+/// "only the injection operator changed" comparison.
+fn shared_init_gate(receipts_dir: &Path, init_hash: &str) -> anyhow::Result<serde_json::Value> {
+    let read = |name: &str| -> anyhow::Result<Option<String>> {
+        let p = receipts_dir.join(name);
+        if !p.exists() {
+            return Ok(None);
+        }
+        let v: serde_json::Value = serde_json::from_slice(&std::fs::read(&p)?)?;
+        Ok(v["artifact"]["init_content_hash_sha256"]
+            .as_str()
+            .map(str::to_string))
+    };
+    let m4c = read("run2-m4c-training-receipt-cellL18toL14.json")?;
+    let m4d = read("run2-m4d-training-receipt-cellL18toL14.json")?;
+    for (rung, h) in [("M4c", &m4c), ("M4d", &m4d)] {
+        if let Some(h) = h {
+            anyhow::ensure!(
+                h == init_hash,
+                "{rung} init hash {h} != M4g init hash {init_hash} — the rungs no longer share \
+                 one seeded init, so the operator ablation would not be isolated"
+            );
+        }
+    }
+    Ok(serde_json::json!({
+        "pass": true,
+        "m4g_init_sha256": init_hash,
+        "m4c_init_sha256": m4c,
+        "m4d_init_sha256": m4d,
+        "rule": "M4c, M4d and M4g must start from ONE byte-identical seeded init so the only difference between the three rungs is the factor each registers (loss config / deployment config / injection operator)",
+    }))
+}
+
+/// Operator-correctness gate: under FUSE, a zero payload must reproduce the
+/// un-injected forward exactly (`h += 0`). Measured through the same composed
+/// differentiable forward the training loop uses, on one fit item, before any
+/// optimizer step. This is also the mechanical statement of what happens to
+/// the registered zero-vector control once the operator changes.
+fn fuse_zero_noop_gate(
+    model: &TrainReceiver,
+    it: &TaskItem,
+    dev: &Device,
+) -> anyhow::Result<serde_json::Value> {
+    let tokens = Tensor::new(&it.full_tokens[..], dev)?.unsqueeze(0)?;
+    let zeros = Tensor::zeros((N_SLOTS, D_OUT), DType::F32, dev)?;
+    let ce = |inject: Option<(&Tensor, &[usize], usize, InjectionMode)>| -> anyhow::Result<f32> {
+        let logits =
+            model.forward_span_logits(&tokens, inject, it.span_start, it.target_tokens.len())?;
+        Ok(span_ce(&logits, &it.target_tokens, dev)?.to_scalar::<f32>()?)
+    };
+    let ce_none = ce(None)?;
+    let ce_fuse_zero = ce(Some((
+        &zeros,
+        &it.slot_positions,
+        INJECT_AFTER_BLOCK,
+        InjectionMode::Fuse,
+    )))?;
+    let ce_over_zero = ce(Some((
+        &zeros,
+        &it.slot_positions,
+        INJECT_AFTER_BLOCK,
+        InjectionMode::Overwrite,
+    )))?;
+    let pass = ce_fuse_zero == ce_none;
+    anyhow::ensure!(
+        pass,
+        "fuse with a zero payload changed the loss ({ce_fuse_zero} vs {ce_none}) — the residual \
+         add is not a no-op, so the operator implementation is wrong"
+    );
+    Ok(serde_json::json!({
+        "pass": pass,
+        "row": it.row,
+        "span_ce_uninjected": ce_none,
+        "span_ce_fuse_zero_payload": ce_fuse_zero,
+        "span_ce_overwrite_zero_payload": ce_over_zero,
+        "overwrite_zero_delta_nats": ce_over_zero - ce_none,
+        "rule": "under FUSE, h += 0 must equal the un-injected forward EXACTLY; the overwrite number is reported alongside to show, on this repo's own model, how far from a no-op the SAME registered zero payload was under the operator every prior rung used",
+    }))
 }
 
 fn main() -> anyhow::Result<()> {
@@ -366,21 +460,36 @@ fn main() -> anyhow::Result<()> {
     // ---- MLP: fresh seeded init (M4c's seed); INIT artifact + golden ------
     let mlp = Mlp::new_seeded(TRAIN_SEED, &dev)?;
     anyhow::ensure!(mlp.param_count() == PARAM_COUNT);
-    let init_artifact = receipts_dir.join("run2-m4d-mlp-deploymatch-init-cellL18toL14.f32bin");
+    let init_artifact = receipts_dir.join("run2-m4g-mlp-fuse-init-cellL18toL14.f32bin");
     let init_hash = mlp.save_artifact(&init_artifact)?;
     let (init_golden_sha, init_in, init_out) =
         golden_pairs(&init_artifact, GOLDEN_SEED, GOLDEN_PAIRS)?;
     anyhow::ensure!(init_golden_sha == init_hash);
-    let init_golden = receipts_dir.join("run2-m4d-golden-mlp-deploymatch-init-cellL18toL14.json");
+    let init_golden = receipts_dir.join("run2-m4g-golden-mlp-fuse-init-cellL18toL14.json");
     std::fs::write(
         &init_golden,
         serde_json::to_string(&serde_json::json!({
             "artifact_file_sha256": init_hash, "input_seed_chacha8": GOLDEN_SEED,
             "n_pairs": GOLDEN_PAIRS, "inputs": init_in, "outputs": init_out,
-            "note": "SEEDED-INIT adapter (transfer-check baseline), outputs from the network itself (candle CPU forward); same TRAIN_SEED as M4c, so these bytes are expected identical to M4c's init artifact",
+            "note": "SEEDED-INIT adapter (transfer-check baseline), outputs from the network itself (candle CPU forward); same TRAIN_SEED as M4c/M4d, so these bytes are asserted identical to M4c's and M4d's init artifacts",
         }))?,
     )?;
     println!("init artifact: {} ({init_hash})", init_artifact.display());
+
+    // ---- Gate: the seeded init is BYTE-IDENTICAL to M4c's and M4d's -------
+    // What makes M4c -> M4d -> M4g a clean ablation is that all three start
+    // from the same weights; asserted against both committed receipts rather
+    // than assumed from the shared seed constant.
+    let shared_init = shared_init_gate(&receipts_dir, &init_hash)?;
+    println!("shared-init gate: {shared_init}");
+
+    // ---- Gate: the FUSE operator is a no-op for a zero payload ------------
+    // The operator-correctness check that also pins the M4g control
+    // semantics: under fuse, `h += 0` must reproduce the un-injected forward
+    // exactly. Measured on the first fit item through the SAME composed
+    // forward the training loop uses, before a single optimizer step.
+    let fuse_zero = fuse_zero_noop_gate(&model, &fit_items[0], &dev)?;
+    println!("fuse zero-payload no-op gate: {fuse_zero}");
 
     // ---- Step-0 gradient gate through the PROBE'S deployment transform ----
     {
@@ -499,14 +608,14 @@ fn main() -> anyhow::Result<()> {
 
     // ---- Trained artifact + golden pairs ----------------------------------
     mlp.set_flat(&best_flat, &dev)?;
-    let artifact = receipts_dir.join("run2-m4d-mlp-deploymatch-cellL18toL14.f32bin");
+    let artifact = receipts_dir.join("run2-m4g-mlp-fuse-cellL18toL14.f32bin");
     let content_hash = mlp.save_artifact(&artifact)?;
     let (golden_sha, inputs, outputs) = golden_pairs(&artifact, GOLDEN_SEED, GOLDEN_PAIRS)?;
     anyhow::ensure!(
         golden_sha == content_hash,
         "artifact hash drift during golden generation"
     );
-    let golden_path = receipts_dir.join("run2-m4d-golden-mlp-deploymatch-cellL18toL14.json");
+    let golden_path = receipts_dir.join("run2-m4g-golden-mlp-fuse-cellL18toL14.json");
     std::fs::write(
         &golden_path,
         serde_json::to_string(&serde_json::json!({
@@ -519,22 +628,50 @@ fn main() -> anyhow::Result<()> {
 
     // ---- Training receipt (BEFORE transfer check and probe) ---------------
     let receipt = serde_json::json!({
-        "stage": "run2-m4d-deploymatch-training",
-        "design": "docs/adr/024-run2-trained-thought-adapter-ladder.md § 'Registered contingency — M4d, train/deploy configuration match' (registered 2026-08-29 BEFORE any M4d run); training-only change, probe protocol untouched (ADR-028: deployment transform evolvable, probe protected)",
+        "stage": "run2-m4g-fuse-training",
+        "design": "docs/adr/024-run2-trained-thought-adapter-ladder.md § 'M4g PRE-REGISTRATION (2026-08-29, before any run) — fuse instead of overwrite' and § 'M4g REGISTERED (2026-08-29): overwrite vs fuse'; the injection OPERATOR is the single changed factor. ADR-028: the injection operator is an EVOLVABLE surface, the frozen probe is PROTECTED. Probe protocol, items, controls and statistics untouched.",
         "cell": CELL,
         "env": env_info(&nvcc),
-        "rung_delta_vs_m4c": {
-            "adr_premise_correction": "ADR-024's M4d registration states 'no training rung has ever had [rescale_to_natural_median] in its loop'. That is factually WRONG about M4c: train_m4c_taskloss.rs::item_loss already applied pool -> rescale-to-natural-median -> 8-slot broadcast -> inject before the receiver forward. The named candidate was therefore already largely discharged at registration time. This receipt records the correction rather than restating the premise; the interpretation rule registered with M4d still applies to whatever this rung measures.",
-            "what_actually_changed_1_rescale_target_source": "M4c took each item's natural inject-block median from the COMPOSED forward (qwen2_c::natural_per_position_l2 — a deviation disclosed in M4c's own receipt). M4d takes it from the PROBE'S OWN code path: QwenRuntime (vendored FUSED BF16) + capture::forward_capture + norms::stats, the literal functions examples/common/m3.rs::four_conditions step 4 calls.",
-            "what_actually_changed_2_rescale_operator_identity": "M4c computed (v/||v||)*median; the probe computes scale = median/||v|| then v*scale (InjectionSpec::effective_vector). M4d uses the probe's operator order via latentmesh_train::deploy::deploy_slot_vectors and pins it with the measured equivalence gate below.",
-            "what_did_NOT_change": "architecture, TRAIN_SEED (same seeded init as M4c), split rule and seed, the 13 probe-overlap exclusions, loss (C2C task CE on the sender's own generated span), optimizer/lr/epochs/batch, SEQ_CAP, MIN_TARGET, stopping rule, golden discipline, probe protocol.",
+        "rung_delta_vs_m4d": {
+            "the_one_changed_factor": "injection operator: OVERWRITE -> FUSE (residual add).",
+            "before_m3_m4_m4c_m4d": "h[slot] = c*v — LayerEdit::Inject / slice_assign of the payload row over the receiver's own residual row at each of the 8 placeholder positions (latentmesh-runtime src/models/qwen2_b.rs, Inject arm), mirrored in qwen2_c::forward_span_logits for training.",
+            "now_m4g": "h[slot] += c*v — LayerEdit::Fuse, the receiver's own row is READ and ADDED to, so its state at those positions survives. Mirrors Cache-to-Cache Eq.3, C_F = C_n(X) + F_n(...), verified from the paper's method section in docs/research/038 §4.",
+            "implementation_discipline": "Fuse is a NEW LayerEdit variant, not a flag on Inject: the overwrite arm's executed op sequence is byte-for-byte unchanged, so every prior receipt (run 1 S1a/S2b, run 2 M3/M4/M4c/M4d) stays reproducible. Every InjectionSpec construction site in the repo now names its mode explicitly.",
+            "what_did_NOT_change": "architecture (M3 MLP 2048->512->1536 ReLU), TRAIN_SEED (byte-identical seeded init to M4c and M4d, asserted below), split rule and seed, the 13 probe-overlap exclusions, loss (C2C task CE on the sender's own generated span), optimizer/lr/epochs/batch, SEQ_CAP, MIN_TARGET, stopping rule, golden discipline, the deployment transform in the loop (M4d's: fused-sourced natural-median rescale in the probe's operator order), the frozen probe protocol.",
+            "rescale_under_fuse_disclosed": "rescale-to-natural-median is a PROTECTED element of the frozen protocol and is therefore kept exactly as registered. Its meaning shifts as a consequence of the operator: under overwrite the slot row BECAME a vector of L2 = the natural per-position median; under fuse a delta of that same L2 is ADDED to a row whose own L2 is about that median. This is disclosed, not adjusted — adjusting it would be a second changed factor.",
             "residual_mismatch_still_present": "the training forward is the COMPOSED differentiable BF16 forward and the probe's is the VENDORED FUSED one — unfixable while gradients are required (the fused kernels are apply_op*_no_bwd). This is the M4c caveat, carried unchanged, and mitigated by the same registered transfer check before any probe draw.",
         },
+        "control_semantics_under_fuse": {
+            "registered_before_the_probe": true,
+            "why_this_section_exists": "ADR-028 forbids a search or a rung from redefining a control. Changing the injection operator changes what two of the four registered conditions MEAN without changing what they ARE, and that must be recorded before the draw rather than explained after it.",
+            "aligned_real": {
+                "definition_unchanged": "sender per-token L18 capture -> trained MLP per token -> mean-pool the translated rows -> scale = natural inject-block median / ||pooled|| -> broadcast to 8 slots.",
+                "delivery_under_fuse": "h[slot] += c*v instead of h[slot] = c*v.",
+                "meaning": "unchanged in kind — it is still 'the adapter's content, delivered at the registered site with the registered rescale'.",
+            },
+            "random": {
+                "definition_unchanged": "per-item seeded ChaCha8 Gaussian (RANDVEC_SEED_BASE + item index), norm-matched to the EFFECTIVE aligned vector, delivered through the same path.",
+                "meaning": "unchanged and still the right comparator: under fuse it is a norm-matched random PERTURBATION of the receiver's own state at those rows, which is exactly the 'same magnitude, no information' control the primary statistic needs. THE PRIMARY STATISTIC aligned_real > random IS THEREFORE UNAFFECTED IN MEANING.",
+            },
+            "zerovec_injected": {
+                "definition_unchanged": "the true zero vector (vector = 0, scale = None) through the real 8-slot path.",
+                "meaning_CHANGED": "under overwrite this ZEROED the eight residual rows — a destructive intervention, and the reason the registered zerovec gate ('2 x zerovec accuracy >= baseline accuracy') was a catastrophe check. Under fuse the identical payload is h += 0, an EXACT no-op, so the zero condition becomes mathematically identical to the uninjected baseline.",
+                "deviation_declared": "This is a genuine semantic deviation forced by the one changed factor. It is declared here, not concealed. The control is NOT redefined, NOT replaced by a substitute (e.g. an overwrite-with-zero condition retained under a fuse rung), and NOT dropped: it is run exactly as registered, all 40 items, and its now-expected identity to the baseline is MEASURED and reported as an operator-correctness diagnostic (fuse_zero_payload_is_noop, below and in the probe receipt).",
+                "why_no_substitute_control_was_added": "Retaining a destructive overwrite-with-zero condition inside an M4g draw would introduce a second injection operator into a rung whose entire content is that exactly one operator changed, and would be an unregistered addition to a protected control set. The registered four-condition quad already contains the correct 'no information delivered' reference for a fuse rung: baseline_uninjected. It is unchanged and is reported.",
+                "consequence_for_the_registered_zerovec_gate": "the gate '2 x zerovec_correct >= baseline_correct' becomes trivially satisfied under fuse (the two conditions are the same computation). It is still computed and reported, and it is labelled DEGENERATE-UNDER-FUSE in the probe receipt so no reader mistakes it for evidence.",
+            },
+            "baseline_uninjected": {
+                "definition_unchanged": "no injection at all (spec = None), same slotted prompt.",
+                "meaning": "unchanged, and PROMOTED in importance: under fuse it is the reference the zero condition collapses onto, so aligned_vs_baseline is the informative 'did adding anything help' contrast.",
+            },
+        },
+        "shared_seeded_init_gate": shared_init,
+        "fuse_zero_payload_is_noop_gate": fuse_zero,
         "deploy_equivalence_gate": equiv,
         "architecture_choice": {
-            "rule": "ADR-024 M4d: repeat M4c's training, one factor changed",
-            "chosen": "M3 MLP 2048->512->1536 ReLU (param_count 1,837,056) — M4c's architecture, unchanged",
-            "init": "FRESH seeded init at M4c's TRAIN_SEED, so the M4c<->M4d comparison isolates the deployment configuration and nothing else",
+            "rule": "ADR-024 M4g: retrain the M3-shaped MLP under task loss with the FUSE operator in the loop, one factor changed",
+            "chosen": "M3 MLP 2048->512->1536 ReLU (param_count 1,837,056) — M4c's/M4d's architecture, unchanged",
+            "init": "FRESH seeded init at M4c's/M4d's TRAIN_SEED; the init artifact hash is ASSERTED byte-identical to both (shared_seeded_init_gate), so the M4c<->M4d<->M4g comparison isolates loss config / deployment config / injection operator respectively",
         },
         "dataset": {
             "dump_receipt": "run2-pertoken-dump-receipt.json",
@@ -549,7 +686,7 @@ fn main() -> anyhow::Result<()> {
             "gsm8k_train_sha256": taskdata::GSM8K_TRAIN_SHA256,
         },
         "split": {
-            "rule": "fit_holdout_split(2560, FIT_SPLIT_SEED) BY ITEM first, THEN the 13 probe-overlap rows dropped from whichever side they landed in (ADR-024 frozen leakage rule) — identical to M3/M4/M4c",
+            "rule": "fit_holdout_split(2560, FIT_SPLIT_SEED) BY ITEM first, THEN the 13 probe-overlap rows dropped from whichever side they landed in (ADR-024 frozen leakage rule) — identical to M3/M4/M4c/M4d",
             "fit_split_seed": FIT_SPLIT_SEED,
             "n_fit": split.fit.len(), "n_holdout": split.holdout.len(),
             "excluded_probe_overlap_rows": split.excluded,
@@ -562,12 +699,15 @@ fn main() -> anyhow::Result<()> {
         },
         "prompt_parity_gate": {
             "pass": true,
-            "rule": "per item, the reconstructed sender capture prompt re-encoded token-identical to the stream's stored prompt_tokens; injection prompt asserted to carry exactly 8 placeholder slots AND to yield the same slot positions under the runtime's own QwenRuntime::placeholder_positions (new in M4d)",
+            "rule": "per item, the reconstructed sender capture prompt re-encoded token-identical to the stream's stored prompt_tokens; injection prompt asserted to carry exactly 8 placeholder slots AND to yield the same slot positions under the runtime's own QwenRuntime::placeholder_positions (inherited from M4d)",
             "items_gated": fit_items.len() + holdout_items.len(),
         },
         "training": {
-            "loss": "C2C-style task loss (M4c's, unchanged): frozen receiver's teacher-forced next-token CE on the item's own sender-generated span, conditioned on the probe's slotted injection prompt with the adapter's vectors injected after block 14",
-            "pipeline": "sender L18 per-token rows (FULL generated span) -> MLP per token (F32 Vars) -> mean-pool TRANSLATED rows -> deploy::deploy_slot_vectors (scale = fused natural median / ||pooled||, then pooled * scale; probe operator order, +1e-12 backward guard) -> 8 slots -> slice_assign injection -> composed BF16 forward -> CE on gen span capped per seq_cap_rule",
+            "loss": "C2C-style task loss (M4c's/M4d's, unchanged): frozen receiver's teacher-forced next-token CE on the item's own sender-generated span, conditioned on the probe's slotted injection prompt with the adapter's vectors FUSED after block 14",
+            "pipeline": "sender L18 per-token rows (FULL generated span) -> MLP per token (F32 Vars) -> mean-pool TRANSLATED rows -> deploy::deploy_slot_vectors (scale = fused natural median / ||pooled||, then pooled * scale; probe operator order, +1e-12 backward guard) -> 8 slots -> RESIDUAL ADD (h[slot] += c*v; LayerEdit::Fuse semantics, mirrored op-for-op in qwen2_c) -> composed BF16 forward -> CE on gen span capped per seq_cap_rule",
+            "injection_operator": {"mode": INJECT_MODE.tag(), "equation": INJECT_MODE.equation(),
+                "prior_rungs": "overwrite (M3, M4, M4c, M4d and all of run 1)",
+                "in_training_loop": true, "in_transfer_check": true, "in_probe": true},
             "receiver": {"model": RECEIVER, "dtype": "BF16", "frozen": true,
                 "training_forward": "qwen2_c composed differentiable forward",
                 "rescale_target_forward": "VENDORED FUSED (QwenRuntime + capture::forward_capture) — the probe's own"},
@@ -579,7 +719,7 @@ fn main() -> anyhow::Result<()> {
                 "beta1": 0.9, "beta2": 0.999, "eps": 1e-8, "weight_decay": 0.01},
             "batch": 1, "epochs": EPOCHS, "train_seed_chacha8": TRAIN_SEED,
             "stopping_rule": format!("fixed {EPOCHS}-epoch budget; artifact = epoch checkpoint with LOWEST holdout task CE (M4c's rule, frozen by this source before any transfer-check/probe invocation)"),
-            "step0_grad_gate": "pass — grads present, finite, nonzero on all four MLP Vars through the probe's deployment transform and the composed forward (inspection-only backward; no update applied)",
+            "step0_grad_gate": "pass — grads present, finite, nonzero on all four MLP Vars through the probe's deployment transform, the FUSE operator and the composed forward (inspection-only backward; no update applied)",
             "runs_performed": 1,
             "note_no_discarded_runs": "single training run; no restarts, no hyperparameter retries",
             "measured_process_peak_vram_mib": peak_vram,
@@ -592,34 +732,37 @@ fn main() -> anyhow::Result<()> {
             "composed_forward_improvement_nats": init_holdout_ce - best_holdout_ce,
         },
         "artifact": {
-            "file": "run2-m4d-mlp-deploymatch-cellL18toL14.f32bin",
+            "file": "run2-m4g-mlp-fuse-cellL18toL14.f32bin",
             "layout": ARTIFACT_LAYOUT,
             "content_hash_sha256": content_hash,
-            "golden_file": "run2-m4d-golden-mlp-deploymatch-cellL18toL14.json",
+            "golden_file": "run2-m4g-golden-mlp-fuse-cellL18toL14.json",
             "golden_file_sha256": sha256_file(&golden_path)?,
-            "init_file": "run2-m4d-mlp-deploymatch-init-cellL18toL14.f32bin",
+            "init_file": "run2-m4g-mlp-fuse-init-cellL18toL14.f32bin",
             "init_content_hash_sha256": init_hash,
-            "init_golden_file": "run2-m4d-golden-mlp-deploymatch-init-cellL18toL14.json",
+            "init_golden_file": "run2-m4g-golden-mlp-fuse-init-cellL18toL14.json",
             "init_golden_file_sha256": sha256_file(&init_golden)?,
             "golden_input_seed_chacha8": GOLDEN_SEED, "golden_pairs": GOLDEN_PAIRS,
         },
         "registered_caveat_bf16_composed_vs_fused": {
             "statement": "training runs through the composed BF16 forward but the frozen probe runs the vendored FUSED BF16 forward; carried unchanged from M4c (the rescale CONSTANT is now fused-sourced, but the training forward still cannot be)",
-            "mitigation_frozen_here": "BEFORE any probe draw, a transfer check (run2_m4d_transfer_check, separate process, inference-only, no probe items, no generation) evaluates the trained adapter's teacher-forced NLL through the VENDORED fused forward on the holdout items, against the SEEDED-INIT adapter under the identical delivery path — the same check M4c ran, so the two rungs' transfer numbers are directly comparable",
+            "mitigation_frozen_here": "BEFORE any probe draw, a transfer check (run2_m4g_transfer_check, separate process, inference-only, no probe items, no generation) evaluates the trained adapter's teacher-forced NLL through the VENDORED fused forward on the holdout items, against the SEEDED-INIT adapter under the identical delivery path — byte-for-byte M4c's and M4d's check with the FUSE operator substituted, so all three rungs' transfer numbers are directly comparable",
             "transfer_pass_criterion_frozen": "mean vendored-fused NLL(trained) < mean vendored-fused NLL(init) over the evaluable holdout items (same seq-cap/min-target spans as training); per-item wins/losses + sign test reported as secondary, not gating",
-            "on_transfer_fail": "the frozen probe is NOT invoked; the transfer receipt plus diagnosis is the honest M4d outcome for that branch",
+            "on_transfer_fail": "the frozen probe is NOT invoked; the transfer receipt plus diagnosis is the honest M4g outcome for that branch",
         },
         "eval_plan_frozen": {
-            "order": "1) transfer check (must pass) -> 2) frozen probe ONCE",
-            "probe": "ADR-023 frozen 40-item S1a/S2b protocol, inherited UNCHANGED (item_seed_chacha8 20897 == 0x51A1, one-sided exact sign test alpha=0.05, 8 slots, rescale-to-natural-median, greedy/batch=1/max 400 tokens), via run2_m4d_probe (run2_m4c_probe lineage, common::m3 shared per-item mechanics)",
+            "order": "1) transfer check (must pass) -> 2) manifold pre-check (diagnostic only, gates nothing) -> 3) frozen probe ONCE",
+            "manifold_precheck": "run2_manifold_precheck is re-run over this artifact and reports cosine-to-natural and item-invariance alongside every prior rung. Per ADR-024's M4f pre-check framing it is DIAGNOSTIC ONLY and is NOT a gate on whether the probe is drawn.",
+            "probe": "ADR-023 frozen 40-item S1a/S2b protocol, inherited UNCHANGED (item_seed_chacha8 20897 == 0x51A1, one-sided exact sign test alpha=0.05, 8 slots, rescale-to-natural-median, greedy/batch=1/max 400 tokens, four conditions), via run2_m4g_probe (run2_m4d_probe lineage, common::m3 shared per-item mechanics with the injection MODE threaded through as the only new parameter)",
             "variant": "per-token pathway ONLY (the pathway this training optimized); ONE probe invocation, no second draw",
             "gate": "aligned_real > random, one-sided exact sign test, p < 0.05 — the recorded verdict statistic, unchanged",
-            "secondary_statistic_reported": "mid-p McNemar (ADR-030 / docs/research/031 §2.4) reported ALONGSIDE the exact sign p on the same collected pairs; it gates nothing and changes no recorded verdict",
+            "primary_statistic_for_this_rung": "ADR-024's M4g pre-registration names mid-p McNemar as primary with exact-sign reported alongside. BOTH are computed on the same collected pairs and BOTH are reported; the receipt's machine gate_pass field stays on the ADR-028-protected exact sign test so it remains comparable with every prior rung's gate_pass, and the M4g verdict prose reports the mid-p value the pre-registration named. Neither number is chosen after seeing the other.",
+            "secondary_statistic_reported": "whichever of the two is not being quoted as primary, plus the NLL sign tests, all on the same collected pairs",
             "cell_scope": "S2-winner cell L18->L14 only",
+            "honest_fail_path": "ADR-024/ADR-032: ONE probe draw, no retry, no protocol iteration, full numbers reported either way. A null leaves M4f (structural on-manifold constraint) and M4b (receiver scale) as the live hypotheses and strengthens the joint negative across loss function, deployment configuration and injection operator.",
         },
         "wall_clock_s": t0.elapsed().as_secs_f64(),
     });
-    let receipt_path = receipts_dir.join("run2-m4d-training-receipt-cellL18toL14.json");
+    let receipt_path = receipts_dir.join("run2-m4g-training-receipt-cellL18toL14.json");
     std::fs::write(&receipt_path, serde_json::to_string_pretty(&receipt)?)?;
     println!("training receipt: {}", receipt_path.display());
     println!("total wall clock: {:.1}s", t0.elapsed().as_secs_f64());

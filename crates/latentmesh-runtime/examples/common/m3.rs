@@ -144,6 +144,11 @@ pub fn sender_solve_capture_rows(
 /// One frozen-protocol item for the M3 MLP: sender solve + capture,
 /// variant-specific MLP application, then the four paired receiver
 /// conditions.
+// The frozen protocol's parameter list, plus ADR-024 M4g's injection-mode
+// selector. Kept flat and explicit rather than bundled into a struct: every
+// one of these is a registered protocol element, and a reader auditing a
+// probe against the ADR should see them named at the call site.
+#[allow(clippy::too_many_arguments)]
 pub fn run_item(
     sender: &mut QwenRuntime,
     receiver: &mut QwenRuntime,
@@ -151,6 +156,7 @@ pub fn run_item(
     item: &super::Gsm8kItem,
     pad_id: u32,
     variant: Variant,
+    mode: InjectionMode,
     device: &candle_core::Device,
 ) -> anyhow::Result<Option<QuadRow>> {
     let e = anyhow::Error::msg;
@@ -221,6 +227,7 @@ pub fn run_item(
         &aligned,
         &sender_pass,
         &meta,
+        mode,
         device,
     )
     .map(Some)
@@ -229,6 +236,19 @@ pub fn run_item(
 /// Steps 3–5 of the frozen protocol (receiver side), shared by every run-2
 /// rung: placeholder-slot prompt (S1a wording), natural inject-block norms,
 /// the four paired conditions, and the per-item row JSON.
+///
+/// `mode` selects the residual operator (ADR-024 M4g's single changed
+/// factor). It is the ONLY thing that varies here between rungs: the three
+/// `InjectionSpec`s below — the aligned payload, the per-item seeded Gaussian
+/// norm-matched to the effective aligned vector, and the true zero vector —
+/// are constructed identically under both operators, so no control is
+/// redefined by changing it. What DOES change is what the zero payload means:
+/// under `Overwrite` it zeroes the eight rows (destructive), under `Fuse` it
+/// is `h += 0` and therefore an exact no-op equal to the uninjected baseline.
+/// That consequence is declared in M4g's training receipt before the draw and
+/// measured in its probe receipt; it is not papered over with a substitute
+/// control.
+#[allow(clippy::too_many_arguments)]
 pub fn four_conditions(
     receiver: &mut QwenRuntime,
     item: &super::Gsm8kItem,
@@ -236,6 +256,7 @@ pub fn four_conditions(
     aligned: &[f32],
     sender_pass: &SenderPass,
     meta: &CaptureMeta,
+    mode: InjectionMode,
     device: &candle_core::Device,
 ) -> anyhow::Result<QuadRow> {
     let e = anyhow::Error::msg;
@@ -271,7 +292,7 @@ pub fn four_conditions(
         positions: positions.clone(),
         vector: aligned.to_vec(),
         scale: Some(natural.median / aligned_l2),
-        mode: InjectionMode::Overwrite,
+        mode,
     };
     let target_l2 = norms::l2(&real.effective_vector());
     let mut vrng = ChaCha8Rng::seed_from_u64(RANDVEC_SEED_BASE + item.index as u64);
@@ -281,14 +302,14 @@ pub fn four_conditions(
         positions: positions.clone(),
         vector: gauss.clone(),
         scale: Some(target_l2 / norms::l2(&gauss)),
-        mode: InjectionMode::Overwrite,
+        mode,
     };
     let zerovec = InjectionSpec {
         after_block: RECEIVER_BLOCK,
         positions,
         vector: vec![0f32; aligned.len()],
         scale: None,
-        mode: InjectionMode::Overwrite,
+        mode,
     };
 
     // 5) Paired conditions (identical to S2b).
@@ -334,6 +355,7 @@ pub fn four_conditions(
             "natural_inject_block_norms": natural,
             "span": [meta.span.start, meta.span.end],
             "variant": meta.variant,
+            "injection_mode": mode.tag(),
         },
         "conditions": {
             "aligned_real": {"correct": real_ok, "nll_gold": real_nll},

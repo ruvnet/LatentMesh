@@ -18,13 +18,17 @@
 //! amplification — the registered M4c numeric caveat).
 //!
 //! No KV cache: this forward exists for teacher-forced training passes only.
-//! Injection mirrors `qwen2_b::apply_edit`'s `Inject` arm op-for-op
-//! (per-position `slice_assign` of a narrowed row, cast to model dtype), so
-//! an F32 adapter output feeds the BF16 model with gradients intact
-//! (`ToDType` backward exists in candle 0.9.2).
+//! Injection mirrors `qwen2_b::apply_edit`'s `Inject`/`Fuse` arms op-for-op
+//! (per-position `slice_assign` of a narrowed row — or of that row ADDED to
+//! the receiver's own row, under [`InjectionMode::Fuse`] — cast to model
+//! dtype), so an F32 adapter output feeds the BF16 model with gradients
+//! intact (`ToDType` backward exists in candle 0.9.2). The operator is
+//! selected explicitly per call so the training loop and the frozen probe
+//! can be pinned to the same one (ADR-024 M4g).
 
 use candle_core::{DType, Device, Module, Tensor, D};
 use candle_nn::{linear, linear_no_bias, Activation, Linear, VarBuilder};
+use latentmesh_runtime::inject::InjectionMode;
 use latentmesh_runtime::Config;
 
 struct TrainLayer {
@@ -243,14 +247,17 @@ impl TrainReceiver {
 
     /// Full differentiable forward with optional injection AFTER
     /// `after_block` (1-based, `qwen2_b::apply_edit` convention). `inject` =
-    /// `(vectors (n_positions, hidden), positions, after_block)`. Returns
-    /// logits for hidden rows `[span_start, span_start + t_len)` — narrowed
-    /// BEFORE lm_head (vocab work only on the loss span; the measured VRAM
-    /// envelope depends on this).
+    /// `(vectors (n_positions, hidden), positions, after_block, mode)`, where
+    /// `mode` selects the SAME residual operator the frozen probe will use —
+    /// [`InjectionMode::Overwrite`] (M3/M4/M4c/M4d) or
+    /// [`InjectionMode::Fuse`] (ADR-024 M4g). Returns logits for hidden rows
+    /// `[span_start, span_start + t_len)` — narrowed BEFORE lm_head (vocab
+    /// work only on the loss span; the measured VRAM envelope depends on
+    /// this).
     pub fn forward_span_logits(
         &self,
         tokens: &Tensor,
-        inject: Option<(&Tensor, &[usize], usize)>,
+        inject: Option<(&Tensor, &[usize], usize, InjectionMode)>,
         span_start: usize,
         t_len: usize,
     ) -> candle_core::Result<Tensor> {
@@ -259,16 +266,20 @@ impl TrainReceiver {
         let mut xs = self.embed.forward(tokens)?;
         for (idx, layer) in self.layers.iter().enumerate() {
             xs = self.block(&xs, layer, &mask)?;
-            if let Some((vectors, positions, after_block)) = inject {
+            if let Some((vectors, positions, after_block, mode)) = inject {
                 if idx + 1 == after_block {
-                    // Mirror apply_edit's Inject arm op-for-op.
+                    // Mirror apply_edit's Inject / Fuse arm op-for-op.
                     for (row, &pos) in positions.iter().enumerate() {
                         let v = vectors
                             .narrow(0, row, 1)?
                             .reshape((1, 1, self.hidden))?
                             .to_dtype(xs.dtype())?
                             .to_device(xs.device())?;
-                        xs = xs.slice_assign(&[0..1, pos..pos + 1, 0..self.hidden], &v)?;
+                        let write = match mode {
+                            InjectionMode::Overwrite => v,
+                            InjectionMode::Fuse => (xs.narrow(1, pos, 1)? + v)?,
+                        };
+                        xs = xs.slice_assign(&[0..1, pos..pos + 1, 0..self.hidden], &write)?;
                     }
                 }
             }

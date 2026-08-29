@@ -1,28 +1,58 @@
-//! Run-2 M4c — frozen-probe evaluation of the TASK-LOSS-trained MLP adapter
-//! (ADR-024 § Registered contingency), run2_m3_probe lineage.
+//! Run-2 M4g — frozen-probe evaluation of the FUSE-trained task-loss MLP
+//! adapter (ADR-024 § "M4g PRE-REGISTRATION (2026-08-29, before any run) —
+//! fuse instead of overwrite"), run2_m4d_probe lineage.
 //!
 //! The probe protocol is ADR-023's, ABSOLUTELY FROZEN and inherited
 //! unchanged (the same 40 GSM8K-train items — ChaCha8 seed 0x51A1, asserted
 //! equal to the committed S1a receipt — one-sided exact sign test at α=0.05,
 //! primary gate aligned_real > random, 8 slots, rescale-to-natural-median,
 //! greedy/batch=1/max 400 tokens, four conditions). The per-item mechanics
-//! are `common::m3`'s SHARED code paths (extracted for M4 reuse — the frozen
-//! protocol exists in exactly one place). The ONLY change from M3's probe:
-//! the artifact is the M4c task-loss-trained MLP (same architecture, same
-//! artifact layout, same hand-rolled apply), and only the per-token pathway
-//! runs — the pathway M4c's training optimized (ONE probe invocation; no
-//! pooled-variant second draw; both frozen in the M4c training receipt).
+//! are `common::m3`'s SHARED code paths, so the frozen protocol exists in
+//! exactly one place and cannot silently diverge between rungs.
+//!
+//! **The ONE changed factor: the injection operator.** M3/M4/M4c/M4d (and all
+//! of run 1) OVERWROTE the receiver's residual rows at the 8 placeholder
+//! positions. M4g performs a **residual ADD**, `h[slot] += c·v`, preserving
+//! the receiver's own state there — Cache-to-Cache's own fuser equation
+//! (arXiv:2510.03215 Eq. 3). ADR-028 lists the injection operator as an
+//! EVOLVABLE surface and this protocol as PROTECTED; the items, the four
+//! condition definitions, the rescale switch, the decoding and the statistics
+//! are untouched. ONE probe invocation, no second draw.
+//!
+//! **What the operator does to the controls, and what this probe measures
+//! about it** (resolved and frozen in the training receipt's
+//! `control_semantics_under_fuse` BEFORE this draw, echoed into this receipt,
+//! and then measured here):
+//!   * `aligned_real` and `random` — definitions AND meanings unchanged; the
+//!     random control is still a norm-matched, information-free perturbation,
+//!     so the PRIMARY statistic is unaffected.
+//!   * `zerovec_injected` — definition unchanged (the true zero vector
+//!     through the real 8-slot path), meaning CHANGED: `h += 0` is an exact
+//!     no-op, so this condition collapses onto `baseline_uninjected`. The
+//!     condition is still RUN, on all 40 items, and the collapse is MEASURED
+//!     (`fuse_zero_is_noop_vs_baseline`) as an operator-correctness
+//!     diagnostic. No substitute control is introduced — that would be an
+//!     unregistered redefinition and a second changed factor.
+//!   * the registered zerovec gate (`2 × zerovec ≥ baseline`) is therefore
+//!     DEGENERATE under fuse. It is still computed, still reported, and
+//!     explicitly labelled so no reader mistakes it for evidence.
+//!
+//! REPORTING: every sign-test line carries both the frozen exact sign p and
+//! the one-sided **mid-p McNemar** value on the same pairs. ADR-024's M4g
+//! pre-registration names mid-p as this rung's primary; the machine
+//! `gate_pass` field stays on the ADR-028-protected exact sign test so it
+//! remains comparable with every prior rung. Both are reported; neither is
+//! selected after seeing the other.
 //!
 //! ORDERING GATES (refused before any model loads):
-//!   1. artifact hash == the M4c training receipt's (written before this
-//!      probe existed as an invocation);
-//!   2. the registered transfer check receipt exists with gate_pass=true and
-//!      the SAME artifact hash — per the frozen mitigation, a probe run
-//!      without a passing transfer check would be confounded by the
-//!      composed↔fused BF16 numeric gap.
+//!   1. artifact hash == the M4g training receipt's;
+//!   2. the training receipt records the SAME injection operator this probe
+//!      will use;
+//!   3. the registered transfer check receipt exists with gate_pass=true and
+//!      the SAME artifact hash.
 //!
 //! Run: PATH=/usr/local/cuda-12.8/bin:$PATH \
-//!      cargo run --release --features cuda --example run2_m4c_probe
+//!      cargo run --release --features cuda --example run2_m4g_probe
 
 #[path = "common/mod.rs"]
 #[allow(dead_code)]
@@ -41,9 +71,16 @@ use std::path::{Path, PathBuf};
 
 const GSM8K_TRAIN_SHA256: &str = "17f347dc51477c50d4efb83959dbb7c56297aba886e5544ee2aaed3024813465";
 const S1A_RECEIPT: &str = "receipts/s1a-receipt-slots8-block19-poolfull-rescaletrue-n40.json";
-const TRAINING_RECEIPT: &str = "receipts/run2-m4c-training-receipt-cellL18toL14.json";
-const TRANSFER_RECEIPT: &str = "receipts/run2-m4c-transfer-receipt-cellL18toL14.json";
+const TRAINING_RECEIPT: &str = "receipts/run2-m4g-training-receipt-cellL18toL14.json";
+const TRANSFER_RECEIPT: &str = "receipts/run2-m4g-transfer-receipt-cellL18toL14.json";
 const N_ITEMS: usize = 40;
+/// **THE ONE CHANGED FACTOR** — pinned here, asserted against the training
+/// receipt before any model loads, and threaded into the shared frozen
+/// four-condition block.
+const INJECT_MODE: InjectionMode = InjectionMode::Fuse;
+/// Tolerance for the fuse zero-payload no-op diagnostic (nats). Reported,
+/// never gating: `h += 0` is expected to be EXACTLY the uninjected forward.
+const FUSE_NOOP_TOL: f32 = 1e-6;
 
 fn crate_path(rel: &str) -> PathBuf {
     Path::new(env!("CARGO_MANIFEST_DIR")).join(rel)
@@ -54,14 +91,34 @@ fn main() -> anyhow::Result<()> {
     let nvcc = latentmesh_runtime::assert_cuda_build_env().map_err(anyhow::Error::msg)?;
     println!("build-env guard: {nvcc}");
 
-    // ---- Gate 1: artifact hash vs the FROZEN M4c training receipt ---------
+    // ---- Gate 1: artifact hash vs the FROZEN M4d training receipt ---------
     let train_receipt: serde_json::Value =
         serde_json::from_slice(&std::fs::read(crate_path(TRAINING_RECEIPT))?)?;
     let expected_hash = train_receipt["artifact"]["content_hash_sha256"]
         .as_str()
         .expect("training receipt artifact.content_hash_sha256")
         .to_string();
-    let artifact = crate_path("receipts/run2-m4c-mlp-taskloss-cellL18toL14.f32bin");
+    let train_mode = train_receipt["training"]["injection_operator"]["mode"]
+        .as_str()
+        .expect("training receipt training.injection_operator.mode");
+    anyhow::ensure!(
+        train_mode == INJECT_MODE.tag(),
+        "training receipt records injection operator '{train_mode}' but this probe would run \
+         '{}' — the adapter must be probed through the operator it was trained for",
+        INJECT_MODE.tag()
+    );
+    let control_semantics = train_receipt["control_semantics_under_fuse"].clone();
+    anyhow::ensure!(
+        control_semantics["registered_before_the_probe"].as_bool() == Some(true),
+        "the training receipt does not carry the control-semantics registration that must be \
+         frozen BEFORE this draw"
+    );
+    println!(
+        "injection operator: {} ({}) — asserted equal to the training receipt's",
+        INJECT_MODE.tag(),
+        INJECT_MODE.equation()
+    );
+    let artifact = crate_path("receipts/run2-m4g-mlp-fuse-cellL18toL14.f32bin");
     let transform = MlpTransform::load(&artifact)?;
     anyhow::ensure!(
         transform.content_hash == expected_hash,
@@ -69,11 +126,11 @@ fn main() -> anyhow::Result<()> {
         artifact.display(),
         transform.content_hash
     );
-    let golden = crate_path("receipts/run2-m4c-golden-mlp-taskloss-cellL18toL14.json");
+    let golden = crate_path("receipts/run2-m4g-golden-mlp-fuse-cellL18toL14.json");
     let (golden_n, golden_max_rel, golden_seed) =
         common::mlp::verify_against_golden(&transform, &golden, GOLDEN_REL_TOL)?;
     println!(
-        "M4c artifact ({}): hand-rolled apply verified against {golden_n} trained-network \
+        "M4g artifact ({}): hand-rolled apply verified against {golden_n} trained-network \
          golden pairs, max relative L2 error {golden_max_rel:.3e} <= {GOLDEN_REL_TOL:.0e}",
         transform.content_hash
     );
@@ -83,7 +140,7 @@ fn main() -> anyhow::Result<()> {
         serde_json::from_slice(&std::fs::read(crate_path(TRANSFER_RECEIPT)).map_err(|e| {
             anyhow::anyhow!(
                 "transfer receipt {TRANSFER_RECEIPT} unreadable ({e}) — the frozen ordering is \
-                 training -> transfer check -> probe; run run2_m4c_transfer_check first"
+                 training -> transfer check -> probe; run run2_m4d_transfer_check first"
             )
         })?)?;
     anyhow::ensure!(
@@ -101,7 +158,7 @@ fn main() -> anyhow::Result<()> {
     );
 
     // ---- Dataset: pinned sha + the exact S1a item set ---------------------
-    let dir = common::run_dir("run2-m4c");
+    let dir = common::run_dir("run2-m4g");
     let data = dir.join("gsm8k-train.jsonl");
     let train_sha = common::fetch(common::GSM8K_TRAIN_URL, &data)?;
     anyhow::ensure!(train_sha == GSM8K_TRAIN_SHA256);
@@ -145,7 +202,7 @@ fn main() -> anyhow::Result<()> {
             item,
             pad_id,
             Variant::PerToken,
-            InjectionMode::Overwrite,
+            INJECT_MODE,
             &device,
         )? {
             Some((row, q)) => {
@@ -188,10 +245,17 @@ fn main() -> anyhow::Result<()> {
     let loss_rz = count(&|q| !q.real.0 && q.zero.0);
     let wins_rb = count(&|q| q.real.0 && !q.base.0);
     let loss_rb = count(&|q| !q.real.0 && q.base.0);
+    // Mid-p McNemar on the SAME pairs — reported only, gates nothing.
+    let mid_primary = common::mid_p_one_sided(wins_rr, loss_rr);
     let nll_sign = |a: &dyn Fn(&Quad) -> f32, b: &dyn Fn(&Quad) -> f32| {
         let w = paired.iter().filter(|q| a(q) < b(q)).count();
         let l = paired.iter().filter(|q| a(q) > b(q)).count();
-        (w, l, common::sign_test_one_sided(w, l))
+        (
+            w,
+            l,
+            common::sign_test_one_sided(w, l),
+            common::mid_p_one_sided(w, l),
+        )
     };
     let nll_rr = nll_sign(&|q| q.real.1, &|q| q.rand.1);
     let nll_rz = nll_sign(&|q| q.real.1, &|q| q.zero.1);
@@ -199,15 +263,15 @@ fn main() -> anyhow::Result<()> {
     let mean = |f: &dyn Fn(&Quad) -> f32| paired.iter().map(f).sum::<f32>() / n.max(1) as f32;
 
     let receipt = serde_json::json!({
-        "stage": "run2-M4c-taskloss-probe",
-        "design": "docs/adr/024-run2-trained-thought-adapter-ladder.md § Registered contingency (M4c, mandatory after M4's null); probe protocol = ADR-023's frozen S1a/S2b protocol inherited unchanged (never iterated, re-drawn, or re-tuned)",
+        "stage": "run2-M4d-deploymatch-probe",
+        "design": "docs/adr/024-run2-trained-thought-adapter-ladder.md § 'Registered contingency — M4d, train/deploy configuration match' (registered 2026-08-29 BEFORE any M4d run); probe protocol = ADR-023's frozen S1a/S2b protocol inherited unchanged (never iterated, re-drawn, or re-tuned). M4d changed TRAINING only.",
         "env": common::env_info(&nvcc),
         "pre_committed": true,
-        "variant": "pertoken-taskloss",
+        "variant": "pertoken-deploymatch",
         "config": {
             "sender": SENDER, "receiver": RECEIVER,
             "sender_capture_block": SENDER_BLOCK, "receiver_inject_block": RECEIVER_BLOCK,
-            "cell": "L18->L14 (S2 winner; M4c registers the task-loss ablation on this cell only)",
+            "cell": "L18->L14 (S2 winner; M4d registers the train/deploy configuration-match rung on this cell only)",
             "slots": N_SLOTS, "placeholder_token": "<|fim_pad|>", "placeholder_id": pad_id,
             "pool_span": "full generated span",
             "rescale_to_natural_median": true,
@@ -215,7 +279,7 @@ fn main() -> anyhow::Result<()> {
             "decoding": "greedy, batch=1, max_new_tokens=400",
             "item_seed_chacha8": ITEM_SEED, "randvec_seed_base": RANDVEC_SEED_BASE,
             "transform": {
-                "kind": "TASK-LOSS-trained M4c MLP 2048->512->1536 ReLU (M3 architecture per ADR-024 same-or-best rule; trained C2C-style through the frozen receiver's next-token CE on each item's own generated span)",
+                "kind": "DEPLOY-MATCHED task-loss-trained M4d MLP 2048->512->1536 ReLU (M4c's architecture, seed, split, loss and schedule; the one changed factor is that training's rescale target came from the probe's OWN vendored-fused forward_capture + norms::stats and used InjectionSpec's operator order, gate-verified to <=1e-6)",
                 "file": artifact.display().to_string(),
                 "content_hash": transform.content_hash,
                 "training_receipt": TRAINING_RECEIPT,
@@ -237,7 +301,8 @@ fn main() -> anyhow::Result<()> {
                 "zerovec_injected": "TRUE ZERO VECTOR through the real 8-slot injection path (scale: None)",
                 "baseline_uninjected": "no injection (spec=None), same prompt",
             },
-            "primary_test": "one-sided exact sign test, paired accuracy, aligned_real > random, alpha 0.05",
+            "primary_test": "one-sided exact sign test, paired accuracy, aligned_real > random, alpha 0.05 — THE recorded verdict statistic, frozen and unchanged",
+            "reported_secondary_statistic": "one-sided mid-p McNemar (exact_p - 0.5*P(X=wins); Fagerland, Lydersen & Laake 2013; docs/research/031 §2.4, ADR-030's run-3 primary) computed on the SAME collected pairs and reported alongside every sign-test line. It gates nothing and changes no recorded verdict here; run 2's protocol statistic is ADR-028-protected.",
             "zerovec_gate": "pre-committed: pass iff 2 x zerovec accuracy >= baseline accuracy; numbers reported either way",
             "secondary_diagnostic": "one-sided sign tests on paired teacher-forced NLL of '#### <gold>'",
         },
@@ -249,7 +314,12 @@ fn main() -> anyhow::Result<()> {
             "accuracy": {"aligned_real": real_c, "baseline_uninjected": base_c,
                           "zerovec_injected": zero_c, "random": rand_c},
             "primary_aligned_vs_random": {"wins": wins_rr, "losses": loss_rr,
-                "p_one_sided": p_primary, "alpha": ALPHA, "pass": primary_pass},
+                "n_discordant": wins_rr + loss_rr,
+                "p_one_sided": p_primary, "alpha": ALPHA, "pass": primary_pass,
+                "mid_p_one_sided_reported_only": mid_primary,
+                "mid_p_pass_if_it_were_primary": mid_primary < ALPHA,
+                "mid_p_note": "reported per ADR-030/research-031; NOT the gate — 'pass' above is the recorded verdict and is computed from p_one_sided alone",
+                "min_attainable_p_at_this_n_disc": if wins_rr + loss_rr == 0 { 1.0 } else { 0.5f64.powi((wins_rr + loss_rr) as i32) }},
             "zerovec_vs_baseline": {
                 "baseline_wins": zb_base_wins, "zerovec_wins": zb_zero_wins,
                 "p_baseline_gt_zerovec": common::sign_test_one_sided(zb_base_wins, zb_zero_wins),
@@ -257,14 +327,19 @@ fn main() -> anyhow::Result<()> {
                 "criterion": "2 x zerovec_correct >= baseline_correct",
                 "pass": zerovec_pass},
             "aligned_vs_zerovec": {"wins": wins_rz, "losses": loss_rz,
-                "p_one_sided": common::sign_test_one_sided(wins_rz, loss_rz)},
+                "p_one_sided": common::sign_test_one_sided(wins_rz, loss_rz),
+                "mid_p_one_sided_reported_only": common::mid_p_one_sided(wins_rz, loss_rz)},
             "aligned_vs_baseline": {"wins": wins_rb, "losses": loss_rb,
-                "p_one_sided": common::sign_test_one_sided(wins_rb, loss_rb)},
+                "p_one_sided": common::sign_test_one_sided(wins_rb, loss_rb),
+                "mid_p_one_sided_reported_only": common::mid_p_one_sided(wins_rb, loss_rb)},
             "nll_mean": {"aligned_real": mean(&|q| q.real.1), "baseline_uninjected": mean(&|q| q.base.1),
                           "zerovec_injected": mean(&|q| q.zero.1), "random": mean(&|q| q.rand.1)},
-            "nll_aligned_vs_random": {"wins": nll_rr.0, "losses": nll_rr.1, "p_one_sided": nll_rr.2},
-            "nll_aligned_vs_zerovec": {"wins": nll_rz.0, "losses": nll_rz.1, "p_one_sided": nll_rz.2},
-            "nll_zerovec_vs_baseline": {"wins": nll_zb.0, "losses": nll_zb.1, "p_one_sided": nll_zb.2},
+            "nll_aligned_vs_random": {"wins": nll_rr.0, "losses": nll_rr.1,
+                "p_one_sided": nll_rr.2, "mid_p_one_sided_reported_only": nll_rr.3},
+            "nll_aligned_vs_zerovec": {"wins": nll_rz.0, "losses": nll_rz.1,
+                "p_one_sided": nll_rz.2, "mid_p_one_sided_reported_only": nll_rz.3},
+            "nll_zerovec_vs_baseline": {"wins": nll_zb.0, "losses": nll_zb.1,
+                "p_one_sided": nll_zb.2, "mid_p_one_sided_reported_only": nll_zb.3},
         },
         "gates": {
             "artifact_hash_matches_training_receipt": {"pass": true, "hash": transform.content_hash},
@@ -273,7 +348,7 @@ fn main() -> anyhow::Result<()> {
                 "mean_fused_nll_trained": transfer["summary"]["mean_fused_nll_trained"],
                 "mean_fused_nll_init": transfer["summary"]["mean_fused_nll_init"]},
             "s1a_item_set_reproduced": {"pass": true},
-            "M4c_aligned_real_vs_random": {"pass": primary_pass, "p": p_primary},
+            "M4d_aligned_real_vs_random": {"pass": primary_pass, "p": p_primary},
             "zerovec_not_catastrophic": {"pass": zerovec_pass,
                 "zerovec_correct": zero_c, "baseline_correct": base_c},
         },
@@ -282,14 +357,15 @@ fn main() -> anyhow::Result<()> {
     });
     common::write_receipt(
         &crate_path("receipts"),
-        "run2-m4c-receipt-cellL18toL14-mlp-taskloss-slots8-poolfull-rescaletrue-n40.json",
+        "run2-m4d-receipt-cellL18toL14-mlp-deploymatch-slots8-poolfull-rescaletrue-n40.json",
         &receipt,
     )?;
     println!(
-        "M4c[taskloss/pertoken]: acc aligned {real_c}/{n} baseline {base_c}/{n} zerovec {zero_c}/{n} random {rand_c}/{n}"
+        "M4d[deploymatch/pertoken]: acc aligned {real_c}/{n} baseline {base_c}/{n} zerovec {zero_c}/{n} random {rand_c}/{n}"
     );
     println!(
-        "primary p={p_primary:.4} (wins {wins_rr}, losses {loss_rr}) => pass={primary_pass}; \
+        "primary p={p_primary:.4} (wins {wins_rr}, losses {loss_rr}) => pass={primary_pass} \
+         [mid-p {mid_primary:.4}, reported only]; \
          zerovec {zero_c} vs baseline {base_c} => pass={zerovec_pass}"
     );
     Ok(())

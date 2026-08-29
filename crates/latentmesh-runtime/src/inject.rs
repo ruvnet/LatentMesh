@@ -1,30 +1,82 @@
-//! `forward_inject` — placeholder-position residual overwrite at block k
+//! `forward_inject` — placeholder-position residual edit at block k
 //! (design §3). The receiver prompt carries placeholder tokens; during
 //! prefill the residual rows at those positions, after `after_block` blocks,
-//! are overwritten with the (optionally rescaled) payload vector. Decode
+//! are edited with the (optionally rescaled) payload vector. Decode
 //! steps inherit the edit through the KV cache of blocks > k, positions
 //! unchanged — RoPE/KV coherent.
+//!
+//! Two operators exist, selected by [`InjectionMode`] and recorded explicitly
+//! at every construction site and in every receipt:
+//!
+//! * [`InjectionMode::Overwrite`] — the ADR-023 original and the operator
+//!   every run-1 and run-2 M3/M4/M4c/M4d receipt was produced with:
+//!   `h[slot] = c·v`, a hard `slice_assign` that discards whatever the
+//!   placeholder position's own forward pass produced. **This path is frozen
+//!   and behaviourally untouched**, so every prior receipt stays reproducible.
+//! * [`InjectionMode::Fuse`] — ADR-024's M4g rung: `h[slot] += c·v`, a
+//!   residual ADD that preserves the receiver's own state at those positions.
+//!   This mirrors Cache-to-Cache's own fuser equation
+//!   `C_F = C_n(X) + F_n(...)` (arXiv:2510.03215 Eq. 3, verified in
+//!   `docs/research/038` §4). The injection operator is an ADR-028
+//!   **evolvable** surface; the probe protocol around it is protected.
 
 use crate::models::{LayerEdit, ModelForCausalLM};
 use candle_core::{DType, Device, Result, Tensor};
 use std::ops::Range;
 
+/// Which residual-stream operator delivers the payload at the slot rows.
+///
+/// Recorded explicitly in every receipt: it is the single changed factor
+/// between ADR-024's M4d rung (`Overwrite`) and its M4g rung (`Fuse`).
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Default, serde::Serialize)]
+pub enum InjectionMode {
+    /// `h[slot] = c·v` — hard overwrite (ADR-023 original; the default, so an
+    /// unannotated call site keeps the historical semantics exactly).
+    #[default]
+    Overwrite,
+    /// `h[slot] += c·v` — residual add / fuse (ADR-024 M4g; C2C Eq. 3).
+    Fuse,
+}
+
+impl InjectionMode {
+    /// Short receipt tag.
+    pub fn tag(self) -> &'static str {
+        match self {
+            InjectionMode::Overwrite => "overwrite",
+            InjectionMode::Fuse => "fuse",
+        }
+    }
+
+    /// The operator, written out, for receipts and error messages.
+    pub fn equation(self) -> &'static str {
+        match self {
+            InjectionMode::Overwrite => "h[slot] = c*v (slice_assign overwrite; ADR-023 original)",
+            InjectionMode::Fuse => {
+                "h[slot] += c*v (residual add; C2C Eq.3 C_F = C_n(X) + F_n(...))"
+            }
+        }
+    }
+}
+
 /// A single-vector injection: the pooled payload broadcast to every slot.
 #[derive(Debug, Clone)]
 pub struct InjectionSpec {
-    /// 1-based block count after which the overwrite happens ("L19/28" => 19).
+    /// 1-based block count after which the edit happens ("L19/28" => 19).
     pub after_block: usize,
     /// Absolute token positions of the placeholder slots in the prompt.
     pub positions: Vec<usize>,
     /// Payload vector, f32, length = receiver hidden size.
     pub vector: Vec<f32>,
-    /// Optional multiplier applied to `vector` before the overwrite (the
+    /// Optional multiplier applied to `vector` before the edit (the
     /// pre-declared norm-rescaling switch; `None` = raw).
     pub scale: Option<f32>,
+    /// Residual operator: overwrite (historical) or fuse (ADR-024 M4g).
+    pub mode: InjectionMode,
 }
 
 impl InjectionSpec {
-    /// The vector actually written (post-scale).
+    /// The vector actually delivered (post-scale). Under `Overwrite` this is
+    /// what the slot row becomes; under `Fuse` it is what is ADDED to it.
     pub fn effective_vector(&self) -> Vec<f32> {
         let s = self.scale.unwrap_or(1.0);
         self.vector.iter().map(|x| x * s).collect()
@@ -36,6 +88,22 @@ impl InjectionSpec {
         let n = self.positions.len();
         let rows: Vec<f32> = std::iter::repeat(v).take(n.max(1)).flatten().collect();
         Tensor::from_vec(rows, (n.max(1), h), device)
+    }
+
+    /// The `LayerEdit` this spec's [`InjectionMode`] selects.
+    fn layer_edit<'a>(&'a self, vectors: &'a Tensor) -> LayerEdit<'a> {
+        match self.mode {
+            InjectionMode::Overwrite => LayerEdit::Inject {
+                after_block: self.after_block,
+                positions: &self.positions,
+                vectors,
+            },
+            InjectionMode::Fuse => LayerEdit::Fuse {
+                after_block: self.after_block,
+                positions: &self.positions,
+                vectors,
+            },
+        }
     }
 }
 
@@ -54,11 +122,7 @@ pub fn prefill_with_injection(
         None => model.forward(&input, 0),
         Some(spec) => {
             let vectors = spec.vectors_tensor(device)?;
-            let mut edit = LayerEdit::Inject {
-                after_block: spec.after_block,
-                positions: &spec.positions,
-                vectors: &vectors,
-            };
+            let mut edit = spec.layer_edit(&vectors);
             model.forward_with_edit(&input, 0, Some(&mut edit))
         }
     }
@@ -82,11 +146,7 @@ pub fn teacher_forced_nll(
         None => model.forward_full_logits(&input, 0, None)?,
         Some(spec) => {
             let vectors = spec.vectors_tensor(device)?;
-            let mut edit = LayerEdit::Inject {
-                after_block: spec.after_block,
-                positions: &spec.positions,
-                vectors: &vectors,
-            };
+            let mut edit = spec.layer_edit(&vectors);
             model.forward_full_logits(&input, 0, Some(&mut edit))?
         }
     };

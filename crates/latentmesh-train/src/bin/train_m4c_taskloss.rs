@@ -39,6 +39,7 @@ use latentmesh_train::taskdata::{self, TaskItem};
 
 use candle_core::{DType, Device, Tensor};
 use candle_nn::Optimizer;
+use latentmesh_runtime::inject::InjectionMode;
 use rand::seq::SliceRandom;
 use rand::SeedableRng;
 use rand_chacha::ChaCha8Rng;
@@ -116,7 +117,12 @@ fn item_loss(
     let tokens = Tensor::new(&it.full_tokens[..], dev)?.unsqueeze(0)?;
     let logits = model.forward_span_logits(
         &tokens,
-        Some((&vectors, &it.slot_positions, INJECT_AFTER_BLOCK)),
+        Some((
+            &vectors,
+            &it.slot_positions,
+            INJECT_AFTER_BLOCK,
+            InjectionMode::Overwrite,
+        )),
         it.span_start,
         it.target_tokens.len(),
     )?;

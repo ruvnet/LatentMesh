@@ -37,6 +37,7 @@ use common::m3::{
     four_conditions, sender_solve_capture_rows, CaptureMeta, Quad, ALPHA, GOLDEN_REL_TOL,
     ITEM_SEED, N_SLOTS, RANDVEC_SEED_BASE, RECEIVER, RECEIVER_BLOCK, SENDER, SENDER_BLOCK,
 };
+use latentmesh_runtime::inject::InjectionMode;
 use latentmesh_runtime::{norms, QwenRuntime};
 use rand::SeedableRng;
 use rand_chacha::ChaCha8Rng;
@@ -224,6 +225,7 @@ fn main() -> anyhow::Result<()> {
                     &aligned,
                     &sr.pass,
                     &meta,
+                    InjectionMode::Overwrite,
                     &device,
                 )?;
                 println!(
