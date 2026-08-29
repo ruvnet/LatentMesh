@@ -64,7 +64,7 @@ shown**, and it is not what reranking or routing actually needs.
 **The dissociation itself** — a payload that moves likelihood with extreme
 fidelity (−0.773 nats, p = 7.5e-35) while moving decisions no more than noise
 (p = 0.72, fully powered, out-of-sample confirmed). The repo's earlier SOTA
-sweep ([028](028-sota-sweep.md)) found no paper naming this split for
+sweep ([028](028-sota-continuous-sweep-1.md)) found no paper naming this split for
 cross-model transfer.
 
 **So the contribution is the finding, not a product built on the channel.**
