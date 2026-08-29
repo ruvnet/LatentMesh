@@ -688,6 +688,67 @@ loss function, deployment configuration, and injection operator.
 **Honest-fail path unchanged**: full numbers either way, no protocol
 iteration, no retry.
 
+## M4h PRE-REGISTRATION (2026-08-29, before any run) — de-pooling
+
+[docs/research/040](../research/040-the-pooling-gap.md) verified from primary
+sources that **no successful cross-model method pools**: C2C transfers
+per-token KV cache (full sequence, all layers); LatentMAS *concatenates* full
+per-token per-layer caches (its "shared latent working memory" is literal, not
+a summary); Bicameral couples live per-token states each decode step and has
+no static object to pool; AVP's cross-model path is per-token. **LatentMesh is
+the only surveyed design that pools** — and every rung, including run 1's
+affine bridges and M4's nominally "sequence" FastGRNN, still pools at the
+injection boundary. Mechanism from the literature (Ethayarajh 2019 anisotropy;
+Li et al. 2020 BERT-flow, STS-B 59.04 pooled vs 70.72 isotropy-corrected),
+reproduced at reasoning-trace scale by our own 036 numbers (cross-item
+invariance 0.962 pooled vs 0.635 real; entropy 9.30 vs 3.36). Honest
+counter-case recorded: SBERT's ablation has trained MEAN pooling *winning*
+(87.44 vs CLS 86.62) — pooling is not intrinsically fatal; **uncorrected
+pooling-unaware geometry** is.
+
+**M4h, two stages, registered now:**
+- **Stage 1 (near-zero cost, no new training or capture)**: take M3's
+  *already-trained* per-token MLP and emit the **last-token** output instead
+  of the mean, same 8-slot broadcast. One registered probe draw.
+- **Stage 2 (~0.5-0.7 GPU-h)**: **8 distinct per-slot vectors** via
+  attention-compression over the sender's own per-token stream — this
+  redirects M4f's bank-attention mechanism at the right target. One
+  registered probe draw.
+
+**Implementability, source-verified**: `LayerEdit::Inject`/`Fuse` in
+`qwen2_b.rs` already accept **distinct per-row vectors**; only
+`InjectionSpec`'s broadcast-repeat wrapper forces pooling. No forward-pass
+change, no new capture — the 719,115-position per-token dumps exist and have
+never been used at full granularity.
+
+**Probe compatibility**: preserved **only if slot count stays exactly 8**
+(content per slot changes; slot count does not). M4h is specified that way
+deliberately.
+
+**Ordering and relationships**: upstream of M4f's manifold framing — our
+"on-manifold" was measured against a *pooled* reference that is itself 0.667
+cosine off the real manifold, so a correctly-scoped M4f and M4h Stage 2 may
+converge on nearly the same experiment. Orthogonal to M4g (overwrite/fuse)
+and M4b (receiver scale). Entangled with M4e (every non-pooling method also
+avoids one-shot delivery) — a combined de-pool + continuous rung is named as a
+future escalation, not the immediate step. **Runs after M4g reports.**
+
+**Scoping correction to an earlier brief**: MANTA is **not** a latent-transfer
+method — its own abstract describes multi-agent topology restructuring
+(roles, links, order, validation), not hidden-state content. It should not be
+cited alongside C2C/LatentMAS/Bicameral as a latent-transfer comparator; any
+earlier text of mine that did so is wrong.
+
+## ADR-028 INTERNAL CONTRADICTION (found 2026-08-29, flagged not adjudicated)
+
+[ADR-028](028-evolutionary-adapter-search-anti-gaming.md) lists **"slot
+count"** on **both** sides of its own boundary: as an *evolvable* surface
+(alongside pooling scheme, injection depth/site) **and** as part of the
+*protected* frozen probe protocol. Those cannot both hold. Recorded here
+rather than silently resolved; M4h sidesteps it by keeping exactly 8 slots.
+ADR-028's owner should adjudicate before any rung proposes changing slot
+count.
+
 ## CORRECTION to M4e's premise + bidirectional exchange deprioritised (2026-08-29)
 
 [docs/research/039](../research/039-bidirectional-latent-exchange.md) corrects
