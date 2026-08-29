@@ -507,33 +507,39 @@ pub struct InjectionValidation {
     pub pass: bool,
 }
 
+#[derive(Debug, Clone, Copy)]
+pub struct InjectionPolicy<'a> {
+    pub hidden_size: usize,
+    pub n_slots: usize,
+    pub registered_gains: &'a [f32],
+    pub require_nonzero: bool,
+}
+
 /// Validate the complete residual-edit boundary before a model sees it.
 /// `require_nonzero=false` is reserved for the registered zero-vector arm.
 pub fn validate_injection(
     vector: &[f32],
     scale: Option<f32>,
     positions: &[usize],
-    hidden_size: usize,
-    n_slots: usize,
     gain: Option<f32>,
-    registered_gains: &[f32],
-    require_nonzero: bool,
+    policy: InjectionPolicy<'_>,
 ) -> anyhow::Result<InjectionValidation> {
-    let vector_length_matches = vector.len() == hidden_size;
-    let positions_match_slots = positions.len() == n_slots;
+    let vector_length_matches = vector.len() == policy.hidden_size;
+    let positions_match_slots = positions.len() == policy.n_slots;
     let mut sorted = positions.to_vec();
     sorted.sort_unstable();
     let positions_unique = sorted.windows(2).all(|w| w[0] != w[1]);
     let vector_finite = vector.iter().all(|v| v.is_finite());
     let scale_finite = scale.map_or(true, f32::is_finite);
-    let gain_registered = gain.map_or(true, |g| registered_gains.contains(&g));
+    let gain_registered = gain.map_or(true, |g| policy.registered_gains.contains(&g));
     let s = scale.unwrap_or(1.0) as f64;
     let effective_l2 = vector
         .iter()
         .map(|v| (*v as f64 * s).powi(2))
         .sum::<f64>()
         .sqrt();
-    let effective_l2_valid = effective_l2.is_finite() && (!require_nonzero || effective_l2 > 0.0);
+    let effective_l2_valid =
+        effective_l2.is_finite() && (!policy.require_nonzero || effective_l2 > 0.0);
     let pass = vector_length_matches
         && positions_match_slots
         && positions_unique
@@ -714,58 +720,28 @@ mod tests {
     #[test]
     fn injection_boundary_rejects_nonfinite_wrong_shape_and_unknown_gain() {
         let gains = [0.25, 0.5, 1.0, 2.0, 4.0];
-        assert!(validate_injection(
-            &[1.0, 2.0],
-            Some(1.0),
-            &[1, 2],
-            2,
-            2,
-            Some(1.0),
-            &gains,
-            true
-        )
-        .is_ok());
+        let strict = InjectionPolicy {
+            hidden_size: 2,
+            n_slots: 2,
+            registered_gains: &gains,
+            require_nonzero: true,
+        };
+        let allow_zero = InjectionPolicy {
+            require_nonzero: false,
+            ..strict
+        };
+        assert!(validate_injection(&[1.0, 2.0], Some(1.0), &[1, 2], Some(1.0), strict).is_ok());
+        assert!(validate_injection(&[1.0], Some(1.0), &[1, 2], Some(1.0), strict).is_err());
         assert!(
-            validate_injection(&[1.0], Some(1.0), &[1, 2], 2, 2, Some(1.0), &gains, true).is_err()
+            validate_injection(&[1.0, f32::NAN], Some(1.0), &[1, 2], Some(1.0), strict).is_err()
         );
-        assert!(validate_injection(
-            &[1.0, f32::NAN],
-            Some(1.0),
-            &[1, 2],
-            2,
-            2,
-            Some(1.0),
-            &gains,
-            true
-        )
-        .is_err());
-        assert!(validate_injection(
-            &[1.0, 2.0],
-            Some(f32::INFINITY),
-            &[1, 2],
-            2,
-            2,
-            Some(1.0),
-            &gains,
-            true
-        )
-        .is_err());
         assert!(
-            validate_injection(&[1.0, 2.0], Some(1.0), &[1], 2, 2, Some(1.0), &gains, true)
+            validate_injection(&[1.0, 2.0], Some(f32::INFINITY), &[1, 2], Some(1.0), strict)
                 .is_err()
         );
-        assert!(validate_injection(
-            &[1.0, 2.0],
-            Some(1.0),
-            &[1, 2],
-            2,
-            2,
-            Some(3.0),
-            &gains,
-            true
-        )
-        .is_err());
-        assert!(validate_injection(&[0.0, 0.0], None, &[1, 2], 2, 2, None, &gains, true).is_err());
-        assert!(validate_injection(&[0.0, 0.0], None, &[1, 2], 2, 2, None, &gains, false).is_ok());
+        assert!(validate_injection(&[1.0, 2.0], Some(1.0), &[1], Some(1.0), strict).is_err());
+        assert!(validate_injection(&[1.0, 2.0], Some(1.0), &[1, 2], Some(3.0), strict).is_err());
+        assert!(validate_injection(&[0.0, 0.0], None, &[1, 2], None, strict).is_err());
+        assert!(validate_injection(&[0.0, 0.0], None, &[1, 2], None, allow_zero).is_ok());
     }
 }

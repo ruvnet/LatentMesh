@@ -26,6 +26,10 @@ fn committed_registration_and_sources_are_byte_exact() {
         "qwen2.5-1.5b-exact-channel",
     )
     .expect("the committed registration must remain frozen and valid");
+    assert_eq!(
+        validated.path,
+        crate_path("receipts/run2-m35-channel-preregistration.json")
+    );
     channel_qualification::profile(&validated.registration, "qwen2.5-3b-scale-oracle")
         .expect("the receiver-scale oracle must remain registered");
 

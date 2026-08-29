@@ -23,7 +23,7 @@ mod common;
 
 use candle_core::Device;
 use candle_nn::VarBuilder;
-use channel::{GainResult, ModelProfile, Registration};
+use channel::{GainResult, InjectionPolicy, ModelProfile, Registration};
 use latentmesh_runtime::{
     capture::forward_capture,
     inject::{teacher_forced_nll, InjectionSpec},
@@ -462,11 +462,13 @@ fn run_item(
         &zero_spec.vector,
         zero_spec.scale,
         &zero_spec.positions,
-        profile.hidden_size,
-        reg.protocol.n_slots,
         None,
-        &reg.protocol.gains,
-        false,
+        InjectionPolicy {
+            hidden_size: profile.hidden_size,
+            n_slots: reg.protocol.n_slots,
+            registered_gains: &reg.protocol.gains,
+            require_nonzero: false,
+        },
     )?;
     let zero = eval(rt, Some(&zero_spec))?;
 
@@ -492,11 +494,13 @@ fn run_item(
             &identity_spec.vector,
             identity_spec.scale,
             &identity_spec.positions,
-            profile.hidden_size,
-            reg.protocol.n_slots,
             Some(gain),
-            &reg.protocol.gains,
-            true,
+            InjectionPolicy {
+                hidden_size: profile.hidden_size,
+                n_slots: reg.protocol.n_slots,
+                registered_gains: &reg.protocol.gains,
+                require_nonzero: true,
+            },
         )?;
         let identity = eval(rt, Some(&identity_spec))?;
         let random_scale = identity_validation.effective_l2 as f32 / random_l2;
@@ -510,11 +514,13 @@ fn run_item(
             &random_spec.vector,
             random_spec.scale,
             &random_spec.positions,
-            profile.hidden_size,
-            reg.protocol.n_slots,
             Some(gain),
-            &reg.protocol.gains,
-            true,
+            InjectionPolicy {
+                hidden_size: profile.hidden_size,
+                n_slots: reg.protocol.n_slots,
+                registered_gains: &reg.protocol.gains,
+                require_nonzero: true,
+            },
         )?;
         anyhow::ensure!(
             relative_difference(
