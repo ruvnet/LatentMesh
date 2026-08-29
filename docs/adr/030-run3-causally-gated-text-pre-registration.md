@@ -140,9 +140,21 @@ Every change below is cited to that document by section.
   it is 0.0625; both are above α=0.05, meaning the test is mathematically incapable of rejecting
   the null regardless of the true effect size.** This is not a modeling assumption; it is exact
   binomial arithmetic on the observed discordant-pair count. **Across the 9 cross-model draws in
-  the ladder to date (S2b×4, M3×2, M4×3), discordant-pair counts were {3,3,3,4,4,4,4,5,5}
-  (`docs/research/031` §1's table) — 6 of 9 landed at `n_disc∈{3,4}`, the dead zone where the exact
-  test could not have passed no matter what the data showed.** Run 3's own 40-item arm inherits
+  the ladder to date (S2b×4, M3×2, M4×3), discordant-pair counts were {3,3,4,3,4,3,4,4,5}
+  — **8 of 9** landed at `n_disc∈{3,4}`, the dead zone where the exact test could not have passed
+  no matter what the data showed.**
+
+  > **CORRECTED 2026-08-29.** This paragraph previously read *"6 of 9"*, citing
+  > `docs/research/031` §1. That figure is **wrong** and
+  > [research/047](../research/047-authoritative-power-table.md) §3.1 names *this
+  > ADR, lines 143-144* as one of the documents that inherited it. Only M4 r=256
+  > (`n_disc=5`) cleared the floor, so the correct figure is **8 of 9**. The
+  > authoritative ladder-wide counts are **statistic-dependent** and both are in
+  > research/047: **10 of 14** draws incapable under the **exact sign test**
+  > (min attainable p = `2^-n_disc`), **6 of 14** under **mid-p McNemar**
+  > (min attainable `2^-(n_disc+1)`, which makes `n_disc=4` capable at 0.03125).
+  > **This ADR registers mid-p as primary, so the mid-p floor — `n_disc ≥ 4` — is
+  > the one that governs Run 3.** Run 3's own 40-item arm inherits
   this exact structural risk: if its discordant-pair count also lands at 3 or 4, a "FAIL" verdict
   from the exact-sign statistic alone would be uninterpretable as evidence about the true effect —
   which is precisely why the primary statistic is mid-p McNemar (above, roughly halving the
