@@ -292,3 +292,45 @@ entry lacking a spec.**
 **Standing rule for every item above**: ADR-040's power calculation before any
 draw, and no accuracy-only endpoint — PC1b/PC2/PC3 proved accuracy can be deaf
 while likelihood carries the signal.
+
+---
+
+# MEASURED: the ADR-041 reasoning envelope does NOT fit a mesh frame
+
+**Phase 1 was asked to measure the envelope's overhead rather than assume it.
+It did, and the answer is disqualifying for the mesh transport story.**
+
+`latentmesh_reasoning::envelope::FIXED_HEADER_BYTES` = **282 bytes** of fixed
+metadata — model fingerprint (32) + checkpoint digest (32) + adapter digest
+(32) + parent hash (32) + result hash (32) + provenance root (32) + schema,
+codec, iteration, causal score, confidence, risk class, reconstruction error,
+body length and signature length. **Before a single byte of payload.**
+
+Against the verified Air budget from lane 3 (~106 B unsigned / ~42 B signed per
+fragment, from the 211-byte usable Meshtastic MTU minus LMS1/LMAD tax):
+
+| | header bytes | Air fragments for the HEADER ALONE |
+|---|---|---|
+| unsigned | 282 | **3** |
+| signed | 282 + 64 = 346 | **9** |
+
+Asserted in `envelope::tests::fixed_header_overhead_exceeds_a_single_air_fragment`
+— a named, failing-if-wrong test, not a comment.
+
+**Combined with the duty-cycle result, this is decisive.** At SF11 the mesh
+allows **~8–9 packets/hour**. A *signed* reasoning delta needs **9 fragments for
+its header alone**, so one message consumes an entire hour's transmission
+budget and still has not carried any payload.
+
+**Conclusion**: ADR-041's envelope is viable over IP/tailnet and **not viable
+over LoRa/Meshtastic as specified.** The mesh path needs either a drastically
+stripped profile — dropping to a short session-scoped key instead of six
+32-byte digests would be the obvious lever — or an acknowledgement that latent
+reasoning deltas are an IP-transport feature and the mesh carries terse text
+and scores, which is what lane 3 recommended on independent grounds.
+
+**This is exactly the kind of finding that only appears if you measure.** The
+envelope's field list is individually reasonable; every digest earns its place
+in the threat model. It is the *sum* that does not fit, and no amount of
+reading the ADR would have surfaced it.
+
