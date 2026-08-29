@@ -871,6 +871,59 @@ under overwrite or under fuse — creates pressure to leave it.
   That combination is registered here as the preferred successor, before the
   verdict that would motivate it.
 
+## MAJOR CORRECTION (2026-08-29): the "0/40 NLL inversion" is NOT ladder-wide
+
+Two zero-cost checks against **already-committed receipts** — no new runs —
+refute a hypothesis and correct a claim I have repeated throughout this
+ladder's write-ups.
+
+**1. The 8-identical-rows hypothesis is REFUTED, for free.** Under
+*overwrite*, the zero-vector control writes **8 literal zero rows** over real
+content — a maximally unnatural duplicated block — and it is **harmless**:
+NLL 2.1537 vs baseline 2.1288 (0.025 nats; 19W/21L, p = 0.68, statistically
+indistinguishable). The *aligned* payload in the same rung costs **3.2 nats**.
+If duplication or placement were doing the damage, eight identical zeros
+would damage too. They do not. **The harm is content-dependent, not
+placement-dependent.** (docs/research/042 proposed exactly this check and it
+falsifies 042's own hypothesis — recorded as such.)
+
+**2. My claim that the inversion "survived on-manifold AND off-manifold
+payloads" is FALSE.** Measured from the committed receipts:
+
+| rung | manifold | aligned NLL | baseline | aligned vs random |
+|---|---|---|---|---|
+| M3 per-token | on | 2.1328 | 2.1288 | 16W/24L |
+| M3 pooled | on | 2.1302 | 2.1288 | 17W/23L |
+| M4 r64 | on | 2.1171 | 2.1288 | 16W/24L |
+| M4 r128 | on | 2.1295 | 2.1288 | 16W/24L |
+| M4 r256 | on | **2.1074** | 2.1288 | 16W/24L |
+| M4c | off | 5.3590 | 2.1288 | **0W/40L** |
+| M4d | off | 4.9193 | 2.1288 | **0W/40L** |
+| M4g | off | 4.8155 | 2.1288 | **0W/40L** |
+
+**The 0/40 unanimous inversion occurs ONLY in the off-manifold task-loss
+rungs.** Every on-manifold rung sits within ~0.004 nats of baseline — and
+M4 r256 is *better* than baseline. The on-manifold family is not harmful at
+all; it is simply **inert**.
+
+**The two null families are therefore cleanly separated, and neither is what
+I described:**
+- **On-manifold (M3, M4, run-1 affine)**: payload is harmless and inert —
+  NLL ≈ baseline, accuracy unmoved. Nothing transfers, nothing breaks.
+- **Off-manifold (M4c, M4d, M4g)**: payload is actively destructive —
+  NLL 2.3-2.5× baseline, unanimous 0/40 — and this survives both overwrite
+  and fuse, so it is the *content* (an off-manifold vector at ~4x natural
+  norm: 134-143 vs natural ~34) doing the damage, not the operator or the
+  placement.
+
+**Consequences**: (a) M4h Stage 1 uses M3's on-manifold adapter, so it should
+**not** invert — its test is purely whether de-pooling adds *benefit*, not
+whether it breaks an inversion; framing it as the latter (as the prior wakeup
+prompt did) was wrong. (b) The off-manifold rungs' accuracy nulls are
+confounded by active damage and are weak evidence about transfer per se.
+(c) The honest ladder-wide statement is: **no configuration has produced
+benefit; only off-manifold ones produced harm.**
+
 ## M4g OUTCOME (2026-08-29) — honest fail; fuse REFUTED as the root cause
 
 `run2-m4g-receipt-cellL18toL14-mlp-fuse-*-n40.json`. Aligned 23/40, baseline
