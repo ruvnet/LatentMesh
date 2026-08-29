@@ -667,6 +667,51 @@ loss function, deployment configuration, and injection operator.
 **Honest-fail path unchanged**: full numbers either way, no protocol
 iteration, no retry.
 
+## CORRECTION to M4e's premise + bidirectional exchange deprioritised (2026-08-29)
+
+[docs/research/039](../research/039-bidirectional-latent-exchange.md) corrects
+a claim this ADR's M4e registration relied on, and settles the bidirectional
+axis:
+
+- **M4e's premise was overstated.** The M4e section states that "every
+  externally successful cross-model method injects continuously, at every
+  generation step". That is **not accurate**: **C2C fuses ONCE at prefill**,
+  not continuously (correcting docs/research/032's characterisation, and
+  consistent with 038's reading of C2C's fuser). **Only the Bicameral Model**
+  (arXiv:2605.11167) couples continuously — and it does so *simultaneously in
+  both directions* at every decode step, so it is not a clean instance of
+  one-way continuous injection either. M4e remains a legitimate untested
+  axis, but the "everyone successful does this" support behind it is reduced
+  to a single, structurally different method. Registered correction; M4e's
+  priority is unchanged but its justification is weaker than written.
+- **Independent corroboration of the scale confound**: Bicameral **degrades
+  on GSM8K** (49.6% → ~40%) when the capability gap between the coupled
+  models is small — our exact task, and a second independent reason to keep
+  **M4b mandatory**.
+- **No one has demonstrated turn-based latent dialogue** (receiver replies,
+  sender revises) anywhere in the literature. Bicameral's only ablation swaps
+  in a no-op auxiliary rather than a unidirectional-continuous control, so
+  bidirectionality is never isolated from "continuous" or from "having a real
+  second model". LatentMAS is confirmed **strictly unidirectional** despite
+  its shared-working-memory framing.
+- **The frozen probe cannot score a bidirectional protocol at all** — not as a
+  matter of degree: every clause (one fixed injected vector, unassisted
+  free-running receiver, one scored output, controls defined relative to one
+  vector, no stopping rule) is violated once the sender's state also changes.
+  This is the first axis that changes the **protocol** rather than the
+  mechanism, so it needs its own pre-registration comparable in scope to
+  ADR-030 — not a drop-in rung.
+- **Hard ordering blocker**: under the current **overwrite** injection, a
+  second round would clobber the first round's content before the receiver
+  integrates it. Bidirectional exchange is not even well-posed until M4g
+  (fuse) lands.
+- **Decision: deprioritised to last, and out of run 2.** It layers on an axis
+  (continuous injection) this ladder has not tested even unidirectionally,
+  violating one-factor-per-rung twice over. If the ladder still nulls after
+  M4g/M4f-rescoped/M4b, spin continuous-then-bidirectional coupling into its
+  own ADR — scoped "continuous unidirectional first, bidirectional as a
+  contingent follow-on".
+
 ## CORRECTION to the M4f pre-check verdict and to the DIAGNOSIS (2026-08-29)
 
 The full pre-check report refines and partly refutes what the section below
