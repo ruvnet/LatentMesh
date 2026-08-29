@@ -411,6 +411,28 @@ transfer — now shown for a trained nonlinear map, scoped by the registered
 receiver-scale confound above. Ladder proceeds to M4 (sequence translation)
 per this ADR's fail path.
 
+## Registered contingency — task-loss training rung (added 2026-08-28, M4 verdict NOT yet known)
+
+SOTA sweep [docs/research/028](../research/028-sota-continuous-sweep-1.md)
+establishes that every external method reporting real cross-model transfer
+gains trains its projector through the receiver's TASK loss (C2C: "standard
+next-token prediction loss on the Receiver's response predictions",
+per-token, all layers), while run 1 and M3 — the field's only
+reconstruction-trained, single-layer, pooled data points — both nulled.
+Independent theory backs the distinction: arXiv:2605.05029 proves
+reconstruction-risk minimizers can be structurally misaligned with the
+causally-relevant subspace (capacity does not fix it), and arXiv:2605.23315
+names the phenomenon ("epiphenomenal correctness") for exactly our
+A6-pass/A7(b)-fail pattern. Registered NOW, before M4's probe result is
+known: **if M4 nulls, a task-loss ablation rung (M4c) runs before any
+conclusion that the adapter ladder is exhausted** — same or best-so-far
+architecture, trained through the receiver's next-token loss on the
+generated spans (C2C-style), single seeded run, the same frozen probe, its
+own receipt. If M4 passes, M4c is optional comparative work. Either way the
+M3/run-1 nulls now carry a candidate mechanistic explanation and a citable
+name, scoped alongside (not replacing) the receiver-scale confound above —
+the two confounds are independent and M4b remains mandatory.
+
 ## Registered confound — receiver-scale threshold (added 2026-08-28, while M3 was in flight)
 
 arXiv:2608.05164 ("Cross-Architecture Steering Transfer", surveyed in
