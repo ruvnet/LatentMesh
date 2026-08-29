@@ -1,6 +1,11 @@
 # 045. M5 — receiver-side adaptation: pre-registration
 
-- **Status**: Proposed (pre-registration — written before any item is drawn).
+- **Status**: **ACCEPTED — EXECUTING** (2026-08-29, on operator go-ahead).
+  Everything below the "MANDATORY POWER CALCULATION" heading was written and
+  committed (`9fe984e`, merged to main in PR #16) **before any item was drawn**
+  and is **frozen**. Nothing in the registration may be edited now that
+  execution has begun; outcomes go in a *separate* results section appended at
+  the end, and any deviation is recorded as a numbered coordinator error.
 - **Date**: 2026-08-29.
 - **Promotes** [research/034](../research/034-m5-receiver-side-adaptation-scout.md)
   to a formal pre-registration, adding the power calculation
@@ -103,6 +108,35 @@ recipe that works, but it stacks onto **two results we already have** — task
 loss alone was *destructive* (0W/40L, off-manifold), multi-layer alone was a
 *powered null* — and it needs a **new gated fusion module**. Worse expected
 information per GPU-hour. Registered as a possible successor, not as this rung.
+
+## Implementation path — surveyed at execution start, NOT part of the frozen registration
+
+Recorded because it corrects a cost impression this ADR could otherwise leave.
+
+**The differentiable receiver already exists.**
+`crates/latentmesh-train/src/qwen2_c.rs` (352 lines) provides `TrainReceiver` —
+a composed BF16 receiver forward built for M4c *specifically because* "the
+vendored inference forward silently cuts the graph". It exposes
+`forward_span_logits` and a `span_ce` loss, and five training binaries already
+drive it (`train_m4c_taskloss`, `train_m4d_deploymatch`, `train_m4g_fuse`, …).
+Backprop through the receiver is therefore **solved infrastructure, not new
+work**. LoRA hooks into `TrainReceiver.layers: Vec<TrainLayer>`.
+
+**But no LoRA implementation exists in this repository** — `grep -rl lora
+crates/ --include=*.rs` returns nothing. This ADR's cost line said "reuses
+existing candle infrastructure … no new fusion module", which is accurate
+about *fusion* and about the 1.2–2.0 GPU-h figure, but it should not be read
+as "no code to write". The LoRA layer, its optimiser wiring, and the M5 probe
+are new. **The GPU estimate stands; an engineering estimate was never given
+and should not be inferred from it.**
+
+**The inherited hazard.** M4c/M4d/M4g trained the payload through this same
+frozen-receiver task loss and produced a *reproducible NLL inversion* —
+0W/40L against both controls, diagnosed as off-manifold rather than
+destructive. M5 changes what is trained (receiver, not payload), so it is not
+the same experiment; but if M5's aligned condition inverts the same way, the
+first hypothesis is off-manifold input, **not** a channel effect, and it must
+be reported that way.
 
 ## Ranked shortlist this was selected from
 
