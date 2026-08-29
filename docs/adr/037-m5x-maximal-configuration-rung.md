@@ -240,6 +240,53 @@ already-scoped-multi-factor rung —
 its e-process adoption, restated here: a pre-registration buys attribution clarity, it does not
 create or predict an effect.
 
+## Blast radius of error #20 — a FROZEN file was touched, and the owner caught it
+
+**Recorded because I did not catch it; the rung owner did.** The duplicate agent
+I spawned had also modified **`examples/common/m3.rs`** — the **frozen shared
+protocol every completed rung runs**. That file is load-bearing for
+reproducibility across the entire ladder.
+
+**The owner handled it exactly right**: diffed it in full *before* acting, found
+the change **additive only** (two constants, four imports, **no function body
+altered**, so no prior receipt was ever at risk), confirmed nothing referenced
+the additions, and reverted it to HEAD **byte-for-byte**. Verified
+independently: `git diff` on `m3.rs` is **0 bytes**.
+
+**The lesson is about blast radius, not about the diff.** The additions were
+harmless. But a duplicate owner spawned onto a live rung reached a file that
+every *completed* rung depends on, and nothing in my process would have caught
+it — I was watching the rung's own files, not the shared protocol. **The cost of
+a duplicate-owner error is not bounded by the rung it duplicates.**
+
+The owner also caught that its own earlier edit had rewired only site 1's
+pre-check constant, leaving `PRECHECK_LABEL_2` stale, and fixed it before
+launching rather than spending a registered draw proving Gate 4 works.
+
+### An unplanned cross-implementation check
+
+The owner's **retracted** site-2 pre-check numbers (inv-cos 0.7611,
+manifold-cos 0.6929) turned out **identical** to the replacement harness's
+numbers for the same cell. **Two independently written harnesses produced the
+same figures.** The retraction stands on process grounds — the source that
+produced the first set no longer exists — but the agreement is a real check that
+neither implementation was asked to provide.
+
+### What the pre-check establishes for reading the draw
+
+Each delivered payload sits on **its own block's** natural un-pooled state:
+
+| | inv-cos / manifold-cos | its block's genuine single-row reference |
+|---|---|---|
+| site 1 (L18→L14) | 0.6670 / 0.6814 | 0.6350 / 0.6670 |
+| site 2 (L24→L19) | 0.7611 / 0.6929 | 0.7206 / 0.6793 |
+
+**The multi-layer factor adds a second site of the same kind, not a payload of a
+different kind** — which is what makes "layer count is the only difference"
+readable rather than asserted. The pooled CONTRAST row at the same cell
+(inv-cos 0.9725) shows what collapse looks like there, so the de-pooled rows are
+demonstrated healthy rather than assumed.
+
 ## COORDINATOR ERROR #20 — I spawned a second owner onto a live rung (2026-08-29)
 
 **A repeat of coordinator error #11, with the same cause and a new delivery
