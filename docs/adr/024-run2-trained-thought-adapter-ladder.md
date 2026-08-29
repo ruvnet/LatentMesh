@@ -1036,6 +1036,53 @@ Open tension to settle before pre-registering: 8 slots across 2 sites is
 either 16 total or a 4+4 split, and ADR-028's slot-count discipline (already
 self-contradictory and unadjudicated) does not cover it.
 
+## Coordinator error #11 — a duplicate launch of one registered rung (2026-08-29)
+
+**I launched PC1b twice.** I resumed the positive-control researcher with an
+approval to proceed *and*, separately, launched workflow `wf_82867994` whose
+implementation agent runs the same rung. Two processes
+(`run2_pc1b_probe` pids 2615231 and 2615993) were executing concurrently
+against **one binary, one payload and one receipt path** — a race on the
+output file, and two concurrent draws of a single registered rung, which is
+precisely the unregistered-re-draw problem recorded for PC1 an hour earlier.
+
+**Caught and resolved by the implementer, not by me**: it killed **its own**
+duplicate rather than another agent's process and let the first claim proceed.
+**Ratified**: first-claim-wins; pid 2615231 is the authoritative draw. Both
+draws are greedy, fixed-seed and deterministic over an identical sha-pinned
+payload, so no evidence is at risk — but per
+[ADR-032](032-negative-result-publication-contract.md) **the fact that a
+duplicate launch occurred belongs in the record regardless**, and if a second
+receipt exists it is to be preserved with a `-duplicate-launch` suffix rather
+than deleted.
+
+**Process lesson, recorded because it will recur**: resuming an agent to do
+work *and* launching a workflow for the same work are two spawn paths that do
+not see each other. Rungs need an explicit claim before launch when both
+paths are in play.
+
+## PC1b pre-draw facts already established (recorded before the verdict)
+
+From `run2-pc1b-capture-receipt.json`, all verified before the draw:
+- **The replacement gate I approved passed EXACTLY, not merely adequately**:
+  bit-identity against PC1's committed vector at the single shared item
+  (train 1153) returned **max |Δ| = 0.000e0**. The claim "same payload
+  derivation" is now *demonstrated byte-for-byte*, not asserted.
+- **Site provenance proven at the strongest available level**: the item stream
+  is **identical to M4i's committed stream** (300 items, `adaptation-512`
+  fixed index order, 13-item exclusion applied, 0 tokenisation exclusions) —
+  not argued in prose. Sample injection sites are genuine question content
+  (item 4 → " How many pages does he write a year").
+- **No adapter weights constructed** in either binary.
+- **The PC1 manifold anomaly may be resolved**: PC1b's payload classifies
+  **on-manifold-item-varying, surprise = FALSE** — the registered expectation —
+  where PC1's classified *item-invariant*. Since PC1b reuses PC1's derivation,
+  the difference must come from the stream (300 items vs 40) or payload
+  composition, not the derivation itself. **This matters**: I flagged the PC1
+  anomaly as needing resolution *before* PC1b could be interpreted, and it
+  appears to be a property of PC1's small item set rather than a pipeline
+  defect.
+
 ## PRECISION CORRECTION — "fails to register" was too strong (2026-08-29)
 
 PC1's full report refines my own correction one level further, and the
