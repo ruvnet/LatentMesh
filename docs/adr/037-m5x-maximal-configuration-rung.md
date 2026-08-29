@@ -240,6 +240,85 @@ already-scoped-multi-factor rung —
 its e-process adoption, restated here: a pre-registration buys attribution clarity, it does not
 create or predict an effect.
 
+## RULING — §5's ordinary-token exclusion is SUPERSEDED; M5X draws at the question-tail site (2026-08-29)
+
+**Coordinator error #18: my Amendment 1 asserted a fact I did not check.** It
+said *"M4i is M5X's single-layer counterpart. **Same site**, same operator
+family, same on-manifold payload, same items."* **The site claim is false.**
+M4i's own receipt:
+
+```
+config.injection_site      = "question_tail_ordinary_tokens"
+config.placeholder_token   = None
+config.placeholder_token_note = "NONE. This rung's prompt contains no
+                                 <|fim_pad|> and no slot sentence."
+```
+
+M5X's registered configuration uses the **placeholder-slot** site, and §5
+explicitly **excludes** M4i's ordinary-token axis. Amendment 1 and §5 cannot
+both stand. Caught by the rung owner, who refused to draw until it was
+resolved — correct call. This is the same failure mode as errors #12, #16 and
+#17: asserting a conflict-or-agreement from memory instead of opening the
+artifact.
+
+### The ruling: adopt M4i's question-tail site
+
+**Two independent reasons, either sufficient.**
+
+**1. §5's exclusion was explicitly conditional, and the condition has expired.**
+Its own text: *"decided now, **before M4i's own outcome is known** — this ADR
+does not wait for or inherit M4i's result."* The confound it feared was that
+M5X *"could not distinguish 'the conjunction works' from **'M4i's specific fix
+was doing the real work.'**"* **That confound is now empirically dead: M4i
+FAILED** (31W/35L, final wealth 0.2578, never crossed). A fix that did not work
+cannot be secretly doing the real work. §5's reasoning does not merely permit
+revisiting — it **anticipated** it.
+
+**2. There is no alternative baseline. M4i is the ONLY e-process rung.**
+Verified across every `*eprocess*` receipt: exactly one exists, and its site is
+question-tail. Every placeholder-site rung (M3, M4, M4c…) ran the **frozen
+40-item protocol**, not ADR-036's e-process, and ADR-032's no-protocol-shopping
+rule forbids conflating the two eras. **So keeping §5 would leave M5X with no
+same-protocol comparator at all** — its result would be uninterpretable for
+lack of a baseline, which is a worse outcome than editing a conditional
+exclusion whose condition has lapsed.
+
+### What this does and does not change
+
+- **Changed**: M5X injects at `question_tail_ordinary_tokens`, making **layer
+  count the only difference from M4i** — which is the entire point of the rung.
+- **Unchanged**: every other registered factor — multi-layer L18/L24→L14/L19,
+  de-pooling, fuse delivery, task loss, 4+4=8 slots — and the e-process
+  parameters. This supersedes one exclusion, not the configuration.
+- **Recorded, not hidden**: §5 stands as written above; this section supersedes
+  it and says why. The ADR is append-only.
+
+### Registered power calculation (ADR-040), stated before any draw
+
+Anchored on M4i's `n_disc = 66` on this identical stream, **verified by
+replaying M4i's committed trajectory** — the replay reproduces
+`final_wealth = 0.25780744271218675` exactly and recovers n_disc 66, 31W/35L.
+
+| quantity | value |
+|---|---|
+| win / loss multiplier (λ=0.30) | ×1.15 / ×0.85 |
+| max attainable wealth at n_disc=66 | 1.15⁶⁶ = **10,140** ≫ 20 |
+| unanimous-win crossing | 22 discordant wins |
+| **realistic crossing bar** | **≥ 46 of 66 discordant wins (69.7%)** |
+| min attainable one-sided sign-test p | 0.5⁶⁶ = **1.4e-20** |
+
+**VERDICT: not power-blocked.** The endpoint can reach α = 0.05 at N = 300.
+
+### Standing reminder for the write-up
+
+M4i's **likelihood arm is not inert**: NLL aligned 2.2446 vs baseline 2.3928
+(−0.148, 181W/119L, mid-p 1.7e-4) and vs **norm-matched random** 2.3474
+(−0.103, 166W/134L, mid-p 0.032). All four figures re-verified against the
+receipt by the rung owner. So on this exact stream the likelihood endpoint
+already beats norm-matched random while accuracy is deaf — the dissociation
+amendment 3 exists to catch. **A bare accuracy null from M5X is uninterpretable
+without the likelihood co-report.**
+
 ## ⛔ MANDATORY AMENDMENTS BEFORE M5X DRAWS (2026-08-29, added on unblocking)
 
 **Three things must be settled before a single item is consumed.** M5X was
