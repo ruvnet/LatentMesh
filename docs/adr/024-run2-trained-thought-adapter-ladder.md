@@ -1036,6 +1036,111 @@ Open tension to settle before pre-registering: 8 slots across 2 sites is
 either 16 total or a 4+4 split, and ADR-028's slot-count discipline (already
 self-contradictory and unadjudicated) does not cover it.
 
+## PC1b RESULT — the gating experiment FAILED, and the pre-registered interpretation of that failure is LOGICALLY INVERTED (2026-08-29)
+
+**Receipt**: `run2-pc1b-receipt-identity-L19lasttoken-goldtf-fuse-questiontail-slots8-eprocess.json`
+(773,964 B). Binary of record `4cda2ef1…`. e-process **pass = false**,
+final wealth **0.1949**, never above its 1.0 start, threshold 20.0 never
+approached.
+
+### The numbers
+
+| | aligned | baseline | zerovec | random |
+|---|---|---|---|---|
+| **accuracy /300** | **127** | 140 | 140 | 133 |
+| NLL mean | **2.1110** | 2.3928 | 2.3928 | 2.3477 |
+
+- e-process (aligned vs random): **29W / 35L, n_disc = 64** — minimum
+  attainable p ≈ 5.4e-20. **The most powered null in the ladder.**
+- NLL sign tests: aligned-vs-baseline **213W / 87L**, aligned-vs-zerovec
+  213W/87L, aligned-vs-random 198W/102L.
+- Operator correctness **proven**: `fuse_zero_is_noop` — 300/300 items
+  bit-identical to baseline, max |Δ NLL| = **0.0**.
+- Gaming guard **clean**: length ratio 1.034, 0/300 degenerate,
+  `gaming_signature = false`.
+
+### Three facts that matter more than the pass/fail
+
+**1. The pathway is NOT inert — the auto-generated verdict is wrong on its own
+numbers.** The receipt's verdict string says *"the pathway is inert."* Its own
+NLL says otherwise: **0.282 nats better than baseline on 213W/87L over 300
+items** — roughly **twice** M4i's 0.148 nats / 181W-119L, and two orders of
+magnitude outside the ~0.004-nat inertness band. This payload registers more
+strongly than anything else in the ladder. The accurate phrase remains the one
+adopted earlier, now with far more current flowing: **the channel is
+electrically connected and functionally dead.**
+
+**2. The payload is WORSE THAN NOISE, reproducibly.** Aligned (127) < random
+(133) < baseline (140), and the same ordering holds in M4i (128 < 132 < 140).
+Since `zerovec` is proven bit-identical to `baseline`, injecting *anything* at
+this site costs ~12-13 correct answers — and injecting the **gold-derived**
+payload costs more than injecting Gaussian noise.
+
+**3. A trained cross-model adapter and a gold-derived identity injection are
+statistically indistinguishable.**
+
+| | M4i (trained adapter) | PC1b (identity, gold-derived) |
+|---|---|---|
+| accuracy aligned / baseline | 128 / 140 | 127 / 140 |
+| acc aligned-vs-baseline | 24W / 36L | 21W / 34L |
+| e-process n_disc | 66 | 64 |
+| e-process W / L | 31 / 35 | 29 / 35 |
+| final wealth | 0.2578 | 0.1949 |
+
+Whether the payload is a learned cross-model alignment or **the literal
+answer**, the outcome is the same.
+
+### My pre-draw concern was WRONG, and the receipt refutes it
+
+Before the verdict I argued PC1b might be informationally incapable of
+passing — that feeding the receiver its own state carries no information it
+lacks, making a null the predicted outcome of a healthy pathway. **The receipt
+refutes this.** The payload is `gold-TF` — captured with the gold answer
+**teacher-forced** — and `FIREWALL_liveness_not_transfer` records the content
+as **"gold-derived"**. It therefore carries information the receiver does not
+have at inference time. **PC1b was informationally capable of passing and did
+not pass.** My objection is withdrawn.
+
+### THE INTERPRETATION REGISTERED BEFORE THE DRAW IS LOGICALLY INVERTED
+
+`pre_registered_interpretation_recorded_before_the_draw.fail_with_real_power`
+says a powered failure means:
+
+> "the pathway is inert EVEN WHERE PAYLOADS DEMONSTRABLY REGISTER, and the
+> ladder nulls would stand as evidence about **TRANSFER** rather than about
+> plumbing."
+
+**This is backwards, and I am recording it against my own pre-registration.**
+
+A positive control exists to prove the apparatus can carry a signal it is
+*known* to contain. **PC1b failed.** So we have **not** established that these
+injection mechanics can carry usable signal — for gold content, same model,
+same item, identity transform, at a site where delivery is proven. A failed
+positive control makes **the method the leading explanation** for every null
+in the ladder; it cannot simultaneously **rule the method out** so the nulls
+can be read as being about transfer. Ruling out plumbing requires the control
+to **pass**.
+
+Steelmanned the other way — *"delivery is proven by the 0.282-nat shift, so the
+failure is downstream, in the receiver's ability to use injected content"* —
+the conclusion is still about the **method**, not about transfer: it says
+*inject-a-vector-and-expect-use* fails for **any** payload, including the
+answer itself. Either reading lands in the same place.
+
+**Therefore, and contrary to what the binary printed:**
+- The ladder's cross-model nulls remain **confounded with an unvalidated
+  apparatus**. They are **not** upgraded to evidence about transfer.
+- **M5X (ADR-037) and M4b (ADR-035) stay BLOCKED.** The gate was "a passing
+  positive control," and it did not pass. Nothing about a failure unblocks
+  them; a failure blocks them harder.
+- The mission's honest position is **"we have still not run a passing positive
+  control,"** which is a worse outcome than a clean transfer null and is the
+  one the evidence supports.
+
+`FIREWALL_liveness_not_transfer` already forbids citing a PASS as transfer
+evidence. **The symmetric rule is now added: a FAIL may not be cited as
+transfer evidence either.** It is evidence about the apparatus.
+
 ## The "source was overwritten" claim is WITHDRAWN — unsupported (2026-08-29)
 
 Recorded because it goes **against** the agent that reported it: the draw
