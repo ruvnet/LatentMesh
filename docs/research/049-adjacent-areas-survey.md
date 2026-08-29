@@ -83,3 +83,136 @@ citations came from direct arXiv API fetches, listed in full for verifiability.
 The coordinator independently re-fetched **arXiv:2204.07496** and confirmed
 title, authors and the zero-shot no-training claim. **Delivering this negative
 early — before any build — is exactly what was asked for.**
+
+---
+
+## Lane 2 — receiver-side adaptation: **MY HYPOTHESIS IS PARTLY REFUTED, and it found the null's likely cause**
+
+### The correction to me, first
+
+I hypothesised the missing factor was *"nobody trained the receiver to listen."*
+**The literature refutes the strict form of that.** Two methods move decisions
+with a **frozen** receiver whose weights are never touched:
+
+- **Cache-to-Cache** (**arXiv:2510.03215**) — **6.4–14.2% accuracy gain**,
+  cross-model, receiver weights unchanged; a Fuser writes into the KV-cache.
+- **ITI** (**arXiv:2306.03341**) — no receiver training at all; TruthfulQA
+  32.5% → 65.1%. But its direction is probed from the *same model's own*
+  representations, so there is no cross-model translation gap to close.
+
+So receiver-weight-training is **not** the shared ingredient. What every working
+method shares is **task-loss training of something, across multiple
+layers, with learned gating.**
+
+### The finding that probably explains our entire null
+
+> **C2C's own Table 10: reduced to a SINGLE layer, C2C yields ~58.42% → 58.45–58.52%, about 0.1pp.**
+
+**That is our null signature exactly.** Every rung in our ladder injected at a
+**single** depth pair. C2C's 6.4–14.2pp requires gated fusion over roughly the
+**top 5 of 28 layers**. The published method, restricted to our configuration,
+reproduces our result.
+
+**Our null may not be a fact about activation injection. It may be a fact about
+single-layer activation injection.**
+
+Corroborating: the **"Beyond Tokens" survey** (**arXiv:2606.05711**) states as
+its own design-space boundary that every surveyed latent-communication method
+keeps receiver weights frozen — so receiver-parameter adaptation is genuinely
+unexplored, but it is *not* what the working methods rely on.
+**Flamingo** (**arXiv:2204.14198**) is the one exception that also trains
+receiver-side parameters — frozen LM blocks plus new gated cross-attention with
+the gate initialised to zero, so it starts as an exact no-op. Its Table 3 shows
+*unfreezing* the LM **hurts** (−8.0%). But it needed ~1.8B image-text pairs;
+nothing in the literature says what a narrow single-task adapter needs.
+
+### And the rung was already written
+
+`docs/research/034-m5-receiver-side-adaptation-scout.md` (32KB) is a
+**ready-to-run pre-registration** for a rank-{1,2,4} receiver-side LoRA.
+**Verified: no M5 receipts exist — it was never executed.** The ladder pivoted
+to site/pooling/operator ablations and closed before M5 ever drew. Costed from
+our own M4c receipts at **~1.2–2.0 GPU-h for all three ranks** — a weekend
+build, with candle's gradient-graph pitfalls already solved and receipted.
+
+## COORDINATOR ERROR #16 — I blocked M5X for a reason that does not apply
+
+**I permanently blocked the one rung that tests the factor the literature says
+is load-bearing.** My stated reason (research/048, ADR-037):
+
+> *"Both vary payload **content**, which is demonstrably not what moves decisions."*
+
+**M5X's factor #1 is not content — it is multi-layer injection**, described in
+ADR-037 as *"the single largest evidence gap this ladder has left untested,"*
+with the L24→L19 pair never used by any rung.
+
+**The precise flaw**: PC3 held the delivery architecture **fixed** (single site,
+8 slots) and varied content. Its null is therefore *conditional on single-layer
+delivery*. I generalised it to "content doesn't matter," then blocked a rung
+whose primary variable is **architecture, not content**. C2C's Table 10 is
+direct external evidence that the generalisation is wrong: same content, more
+layers, 0.1pp → 6.4–14.2pp.
+
+**Consequence: M5X is UNBLOCKED.** M4b's block is untouched — its variable is
+receiver scale and its own rationale is unaffected by this.
+
+---
+
+## Lane 3 — low-bandwidth mesh: **send terse text or scores, not compressed thoughts**
+
+Two corrections to my own framing, both verified:
+
+- **The 211-byte budget is optimistic.** LMS1/LMAD envelope tax is ~48B header
+  + 52B fixed (+64B if signed), so real content room is **~106B unsigned /
+  ~42B signed**.
+- **Duty cycle — ADR-019's open row is now resolvable.** EU868 is
+  **sub-band dependent**: the L/M band where Meshtastic operates is **1%**
+  (not the 0.1%/10% figures the ADR flags as conflicting). At SF11/BW125,
+  ~4.18s airtime per full frame gives **≈8–9 packets/hour — one packet every
+  ~7 minutes.**
+
+**That kills raw latent transmission on economics alone**, independent of
+whether it works: a 1.5–6KB activation needs 8–30 fragments = 33–125s of
+airtime = **93–100% of the entire hourly budget on one message.**
+
+**The slot is the scarce resource, not the byte.** A 2-byte codebook index and a
+100-byte text message cost the same single slot — so pack score + retrieval key
++ terse text into each rare slot rather than optimising any one field's
+compression ratio. Ranked by decision-relevance per slot: routing hint/score
+(1–4B) > retrieval key (8–20B) > terse text (the only channel with positive
+causal evidence, Δ=+0.512) > VQ codes > raw activations (dead on arrival).
+
+Relevant literature exists but has not merged: wireless VQ semantic comms
+(arXiv:2602.15045, 2508.08686, 2510.02646, 2510.18604, 2504.11709, 2606.26398)
+is image/sensor reconstruction, not LLM reasoning; the LLM-agent side
+(**BANDMAS arXiv:2608.00458**, 53–77% byte reduction while matching accuracy;
+arXiv:2607.16133; 2605.25422; 2604.13349; 2608.25277) is routing and selection,
+not codecs.
+
+---
+
+## Lane 4 — safety/detection: **the machinery already exists; point it at the text channel**
+
+- **ADR-003's five-control admission test is already implemented in code** —
+  verified at `crates/latentmesh-gate/src/causal.rs`:
+  `sign_flip_permutation_test`, controls `zero/random/mismatched/self_generated/
+  text_equivalent`, *"Admission requires the WORST."* **`mismatched` is
+  precisely the independent variable of our misinformation finding.** It is
+  offline topology-fitness tooling today; the proposal is to reframe it as a
+  **runtime per-message gate**.
+- **agentbbs-bridge already signs authorship (Ed25519)** but checks **no content
+  plausibility** — a validly-signed *wrong* message passes unchanged.
+- **Point detection at the TEXT channel.** Run 3 shows text is what moves
+  decisions; a latent-only NLL monitor would defend a surface our own data shows
+  is decision-inert.
+- **A likelihood check cannot stand alone** — PC3's p=0.72 null means a PASS
+  proves content was *read*, not that the outcome is safe. It must be paired
+  with ADR-003's ΔV outcome check, and needs a norm-matched null or it is
+  trivially defeated by any perturbation of matching magnitude.
+- **Our misinformation ordering may be novel.** The general phenomenon is
+  documented (**arXiv:2606.16710**, **2506.00509**, **2410.07283** prompt
+  infection), but the **three-way ordering** — plausible-wrong **<** random
+  noise **<** no message, isolating *plausibility itself* rather than mere
+  wrongness — was not found already published. Nearest analogue is the human
+  processing-fluency / illusory-truth literature. **Flagged as tentative**
+  (arXiv-API-only search reach), and worth writing up separately.
