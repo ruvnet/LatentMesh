@@ -39,6 +39,21 @@ prior draws. It will not recur through omission.
 | **expected n_disc at N = 300** | **≈ 77** | |
 | **minimum attainable p** | **6.6 × 10⁻²⁴** | 2⁻⁷⁷ |
 | N for n_disc ≥ 30 (floor) | ≈ 117 items | |
+| **direction of the split** | **33 wins / 44 losses** | PC2 receipt, paired |
+
+**The direction matters and this block originally omitted it** — caught by the
+PC3 owner. On PC2's post-hoc data `steer` changed answers *less* often than the
+norm-matched Gaussian, so the wealth process would have **declined**, not
+merely failed to cross. **A powered FAIL is therefore the strongly-expected
+outcome, not a coin flip.** Stated here so the expectation is on record before
+the draw rather than claimed afterwards.
+
+**Endpoint comparator — normative.** "The answer differs from baseline" is
+evaluated with **`common::answers_equal` (numeric)**, never string inequality.
+`"18.0"` and `"18"` are the *same answer*; counting that as a decision change
+measures formatting noise. Three PC2 items turn on exactly this (280, 788,
+1390), and the choice moves the split from 33W/44L to 33W/45L. The receipt must
+state which comparator the endpoint used.
 
 **Compare the endpoint this replaces**: decoy-emission gave expected n_disc
 ≈ 4.5 and a minimum attainable p of 0.043 — needing **~4,224 items** for
@@ -51,8 +66,28 @@ own uninjected baseline answer** — `steer` vs `random`, paired per item, under
 ADR-036's e-process (λ = 0.30, α = 0.05, threshold 20.0, N_max = 300).
 
 **Item stream**: `adaptation-512`, fixed ascending order, ADR-024's 13-item
-exclusion, **taking the next 300 eligible items NOT used by PC2/M4i** — a
+exclusion, **taking every remaining eligible item NOT used by PC2/M4i** — a
 genuine **out-of-sample** confirmation, not a re-analysis.
+
+**AMENDED before the draw — N_max is 212, not 300.** The pool cannot supply
+300: `adaptation-512` holds 512 indices, PC2/M4i/PC1b consumed the **first
+300** (hard-gated identical across all three), leaving **212**, starting at
+index 4485. The original text was *arithmetically unattainable*. The rung runs
+the **entire remaining out-of-sample pool, N_max = 212**, which at PC2's
+measured 26% discordance still projects **expected n_disc ≈ 55** — clear of the
+30-item floor above, so the run stays powered. Recorded in the receipt as a
+first-class gate field `n_max_reduced_from_300_to_212_pool_exhausted` carrying
+the arithmetic. ADR-036's stratified-resample tranche is **not** invoked: it is
+"named, not built", and inventing it mid-rung would be protocol-shopping.
+
+**AMENDED — `restore` is DERIVED here, not byte-replayed.** PC2's `restore` arm
+replayed PC1b's committed payload file byte-for-byte and gated against it. **No
+PC1b/PC2 artifact covers items 4485+**, so that cross-artifact validation is
+impossible for PC3. The gold payload is derived through the identical `tap()`
+path (same blocks, same last-row tap, same rendering), with only the
+continuation text differing between arms. The one-changed-factor claim remains
+provable *within* the run but is **no longer cross-validated against a prior
+committed file** — a genuine weakening of the gate, recorded as such.
 
 **Conditions**: unchanged from PC2 (`steer`, `restore`, `baseline`, `zerovec`,
 `random` norm-matched). **Secondary endpoints retained**: decoy-emission (for
