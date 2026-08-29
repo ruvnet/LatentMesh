@@ -1036,6 +1036,36 @@ Open tension to settle before pre-registering: 8 slots across 2 sites is
 either 16 total or a 4+4 split, and ADR-028's slot-count discipline (already
 self-contradictory and unadjudicated) does not cover it.
 
+## RESOLVED — the authoritative power table (2026-08-29)
+
+[docs/research/047](../research/047-authoritative-power-table.md) settled the
+discrepancy below **from primary evidence**: every `n_disc` recomputed by
+counting discordant items in each receipt's own per-item table, then
+cross-checked against that receipt's summary. No number in it is copied from
+prose in this ADR, 031, 041 or 046.
+
+**The authoritative finding: 14 valid draws exist across both runs, and 10 of
+them were structurally incapable of rejecting the null at any true effect
+size.** Only **four** draws could ever have produced a significant result:
+S1a (n_disc 5), M4 r256 (5), M4c (6), M4d (7).
+
+**The "6 of 9" figure I have repeated throughout this ADR and in every
+summary is WRONG.** The correct figure for that family is **8 of 9**.
+research/046's independent recount (10 of 13 cross-model draws incapable) is
+**confirmed at the receipt level**.
+
+`n_disc` across all 14 draws: **{2, 3, 3, 3, 3, 3, 4, 4, 4, 4, 5, 5, 6, 7}**.
+
+**What this changes**: it *strengthens* the instrument finding rather than
+altering any verdict. The honest ladder-wide statement is now sharper —
+**most of this ladder's draws could not have detected an effect had one been
+present**, and only the four capable draws (one of which, S1a, *passed*)
+carry evidential weight about absence. Every future write-up must cite
+research/047's receipt-derived table rather than restating a remembered
+figure; that is the third time tonight a restated number drifted from its
+receipt (after the GPU-hour total and the permutation count), and the
+pattern is now itself a recorded finding.
+
 ## UNRESOLVED DISCREPANCY — how many draws were power-incapable? (flagged 2026-08-29)
 
 [docs/research/046](../research/046-run2-synthesis-v2.md) found an internal
