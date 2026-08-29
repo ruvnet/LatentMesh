@@ -55,3 +55,7 @@ anyhow = "1"
 [[bin]]
 name = "train_m3_mlp"
 required-features = ["cuda"]
+
+[[bin]]
+name = "train_m4_fastgrnn"
+required-features = ["cuda"]

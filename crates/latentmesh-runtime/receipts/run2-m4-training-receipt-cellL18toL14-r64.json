@@ -1,0 +1,464 @@
+{
+  "artifact": {
+    "content_hash_sha256": "b73702a9a743452dd09d861c006942638a60e20658152f972e86d518215d656b",
+    "file": "run2-m4-fastgrnn-r64-cellL18toL14.f32bin",
+    "golden_file": "run2-m4-golden-fastgrnn-r64-cellL18toL14.json",
+    "golden_file_sha256": "8380369729c8c28ed9da78f54ea82ce18195ceea76a0f28a59f3219e80b49d5e",
+    "golden_input_seed_chacha8": 1295278109,
+    "golden_seq_len": 8,
+    "golden_seqs": 8,
+    "layout": "little-endian f32: w1[2048xR row-major, x@W convention] || w2[Rx1536 row-major] || u1[1536xR row-major] || u2[Rx1536 row-major] || b_z[1536] || b_h[1536] || zeta_raw[1] || nu_raw[1]"
+  },
+  "cell": "L18->L14",
+  "curves": {
+    "per_epoch": [
+      {
+        "epoch": 0,
+        "holdout_mse": 1.05204511356067,
+        "holdout_rel_residual_vs_fit_mean": 1.1170993835549476,
+        "train_mse_mean": 1.1634368531254629,
+        "wall_s": 11.201308250427246
+      },
+      {
+        "epoch": 1,
+        "holdout_mse": 0.8900959959506874,
+        "holdout_rel_residual_vs_fit_mean": 1.027526554178475,
+        "train_mse_mean": 0.989496780580272,
+        "wall_s": 11.024482727050781
+      },
+      {
+        "epoch": 2,
+        "holdout_mse": 0.5784317225459576,
+        "holdout_rel_residual_vs_fit_mean": 0.8283248332139133,
+        "train_mse_mean": 0.6978756876803544,
+        "wall_s": 11.037003517150879
+      },
+      {
+        "epoch": 3,
+        "holdout_mse": 0.5033367903986545,
+        "holdout_rel_residual_vs_fit_mean": 0.7726876450468206,
+        "train_mse_mean": 0.5382537369956967,
+        "wall_s": 11.045708656311035
+      },
+      {
+        "epoch": 4,
+        "holdout_mse": 0.47058219503732857,
+        "holdout_rel_residual_vs_fit_mean": 0.7471234639868345,
+        "train_mse_mean": 0.4879891197924009,
+        "wall_s": 11.12075424194336
+      },
+      {
+        "epoch": 5,
+        "holdout_mse": 0.4545704757141684,
+        "holdout_rel_residual_vs_fit_mean": 0.7343028991208168,
+        "train_mse_mean": 0.46008224967830846,
+        "wall_s": 11.113868713378906
+      },
+      {
+        "epoch": 6,
+        "holdout_mse": 0.43989321872241555,
+        "holdout_rel_residual_vs_fit_mean": 0.7223509760027604,
+        "train_mse_mean": 0.4435897317696494,
+        "wall_s": 11.129583358764648
+      },
+      {
+        "epoch": 7,
+        "holdout_mse": 0.4316515309634563,
+        "holdout_rel_residual_vs_fit_mean": 0.7155521206936369,
+        "train_mse_mean": 0.4346080604180684,
+        "wall_s": 11.133607864379883
+      },
+      {
+        "epoch": 8,
+        "holdout_mse": 0.4259276605692619,
+        "holdout_rel_residual_vs_fit_mean": 0.7107920355052145,
+        "train_mse_mean": 0.424230623238294,
+        "wall_s": 11.172792434692383
+      },
+      {
+        "epoch": 9,
+        "holdout_mse": 0.4173043254993444,
+        "holdout_rel_residual_vs_fit_mean": 0.7035598919924323,
+        "train_mse_mean": 0.4195288643706375,
+        "wall_s": 11.103681564331055
+      }
+    ],
+    "sampled_steps_every_200": [
+      {
+        "epoch": 0,
+        "step": 0,
+        "train_mse": 1.5711159706115723
+      },
+      {
+        "epoch": 0,
+        "step": 200,
+        "train_mse": 1.3741286993026733
+      },
+      {
+        "epoch": 0,
+        "step": 400,
+        "train_mse": 1.2906904220581055
+      },
+      {
+        "epoch": 0,
+        "step": 600,
+        "train_mse": 1.239164113998413
+      },
+      {
+        "epoch": 1,
+        "step": 800,
+        "train_mse": 1.2124894857406616
+      },
+      {
+        "epoch": 1,
+        "step": 1000,
+        "train_mse": 1.2252343893051147
+      },
+      {
+        "epoch": 1,
+        "step": 1200,
+        "train_mse": 1.1630162000656128
+      },
+      {
+        "epoch": 1,
+        "step": 1400,
+        "train_mse": 1.1185379028320312
+      },
+      {
+        "epoch": 2,
+        "step": 1600,
+        "train_mse": 1.0906457901000977
+      },
+      {
+        "epoch": 2,
+        "step": 1800,
+        "train_mse": 1.0457932949066162
+      },
+      {
+        "epoch": 2,
+        "step": 2000,
+        "train_mse": 1.0067757368087769
+      },
+      {
+        "epoch": 2,
+        "step": 2200,
+        "train_mse": 0.9735411405563354
+      },
+      {
+        "epoch": 3,
+        "step": 2400,
+        "train_mse": 0.9639095664024353
+      },
+      {
+        "epoch": 3,
+        "step": 2600,
+        "train_mse": 0.9311082363128662
+      },
+      {
+        "epoch": 3,
+        "step": 2800,
+        "train_mse": 0.9351562261581421
+      },
+      {
+        "epoch": 3,
+        "step": 3000,
+        "train_mse": 0.8772461414337158
+      },
+      {
+        "epoch": 4,
+        "step": 3200,
+        "train_mse": 0.8452438116073608
+      },
+      {
+        "epoch": 4,
+        "step": 3400,
+        "train_mse": 0.8375066518783569
+      },
+      {
+        "epoch": 4,
+        "step": 3600,
+        "train_mse": 0.8077206611633301
+      },
+      {
+        "epoch": 4,
+        "step": 3800,
+        "train_mse": 0.7961995005607605
+      },
+      {
+        "epoch": 5,
+        "step": 4000,
+        "train_mse": 0.7637816667556763
+      },
+      {
+        "epoch": 5,
+        "step": 4200,
+        "train_mse": 0.7561194896697998
+      },
+      {
+        "epoch": 5,
+        "step": 4400,
+        "train_mse": 0.7500969767570496
+      },
+      {
+        "epoch": 5,
+        "step": 4600,
+        "train_mse": 0.7665098905563354
+      },
+      {
+        "epoch": 6,
+        "step": 4800,
+        "train_mse": 0.7417376041412354
+      },
+      {
+        "epoch": 6,
+        "step": 5000,
+        "train_mse": 0.7599160075187683
+      },
+      {
+        "epoch": 6,
+        "step": 5200,
+        "train_mse": 0.7413371801376343
+      },
+      {
+        "epoch": 6,
+        "step": 5400,
+        "train_mse": 0.7221622467041016
+      },
+      {
+        "epoch": 7,
+        "step": 5600,
+        "train_mse": 0.7413475513458252
+      },
+      {
+        "epoch": 7,
+        "step": 5800,
+        "train_mse": 0.7083888053894043
+      },
+      {
+        "epoch": 7,
+        "step": 6000,
+        "train_mse": 0.6882727146148682
+      },
+      {
+        "epoch": 7,
+        "step": 6200,
+        "train_mse": 0.7111272215843201
+      },
+      {
+        "epoch": 8,
+        "step": 6400,
+        "train_mse": 0.6988133788108826
+      },
+      {
+        "epoch": 8,
+        "step": 6600,
+        "train_mse": 0.6767995357513428
+      },
+      {
+        "epoch": 8,
+        "step": 6800,
+        "train_mse": 0.6972596049308777
+      },
+      {
+        "epoch": 8,
+        "step": 7000,
+        "train_mse": 0.6534180641174316
+      },
+      {
+        "epoch": 9,
+        "step": 7200,
+        "train_mse": 0.7104809284210205
+      },
+      {
+        "epoch": 9,
+        "step": 7400,
+        "train_mse": 0.6869972944259644
+      },
+      {
+        "epoch": 9,
+        "step": 7600,
+        "train_mse": 0.6739250421524048
+      },
+      {
+        "epoch": 9,
+        "step": 7800,
+        "train_mse": 0.6613389253616333
+      }
+    ]
+  },
+  "dataset": {
+    "dump_receipt": "run2-pertoken-dump-receipt.json",
+    "index_sha256": "5069580651bdfd2c2772d442096530a54f81f6629bc509170bbacc7a00313f55",
+    "n_items": 2560,
+    "receiver_file": "receiver_L14.tok.f32bin",
+    "run_dir": "/home/ruvultra/projects/LatentMesh-1/crates/latentmesh-runtime/target/latentmesh-runs/run2",
+    "sender_file": "sender_L18.tok.f32bin",
+    "total_tokens": 719115,
+    "verified_before_training": [
+      {
+        "bytes": 4418242560,
+        "file": "receiver_L14.tok.f32bin",
+        "pass": true,
+        "sha256": "e528e37ec0e3aa766989cc80f2feffeee71eb73c7b84a8c9a15dab6a2795e263"
+      },
+      {
+        "bytes": 4418242560,
+        "file": "receiver_L19.tok.f32bin",
+        "pass": true,
+        "sha256": "ba656d81f3774279b1faf1fa3503245cf63771a41bfe1d6add8cd9862110c452"
+      },
+      {
+        "bytes": 5890990080,
+        "file": "sender_L18.tok.f32bin",
+        "pass": true,
+        "sha256": "44574f9e38bbbe8e2f5b5955cd1cccae0d399b48ed87b5270d1564ab85069c04"
+      },
+      {
+        "bytes": 5890990080,
+        "file": "sender_L24.tok.f32bin",
+        "pass": true,
+        "sha256": "b0c1a3b7abb686639a3da15d669e897a7133fb39f005db365e89c69bacbe900d"
+      }
+    ]
+  },
+  "design": "docs/adr/024-run2-trained-thought-adapter-ladder.md M4 (frozen FastGRNN cell, low-rank, sub-rung ladder r in {64,128,256} ascending; leakage rule per section 'Leakage discipline')",
+  "env": {
+    "crate": "latentmesh-train 0.1.0 (candle 0.9.2, lockfile copied from latentmesh-runtime)",
+    "evidence_label": "seeded deterministic GPU training (candle 0.9.2 AdamW) over captured per-token pairs; the pairs are live-model capture output (run2-pertoken-dump-receipt.json, evidence label live-model, single-host, simulation-free)",
+    "git_commit": "78adcf01627e0e1d11b5d180239726dea538ca4c",
+    "gpu": "NVIDIA GeForce RTX 5080, 580.126.09, 16303 MiB",
+    "nvcc": "nvcc 12.8 (build-time 12.8)",
+    "unix_time": 1787961533
+  },
+  "eval_plan_frozen": {
+    "cell_scope": "S2-winner cell L18->L14 only, matching M3; anchor cell deliberately not probed (unregistered extra draw)",
+    "gate": "aligned_real (FastGRNN payload) > random, one-sided exact sign test, p < 0.05",
+    "payload_derivation": "AUTHORIAL CHOICE, recorded here before the probe (ADR-024's M4 text fixes the architecture and gate but not the pooling step): the FastGRNN consumes the sender's full generated-span per-token L18 sequence from h_0 = 0 and emits the translated sequence h_1..h_T; the 8-slot injection payload is the mean-pool (f64 accumulation) of that TRANSLATED sequence — sequence processing upstream of the pool, the direct sequence analog of M3's variant (i), which is exactly the pooling-hypothesis contrast M4 exists to test",
+    "probe": "ADR-023 frozen 40-item S1a/S2b protocol, inherited unchanged (item_seed_chacha8 20897 == 0x51A1, one-sided exact sign test alpha=0.05, 8 slots, rescale-to-natural-median, greedy/batch=1/max 400 tokens)",
+    "sub_rung_order": "r=64 first; on gate fail r=128 is trained+probed; on fail r=256; each rank one training run + one probe run, ALL receipts kept regardless of outcome (ADR-024's registered exception: three pre-declared architectures in a pre-declared order, not a sweep-until-pass)"
+  },
+  "rank": 64,
+  "results": {
+    "best_epoch": 9,
+    "best_holdout_mse": 0.4173043254993444,
+    "best_holdout_rel_residual_vs_fit_mean": 0.7035598919924323,
+    "holdout_mean_predictor_mse_variance_baseline": 0.84304496551465,
+    "rel_residual_formula": "sqrt(sum ||pred-y||^2 / sum ||y-mu_r||^2) over holdout tokens, mu_r = fit-side per-dim mean (verbatim M3 formula for direct M3-vs-M4 comparability)"
+  },
+  "split": {
+    "bptt_windows_per_epoch": 36614,
+    "excluded_probe_overlap_rows": [
+      {
+        "item": 150,
+        "row": 69,
+        "side": "fit"
+      },
+      {
+        "item": 1309,
+        "row": 683,
+        "side": "fit"
+      },
+      {
+        "item": 1573,
+        "row": 824,
+        "side": "fit"
+      },
+      {
+        "item": 2365,
+        "row": 1258,
+        "side": "fit"
+      },
+      {
+        "item": 2418,
+        "row": 1281,
+        "side": "fit"
+      },
+      {
+        "item": 2540,
+        "row": 1346,
+        "side": "holdout"
+      },
+      {
+        "item": 2958,
+        "row": 1577,
+        "side": "fit"
+      },
+      {
+        "item": 2973,
+        "row": 1586,
+        "side": "holdout"
+      },
+      {
+        "item": 3084,
+        "row": 1647,
+        "side": "fit"
+      },
+      {
+        "item": 3825,
+        "row": 2052,
+        "side": "fit"
+      },
+      {
+        "item": 3844,
+        "row": 2058,
+        "side": "fit"
+      },
+      {
+        "item": 3877,
+        "row": 2078,
+        "side": "fit"
+      },
+      {
+        "item": 4746,
+        "row": 2529,
+        "side": "fit"
+      }
+    ],
+    "fit_rows_sha256_comma_joined": "10b47b863e82641722e146b37f8d6b0ef79b00405013ba8b5ae32a778133607e",
+    "fit_split_seed": 616619523,
+    "fit_token_pairs": 572424,
+    "holdout_rows_sha256_comma_joined": "02c1bf502244db56a2159a275e90917d465c7184d5bf981f574eddb58800e5a4",
+    "holdout_token_pairs": 143121,
+    "n_fit": 2037,
+    "n_fit_pre_exclusion": 2048,
+    "n_holdout": 510,
+    "n_holdout_pre_exclusion": 512,
+    "rule": "fit_holdout_split(2560, FIT_SPLIT_SEED) BY ITEM first (replica of harness/latentmesh-live/src/calibrate.rs:115, replica==harness ground truth pinned by unit test), THEN the 13 probe-overlap rows dropped from whichever side they landed in (ADR-024 frozen leakage rule); sequence windows are drawn WITHIN fit items only (no cross-item sequences)"
+  },
+  "stage": "run2-m4-fastgrnn-training",
+  "training": {
+    "architecture": "low-rank FastGRNN cell, D_in 2048 -> D_h 1536, r=64 (shared W,U between gate and candidate; W=W1@W2, U=U1@U2; h_t = z*h_prev + (sigmoid(zeta)(1-z)+sigmoid(nu))*h_tilde; Kusupati et al. arXiv:1901.02358, equations per M0 scout primary fetch)",
+    "disclosure_train_eval_match": "training, holdout metric, and probe all run the full per-item sequence from h_0 = 0 (gradient truncation at 16 steps is the only training-specific element) — the train/deployment distribution mismatch of the superseded window scheme is closed by construction",
+    "epochs": 10,
+    "init": "factor matrices U(-1/sqrt(fan_in), +1/sqrt(fan_in)) from one seeded ChaCha8 stream in artifact-layout order; b_z=b_h=0; zeta_raw=1.0, nu_raw=-4.0 (EdgeML reference-implementation defaults, adopted because the scout pinned the equations but not the init)",
+    "loss": "masked MSE over each BPTT window's valid (unpadded) positions (teacher-forced-capture states on both sides)",
+    "note_no_discarded_runs": "one preserved+disclosed pre-probe superseded run (see superseded_run); the run in this receipt is the single training run of the frozen carried-state scheme — no probe-informed retries ever",
+    "optimizer": {
+      "beta1": 0.9,
+      "beta2": 0.999,
+      "eps": 1e-8,
+      "lr": 0.001,
+      "name": "AdamW (candle-nn 0.9.2, the only Adam variant shipped — ADR-024 frozen optimizer constraint)",
+      "weight_decay": 0.01
+    },
+    "param_count": 429058,
+    "param_count_formula": "r(D_in + D_h) + 2*r*D_h + 2*D_h + 2",
+    "runs_performed": 2,
+    "sequences": {
+      "bptt_steps": 16,
+      "item_batch": 64,
+      "scheme": "full-sequence truncated BPTT with carried state: each fit item is ONE sequence from h_0 = 0 (state resets only at item boundaries — no cross-item sequences, ADR-024), stepped in 16-step gradient windows with the hidden state carried DETACHED across windows; items batched 64 at a time, padded + masked (the M0 scout's proven 16-step-BPTT compute pattern, with the training-time h distribution equal to full-sequence deployment by construction)"
+    },
+    "stopping_rule": "fixed 10-epoch budget; artifact = epoch checkpoint with lowest FULL-SEQUENCE holdout MSE (each holdout item's whole generated span forward from h0=0 — the probe's exact forward, so selection matches deployment; frozen in this receipt before any frozen-probe invocation, ADR-024: the probe-invocation order is the freeze point)",
+    "superseded_run": {
+      "artifact": "run2-m4-fastgrnn-r64-cellL18toL14-superseded-windowzeroinit.f32bin",
+      "discipline": "discovered entirely via the calibration-derived holdout metric; the frozen 40-item probe was NEVER invoked against the superseded artifact — zero probe bits consumed (ADR-024: the probe-invocation order is the freeze point, and it had not occurred); superseded trio preserved, not deleted, per the repo's kept-failure-receipt precedent",
+      "receipt": "run2-m4-training-receipt-cellL18toL14-r64-superseded-windowzeroinit.json",
+      "scheme": "independent zero-init 16-token windows (no state carry)",
+      "why_superseded": "full-sequence holdout MSE DIVERGED across epochs (1.484 -> 7.868; best epoch 0, rel residual 1.327 > 1.0 constant-predictor) while window-train MSE improved — the exposure-bias signature of training only on 16-step zero-init horizons then deploying over 100-400 steps; superseded PRE-PROBE by the carried-state TBPTT scheme in this receipt"
+    },
+    "train_seed_chacha8": 1295253568,
+    "train_seed_rule": "TRAIN_SEED_BASE 0x4D340000 + rank"
+  },
+  "wall_clock_s": 121.994585292
+}

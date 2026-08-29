@@ -1,9 +1,16 @@
-//! Run-2 M3 probe internals (ADR-024): the frozen per-item four-condition
-//! execution, shared constants, and the two registered eval variants.
+//! Run-2 probe internals (ADR-024): the frozen per-item four-condition
+//! execution, shared constants, and the M3 eval variants.
 //! Split out of `run2_m3_probe.rs` purely for file-size discipline — the
 //! protocol here is ADR-023's frozen S1a/S2b protocol, byte-for-byte the
 //! same mechanics as `s2b_bridge_probe.rs`'s `run_item`, with only the
-//! transform application swapped for the trained MLP.
+//! transform application swapped for the trained adapter.
+//!
+//! M4 reuse (ADR-024 sub-rung ladder): the sender solve + per-token rows
+//! capture ([`sender_solve_capture_rows`]) and the receiver-side frozen
+//! four-condition block ([`four_conditions`]) are the SAME code paths M3's
+//! per-token variant ran — extracted, not duplicated, so the frozen
+//! protocol exists in exactly one place and cannot silently diverge
+//! between rungs.
 
 use super::mlp::MlpTransform;
 use latentmesh_runtime::{
@@ -15,10 +22,11 @@ use latentmesh_runtime::{
 };
 use rand::SeedableRng;
 use rand_chacha::ChaCha8Rng;
+use std::ops::Range;
 
 pub const SENDER: &str = "Qwen/Qwen2.5-3B-Instruct";
 pub const RECEIVER: &str = "Qwen/Qwen2.5-1.5B-Instruct";
-/// S2 winner cell L18→L14 (ADR-023 Deviation 6; ADR-024 M3's cell).
+/// S2 winner cell L18→L14 (ADR-023 Deviation 6; ADR-024 M3/M4's cell).
 pub const SENDER_BLOCK: usize = 18;
 pub const RECEIVER_BLOCK: usize = 14;
 pub const ITEM_SEED: u64 = 0x51A1;
@@ -59,23 +67,43 @@ pub struct Quad {
 
 pub type QuadRow = (serde_json::Value, Quad);
 
-/// One frozen-protocol item: sender solve + capture, variant-specific MLP
-/// application, then the four paired receiver conditions.
-pub fn run_item(
+/// Sender first-pass outcome (step 1), carried into the per-item row JSON.
+pub struct SenderPass {
+    pub first_pass_correct: bool,
+    pub first_pass_answer: Option<String>,
+    pub generated_tokens: usize,
+}
+
+/// Capture metadata for the per-item row JSON.
+pub struct CaptureMeta {
+    pub hidden_size: usize,
+    pub pooled_l2_raw: f32,
+    pub span: Range<usize>,
+    pub variant: &'static str,
+}
+
+/// Sender solve + per-token rows capture (steps 1–2a of the frozen
+/// protocol): greedy solve, then teacher-forced re-prefill with the tap
+/// after the sender sweep block, returning the raw `[n_rows × hidden]`
+/// generated-span rows (plus the natural pooled vector for diagnostics).
+/// `Ok(None)` = degenerate capture pass (no generated tokens), skipped.
+pub struct SenderRows {
+    pub pass: SenderPass,
+    pub rows: Vec<f32>,
+    pub n_rows: usize,
+    pub pooled: Vec<f32>,
+    pub hidden_size: usize,
+    pub span: Range<usize>,
+}
+
+pub fn sender_solve_capture_rows(
     sender: &mut QwenRuntime,
-    receiver: &mut QwenRuntime,
-    transform: &MlpTransform,
     item: &super::Gsm8kItem,
-    pad_id: u32,
-    variant: Variant,
     device: &candle_core::Device,
-) -> anyhow::Result<Option<QuadRow>> {
+) -> anyhow::Result<Option<SenderRows>> {
     let e = anyhow::Error::msg;
     let fmt = super::ANSWER_FORMAT;
     let mut greedy = Sampler::new(Sampling::Greedy, 0);
-
-    // 1) Sender capture pass: solve, then teacher-forced re-prefill with the
-    //    tap after the sender sweep block over the generated span.
     let cap_prompt = QwenRuntime::chat_prompt(SYSTEM, &format!("{}\n\n{fmt}", item.question));
     let cap_tokens = sender.encode(&cap_prompt).map_err(e)?;
     let gen = sender
@@ -90,46 +118,128 @@ pub fn run_item(
         .copied()
         .collect();
     let span = cap_tokens.len()..full.len();
-
-    // 2) Variant-specific trained-MLP application (ADR-024 M3).
-    let (aligned, cap_pooled_l2, cap_hidden, cap_span) = match variant {
-        Variant::PerToken => {
-            let (_, mut caps) = forward_capture_multi_with_rows(
-                &mut sender.model,
-                &full,
-                &[SENDER_BLOCK],
-                span.clone(),
-                device,
-            )
+    let (_, mut caps) =
+        forward_capture_multi_with_rows(&mut sender.model, &full, &[SENDER_BLOCK], span, device)
             .map_err(e)?;
-            let cwr = caps.remove(0);
-            anyhow::ensure!(cwr.capture.hidden_size == super::mlp::D_IN);
-            let n_rows = cwr.capture.span.len();
-            let aligned = transform.apply_rows_then_pool(&cwr.rows, n_rows);
-            (
-                aligned,
-                norms::l2(&cwr.capture.pooled),
-                cwr.capture.hidden_size,
-                cwr.capture.span.clone(),
-            )
-        }
-        Variant::Pooled => {
-            let (_, cap) =
-                forward_capture(&mut sender.model, &full, SENDER_BLOCK, span, device).map_err(e)?;
-            anyhow::ensure!(cap.hidden_size == super::mlp::D_IN);
-            let aligned = transform.apply(&cap.pooled);
-            (
-                aligned,
-                norms::l2(&cap.pooled),
-                cap.hidden_size,
-                cap.span.clone(),
-            )
-        }
-    };
+    let cwr = caps.remove(0);
     let first_pass_answer = super::extract_answer(&gen.text);
     let first_pass_correct = first_pass_answer
         .as_deref()
         .is_some_and(|a| super::answers_equal(a, &item.gold));
+    let n_rows = cwr.capture.span.len();
+    Ok(Some(SenderRows {
+        pass: SenderPass {
+            first_pass_correct,
+            first_pass_answer,
+            generated_tokens: gen.tokens.len(),
+        },
+        rows: cwr.rows,
+        n_rows,
+        pooled: cwr.capture.pooled,
+        hidden_size: cwr.capture.hidden_size,
+        span: cwr.capture.span,
+    }))
+}
+
+/// One frozen-protocol item for the M3 MLP: sender solve + capture,
+/// variant-specific MLP application, then the four paired receiver
+/// conditions.
+pub fn run_item(
+    sender: &mut QwenRuntime,
+    receiver: &mut QwenRuntime,
+    transform: &MlpTransform,
+    item: &super::Gsm8kItem,
+    pad_id: u32,
+    variant: Variant,
+    device: &candle_core::Device,
+) -> anyhow::Result<Option<QuadRow>> {
+    let e = anyhow::Error::msg;
+
+    // 1)+2) Sender capture pass + variant-specific trained-MLP application.
+    let (aligned, sender_pass, meta) = match variant {
+        Variant::PerToken => {
+            let Some(sr) = sender_solve_capture_rows(sender, item, device)? else {
+                return Ok(None);
+            };
+            anyhow::ensure!(sr.hidden_size == super::mlp::D_IN);
+            let aligned = transform.apply_rows_then_pool(&sr.rows, sr.n_rows);
+            let meta = CaptureMeta {
+                hidden_size: sr.hidden_size,
+                pooled_l2_raw: norms::l2(&sr.pooled),
+                span: sr.span.clone(),
+                variant: variant.tag(),
+            };
+            (aligned, sr.pass, meta)
+        }
+        Variant::Pooled => {
+            let fmt = super::ANSWER_FORMAT;
+            let mut greedy = Sampler::new(Sampling::Greedy, 0);
+            let cap_prompt =
+                QwenRuntime::chat_prompt(SYSTEM, &format!("{}\n\n{fmt}", item.question));
+            let cap_tokens = sender.encode(&cap_prompt).map_err(e)?;
+            let gen = sender
+                .generate(&cap_tokens, None, &mut greedy, MAX_NEW_TOKENS, false)
+                .map_err(e)?;
+            if gen.tokens.is_empty() {
+                return Ok(None);
+            }
+            let full: Vec<u32> = cap_tokens
+                .iter()
+                .chain(gen.tokens.iter())
+                .copied()
+                .collect();
+            let span = cap_tokens.len()..full.len();
+            let (_, cap) =
+                forward_capture(&mut sender.model, &full, SENDER_BLOCK, span, device).map_err(e)?;
+            anyhow::ensure!(cap.hidden_size == super::mlp::D_IN);
+            let aligned = transform.apply(&cap.pooled);
+            let first_pass_answer = super::extract_answer(&gen.text);
+            let first_pass_correct = first_pass_answer
+                .as_deref()
+                .is_some_and(|a| super::answers_equal(a, &item.gold));
+            let meta = CaptureMeta {
+                hidden_size: cap.hidden_size,
+                pooled_l2_raw: norms::l2(&cap.pooled),
+                span: cap.span.clone(),
+                variant: variant.tag(),
+            };
+            (
+                aligned,
+                SenderPass {
+                    first_pass_correct,
+                    first_pass_answer,
+                    generated_tokens: gen.tokens.len(),
+                },
+                meta,
+            )
+        }
+    };
+    four_conditions(
+        receiver,
+        item,
+        pad_id,
+        &aligned,
+        &sender_pass,
+        &meta,
+        device,
+    )
+    .map(Some)
+}
+
+/// Steps 3–5 of the frozen protocol (receiver side), shared by every run-2
+/// rung: placeholder-slot prompt (S1a wording), natural inject-block norms,
+/// the four paired conditions, and the per-item row JSON.
+pub fn four_conditions(
+    receiver: &mut QwenRuntime,
+    item: &super::Gsm8kItem,
+    pad_id: u32,
+    aligned: &[f32],
+    sender_pass: &SenderPass,
+    meta: &CaptureMeta,
+    device: &candle_core::Device,
+) -> anyhow::Result<QuadRow> {
+    let e = anyhow::Error::msg;
+    let fmt = super::ANSWER_FORMAT;
 
     // 3) Receiver injection prompt with placeholder slots (S1a wording).
     let slots = "<|fim_pad|>".repeat(N_SLOTS);
@@ -155,11 +265,11 @@ pub fn run_item(
     .map_err(e)?;
     let natural = norms::stats(nat_cap.per_position_l2.clone());
 
-    let aligned_l2 = norms::l2(&aligned);
+    let aligned_l2 = norms::l2(aligned);
     let real = InjectionSpec {
         after_block: RECEIVER_BLOCK,
         positions: positions.clone(),
-        vector: aligned.clone(),
+        vector: aligned.to_vec(),
         scale: Some(natural.median / aligned_l2),
     };
     let target_l2 = norms::l2(&real.effective_vector());
@@ -210,16 +320,17 @@ pub fn run_item(
     let row = serde_json::json!({
         "item": item.index,
         "gold": item.gold,
-        "sender_first_pass": {"correct": first_pass_correct, "answer": first_pass_answer,
-                               "generated_tokens": gen.tokens.len()},
+        "sender_first_pass": {"correct": sender_pass.first_pass_correct,
+                               "answer": sender_pass.first_pass_answer,
+                               "generated_tokens": sender_pass.generated_tokens},
         "capture": {
-            "hidden_size": cap_hidden,
-            "pooled_l2_raw": cap_pooled_l2,
+            "hidden_size": meta.hidden_size,
+            "pooled_l2_raw": meta.pooled_l2_raw,
             "aligned_l2_raw": aligned_l2,
             "injected_l2": target_l2,
             "natural_inject_block_norms": natural,
-            "span": [cap_span.start, cap_span.end],
-            "variant": variant.tag(),
+            "span": [meta.span.start, meta.span.end],
+            "variant": meta.variant,
         },
         "conditions": {
             "aligned_real": {"correct": real_ok, "nll_gold": real_nll},
@@ -229,7 +340,7 @@ pub fn run_item(
         },
         "aligned_answer_tail": real_text.chars().rev().take(60).collect::<String>().chars().rev().collect::<String>(),
     });
-    Ok(Some((
+    Ok((
         row,
         Quad {
             real: (real_ok, real_nll),
@@ -237,5 +348,5 @@ pub fn run_item(
             zero: (zero_ok, zero_nll),
             rand: (rand_ok, rand_nll),
         },
-    )))
+    ))
 }

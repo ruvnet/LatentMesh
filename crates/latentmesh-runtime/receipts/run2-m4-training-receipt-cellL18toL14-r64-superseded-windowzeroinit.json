@@ -1,0 +1,403 @@
+{
+  "artifact": {
+    "content_hash_sha256": "bfe646b6ee06b1f0b12cde1b8b14e462d9f8d57a8a3018d3431add416bd6a9c8",
+    "file": "run2-m4-fastgrnn-r64-cellL18toL14.f32bin",
+    "golden_file": "run2-m4-golden-fastgrnn-r64-cellL18toL14.json",
+    "golden_file_sha256": "fe5dadf20e790c9f90f800d1861f9cf4094ec2fffaae8084f46d5c16e5cbdb37",
+    "golden_input_seed_chacha8": 1295278109,
+    "golden_seq_len": 8,
+    "golden_seqs": 8,
+    "layout": "little-endian f32: w1[2048xR row-major, x@W convention] || w2[Rx1536 row-major] || u1[1536xR row-major] || u2[Rx1536 row-major] || b_z[1536] || b_h[1536] || zeta_raw[1] || nu_raw[1]"
+  },
+  "cell": "L18->L14",
+  "curves": {
+    "per_epoch": [
+      {
+        "epoch": 0,
+        "holdout_mse": 1.4840720712281916,
+        "holdout_rel_residual_vs_fit_mean": 1.3267898071832969,
+        "train_mse_mean": 1.264526007990317,
+        "wall_s": 7.642894744873047
+      },
+      {
+        "epoch": 1,
+        "holdout_mse": 2.6629905722983818,
+        "holdout_rel_residual_vs_fit_mean": 1.7772946961268032,
+        "train_mse_mean": 1.1369391384915013,
+        "wall_s": 7.364344120025635
+      },
+      {
+        "epoch": 2,
+        "holdout_mse": 4.261666601526564,
+        "holdout_rel_residual_vs_fit_mean": 2.248352315343629,
+        "train_mse_mean": 1.055202992201281,
+        "wall_s": 7.336381435394287
+      },
+      {
+        "epoch": 3,
+        "holdout_mse": 13.832581092513793,
+        "holdout_rel_residual_vs_fit_mean": 4.05066421097623,
+        "train_mse_mean": 0.9567305093942793,
+        "wall_s": 7.377251625061035
+      },
+      {
+        "epoch": 4,
+        "holdout_mse": 24.670386748799967,
+        "holdout_rel_residual_vs_fit_mean": 5.409568310358745,
+        "train_mse_mean": 0.8362488579065033,
+        "wall_s": 7.3583292961120605
+      },
+      {
+        "epoch": 5,
+        "holdout_mse": 2.2348350838189366,
+        "holdout_rel_residual_vs_fit_mean": 1.6281610861226548,
+        "train_mse_mean": 0.7531765867290214,
+        "wall_s": 7.334630489349365
+      },
+      {
+        "epoch": 6,
+        "holdout_mse": 2.312930807163752,
+        "holdout_rel_residual_vs_fit_mean": 1.6563646405379615,
+        "train_mse_mean": 0.6999056792834849,
+        "wall_s": 7.34131383895874
+      },
+      {
+        "epoch": 7,
+        "holdout_mse": 5.048428937169715,
+        "holdout_rel_residual_vs_fit_mean": 2.447105843531707,
+        "train_mse_mean": 0.6605200086949061,
+        "wall_s": 7.373147010803223
+      },
+      {
+        "epoch": 8,
+        "holdout_mse": 5.811341088426343,
+        "holdout_rel_residual_vs_fit_mean": 2.62550478200342,
+        "train_mse_mean": 0.6386599510593939,
+        "wall_s": 7.3467607498168945
+      },
+      {
+        "epoch": 9,
+        "holdout_mse": 7.86802152985935,
+        "holdout_rel_residual_vs_fit_mean": 3.0549731683376447,
+        "train_mse_mean": 0.6242859237685172,
+        "wall_s": 7.4197869300842285
+      }
+    ],
+    "sampled_steps_every_200": [
+      {
+        "epoch": 0,
+        "step": 0,
+        "train_mse": 1.6209418773651123
+      },
+      {
+        "epoch": 0,
+        "step": 200,
+        "train_mse": 1.2740933895111084
+      },
+      {
+        "epoch": 0,
+        "step": 400,
+        "train_mse": 1.217084288597107
+      },
+      {
+        "epoch": 1,
+        "step": 600,
+        "train_mse": 1.2030446529388428
+      },
+      {
+        "epoch": 1,
+        "step": 800,
+        "train_mse": 1.1894800662994385
+      },
+      {
+        "epoch": 1,
+        "step": 1000,
+        "train_mse": 1.108642339706421
+      },
+      {
+        "epoch": 2,
+        "step": 1200,
+        "train_mse": 1.1022326946258545
+      },
+      {
+        "epoch": 2,
+        "step": 1400,
+        "train_mse": 1.0453675985336304
+      },
+      {
+        "epoch": 2,
+        "step": 1600,
+        "train_mse": 1.023176908493042
+      },
+      {
+        "epoch": 3,
+        "step": 1800,
+        "train_mse": 1.0088928937911987
+      },
+      {
+        "epoch": 3,
+        "step": 2000,
+        "train_mse": 0.955004096031189
+      },
+      {
+        "epoch": 3,
+        "step": 2200,
+        "train_mse": 0.9097194075584412
+      },
+      {
+        "epoch": 4,
+        "step": 2400,
+        "train_mse": 0.8696808218955994
+      },
+      {
+        "epoch": 4,
+        "step": 2600,
+        "train_mse": 0.839468240737915
+      },
+      {
+        "epoch": 4,
+        "step": 2800,
+        "train_mse": 0.7996387481689453
+      },
+      {
+        "epoch": 5,
+        "step": 3000,
+        "train_mse": 0.7670491933822632
+      },
+      {
+        "epoch": 5,
+        "step": 3200,
+        "train_mse": 0.7425055503845215
+      },
+      {
+        "epoch": 5,
+        "step": 3400,
+        "train_mse": 0.7135173082351685
+      },
+      {
+        "epoch": 6,
+        "step": 3600,
+        "train_mse": 0.7041885256767273
+      },
+      {
+        "epoch": 6,
+        "step": 3800,
+        "train_mse": 0.6901284456253052
+      },
+      {
+        "epoch": 6,
+        "step": 4000,
+        "train_mse": 0.6704031825065613
+      },
+      {
+        "epoch": 7,
+        "step": 4200,
+        "train_mse": 0.6578460335731506
+      },
+      {
+        "epoch": 7,
+        "step": 4400,
+        "train_mse": 0.6541963815689087
+      },
+      {
+        "epoch": 8,
+        "step": 4600,
+        "train_mse": 0.6349517107009888
+      },
+      {
+        "epoch": 8,
+        "step": 4800,
+        "train_mse": 0.6425794363021851
+      },
+      {
+        "epoch": 8,
+        "step": 5000,
+        "train_mse": 0.6170859336853027
+      },
+      {
+        "epoch": 9,
+        "step": 5200,
+        "train_mse": 0.6351186633110046
+      },
+      {
+        "epoch": 9,
+        "step": 5400,
+        "train_mse": 0.6402141451835632
+      },
+      {
+        "epoch": 9,
+        "step": 5600,
+        "train_mse": 0.5967146754264832
+      }
+    ]
+  },
+  "dataset": {
+    "dump_receipt": "run2-pertoken-dump-receipt.json",
+    "index_sha256": "5069580651bdfd2c2772d442096530a54f81f6629bc509170bbacc7a00313f55",
+    "n_items": 2560,
+    "receiver_file": "receiver_L14.tok.f32bin",
+    "run_dir": "/home/ruvultra/projects/LatentMesh-1/crates/latentmesh-runtime/target/latentmesh-runs/run2",
+    "sender_file": "sender_L18.tok.f32bin",
+    "total_tokens": 719115,
+    "verified_before_training": [
+      {
+        "bytes": 4418242560,
+        "file": "receiver_L14.tok.f32bin",
+        "pass": true,
+        "sha256": "e528e37ec0e3aa766989cc80f2feffeee71eb73c7b84a8c9a15dab6a2795e263"
+      },
+      {
+        "bytes": 4418242560,
+        "file": "receiver_L19.tok.f32bin",
+        "pass": true,
+        "sha256": "ba656d81f3774279b1faf1fa3503245cf63771a41bfe1d6add8cd9862110c452"
+      },
+      {
+        "bytes": 5890990080,
+        "file": "sender_L18.tok.f32bin",
+        "pass": true,
+        "sha256": "44574f9e38bbbe8e2f5b5955cd1cccae0d399b48ed87b5270d1564ab85069c04"
+      },
+      {
+        "bytes": 5890990080,
+        "file": "sender_L24.tok.f32bin",
+        "pass": true,
+        "sha256": "b0c1a3b7abb686639a3da15d669e897a7133fb39f005db365e89c69bacbe900d"
+      }
+    ]
+  },
+  "design": "docs/adr/024-run2-trained-thought-adapter-ladder.md M4 (frozen FastGRNN cell, low-rank, sub-rung ladder r in {64,128,256} ascending; leakage rule per section 'Leakage discipline')",
+  "env": {
+    "crate": "latentmesh-train 0.1.0 (candle 0.9.2, lockfile copied from latentmesh-runtime)",
+    "evidence_label": "seeded deterministic GPU training (candle 0.9.2 AdamW) over captured per-token pairs; the pairs are live-model capture output (run2-pertoken-dump-receipt.json, evidence label live-model, single-host, simulation-free)",
+    "git_commit": "78adcf01627e0e1d11b5d180239726dea538ca4c",
+    "gpu": "NVIDIA GeForce RTX 5080, 580.126.09, 16303 MiB",
+    "nvcc": "nvcc 12.8 (build-time 12.8)",
+    "unix_time": 1787961135
+  },
+  "eval_plan_frozen": {
+    "cell_scope": "S2-winner cell L18->L14 only, matching M3; anchor cell deliberately not probed (unregistered extra draw)",
+    "gate": "aligned_real (FastGRNN payload) > random, one-sided exact sign test, p < 0.05",
+    "payload_derivation": "AUTHORIAL CHOICE, recorded here before the probe (ADR-024's M4 text fixes the architecture and gate but not the pooling step): the FastGRNN consumes the sender's full generated-span per-token L18 sequence from h_0 = 0 and emits the translated sequence h_1..h_T; the 8-slot injection payload is the mean-pool (f64 accumulation) of that TRANSLATED sequence — sequence processing upstream of the pool, the direct sequence analog of M3's variant (i), which is exactly the pooling-hypothesis contrast M4 exists to test",
+    "probe": "ADR-023 frozen 40-item S1a/S2b protocol, inherited unchanged (item_seed_chacha8 20897 == 0x51A1, one-sided exact sign test alpha=0.05, 8 slots, rescale-to-natural-median, greedy/batch=1/max 400 tokens)",
+    "sub_rung_order": "r=64 first; on gate fail r=128 is trained+probed; on fail r=256; each rank one training run + one probe run, ALL receipts kept regardless of outcome (ADR-024's registered exception: three pre-declared architectures in a pre-declared order, not a sweep-until-pass)"
+  },
+  "rank": 64,
+  "results": {
+    "best_epoch": 0,
+    "best_holdout_mse": 1.4840720712281916,
+    "best_holdout_rel_residual_vs_fit_mean": 1.3267898071832969,
+    "holdout_mean_predictor_mse_variance_baseline": 0.84304496551465,
+    "rel_residual_formula": "sqrt(sum ||pred-y||^2 / sum ||y-mu_r||^2) over holdout tokens, mu_r = fit-side per-dim mean (verbatim M3 formula for direct M3-vs-M4 comparability)"
+  },
+  "split": {
+    "excluded_probe_overlap_rows": [
+      {
+        "item": 150,
+        "row": 69,
+        "side": "fit"
+      },
+      {
+        "item": 1309,
+        "row": 683,
+        "side": "fit"
+      },
+      {
+        "item": 1573,
+        "row": 824,
+        "side": "fit"
+      },
+      {
+        "item": 2365,
+        "row": 1258,
+        "side": "fit"
+      },
+      {
+        "item": 2418,
+        "row": 1281,
+        "side": "fit"
+      },
+      {
+        "item": 2540,
+        "row": 1346,
+        "side": "holdout"
+      },
+      {
+        "item": 2958,
+        "row": 1577,
+        "side": "fit"
+      },
+      {
+        "item": 2973,
+        "row": 1586,
+        "side": "holdout"
+      },
+      {
+        "item": 3084,
+        "row": 1647,
+        "side": "fit"
+      },
+      {
+        "item": 3825,
+        "row": 2052,
+        "side": "fit"
+      },
+      {
+        "item": 3844,
+        "row": 2058,
+        "side": "fit"
+      },
+      {
+        "item": 3877,
+        "row": 2078,
+        "side": "fit"
+      },
+      {
+        "item": 4746,
+        "row": 2529,
+        "side": "fit"
+      }
+    ],
+    "fit_rows_sha256_comma_joined": "10b47b863e82641722e146b37f8d6b0ef79b00405013ba8b5ae32a778133607e",
+    "fit_seq_windows": 36614,
+    "fit_split_seed": 616619523,
+    "fit_token_pairs": 572424,
+    "holdout_rows_sha256_comma_joined": "02c1bf502244db56a2159a275e90917d465c7184d5bf981f574eddb58800e5a4",
+    "holdout_token_pairs": 143121,
+    "n_fit": 2037,
+    "n_fit_pre_exclusion": 2048,
+    "n_holdout": 510,
+    "n_holdout_pre_exclusion": 512,
+    "rule": "fit_holdout_split(2560, FIT_SPLIT_SEED) BY ITEM first (replica of harness/latentmesh-live/src/calibrate.rs:115, replica==harness ground truth pinned by unit test), THEN the 13 probe-overlap rows dropped from whichever side they landed in (ADR-024 frozen leakage rule); sequence windows are drawn WITHIN fit items only (no cross-item sequences)"
+  },
+  "stage": "run2-m4-fastgrnn-training",
+  "training": {
+    "architecture": "low-rank FastGRNN cell, D_in 2048 -> D_h 1536, r=64 (shared W,U between gate and candidate; W=W1@W2, U=U1@U2; h_t = z*h_prev + (sigmoid(zeta)(1-z)+sigmoid(nu))*h_tilde; Kusupati et al. arXiv:1901.02358, equations per M0 scout primary fetch)",
+    "disclosure_train_eval_mismatch": "training sees only 16-step zero-init windows; holdout metric and probe run the full sequence (100-400 steps) from h0=0 — long-horizon behavior beyond 16 steps is not directly trained; checkpoint selection on the full-sequence metric guards against a diverging artifact reaching the probe, and the mismatch is disclosed here rather than hidden",
+    "epochs": 10,
+    "init": "factor matrices U(-1/sqrt(fan_in), +1/sqrt(fan_in)) from one seeded ChaCha8 stream in artifact-layout order; b_z=b_h=0; zeta_raw=1.0, nu_raw=-4.0 (EdgeML reference-implementation defaults, adopted because the scout pinned the equations but not the init)",
+    "loss": "MSE over all window steps (teacher-forced-capture states on both sides)",
+    "note_no_discarded_runs": "single training run at this rank; no restarts, no hyperparameter retries",
+    "optimizer": {
+      "beta1": 0.9,
+      "beta2": 0.999,
+      "eps": 1e-8,
+      "lr": 0.001,
+      "name": "AdamW (candle-nn 0.9.2, the only Adam variant shipped — ADR-024 frozen optimizer constraint)",
+      "weight_decay": 0.01
+    },
+    "param_count": 429058,
+    "param_count_formula": "r(D_in + D_h) + 2*r*D_h + 2*D_h + 2",
+    "runs_performed": 1,
+    "sequences": {
+      "batch_windows": 64,
+      "bptt_steps": 16,
+      "window_len": 16,
+      "windowing": "within-item tiling from offset 0, stride 16, plus one tail window ending at T_i when T_i % 16 != 0 (min gen_len 100 => all windows full-length); h_0 = 0 per window; full 16-step BPTT (M0 scout's proven pattern, batch 64 x seq 16)"
+    },
+    "stopping_rule": "fixed 10-epoch budget; artifact = epoch checkpoint with lowest FULL-SEQUENCE holdout MSE (each holdout item's whole generated span forward from h0=0 — the probe's exact forward, so selection matches deployment; frozen in this receipt before any frozen-probe invocation, ADR-024: the probe-invocation order is the freeze point)",
+    "train_seed_chacha8": 1295253568,
+    "train_seed_rule": "TRAIN_SEED_BASE 0x4D340000 + rank"
+  },
+  "wall_clock_s": 84.778415121
+}

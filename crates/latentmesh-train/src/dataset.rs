@@ -75,6 +75,13 @@ impl LayerMap {
     pub fn row(&self, t: usize) -> &[f32] {
         &self.floats()[t * self.dim..(t + 1) * self.dim]
     }
+
+    /// `n` consecutive rows starting at global token index `t0`, as one
+    /// contiguous `[n × dim]` slice (valid because the dump is ragged but
+    /// contiguous per layer file) — the M4 sequence-window accessor.
+    pub fn span(&self, t0: usize, n: usize) -> &[f32] {
+        &self.floats()[t0 * self.dim..(t0 + n) * self.dim]
+    }
 }
 
 /// The verified, memory-mapped per-token dataset for one (sender, receiver)

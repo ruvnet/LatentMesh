@@ -411,6 +411,24 @@ transfer — now shown for a trained nonlinear map, scoped by the registered
 receiver-scale confound above. Ladder proceeds to M4 (sequence translation)
 per this ADR's fail path.
 
+## M4 outcome (2026-08-29, appended per ladder discipline)
+
+**Honest fail, all three sub-rungs, adversarially confirmed** (receipts
+`run2-m4-receipt-cellL18toL14-fastgrnn-r{64,128,256}-*.json`; r256 probe
+re-run bit-identical). Primary: r=64 p=0.3125, r=128 p=0.3125, r=256
+p=0.1875 (4W/1L, aligned 24/40 vs random 21/40 — least-bad, above α).
+FastGRNN learned structure (holdout rel residual 0.704/0.663/0.633 vs
+0.843 baseline, weaker fit than M3's MLP 0.461) and, like M3, fit bought
+no causal transfer. One pre-probe superseded r=64 training run (diverging
+window-zero-init scheme, caught by the holdout metric before any probe
+invocation, preserved with -superseded suffix, disclosed in receipt).
+**Per the pre-verdict interpretive rule above, this is NOT evidence against
+sequence structure — the reconstruction-loss confound applies identically.
+The registered M4c (task-loss ablation) is now MANDATORY.** Execution
+order decision: M4c runs before M4b (it reuses all existing capture and
+machinery; M4b needs fresh 3B-receiver calibration + its own
+pre-registration addendum; both remain mandatory).
+
 ## Registered contingency — task-loss training rung (added 2026-08-28, M4 verdict NOT yet known)
 
 SOTA sweep [docs/research/028](../research/028-sota-continuous-sweep-1.md)
