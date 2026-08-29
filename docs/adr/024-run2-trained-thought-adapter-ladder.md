@@ -615,6 +615,64 @@ The 0/40 probe-time NLL inversion therefore cannot be attributed to
 composed-vs-fused numerics — it is specific to the **deployment
 configuration**, which is exactly what M4d isolates.
 
+## M4f PRE-CHECK VERDICT (2026-08-29): collapse is TASK-LOSS-SPECIFIC, and it was there from init
+
+The registered zero-probe pre-check ran across every ladder artifact
+(receipt `run2-manifold-precheck-receipt.json`; scout analysis
+[docs/research/038](../research/038-manifold-constrained-adapter-scout.md)).
+Verdict, and it is sharper than the question asked:
+
+- **All six reconstruction-trained candidates are ON-manifold** — M3 (both
+  variants) and M4 (all three ranks, including the deliberately-bad
+  superseded init) sit at cosine-to-natural **0.97-0.99**.
+- **Both task-loss candidates are OFF-manifold** — M4c and M4d at cosine
+  **-0.02 / 0.05**.
+- **The decisive detail**: M4c-init and M4d-init — *the same untrained random
+  MLP initialisation, before a single gradient step* — are **already** at
+  cosine -0.02. **Task-loss training never learned to leave the manifold; it
+  simply never had to return to it.** MSE reconstruction loss structurally
+  forces manifold proximity (it regresses toward real receiver states);
+  cross-entropy through an *overwrite* channel imposes no such pressure, so a
+  random init that starts off-manifold can stay there while still reducing
+  the loss.
+
+**Consequences for the ladder**: the nulls now separate into two mechanically
+distinct families rather than one. M3/M4 nulls are **on-manifold and still
+useless** — manifold location is demonstrably NOT sufficient. M4c/M4d nulls
+are **off-manifold and actively harmful**. Any write-up must report these
+separately; a single "nothing transferred" narrative would misrepresent both.
+
+**M4f is therefore the fourth cell of a 2x2** (reconstruction/task-loss x
+on-/off-manifold), and the pre-registered risk is explicit: it may produce a
+genuinely on-manifold, item-varying adapter that **still nulls**, because
+manifold location and content-usefulness are independent properties — M3/M4
+already prove on-manifold-ness alone buys nothing. M4f's pre-probe gate
+(re-running this same pre-check plus a gold-token-rank check) exists to catch
+that *before* spending the frozen probe draw, not to guarantee a pass.
+
+**M4f recommended mechanism** (structural, not a penalty): attention over a
+frozen bank of ~512 real receiver-L14 states sampled from the existing
+`receiver_L14.tok.f32bin` dump — query from sender L18 through the M3-shaped
+MLP, softmax weights, output = convex combination of bank rows. On-manifold
+**by construction**, item-varying **by construction** — the two symptoms
+together. A soft VICReg-style penalty is explicitly rejected: it would add
+one more term for gradient descent to trade against, reproducing the same
+shortcut. Fallback: residual/delta anchored to the nearest bank state with an
+L2-penalised delta. ~0.5-0.7 GPU-h for 10 epochs by analogy to M4c's
+receipted 0.446 GPU-h; no new data capture required.
+
+## M4g REGISTERED (2026-08-29): overwrite vs fuse — a separate root-cause candidate
+
+Verified from Cache-to-Cache's own method section (arxiv.org/html/2510.03215):
+its fuser computes `C_F = C_n(X) + F_n(...)` — a **residual ADD onto the
+receiver's own cache**. LatentMesh's `inject.rs` performs a hard
+`slice_assign` **OVERWRITE** of the residual rows (verified in
+`qwen2_b.rs:79-87`). These are opposite mechanisms, and overwriting plausibly
+gives training a shortcut: make the injected slots *harmless* rather than
+useful. Registered as **M4g** rather than folded into M4f, to preserve the
+ladder's one-changed-factor-per-rung discipline. If M4f nulls, M4g is the
+best-motivated successor. Own pre-registration required before any probe draw.
+
 ## CORRECTION to the M4d registration (2026-08-29) — a coordinator error, recorded
 
 The M4d contingency text above asserts that "no training rung has ever had
