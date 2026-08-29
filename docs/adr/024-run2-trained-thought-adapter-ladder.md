@@ -1099,6 +1099,39 @@ verified before entering this record, so nothing rests on the attribution; but
 rung. Everything downstream — the duplicate process, the concurrent source
 edits, the merged message identity — follows from that single mistake.
 
+## ERROR CLASS — cross-rung number transposition (identified 2026-08-29)
+
+Recorded as a **class**, not an incident, because it is the one that defeats a
+plausibility check.
+
+The PC3 owner stated the expected wealth decline as "around 0.19". Recomputing
+from the split gives **W = 1.15³³ × 0.85⁴⁴ = 0.0790**, a 12.7× decline. The
+owner then identified the source, and it is verifiable: **0.19 was PC1b's own
+`final_wealth` (0.194939465)** — a figure carried across from a *different
+rung's receipt* rather than computed from PC2's 33W/44L.
+
+**Why this class is dangerous here.** It is not a formula error and not a typo.
+A transposed number from a neighbouring rung **passes every sanity check**:
+0.19 *is* a plausible declining wealth, it *is* the right order of magnitude,
+and it *is* below 1.0 in the expected direction. Nothing about it looks wrong.
+This repository now holds fifteen-plus rungs whose wealths, n_disc counts and
+NLL means all live in the same numeric neighbourhood, so **every figure is
+camouflage for every other figure.**
+
+It was caught only by **recomputing from the underlying split** rather than
+checking the magnitude for reasonableness.
+
+**Standing rule, adopted**: *compute every reported number from the rung's own
+trajectory and cite the receipt field it came from; never carry a figure across
+rungs from memory.* This is the same discipline that
+[research/047](../research/047-authoritative-power-table.md) had to impose on
+power claims after the ladder accumulated four restated-number drifts, now
+generalised beyond power.
+
+Related and already recorded: coordinator error #4 (M4d's primary p conflated
+aligned-vs-random with aligned-vs-baseline) and #8 ("6 of 9 power-incapable"
+against the authoritative recount of 10 of 14) are **the same class**.
+
 ## THE DISSOCIATION, RESOLVED — "decision-inert" is WRONG; the apparatus is decision-PERTURBATIVE but NON-SEMANTIC (2026-08-29)
 
 **Computed from PC2's committed receipt with zero new GPU time**, by reading
