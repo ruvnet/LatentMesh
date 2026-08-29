@@ -1099,6 +1099,89 @@ verified before entering this record, so nothing rests on the attribution; but
 rung. Everything downstream — the duplicate process, the concurrent source
 edits, the merged message identity — follows from that single mistake.
 
+## PC2 RESULT — primary UNINFORMATIVE (not a FAIL); the salvage is the mission's sharpest finding (2026-08-29)
+
+**Receipt**: `run2-pc2-receipt-identity-L19lasttoken-decoytf-fuse-questiontail-slots8-eprocess.json`.
+Leakage gate **did not trip** (baseline 1.33% < 2%), so the rung is **valid**.
+
+### I am OVERRIDING the binary's auto-verdict
+
+The receipt's verdict string reads *"FAIL — THE APPARATUS CANNOT MOVE A DECISION
+BY ANY MEANS."* **That is not supported by its own data, and it ignores the
+third branch ADR-039 registered.**
+
+- **n_discordant = 3.** Minimum attainable p = 2⁻³ = **0.125**. The primary
+  **cannot reach α = 0.05 even on a flawless run**. It is *structurally
+  incapable*, exactly as [coordinator error #14](039-pc2-steering-control-pre-registration.md)
+  recorded **mid-draw, before this outcome was known**.
+- **wins 3, losses 0.** *Every* discordant pair favoured `steer`. A
+  directionally perfect run — which is the opposite of "cannot move a decision
+  by any means", and which a FAIL verdict actively misreports.
+
+**The registered primary is therefore UNINFORMATIVE.** Per ADR-039 it is *"not
+spun as either outcome"*, and per ADR-036 Decision 3 the power floor is stated
+on its own scale. **PC2 does not discharge the gate. M5X (ADR-037) and M4b
+(ADR-035) remain BLOCKED.**
+
+### The salvage — fully powered, and it is the sharpest result of the mission
+
+The decoy-string NLL is dense: 300 paired observations, no rarity problem.
+
+**Mean NLL of the DECOY target**
+
+| | steer | restore | baseline | zerovec | random |
+|---|---|---|---|---|---|
+| | **2.3097** | 2.9595 | 3.0308 | 3.0308 | 2.9000 |
+
+**Mean NLL of the GOLD target**
+
+| | steer | restore | baseline | zerovec | random |
+|---|---|---|---|---|---|
+| | 2.4446 | **2.1110** | 2.3928 | 2.3928 | 2.3481 |
+
+**Each payload moves the likelihood toward the answer it encodes, and away from
+the other:**
+
+- `steer` → decoy NLL **−0.721 nats** vs baseline, **264W/36L, p = 2.6e-44**;
+  vs norm-matched random **−0.590 nats**, 256W/44L, **p = 7.9e-38**.
+- `steer` → gold NLL **+0.052 nats WORSE** (124W/176L) — it actively moves
+  probability *off* the true answer.
+- `restore` → gold NLL **−0.282 nats**, 198W/102L, p = 1.6e-8 — **reproducing
+  PC1b's number exactly, on 300/300 comparable items.**
+- `restore` → decoy NLL barely moves (3.031 → 2.960), as it must.
+
+**This is semantically faithful, directional steering.** The channel does not
+merely carry *information* — it carries **which answer**, and the receiver's
+distribution follows it.
+
+### And it still does not become a decision
+
+Accuracy: `steer` **126**, `restore` 127, `baseline` **140**, `zerovec` 140,
+`random` 130. Injecting any non-zero vector costs ~10-14 correct answers, on
+now a **third** independent stream.
+
+`zerovec` is bit-identical to `baseline` — **300/300 identical generated
+texts**, `max |Δ NLL| = 0.0` on **both** targets. The operator is proven, so
+none of this is an artefact of the injection machinery.
+
+### The finding, stated precisely
+
+> **The apparatus is LIKELIHOOD-STEERABLE and DECISION-INERT.** A payload can
+> move the receiver's distribution toward *any specified answer* — the true one
+> (PC1b, −0.28 nats) or a deliberately false one (PC2, **−0.72 nats**,
+> p = 2.6e-44) — while **changing essentially none of its answers**, and while
+> *reducing* accuracy.
+
+This is stronger than PC1b alone, which showed only that *content* got through.
+PC2 shows the channel is **steerable with semantic fidelity** and that the
+failure is located precisely at the **likelihood → decision** step. The
+gaming guard is clean (length ratio 1.005, 1/300 degenerate, no NLL collapse),
+so this is not a degenerate-output artefact.
+
+**Firewall, unchanged**: PC2 is same-model, same-item, identity-transform.
+It tests **the apparatus, never transfer** — and, per the symmetric rule, this
+result may not be cited as transfer evidence in **either** direction.
+
 ## COORDINATOR ERROR #13 — "worse than noise, reproducibly" is RETRACTED (2026-08-29)
 
 **I foregrounded a finding that the data does not support.** I wrote that the
