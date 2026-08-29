@@ -1,5 +1,32 @@
 # 024. Run 2: trained thought-adapter ladder
 
+> ## 🔒 LADDER CLOSED — SCOPED NEGATIVE RESULT (final, 2026-08-29)
+>
+> **FALSIFIED, precisely and only:** *direct activation injection — a captured
+> hidden state written into a **frozen** receiver's residual stream — under a
+> **same-model** apparatus, at **one and two layers**, as a mechanism for
+> changing downstream **decisions**.*
+>
+> **NOT falsified, and must not be cited as such:** latent communication in
+> general · **learned-integration methods** (task-loss-trained fusers, gated
+> multi-layer receivers, receiver-side adaptation — **none tested here**) ·
+> cross-model transfer as such · the **likelihood-level effect**, which is real
+> and replicated.
+>
+> **Layer count is eliminated as the explanation.** M5X (two sites) and M4i (one
+> site) ran the same stream, site, adapters and task, and returned **accuracy
+> 128 in both** and **NLL-vs-norm-matched-random 166W/134L in both** — the same
+> integers. Powered null: n_disc 64, min attainable p 5.4e-21, against a bar of
+> ≥46/66 registered before the draw.
+>
+> **Verifiable without prose**:
+> [research/052](../research/052-decision-equivalence-from-receipts.md) is a
+> field-path index into the committed receipts.
+>
+> **Consequence for the programme**: stop funding manual injection variants.
+> The remaining hypothesis is **learned integration**, not *more sites*, and it
+> must be evaluated as a separate mechanism with its own pre-registration.
+
 > ## ✅ THE LADDER IS CLOSED (2026-08-29)
 >
 > **Final result, confirmed out of sample by PC3**: activation injection is

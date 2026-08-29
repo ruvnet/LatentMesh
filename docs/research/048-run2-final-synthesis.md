@@ -8,6 +8,36 @@ contract — reported without softening.
 
 ---
 
+## The programme's thesis, restated after M5X
+
+**LatentMesh does not optimise for latent transport. It optimises for the
+measured causal utility of a representation.**
+
+That is not a retreat from the original goal — it is what the receipts support.
+The runtime's job is to *discover* which representation earns its cost:
+
+```
+candidate representation
+  none · text · semantic delta · symbolic rule · prototype · KV · latent
+                            ↓
+                   causal gate (five controls)
+                            ↓
+                      UtilityDensity
+                            ↓
+              route only if it earns its cost
+```
+
+**Text and deterministic semantic deltas are first-class reference channels,
+not fallbacks.** Text is the only channel in this repository with a *positive*
+causal result on decisions (Run 3: crossed at item 43, with a control ordering
+proving content is read). Treating it as the thing you resort to when latent
+fails inverts the evidence.
+
+**`UtilityDensity` is the selection objective**, not a diagnostic — implemented
+in `crates/latentmesh-reasoning/src/routing.rs`, where `None` is a first-class
+candidate that can win and `Unmeasured` is structurally distinct from
+`Measured(0.0)`.
+
 ## The result in one sentence
 
 **Activation injection carries semantic content into a receiver's likelihood
