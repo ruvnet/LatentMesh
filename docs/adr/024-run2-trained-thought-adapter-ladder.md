@@ -667,6 +667,65 @@ loss function, deployment configuration, and injection operator.
 **Honest-fail path unchanged**: full numbers either way, no protocol
 iteration, no retry.
 
+## CORRECTION to the M4f pre-check verdict and to the DIAGNOSIS (2026-08-29)
+
+The full pre-check report refines and partly refutes what the section below
+records. Corrections, per [ADR-031](031-evidence-receipt-and-statistical-protocol-governance.md)'s
+append-only rule — the original text stays, this supersedes it:
+
+**1. "Task-loss-specific" is wrong. Off-manifold is the UNTRAINED DEFAULT.**
+The shared zero-step initialisation (byte-identical across M4c and M4d,
+asserted not assumed) is already orthogonal to the receiver's block-14
+residual stream (cosine −0.021). **Reconstruction training MOVES the output
+onto the manifold** (M3 0.989/0.975; M4 r64/r128/r256 0.984/0.983/0.985) —
+**as do run 1's training-free affine bridges** (0.982/0.996), all at natural
+norms (31.5-34.6 vs reference 34.5) and natural entropy. **Task-loss training
+does not**: M4c −0.018 at norm 134.6, M4d +0.048 at norm 143.6 — it grew the
+initialisation's norm ~14x and left the direction where it found it. So the
+collapse is **not caused by** task loss; it is what task loss **failed to
+remove**. Neither universal nor task-loss-specific: 7 of 11 emitters are
+on-manifold, 1 intermediate.
+
+**2. Two of docs/research/033 §4's three grounds fail** (measured against the
+receiver's OWN pooled L14 state — a reference 033 did not have):
+- "77 distinct tokens across 40 items" is **not diagnostic**: the natural
+  pooled state gives 78.
+- "nearly item-invariant" **inverts**: M4c's 0.881 mean pairwise cosine makes
+  it the *least* item-invariant pooled emitter; every on-manifold adapter is
+  *more* invariant (0.96-0.98).
+- "gold at the 61st percentile, worse than the middle" survives only as a
+  *relative* claim: the natural pooled state puts gold at 38.4% and a real
+  single state at 22.5%, so LAP's "negligible" band contains the receiver's
+  own genuine state.
+033's headline (off-manifold; rescale exonerated) **stands, on one
+measurement rather than three**: cosine to the receiver's own state for the
+same item, where the two families separate by ~a full unit with no overlap.
+
+**3. The unasked finding, potentially the most consequential: POOLING is
+itself a large step off the manifold.** A genuine receiver block-14 state and
+that same item's pooled state have cosine **0.667**, entropy 9.30 vs 3.36,
+cross-item invariance 0.962 vs 0.635. **Every rung — run 1's affine included
+— injects a POOLED vector**, so "on-manifold" above means *on the manifold of
+pooled states*, which is itself well off the manifold of states the receiver
+actually carries. This is independent of M4e (continuous injection) and M4b
+(receiver scale), and arguably upstream of both. Testable the same zero-GPU
+way.
+
+**4. M4f MUST BE RE-SCOPED before scheduling.** This ADR registered M4f as
+"constrain the adapter's output to the receiver's residual-stream manifold".
+**The reconstruction objective already achieves that** (0.975-0.989) and did
+not rescue transfer — manifold membership is necessary-looking but
+demonstrably **not sufficient**. The pooled-vs-real-state gap is the better
+target. M4f as sketched is superseded; a re-scoped version must name the
+pooling gap, not manifold membership, as its object.
+
+**Disclosed caveat** (from the report, not to be lost): the reconstruction
+rungs and affine bridges were *fit to* the receiver's L14 states, so landing
+on that manifold is near-tautological. The non-tautological content is that
+it holds at deployment on held-out items, that task loss demonstrably does
+not get there, and that the untrained default is orthogonal — hence the nulls
+do **not** share one mechanism.
+
 ## M4f PRE-CHECK VERDICT (2026-08-29): collapse is TASK-LOSS-SPECIFIC, and it was there from init
 
 The registered zero-probe pre-check ran across every ladder artifact

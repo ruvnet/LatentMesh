@@ -42,7 +42,9 @@ mod common;
 use common::m3::{RECEIVER, RECEIVER_BLOCK, SYSTEM};
 use common::mlp::MlpTransform;
 use latentmesh_runtime::{
-    capture::forward_capture, inject::teacher_forced_nll, inject::InjectionSpec, norms, QwenRuntime,
+    capture::forward_capture,
+    inject::{teacher_forced_nll, InjectionMode, InjectionSpec},
+    norms, QwenRuntime,
 };
 use sha2::Digest as _;
 use std::io::{Read as _, Seek as _};
@@ -272,6 +274,7 @@ fn main() -> anyhow::Result<()> {
                 positions: positions.clone(),
                 vector: pooled.clone(),
                 scale: Some(natural.median / norms::l2(&pooled)),
+                mode: InjectionMode::Overwrite,
             };
             teacher_forced_nll(
                 &mut receiver.model,

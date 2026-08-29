@@ -15,7 +15,7 @@
 use super::mlp::MlpTransform;
 use latentmesh_runtime::{
     capture::{forward_capture, forward_capture_multi_with_rows},
-    inject::{teacher_forced_nll, InjectionSpec},
+    inject::{teacher_forced_nll, InjectionMode, InjectionSpec},
     norms,
     sampler::{Sampler, Sampling},
     QwenRuntime,
@@ -271,6 +271,7 @@ pub fn four_conditions(
         positions: positions.clone(),
         vector: aligned.to_vec(),
         scale: Some(natural.median / aligned_l2),
+        mode: InjectionMode::Overwrite,
     };
     let target_l2 = norms::l2(&real.effective_vector());
     let mut vrng = ChaCha8Rng::seed_from_u64(RANDVEC_SEED_BASE + item.index as u64);
@@ -280,12 +281,14 @@ pub fn four_conditions(
         positions: positions.clone(),
         vector: gauss.clone(),
         scale: Some(target_l2 / norms::l2(&gauss)),
+        mode: InjectionMode::Overwrite,
     };
     let zerovec = InjectionSpec {
         after_block: RECEIVER_BLOCK,
         positions,
         vector: vec![0f32; aligned.len()],
         scale: None,
+        mode: InjectionMode::Overwrite,
     };
 
     // 5) Paired conditions (identical to S2b).

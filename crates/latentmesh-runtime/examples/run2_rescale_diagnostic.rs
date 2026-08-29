@@ -36,7 +36,7 @@
 mod common;
 
 use candle_core::{DType, Device};
-use latentmesh_runtime::inject::InjectionSpec;
+use latentmesh_runtime::inject::{InjectionMode, InjectionSpec};
 use latentmesh_runtime::norms;
 use std::io::{Read, Seek, SeekFrom};
 use std::path::{Path, PathBuf};
@@ -216,6 +216,7 @@ fn main() -> anyhow::Result<()> {
                 positions: (0..N_SLOTS).collect(),
                 vector: v.clone(),
                 scale: Some(m / norms::l2(&v)),
+                mode: InjectionMode::Overwrite,
             };
             let got = spec.effective_vector();
             let c = m / norms::l2(&v);
@@ -392,6 +393,7 @@ fn main() -> anyhow::Result<()> {
             positions: (0..N_SLOTS).collect(),
             vector: raw.clone(),
             scale: Some(median / raw_l2),
+            mode: InjectionMode::Overwrite,
         };
         let rescaled = spec.effective_vector();
         let scale = median / raw_l2;

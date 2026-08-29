@@ -55,7 +55,7 @@ mod common;
 
 use latentmesh_runtime::{
     capture::forward_capture,
-    inject::{teacher_forced_nll, InjectionSpec},
+    inject::{teacher_forced_nll, InjectionMode, InjectionSpec},
     norms,
     sampler::{Sampler, Sampling},
     QwenRuntime,
@@ -515,6 +515,7 @@ fn run_item(
         positions: positions.clone(),
         vector: aligned.clone(),
         scale: Some(natural.median / aligned_l2),
+        mode: InjectionMode::Overwrite,
     };
     let target_l2 = norms::l2(&real.effective_vector());
     // Random control: per-item seeded gaussian, norm-matched (as S1a).
@@ -525,6 +526,7 @@ fn run_item(
         positions: positions.clone(),
         vector: gauss.clone(),
         scale: Some(target_l2 / norms::l2(&gauss)),
+        mode: InjectionMode::Overwrite,
     };
     // A7(c) control: TRUE zero vector through the real 8-slot path.
     let zerovec = InjectionSpec {
@@ -532,6 +534,7 @@ fn run_item(
         positions,
         vector: vec![0f32; aligned.len()],
         scale: None,
+        mode: InjectionMode::Overwrite,
     };
 
     // 5) Paired conditions.
