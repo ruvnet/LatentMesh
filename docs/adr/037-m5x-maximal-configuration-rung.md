@@ -240,6 +240,55 @@ already-scoped-multi-factor rung —
 its e-process adoption, restated here: a pre-registration buys attribution clarity, it does not
 create or predict an effect.
 
+## COORDINATOR ERROR #20 — I spawned a second owner onto a live rung (2026-08-29)
+
+**A repeat of coordinator error #11, with the same cause and a new delivery
+failure layered on top.**
+
+Sequence:
+1. The rung owner asked for three rulings. **I recorded them on
+   `feat/latentmesh-reasoning-phase1` while its worktree was on
+   `feat/m5x-multi-layer`** — a branch that did not contain them. It could not
+   read the rulings in the ADR, and my direct messages were not reaching it
+   either. It reported "still blocked" three times, correctly.
+2. It then reported *"stopping at the adjudication boundary."* **I read that as
+   finished rather than blocked** and spawned a second agent to carry the rung
+   home.
+3. That agent **rewrote the owner's `run2_m5x_manifold_precheck.rs` mid-session**,
+   invalidating a receipt the owner had already produced and changing the
+   candidate labels its probe gate resolved against.
+
+**The duplicate has been stopped; the original owner is sole owner.** The
+rulings were synced to the correct branch at `febcbde`.
+
+### What prevented this from costing a registered draw
+
+**The owner's Gate 4 failed loudly rather than silently.** It looked the
+pre-check label up and errored — *"carries no `<label>` candidate row"* — rather
+than skipping an unresolvable check. **A gate that treats a missing input as a
+failure rather than a pass is why a mid-session file swap cost fifteen minutes
+instead of one wasted draw**, of which this rung permits exactly one.
+
+### What was kept, on merit
+
+The replacement pre-check was **not reverted**, because it is better: it
+measures **both sites at matched N in one pass**, and adds a **harness-
+faithfulness gate** asserting its site-1 row reproduces the committed M4i
+pre-check row within 5e-3 (`FAITHFULNESS_LABEL =
+m4h-s1-m3-mlp-lasttoken-depooled`). Validating a duplicated harness against a
+known-good committed row **before** anyone reads its new row is a genuinely
+better design than either implementation had alone.
+
+**The owner's earlier pre-check numbers are RETRACTED, not provisional** — they
+were produced by a source that no longer exists on disk and therefore cannot be
+reproduced from the tree.
+
+### The standing rule this violates, restated
+
+**One owner per rung, and the rulings must land where that owner can read
+them.** Recording a decision on a branch the deciding agent cannot see is not a
+decision; it is a note to oneself. Both halves failed here.
+
 ## RULING 2 — reconstruction at BOTH sites; factor 4 (task loss) DEFERRED to a follow-on (2026-08-29)
 
 **The rung owner found ADR-037 internally inconsistent about the loss, and it is
