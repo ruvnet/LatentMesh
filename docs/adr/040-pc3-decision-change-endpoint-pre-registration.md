@@ -37,6 +37,7 @@ prior draws. It will not recur through omission.
 | `random` changes the answer | 50.3% | PC2 receipt, 151/300 |
 | **observed discordance rate** | **25.7%** | 77/300 paired |
 | **expected n_disc at N = 300** | **≈ 77** | |
+| **expected n_disc at N = 212 (actual)** | **≈ 55** | pool exhausted, see amendment |
 | **minimum attainable p** | **6.6 × 10⁻²⁴** | 2⁻⁷⁷ |
 | N for n_disc ≥ 30 (floor) | ≈ 117 items | |
 | **direction of the split** | **33 wins / 44 losses** | PC2 receipt, paired |
@@ -57,13 +58,14 @@ state which comparator the endpoint used.
 
 **Compare the endpoint this replaces**: decoy-emission gave expected n_disc
 ≈ 4.5 and a minimum attainable p of 0.043 — needing **~4,224 items** for
-PC1b-level power. The new endpoint reaches decisive power at **N = 300**.
+PC1b-level power. The new endpoint reaches decisive power even at the **N = 212** actually available.
 
 ## Decision
 
 **Primary endpoint**: whether the receiver's extracted answer **differs from its
 own uninjected baseline answer** — `steer` vs `random`, paired per item, under
-ADR-036's e-process (λ = 0.30, α = 0.05, threshold 20.0, N_max = 300).
+ADR-036's e-process (λ = 0.30, α = 0.05, threshold 20.0, **N_max = 212** —
+see the amendment below; the pool cannot supply 300).
 
 **Item stream**: `adaptation-512`, fixed ascending order, ADR-024's 13-item
 exclusion, **taking every remaining eligible item NOT used by PC2/M4i** — a
@@ -118,7 +120,7 @@ over `{g+1, g-1, g+10, 2g}`), committed before the draw.
 apparatus moves decisions **semantically**. PC2's post-hoc null was a
 false negative; **M5X and M4b unblock.**
 
-**FAIL with real power** (expected: n_disc ≈ 77) — **confirms out of sample
+**FAIL with real power** (expected: n_disc ≈ 55 at N_max = 212) — **confirms out of sample
 that decision-level change is non-semantic**: injection perturbs ~half of all
 answers, and payload content contributes nothing a norm-matched Gaussian does
 not. Combined with the likelihood arm's p = 2.6e-44, this establishes the
