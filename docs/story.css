@@ -462,3 +462,68 @@ a { color: var(--cyan); text-decoration-thickness: 1px; text-underline-offset: 3
 .pillars, .deploys, .appgrid, .hw, .cards, .tabs, .metrics, .tabpanels { margin-inline: 0; }
 /* Trailing note under a grid keeps the same edge. */
 section.prose > .narrow:last-child:not(:first-child) { margin-inline: 0; }
+
+/* ---------- mobile: make the wide figures readable AND obviously scrollable ---------- */
+@media (max-width: 860px) {
+  .tab-viz, .pillar-viz {
+    position: relative;
+    /* Let the figure be taller so the scaled-down artwork still has presence. */
+    aspect-ratio: auto; height: 168px;
+    scroll-snap-type: x proximity;
+  }
+  .tab-viz svg, .pillar-viz svg { min-width: 620px; height: 100%; }
+  /* Edge fade + hint so it is visibly a scrollable strip, not a clipped image. */
+  .tab-viz::after, .pillar-viz::after {
+    content: ""; display: block; position: absolute; top: 0; right: 0; bottom: 0; width: 42px;
+    background: linear-gradient(90deg, transparent, var(--panel2));
+    pointer-events: none; z-index: 3;
+  }
+  .scrollhint {
+    position: absolute; right: 8px; bottom: 7px; z-index: 4; pointer-events: none;
+    font-family: var(--mono); font-size: .5rem; letter-spacing: .14em; text-transform: uppercase;
+    color: var(--cyan); opacity: .85; display: flex; align-items: center; gap: 3px;
+    animation: nudge 2.4s ease-in-out infinite;
+  }
+  @keyframes nudge { 0%,100% { transform: translateX(0); } 50% { transform: translateX(4px); } }
+  .pillar-viz { height: 150px; }
+}
+@media (min-width: 861px) { .scrollhint { display: none; } }
+@media (prefers-reduced-motion: reduce) { .scrollhint { animation: none !important; } }
+
+/* ---------- tabs that read as controls ---------- */
+.tabs {
+  background: var(--panel2); border: 1px solid var(--line2); padding: 4px; gap: 4px;
+  border-radius: 11px;
+}
+.tab {
+  border-radius: 8px; border: 1px solid transparent; background: transparent;
+  position: relative; padding: .72rem .6rem;
+}
+.tab:hover { background: color-mix(in srgb, var(--cyan) 8%, transparent); color: var(--cyan); }
+.tab.is-on {
+  background: var(--navy); border-color: color-mix(in srgb, var(--cyan) 42%, var(--line2));
+  color: var(--cyan); box-shadow: none;
+}
+.tab.is-on::after {
+  content: ""; position: absolute; left: 50%; transform: translateX(-50%);
+  bottom: 5px; width: 16px; height: 2px; border-radius: 2px; background: var(--cyan);
+}
+.tab:focus-visible { outline: 2px solid var(--cyan); outline-offset: 2px; }
+.tabs-hint {
+  font-family: var(--mono); font-size: .56rem; letter-spacing: .16em; text-transform: uppercase;
+  color: var(--faint); margin: .55rem 0 0; display: flex; align-items: center; gap: .4rem;
+}
+.tabs-hint::before { content: "▸"; color: var(--cyan); }
+
+/* The generic .viz max-width is for the SQUARE scrolly panels; the wide tab and
+   pillar figures must fill their column or they get clamped to 240px. */
+.tab-viz, .pillar-viz { max-width: none !important; }
+
+/* Desktop hero: trim the vertical so the metric strip lands above the fold. */
+@media (min-width: 901px) {
+  .hero { padding-block: clamp(34px, 6.5vh, 68px) clamp(28px, 5vh, 52px); }
+  .hero-viz { max-width: 430px; }
+  h1 { font-size: clamp(2rem, 1.1rem + 3.4vw, 3.5rem); }
+  .hero .lede { font-size: clamp(1rem, .95rem + .4vw, 1.16rem); }
+  .metrics { margin-block: 1.5rem 0; }
+}

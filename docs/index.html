@@ -10,7 +10,7 @@
 <meta property="og:description" content="Coordinate AI agents over LoRa, ham radio, BLE or audio. No internet. Runs on a $10 microcontroller.">
 <meta property="og:type" content="website">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='88'>📡</text></svg>">
-<link rel="stylesheet" href="story.css?v=202608301425">
+<link rel="stylesheet" href="story.css?v=202608301428">
 <script type="importmap">
 { "imports": { "three": "https://cdn.jsdelivr.net/npm/three@0.169.0/build/three.module.js" } }
 </script>
@@ -70,7 +70,7 @@
 
     <!-- REACH -->
     <div class="pillar">
-      <div class="viz standalone pillar-viz" data-label="Reach">
+      <div class="viz standalone pillar-viz" data-label="Reach"><span class="scrollhint">swipe ›</span>
         <svg viewBox="0 0 360 250" role="img" aria-label="A message hopping from a field node over LoRa, through a bulletin board, into a fleet API.">
           <g class="pop d1">
             <rect x="14" y="150" width="40" height="40" rx="7" fill="#0c1624" stroke="#50e6ff" stroke-width="1.5"/>
@@ -115,7 +115,7 @@
 
     <!-- TRUST -->
     <div class="pillar">
-      <div class="viz standalone pillar-viz" data-label="Trust">
+      <div class="viz standalone pillar-viz" data-label="Trust"><span class="scrollhint">swipe ›</span>
         <svg viewBox="0 0 360 250" role="img" aria-label="A candidate edge tested against five decoy controls before authority is granted.">
           <g class="pop d1">
             <rect x="14" y="104" width="52" height="42" rx="7" fill="#0c1624" stroke="#50e6ff" stroke-width="1.5"/>
@@ -156,7 +156,7 @@
 
     <!-- TRANSLATION -->
     <div class="pillar">
-      <div class="viz standalone pillar-viz" data-label="Open problem">
+      <div class="viz standalone pillar-viz" data-label="Open problem"><span class="scrollhint">swipe ›</span>
         <svg viewBox="0 0 360 250" role="img" aria-label="Two latent spaces align geometrically while the meaning-preserving links between them fail.">
           <text class="mono faint" x="88" y="44" text-anchor="middle" font-size="8">MODEL A</text>
           <text class="mono faint" x="272" y="44" text-anchor="middle" font-size="8">MODEL B</text>
@@ -534,10 +534,12 @@
     <button class="tab"       role="tab" aria-selected="false" data-tab="t3">03 · Speculative</button>
   </div>
 
+  <p class="tabs-hint">Tap a tier to switch</p>
+
   <div class="tabpanels">
     <!-- ================= TIER 1 ================= -->
     <div class="tabpanel is-on" data-panel="t1" role="tabpanel">
-      <div class="viz standalone tab-viz on" data-label="Deployed · today">
+      <div class="viz standalone tab-viz on" data-label="Deployed · today"><span class="scrollhint">swipe ›</span>
         <svg viewBox="0 0 720 200" role="img" aria-label="Field sensors relaying to a gateway and onward to an operator.">
           <path d="M0 160 q 120 -28 240 -6 t 240 -10 t 240 12" fill="none" stroke="#1a2a3d" stroke-width="1.4"/>
           <g class="pop d1">
@@ -575,7 +577,7 @@
 
     <!-- ================= TIER 2 ================= -->
     <div class="tabpanel" data-panel="t2" role="tabpanel">
-      <div class="viz standalone tab-viz" data-label="Buildable · now">
+      <div class="viz standalone tab-viz" data-label="Buildable · now"><span class="scrollhint">swipe ›</span>
         <svg viewBox="0 0 720 200" role="img" aria-label="A robot swarm sharing a world model, with one unit rejoining and resyncing.">
           <g class="pop d1" fill="none" stroke="#50e6ff" stroke-width="1.3">
             <circle cx="140" cy="104" r="13"/><circle cx="228" cy="72" r="13"/><circle cx="248" cy="140" r="13"/><circle cx="330" cy="98" r="13"/>
@@ -614,7 +616,7 @@
 
     <!-- ================= TIER 3 ================= -->
     <div class="tabpanel" data-panel="t3" role="tabpanel">
-      <div class="viz standalone tab-viz" data-label="Speculative · constraints only">
+      <div class="viz standalone tab-viz" data-label="Speculative · constraints only"><span class="scrollhint">swipe ›</span>
         <svg viewBox="0 0 720 200" role="img" aria-label="A long-delay relay chain across extreme distance, with bounded messages and local autonomy.">
           <!-- distance scale -->
           <line class="fade d1" x1="40" y1="176" x2="600" y2="176" stroke="#243951" stroke-width="1"/>
@@ -816,7 +818,7 @@ radio.set_destination(<span class="s">0xffffffff</span>); <span class="c">// bro
 </nav>
 
 <script type="module">
-  import { createScene, createHeroScene } from "./scene.js?v=202608301425";
+  import { createScene, createHeroScene } from "./scene.js?v=202608301428";
   const c = document.getElementById("mesh3d");
   const panel = document.querySelector(".viz3d");
   const scene = c ? createScene(c) : null;
@@ -841,6 +843,6 @@ radio.set_destination(<span class="s">0xffffffff</span>); <span class="c">// bro
     document.querySelector(".hero-viz").classList.add("no-webgl");
   }
 </script>
-<script src="story.js?v=202608301425"></script>
+<script src="story.js?v=202608301428"></script>
 </body>
 </html>
