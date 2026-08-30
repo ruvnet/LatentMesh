@@ -356,3 +356,84 @@ against the letter of the task brief. **Recorded as a justified deviation, not
 an error.** ADR-045 permits one draw per rank and forbids retry; spending it on
 a receiver answering 8% of items would have burned it irreversibly on a null
 attributable to the objective rather than to the channel.
+
+## Coordinator correction #23 — the FAIL branch's likelihood sentence does not hold on this rung
+
+**Approved by the coordinator after the rank-1 draw. Recorded here; the frozen
+registration, INCLUDING the FAIL-branch text itself, is not edited.**
+
+### What the frozen text says
+
+§"Registered interpretation, both branches", FAIL arm: *"The **likelihood-level
+effect remains real** and unaffected either way."*
+
+### What the rank-1 draw measured
+
+On the **adapted** receiver, `aligned` vs `random` on teacher-forced NLL is
+**147W/153L, one-sided p = 0.657** — dead null. And the control-vs-control pair
+the battery exists to compute shows a norm-matched **random** vector beating
+baseline *more* than the aligned payload does:
+
+| pair (NLL, lower is better) | W/L | one-sided p |
+|---|---|---|
+| `aligned` vs `baseline` | 200/100 | 4.01 × 10⁻⁹ |
+| **`random` vs `baseline`** | **205/95** | **9.83 × 10⁻¹¹** |
+| `aligned` vs `random` | 147/153 | 0.657 |
+
+So the `aligned`-vs-`baseline` result, which alone reads as a strong
+likelihood-level effect, is **not content-specific**: it is a generic
+perturbation effect at this site. On this rung the frozen sentence does not
+hold.
+
+### What is NOT overturned
+
+The frozen-receiver rungs' likelihood finding stands. **M4i** reported
+`aligned` vs `random` on NLL at **166W/134L, one-sided p = 0.0367** (mid-p
+0.0325) — a direct content-vs-content-free comparison, and a real if modest
+content-specific effect.
+
+**CORRECTION TO THE COORDINATOR'S OWN SCOPING, recorded rather than quietly
+adopted.** The ruling described this as *"replicated"* on the strength of M5X
+reporting the same 166W/134L. **M5X is not an independent replication.**
+[research/052](../research/052-decision-equivalence-from-receipts.md) Claim 1
+already establishes that M4i and M5X are decision- *and* likelihood-equivalent
+— *"the same integers, not a similar ratio"* — because both ran the same
+300-item stream, the same site, the same adapters and the same task, and the
+only difference (a second injection site) was inert. The frozen-receiver
+evidence is therefore **one observation of 166W/134L at p = 0.0367, observed
+twice through a change that made no difference** — not two independent
+replications. A correction about an overstated claim must not itself overstate.
+
+### The honest statement — a NEW finding, not a retraction
+
+> On the **frozen** receiver the likelihood movement was **weakly
+> content-specific** (166W/134L, p = 0.0367, single observation). On the
+> **adapted** receiver it is **not content-specific at all** (147W/153L,
+> p = 0.657, with random beating baseline more than aligned does). Receiver
+> adaptation did not make the channel carry decisions — it appears to have
+> **removed the content-specificity the likelihood arm previously had.**
+
+**Do not write this as "the likelihood effect is dead."** It is not. It is: *at
+this site, on this adapted receiver, the movement is generic.*
+
+### Mandatory caveat on the comparison itself
+
+This is a **between-rung comparison across DIFFERENT receivers** — frozen
+versus LoRA-adapted, and per this ADR's own
+`the_adapted_receiver_is_a_MATERIALLY_DIFFERENT_GENERATOR` caveat the adapted
+receiver's output distribution has shifted substantially (252 vs 841 mean
+generated chars). It is therefore **hypothesis-generating, not a controlled
+test**. It is exactly the class of cross-rung comparison this rung's own
+accuracy caveat warns against, and it must carry that warning wherever it is
+quoted.
+
+### Methodological result, recorded as one
+
+The battery caught this on its **first real draw**. Without the
+`random`-vs-`baseline` row, `aligned` vs `baseline` at p = 4 × 10⁻⁹ would have
+been written up as a strong likelihood-level channel effect. That is coordinator
+error #21's exact shape, prevented by the mechanism made mandatory to prevent
+it. **The battery earning its keep is itself a result**, and the two fields
+doing the work — the battery's `scope_limit_disclosed` and the accuracy block's
+"NOT comparable to any prior rung" note — are carried into every subsequent
+rank's receipt by the receipt builder, not by anyone remembering to add them.
