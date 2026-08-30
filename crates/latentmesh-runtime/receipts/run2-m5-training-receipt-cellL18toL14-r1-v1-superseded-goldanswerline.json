@@ -11,10 +11,10 @@
     "scaling": 1.0
   },
   "artifact": {
-    "content_hash_sha256": "040d24b21cf822e62fac426596f4cd1962eae608096a714b9f3f39ff8c1b1160",
+    "content_hash_sha256": "cb617c07260d9cd9a798f8bd13afa3540a1b3f683bd8990c98aca57beef6c31b",
     "file": "run2-m5-lora-r1-cellL18toL14.f32bin",
     "golden_file": "run2-m5-golden-lora-r1-cellL18toL14.json",
-    "golden_file_sha256": "7f97a19840f653dc3d961936e8b2d93e6f54549bc233efac98ff8d69078f7e6f",
+    "golden_file_sha256": "eb2be14fc9abd0e4ff30a68184fcbbd7ce1c7784723a4f2084cf8b51ffec52a5",
     "golden_input_seed_chacha8": 1295320605,
     "golden_pairs": 8,
     "init_content_hash_sha256": "3f48186b3a7060f4089940a4ba4de3d53c1c8aea5eb322fcca1496972b102981",
@@ -28,83 +28,83 @@
     "per_epoch": [
       {
         "epoch": 0,
-        "holdout_ce": 0.5213649878753167,
-        "lora_a_l2": 2.098069906234741,
-        "lora_b_l2": 1.6315722465515137,
-        "train_ce_mean": 0.5365872595369611,
-        "wall_s": 139.36663818359375
+        "holdout_ce": 0.6897038689080635,
+        "lora_a_l2": 1.9940515756607056,
+        "lora_b_l2": 1.654207706451416,
+        "train_ce_mean": 0.7292884706567517,
+        "wall_s": 110.05744934082031
       },
       {
         "epoch": 1,
-        "holdout_ce": 0.5179366465146635,
-        "lora_a_l2": 2.4471476078033447,
-        "lora_b_l2": 2.1246581077575684,
-        "train_ce_mean": 0.518530050999447,
-        "wall_s": 139.44439697265625
+        "holdout_ce": 0.6902094590083888,
+        "lora_a_l2": 2.370917797088623,
+        "lora_b_l2": 2.192687511444092,
+        "train_ce_mean": 0.6417801737670511,
+        "wall_s": 112.01988220214844
       },
       {
         "epoch": 2,
-        "holdout_ce": 0.5192430979042661,
-        "lora_a_l2": 2.7591888904571533,
-        "lora_b_l2": 2.5010411739349365,
-        "train_ce_mean": 0.5138655865933448,
-        "wall_s": 139.39718627929688
+        "holdout_ce": 0.6786230096281917,
+        "lora_a_l2": 2.8271405696868896,
+        "lora_b_l2": 2.657170295715332,
+        "train_ce_mean": 0.6184420145832814,
+        "wall_s": 109.90532684326172
       },
       {
         "epoch": 3,
-        "holdout_ce": 0.5179267672785357,
-        "lora_a_l2": 2.9774603843688965,
-        "lora_b_l2": 2.791692018508911,
-        "train_ce_mean": 0.5114170670194783,
-        "wall_s": 139.41732788085938
+        "holdout_ce": 0.6643095362672409,
+        "lora_a_l2": 3.140045404434204,
+        "lora_b_l2": 2.9895126819610596,
+        "train_ce_mean": 0.6038419417835776,
+        "wall_s": 109.95677947998047
       },
       {
         "epoch": 4,
-        "holdout_ce": 0.5170876131192141,
-        "lora_a_l2": 3.142380714416504,
-        "lora_b_l2": 3.0242466926574707,
-        "train_ce_mean": 0.5094672869186836,
-        "wall_s": 139.4597930908203
+        "holdout_ce": 0.6826049898143894,
+        "lora_a_l2": 3.440878391265869,
+        "lora_b_l2": 3.30314040184021,
+        "train_ce_mean": 0.5844335416897489,
+        "wall_s": 110.02301788330078
       },
       {
         "epoch": 5,
-        "holdout_ce": 0.5194356763479756,
-        "lora_a_l2": 3.2891433238983154,
-        "lora_b_l2": 3.2170722484588623,
-        "train_ce_mean": 0.5078841965036557,
-        "wall_s": 139.45240783691406
+        "holdout_ce": 0.6690260148876904,
+        "lora_a_l2": 3.7192726135253906,
+        "lora_b_l2": 3.5626049041748047,
+        "train_ce_mean": 0.5774848260939606,
+        "wall_s": 110.10626220703125
       },
       {
         "epoch": 6,
-        "holdout_ce": 0.517401933655435,
-        "lora_a_l2": 3.404550075531006,
-        "lora_b_l2": 3.3730804920196533,
-        "train_ce_mean": 0.5077142819202614,
-        "wall_s": 139.4792938232422
+        "holdout_ce": 0.682841078982022,
+        "lora_a_l2": 3.9803173542022705,
+        "lora_b_l2": 3.817065477371216,
+        "train_ce_mean": 0.5636225482428388,
+        "wall_s": 110.06938171386719
       },
       {
         "epoch": 7,
-        "holdout_ce": 0.5228261172041004,
-        "lora_a_l2": 3.4968509674072266,
-        "lora_b_l2": 3.492971658706665,
-        "train_ce_mean": 0.5068473437939078,
-        "wall_s": 139.54144287109375
+        "holdout_ce": 0.6872093760599919,
+        "lora_a_l2": 4.273769378662109,
+        "lora_b_l2": 4.068845748901367,
+        "train_ce_mean": 0.5577367499199395,
+        "wall_s": 109.9631118774414
       },
       {
         "epoch": 8,
-        "holdout_ce": 0.5210763627845867,
-        "lora_a_l2": 3.604426383972168,
-        "lora_b_l2": 3.610156297683716,
-        "train_ce_mean": 0.5066800698652593,
-        "wall_s": 139.33148193359375
+        "holdout_ce": 0.7051852125578044,
+        "lora_a_l2": 4.3640546798706055,
+        "lora_b_l2": 4.189776420593262,
+        "train_ce_mean": 0.5513483864305038,
+        "wall_s": 109.88356018066406
       },
       {
         "epoch": 9,
-        "holdout_ce": 0.5194608282809164,
-        "lora_a_l2": 3.6698031425476074,
-        "lora_b_l2": 3.697166681289673,
-        "train_ce_mean": 0.5060135971171398,
-        "wall_s": 139.42274475097656
+        "holdout_ce": 0.7009497524790098,
+        "lora_a_l2": 4.59137487411499,
+        "lora_b_l2": 4.381246566772461,
+        "train_ce_mean": 0.5412957834422293,
+        "wall_s": 110.15922546386719
       }
     ]
   },
@@ -148,12 +148,12 @@
     "n_slots": 8,
     "natural_median_stats_across_items": {
       "max": 54.9330940246582,
-      "mean": 53.040855407714844,
+      "mean": 53.04054260253906,
       "median": 53.00688171386719,
       "min": 51.08430480957031,
-      "n": 2547,
+      "n": 2546,
       "p25": 52.7030029296875,
-      "p75": 53.40117645263672
+      "p75": 53.39972686767578
     },
     "natural_norm_source": "per-item median of per-position L2 after block 14 over the question-tail prompt, computed on the BASE receiver with the adapter OFF — the capture tap runs before the adapter by construction, so this target is the same one every frozen-receiver rung used",
     "operator": {
@@ -171,10 +171,10 @@
   "env": {
     "crate": "latentmesh-train 0.1.0 (candle 0.9.2, lockfile copied from latentmesh-runtime)",
     "evidence_label": "seeded deterministic GPU training (candle 0.9.2 AdamW) of a RECEIVER-side LoRA driving a LIVE receiver forward (composed differentiable BF16 qwen2_c); sender states are live-model capture output (run2-pertoken-dump-receipt.json)",
-    "git_commit": "a8fb4f5dfcdeb9fd27820d184403240dd42115d1",
+    "git_commit": "b4feac6316365a48bf6571c6d7375e005235ba04",
     "gpu": "NVIDIA GeForce RTX 5080, 580.126.09, 16303 MiB",
     "nvcc": "nvcc 12.8 (build-time 12.8)",
-    "unix_time": 1788050836
+    "unix_time": 1788048291
   },
   "eval_plan_frozen": {
     "baseline_must_be_re_measured": "ADR-045: the baseline arm is re-measured on THIS adapted receiver. No frozen-receiver rung's baseline may be reused — a task-loss-adapted receiver could simply be a better GSM8K solver, and reusing an old baseline would credit that to the channel.",
@@ -191,15 +191,14 @@
     "mitigation_frozen_here": "BEFORE any draw, run2_m5_transfer_check (separate process, inference-only, no draw items, no generation) evaluates the trained adapter's teacher-forced gold-continuation NLL through the VENDORED fused forward on the holdout items, against the SAME receiver with the adapter OFF, under the identical aligned-payload delivery path",
     "on_transfer_fail": "the draw is NOT invoked; the transfer receipt plus diagnosis is the honest M5 outcome for that branch (a null would be confounded by the numeric gap)",
     "statement": "training runs through the composed BF16 forward but the draw runs the vendored FUSED BF16 forward; the measured gap at L=128 is 116/128 argmax agreement, max|dlogit| 8.19 (pure rounding amplification — F32 parity 128/128 at max|dlogit| 0.119 proves same function). Inherited unchanged from M4c.",
-    "transfer_pass_criterion_frozen": "mean vendored-fused CE of the TRAINING TARGET (the rendered gold solution) with the trained adapter < the same quantity with the adapter off, over the evaluable holdout items; per-item wins/losses + sign test reported as secondary, not gating",
-    "why_off_and_not_the_init_artifact": "B is zero-initialised, so the init adapter IS the identity: 'adapter off' and 'adapter at init' are the same function, and the check uses the cheaper of the two. The init artifact and its goldens are committed anyway so the claim is auditable.",
-    "why_the_criterion_is_on_the_training_target": "the transfer check exists to verify that the improvement measured through the COMPOSED forward survives the crossing to the vendored FUSED forward. Measuring that on a quantity training did not optimise would conflate transfer with generalisation. The probe's own endpoint ('#### {gold}' NLL) is reported in the same receipt, unchanged and comparable with the v1 receipt, but it does not gate."
+    "transfer_pass_criterion_frozen": "mean vendored-fused gold-continuation NLL(trained adapter) < mean vendored-fused NLL(adapter off) over the evaluable holdout items; per-item wins/losses + sign test reported as secondary, not gating",
+    "why_off_and_not_the_init_artifact": "B is zero-initialised, so the init adapter IS the identity: 'adapter off' and 'adapter at init' are the same function, and the check uses the cheaper of the two. The init artifact and its goldens are committed anyway so the claim is auditable."
   },
   "results": {
-    "best_epoch": 4,
-    "best_holdout_gold_ce": 0.5170876131192141,
-    "composed_forward_improvement_nats": 0.22338070315765401,
-    "init_holdout_gold_ce": 0.7404683162768682
+    "best_epoch": 3,
+    "best_holdout_gold_ce": 0.6643095362672409,
+    "composed_forward_improvement_nats": 1.6529162240711124,
+    "init_holdout_gold_ce": 2.3172257603383533
   },
   "smoke_run": null,
   "split": {
@@ -270,9 +269,17 @@
         "side": "fit"
       }
     ],
-    "fit_items_trained": 2037,
+    "fit_items_trained": 2036,
     "fit_rows_sha256_comma_joined": "10b47b863e82641722e146b37f8d6b0ef79b00405013ba8b5ae32a778133607e",
-    "fit_skipped": [],
+    "fit_skipped": [
+      {
+        "inj_len": 256,
+        "item": 1202,
+        "reason": "prompt + gold continuation exceeds the measured seq cap",
+        "row": 624,
+        "target_fit": 4
+      }
+    ],
     "fit_split_seed": 616619523,
     "holdout_items_evaluated": 510,
     "holdout_rows": [
@@ -797,13 +804,13 @@
     "n_fit": 2037,
     "n_holdout": 510,
     "rule": "fit_holdout_split(2560, FIT_SPLIT_SEED) BY ITEM first, THEN the 13 probe-overlap rows dropped from whichever side they landed in (ADR-024 frozen leakage rule) — identical to every prior rung",
-    "seq_cap_rule": "skip if prompt_len + gold_continuation_len > 384 (SEQ_CAP = M4c's largest MEASURED envelope on this card)"
+    "seq_cap_rule": "skip if prompt_len + gold_continuation_len > 256 (SEQ_CAP = M4c's largest MEASURED envelope on this card)"
   },
   "stage": "run2-m5-receiver-lora-training",
   "training": {
     "batch": 1,
     "epochs": 10,
-    "measured_process_peak_vram_mib": 11474,
+    "measured_process_peak_vram_mib": 9842,
     "note_no_discarded_runs": "single training run; no restarts, no hyperparameter retries",
     "optimizer": {
       "beta1": 0.9,
@@ -818,8 +825,8 @@
     "runs_performed": 1,
     "step0_grad_gate": {
       "grad_l2_a": 0.0,
-      "grad_l2_b": 0.21744903922080994,
-      "loss": 0.6421725749969482,
+      "grad_l2_b": 1.4609044790267944,
+      "loss": 2.3579869270324707,
       "pass": true,
       "registered_expectation": "with B = 0 the gradient on A is EXACTLY zero — d(delta)/dA carries a factor of B — so the gate requires finite grads on BOTH Vars and a NONZERO grad on B. A's zero is the standard LoRA init's arithmetic, not a cut graph; B's nonzero grad is what proves the graph reaches the adapter through inject -> composed forward -> CE."
     },
@@ -827,22 +834,12 @@
     "train_seed_chacha8": 1295319041
   },
   "training_objective": {
-    "amended_by": "ADR-045 § Deviations, coordinator error #22",
-    "cap_rule": "target_len = min(render_gold_len, 384 - prompt_len), item skipped only if < 8 (M4c's rule verbatim). Items are TRUNCATED, not dropped: dropping would keep only short problems, which correlates with difficulty and would bias the fit set.",
     "delta_v_never_used": "ΔV is not computed here and is not a training signal. docs/research/034 §3 prices ONE properly powered verify_edge draw at ~3 GPU-h — more than this entire run — and ADR-028 forbids frozen-probe fitness for any adapter search. ADR-045 registers ΔV as a single post-hoc characterisation.",
-    "loss": "teacher-forced next-token CE (nats/token, F32 upcast, detached-max log-softmax) on the RENDERED GOLD SOLUTION (render_gold: the human reference solution with GSM8K's <<a+b=c>> calculator annotations stripped, ending in its own '#### n' line), conditioned on the question-tail prompt with the frozen aligned payload fused at the 8 tail positions",
-    "measured_coverage": {
-      "fit_items_fully_covered": 2016,
-      "fit_mean_covered_fraction": 0.998498694072047,
-      "holdout_items_fully_covered": 506,
-      "holdout_mean_covered_fraction": 0.998778317457929,
-      "why_recorded": "a silently truncated reasoning target is how error #22 would recur in another form"
-    },
-    "not_the_sender_span": "docs/research/034 §5.2: task-loss training on the sender's generated span steered M4c toward reproducing the sender's tokens rather than the answer format the probe scores. This trainer never sees the sender's generated tokens as a target — the target is the DATASET's reference solution.",
-    "probe_endpoints_unchanged": "the probe's teacher-forced NLL target remains '#### {gold}' and its accuracy endpoint is unchanged. Only the TRAINING target moved. The transfer check reports both: it gates on the fused CE of the TRAINING target (the actual composed->fused transfer question) and reports the probe-endpoint NLL alongside, so the two are never conflated.",
-    "what_changed_and_why": "ADR-045 registered the target as the gold-answer CONTINUATION alone ('#### {gold}'). Trained on that, the v1 rank-1 adapter cut holdout CE 2.3172 -> 0.6643 (508W/2L on the fused forward) while GSM8K accuracy collapsed 31/64 -> 5/64 and generated length halved (841 -> 389 chars). Raising the likelihood of the answer line does not require solving the problem; the cheapest descent direction is to stop reasoning and emit it immediately. That objective ALSO falsifies the power model the same ADR registers (n_disc ~= 65 is anchored on M4i/M5X, which ran a ~47% receiver; an 8% receiver cannot produce it). The amended target CONTAINS the reasoning whose absence was the pathology."
+    "loss": "teacher-forced next-token CE (nats/token, F32 upcast, detached-max log-softmax) on the GOLD-ANSWER CONTINUATION '#### {gold}', conditioned on the question-tail prompt with the frozen aligned payload fused at the 8 tail positions",
+    "not_the_sender_span": "docs/research/034 §5.2: task-loss training on the sender's generated span steered M4c toward reproducing the sender's tokens rather than the answer format the probe scores. ADR-045 registers the gold continuation; this trainer never sees the sender's generated tokens as a target.",
+    "target_is_the_probes_own": "the CE target tokens are literally encode(\"#### {gold}\") — the same string examples/common/m3.rs builds for its teacher-forced NLL arm. Training optimises the probe's likelihood endpoint directly."
   },
-  "wall_clock_s": 1438.840590904,
+  "wall_clock_s": 1145.393867769,
   "what_is_trained_and_what_is_frozen": {
     "frozen_receiver_weights": "every Qwen2.5-1.5B-Instruct weight; candle 0.9.2 materialises frozen-weight grads internally (visible in the VRAM figure), but no frozen tensor is a Var and none is passed to the optimiser",
     "frozen_sender": "Qwen2.5-3B-Instruct; its L18 states are read from the committed M2 dump, never recomputed",
