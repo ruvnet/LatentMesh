@@ -440,6 +440,8 @@ rank's receipt by the receipt builder, not by anyone remembering to add them.
 
 ## OUTCOME — the registered ladder {1, 2, 4}, complete
 
+**Full write-up**: [research/054](../research/054-m5-receiver-adaptation-closed.md) — the closing document for this rung.
+
 Three ranks registered, three trained, three drawn under the frozen design.
 **None crossed.** Each draw is powered: realised `n_disc` 67–77, all far above
 the registered uninformative floor of 30.
