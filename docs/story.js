@@ -86,47 +86,5 @@
   );
   document.querySelectorAll(".viz.standalone").forEach(function (v) { revealIO.observe(v); });
 
-  /* ---- count-up numbers ---- */
-  var fmt = function (v, dp) { return dp ? v.toFixed(dp) : Math.round(v).toLocaleString(); };
-  var countIO = new IntersectionObserver(
-    function (entries) {
-      entries.forEach(function (e) {
-        if (!e.isIntersecting) return;
-        var el = e.target;
-        countIO.unobserve(el);
-        var target = parseFloat(el.dataset.count);
-        var dp = parseInt(el.dataset.dp || "0", 10);
-        var suffix = el.dataset.suffix || "";
-        if (reduce || isNaN(target)) { el.textContent = fmt(target, dp) + suffix; return; }
-        var t0 = null, dur = 900;
-        var tick = function (t) {
-          if (t0 === null) t0 = t;
-          var p = Math.min((t - t0) / dur, 1);
-          var eased = 1 - Math.pow(1 - p, 3);
-          el.textContent = fmt(target * eased, dp) + suffix;
-          if (p < 1) requestAnimationFrame(tick);
-        };
-        requestAnimationFrame(tick);
-      });
-    },
-    { threshold: 0.5 }
-  );
-  document.querySelectorAll("[data-count]").forEach(function (el) { countIO.observe(el); });
 
-  /* ---- theme toggle (respects system default until clicked) ---- */
-  var btn = document.querySelector("[data-theme-toggle]");
-  if (btn) {
-    var stored = null;
-    try { stored = localStorage.getItem("lm-theme"); } catch (e) { /* private mode */ }
-    if (stored) document.documentElement.setAttribute("data-theme", stored);
-    btn.addEventListener("click", function () {
-      var cur = document.documentElement.getAttribute("data-theme");
-      if (!cur) {
-        cur = window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
-      }
-      var next = cur === "dark" ? "light" : "dark";
-      document.documentElement.setAttribute("data-theme", next);
-      try { localStorage.setItem("lm-theme", next); } catch (e) { /* ignore */ }
-    });
-  }
 })();
