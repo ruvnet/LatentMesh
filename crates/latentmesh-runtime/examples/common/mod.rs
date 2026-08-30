@@ -4,6 +4,7 @@
 //! environment capture.
 
 pub mod affine;
+pub mod displace;
 pub mod fastgrnn;
 pub mod lens;
 pub mod m3;
