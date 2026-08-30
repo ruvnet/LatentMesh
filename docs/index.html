@@ -10,7 +10,7 @@
 <meta property="og:description" content="Coordinate AI agents over LoRa, ham radio, BLE or audio. No internet. Runs on a $10 microcontroller.">
 <meta property="og:type" content="website">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='88'>📡</text></svg>">
-<link rel="stylesheet" href="story.css?v=202608301428">
+<link rel="stylesheet" href="story.css?v=202608301437">
 <script type="importmap">
 { "imports": { "three": "https://cdn.jsdelivr.net/npm/three@0.169.0/build/three.module.js" } }
 </script>
@@ -56,6 +56,193 @@
     <div class="metric am"><span class="lab">Min hardware</span><span class="val">$0</span><span class="sub">transport simulates</span></div>
   </div>
 </header>
+
+<hr class="rule">
+
+<div class="scrolly wrap explainer">
+  <div class="scrolly-inner">
+    <div class="viz-col">
+
+      <!-- E1 — the cloud dependency -->
+      <div class="viz" data-viz="e1" data-label="Today">
+        <svg viewBox="0 0 320 320" role="img" aria-label="Two agents talking through the cloud.">
+          <g class="pop d1">
+            <rect x="26" y="200" width="56" height="56" rx="12" fill="#0c1624" stroke="#50e6ff" stroke-width="2"/>
+            <circle cx="54" cy="222" r="6" fill="#50e6ff"/>
+            <path d="M40 240 q 14 -10 28 0" fill="none" stroke="#50e6ff" stroke-width="2"/>
+            <rect x="238" y="200" width="56" height="56" rx="12" fill="#0c1624" stroke="#50e6ff" stroke-width="2"/>
+            <circle cx="266" cy="222" r="6" fill="#50e6ff"/>
+            <path d="M252 240 q 14 -10 28 0" fill="none" stroke="#50e6ff" stroke-width="2"/>
+          </g>
+          <g class="pop d2">
+            <path d="M110 86 a 30 30 0 0 1 58 -14 a 26 26 0 0 1 44 20 a 24 24 0 0 1 -6 47 h -84 a 27 27 0 0 1 -12 -53 z"
+                  fill="#0c1624" stroke="#8d7cff" stroke-width="2"/>
+          </g>
+          <path class="flow d3" d="M60 196 L 120 142" stroke="#8d7cff" stroke-width="2" fill="none"/>
+          <path class="flow d3" d="M260 196 L 200 142" stroke="#8d7cff" stroke-width="2" fill="none"/>
+          <text class="mono dim d4 fade" x="160" y="296" text-anchor="middle" font-size="11">EVERY MESSAGE GOES VIA THE CLOUD</text>
+        </svg>
+      </div>
+
+      <!-- E2 — no signal, everything stops -->
+      <div class="viz" data-viz="e2" data-label="No signal" style="display:none">
+        <svg viewBox="0 0 320 320" role="img" aria-label="With the cloud unreachable, both agents stop.">
+          <g class="pop d1">
+            <rect x="26" y="200" width="56" height="56" rx="12" fill="#0c1624" stroke="#526379" stroke-width="2"/>
+            <circle cx="54" cy="222" r="6" fill="#526379"/>
+            <path d="M40 244 q 14 8 28 0" fill="none" stroke="#526379" stroke-width="2"/>
+            <rect x="238" y="200" width="56" height="56" rx="12" fill="#0c1624" stroke="#526379" stroke-width="2"/>
+            <circle cx="266" cy="222" r="6" fill="#526379"/>
+            <path d="M252 244 q 14 8 28 0" fill="none" stroke="#526379" stroke-width="2"/>
+          </g>
+          <path class="fade d1" d="M110 86 a 30 30 0 0 1 58 -14 a 26 26 0 0 1 44 20 a 24 24 0 0 1 -6 47 h -84 a 27 27 0 0 1 -12 -53 z"
+                fill="none" stroke="#243951" stroke-width="2" stroke-dasharray="5 6"/>
+          <g class="pop d3" stroke="#ff6b6b" stroke-width="3.5" stroke-linecap="round">
+            <line x1="74" y1="150" x2="110" y2="186"/><line x1="110" y1="150" x2="74" y2="186"/>
+            <line x1="210" y1="150" x2="246" y2="186"/><line x1="246" y1="150" x2="210" y2="186"/>
+          </g>
+          <text class="mono d4 fade" x="160" y="296" text-anchor="middle" font-size="11" fill="#ff6b6b">NO INTERNET · NOTHING WORKS</text>
+        </svg>
+      </div>
+
+      <!-- E3 — talk to each other -->
+      <div class="viz" data-viz="e3" data-label="Direct" style="display:none">
+        <svg viewBox="0 0 320 320" role="img" aria-label="The two agents talk directly by radio.">
+          <g class="pop d1">
+            <rect x="26" y="180" width="56" height="56" rx="12" fill="#0c1624" stroke="#4df3a5" stroke-width="2"/>
+            <circle cx="54" cy="202" r="6" fill="#4df3a5"/>
+            <path d="M40 220 q 14 -10 28 0" fill="none" stroke="#4df3a5" stroke-width="2"/>
+            <path d="M54 180 v -22" stroke="#4df3a5" stroke-width="2"/>
+            <rect x="238" y="180" width="56" height="56" rx="12" fill="#0c1624" stroke="#4df3a5" stroke-width="2"/>
+            <circle cx="266" cy="202" r="6" fill="#4df3a5"/>
+            <path d="M252 220 q 14 -10 28 0" fill="none" stroke="#4df3a5" stroke-width="2"/>
+            <path d="M266 180 v -22" stroke="#4df3a5" stroke-width="2"/>
+          </g>
+          <g fill="none" stroke="#4df3a5" opacity=".55">
+            <circle class="pulse" cx="54" cy="156" r="9" stroke-width="2"/>
+            <circle class="pulse2" cx="266" cy="156" r="9" stroke-width="2"/>
+          </g>
+          <path class="draw d3" d="M78 150 Q 160 96 242 150" stroke="#4df3a5" stroke-width="2.5" fill="none"/>
+          <circle r="5" fill="#50e6ff"><animateMotion dur="2.6s" repeatCount="indefinite" path="M78 150 Q 160 96 242 150"/></circle>
+          <text class="mono d4 fade" x="160" y="292" text-anchor="middle" font-size="11" fill="#4df3a5">THEY TALK TO EACH OTHER</text>
+        </svg>
+      </div>
+
+      <!-- E4 — the tiny pipe -->
+      <div class="viz" data-viz="e4" data-label="227 bytes" style="display:none">
+        <svg viewBox="0 0 320 320" role="img" aria-label="A large chat log will not fit through a narrow radio link.">
+          <g class="pop d1">
+            <rect x="14" y="96" width="104" height="120" rx="10" fill="#0c1624" stroke="#ff6b6b" stroke-width="2"/>
+            <g stroke="#ff6b6b" stroke-width="2" opacity=".65">
+              <path d="M28 118 h 76 M 28 134 h 76 M 28 150 h 60 M 28 166 h 76 M 28 182 h 48 M 28 198 h 68"/>
+            </g>
+          </g>
+          <text class="mono dim d1 fade" x="66" y="240" text-anchor="middle" font-size="10">CHAT LOG</text>
+          <g class="draw d2" stroke="#243951" stroke-width="2" fill="none">
+            <path d="M126 128 L 186 150 L 186 168 L 126 190"/>
+          </g>
+          <rect class="pop d3" x="186" y="146" width="120" height="26" rx="6" fill="#0c1624" stroke="#50e6ff" stroke-width="2"/>
+          <text class="mono d3 pop" x="246" y="164" text-anchor="middle" font-size="11" fill="#50e6ff">227 BYTES</text>
+          <text class="mono faint d4 fade" x="246" y="192" text-anchor="middle" font-size="9">measured on real hardware</text>
+          <text class="mono d5 fade" x="160" y="286" text-anchor="middle" font-size="11" fill="#ff6b6b">THE LOG DOES NOT FIT</text>
+        </svg>
+      </div>
+
+      <!-- E5 — the envelope -->
+      <div class="viz" data-viz="e5" data-label="What we send" style="display:none">
+        <svg viewBox="0 0 320 320" role="img" aria-label="A small envelope carrying what changed, its importance, exact facts and a fingerprint.">
+          <rect class="pop d1" x="86" y="42" width="148" height="42" rx="8" fill="#0c1624" stroke="#50e6ff" stroke-width="2"/>
+          <text class="mono pop d1" x="160" y="68" text-anchor="middle" font-size="12" fill="#50e6ff">64-BYTE ENVELOPE</text>
+          <g class="rise d2">
+            <rect x="40" y="112" width="240" height="34" rx="7" fill="#09111d" stroke="#1a2a3d" stroke-width="1.5"/>
+            <circle cx="62" cy="129" r="7" fill="none" stroke="#4df3a5" stroke-width="2"/><path d="M58 129 l 3 3 l 6 -7" stroke="#4df3a5" stroke-width="2" fill="none"/>
+            <text x="82" y="134" font-size="12">what changed</text>
+          </g>
+          <g class="rise d3">
+            <rect x="40" y="154" width="240" height="34" rx="7" fill="#09111d" stroke="#1a2a3d" stroke-width="1.5"/>
+            <path d="M56 136 m 0 0" /><path d="M56 172 l 6 -12 l 6 8 l 6 -14" fill="none" stroke="#ffb454" stroke-width="2"/>
+            <text x="82" y="176" font-size="12">how much it matters</text>
+          </g>
+          <g class="rise d4">
+            <rect x="40" y="196" width="240" height="34" rx="7" fill="#09111d" stroke="#1a2a3d" stroke-width="1.5"/>
+            <rect x="55" y="206" width="14" height="14" rx="3" fill="none" stroke="#50e6ff" stroke-width="2"/>
+            <text x="82" y="218" font-size="12">facts that must be exact</text>
+          </g>
+          <g class="rise d5">
+            <rect x="40" y="238" width="240" height="34" rx="7" fill="#09111d" stroke="#1a2a3d" stroke-width="1.5"/>
+            <path d="M55 255 h 4 l 3 -7 l 4 14 l 3 -7 h 5" fill="none" stroke="#8d7cff" stroke-width="2"/>
+            <text x="82" y="260" font-size="12">a fingerprint to check drift</text>
+          </g>
+        </svg>
+      </div>
+
+      <!-- E6 — resilience -->
+      <div class="viz" data-viz="e6" data-label="Resilience" style="display:none">
+        <svg viewBox="0 0 320 320" role="img" aria-label="Messages wait when a node is away, and bad messages are dropped.">
+          <g class="pop d1">
+            <rect x="24" y="72" width="48" height="48" rx="10" fill="#0c1624" stroke="#50e6ff" stroke-width="2"/>
+          </g>
+          <g class="pop d2">
+            <rect x="98" y="84" width="18" height="14" rx="3" fill="#ffb454"/>
+            <rect x="122" y="84" width="18" height="14" rx="3" fill="#ffb454" opacity=".75"/>
+            <rect x="146" y="84" width="18" height="14" rx="3" fill="#ffb454" opacity=".5"/>
+          </g>
+          <text class="mono faint d2 fade" x="131" y="114" text-anchor="middle" font-size="9.5">WAITING</text>
+          <g class="blink"><rect x="200" y="72" width="48" height="48" rx="10" fill="none" stroke="#526379" stroke-width="2" stroke-dasharray="5 5"/></g>
+          <text class="mono faint d1 fade" x="224" y="136" text-anchor="middle" font-size="9.5">AWAY</text>
+          <path class="flow d3" d="M172 92 L 196 92" stroke="#4df3a5" stroke-width="2" fill="none"/>
+          <text class="mono d4 fade" x="160" y="166" text-anchor="middle" font-size="11" fill="#4df3a5">NOTHING IS LOST</text>
+
+          <line class="fade d4" x1="40" y1="192" x2="280" y2="192" stroke="#1a2a3d" stroke-width="1.5"/>
+          <g class="pop d5">
+            <rect x="40" y="216" width="112" height="42" rx="8" fill="#0c1624" stroke="#ff6b6b" stroke-width="2"/>
+            <text class="mono" x="96" y="242" text-anchor="middle" font-size="10" fill="#ff6b6b">BAD MESSAGE</text>
+          </g>
+          <path class="draw d5" d="M158 237 L 190 237" stroke="#ff6b6b" stroke-width="2" fill="none"/>
+          <g class="pop d6" stroke="#ff6b6b" stroke-width="3.5" stroke-linecap="round">
+            <line x1="204" y1="222" x2="236" y2="254"/><line x1="236" y1="222" x2="204" y2="254"/>
+          </g>
+          <text class="mono d6 fade" x="252" y="288" text-anchor="middle" font-size="10" fill="#ff6b6b">DROPPED</text>
+        </svg>
+      </div>
+
+    </div>
+
+    <div class="steps">
+      <div class="step" data-viz="e1"><div class="step-inner">
+        <h2>Today, agents talk through the cloud</h2>
+        <p>When one AI agent needs something from another, the message goes up to a datacentre and back down. That works beautifully — right up until the connection doesn't.</p>
+      </div></div>
+
+      <div class="step" data-viz="e2"><div class="step-inner">
+        <h2>Take away the internet and they stop</h2>
+        <p>No towers, no WiFi, no satellite you can afford — and everything cloud-dependent simply halts. That's a hard edge on where autonomous systems can go, and <strong>most of the planet sits on the wrong side of it</strong>.</p>
+      </div></div>
+
+      <div class="step" data-viz="e3"><div class="step-inner">
+        <h2>So let them talk to each other instead</h2>
+        <p>Give each one a cheap radio — LoRa, a ham band, Bluetooth, even audio tones through a handheld — and they reach each other directly. No tower. No subscription. No company that can switch you off.</p>
+      </div></div>
+
+      <div class="step" data-viz="e4"><div class="step-inner">
+        <h2>But the pipe is very, very small</h2>
+        <p>A long-range radio gives you a few hundred bytes per message, and strict limits on how often you may send. We measured the real ceiling on Meshtastic hardware: <strong>227 bytes</strong> — not the 233 the spec implies.</p>
+        <p>A conversation log has no chance of fitting.</p>
+      </div></div>
+
+      <div class="step" data-viz="e5"><div class="step-inner">
+        <h2>So send meaning, not transcript</h2>
+        <p>Each agent sends a small envelope instead: <strong>what changed</strong>, <strong>how much it matters</strong>, <strong>which facts must arrive exactly</strong>, and a <strong>fingerprint</strong> so the receiver can tell whether its picture has drifted out of step.</p>
+      </div></div>
+
+      <div class="step" data-viz="e6"><div class="step-inner">
+        <h2>Built for links that come and go</h2>
+        <p>Radios lose line of sight and batteries sleep. Messages wait and deliver when the node returns.</p>
+        <p>And anything failing its checksum, signature or replay window is <strong>dropped</strong> — never waved through because it looked close enough.</p>
+      </div></div>
+    </div>
+  </div>
+</div>
 
 <hr class="rule">
 
@@ -818,7 +1005,7 @@ radio.set_destination(<span class="s">0xffffffff</span>); <span class="c">// bro
 </nav>
 
 <script type="module">
-  import { createScene, createHeroScene } from "./scene.js?v=202608301428";
+  import { createScene, createHeroScene } from "./scene.js?v=202608301437";
   const c = document.getElementById("mesh3d");
   const panel = document.querySelector(".viz3d");
   const scene = c ? createScene(c) : null;
@@ -843,6 +1030,6 @@ radio.set_destination(<span class="s">0xffffffff</span>); <span class="c">// bro
     document.querySelector(".hero-viz").classList.add("no-webgl");
   }
 </script>
-<script src="story.js?v=202608301428"></script>
+<script src="story.js?v=202608301437"></script>
 </body>
 </html>

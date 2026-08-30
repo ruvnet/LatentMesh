@@ -527,3 +527,10 @@ section.prose > .narrow:last-child:not(:first-child) { margin-inline: 0; }
   .hero .lede { font-size: clamp(1rem, .95rem + .4vw, 1.16rem); }
   .metrics { margin-block: 1.5rem 0; }
 }
+
+/* The explainer runs at icon scale, so its panels are lighter than the
+   field-deployment scrolly that follows. */
+.explainer .viz { max-width: 440px; background: var(--panel); }
+.explainer .step h2 { font-size: clamp(1.4rem, 1.1rem + 1.2vw, 1.9rem); }
+@media (max-width: 860px) { .explainer .viz { max-width: 270px; } }
+@media (max-width: 520px) { .explainer .viz { max-width: 230px; } }
