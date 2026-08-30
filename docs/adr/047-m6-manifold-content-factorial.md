@@ -508,11 +508,18 @@ generalises to decisions*, a null here would be unsurprising. That is a
 hypothesis about generalisation, not an established property, and it is **not**
 grounds for attaching "weaker evidence" to §7.4.
 
-### Registered BEFORE the draw — the likelihood prediction
+### Registered BEFORE THE RESULT WAS SEEN — the likelihood prediction
+
+**Precise provenance, because the weaker true statement is the one worth
+making:** the draw was already running when the coordinator sent this
+prediction and when it was committed here. It was therefore registered *before
+any output of the draw had been read* — not before the draw was launched. No
+line of the result had been seen by the implementing agent or the coordinator
+at commit time, so it cannot have been fitted to the outcome; but the honest
+label is "before the result", not "before the draw".
 
 If correction #23 generalises, **the LIKELIHOOD arm should stay null in M6
-too.** Both endpoints are co-reported. Written down now so neither outcome can
-be fitted afterwards:
+too.** Both endpoints are co-reported:
 
 - **Decision crosses while likelihood stays null** → a **dissociation**, and a
   real finding.
