@@ -4,9 +4,14 @@
 //! environment capture.
 
 pub mod affine;
+pub mod displace;
 pub mod fastgrnn;
 pub mod lens;
 pub mod m3;
+pub mod m5;
+pub mod m6;
+pub mod m6_battery;
+pub mod m6_supply;
 pub mod mlp;
 
 use sha2::{Digest, Sha256};

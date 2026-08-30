@@ -51,6 +51,7 @@ use std::io::{Read, Seek, SeekFrom};
 use std::path::{Path, PathBuf};
 
 use common::affine::AffineTransform;
+use common::displace;
 use common::fastgrnn::FastGrnnTransform;
 use common::lens::{
     classify, cosine, dominant_token_share, entropy_nats, logsumexp, mean, mean_pairwise_cosine,
@@ -76,6 +77,17 @@ const DUMP_RECEIPT: &str = "receipts/run2-pertoken-dump-receipt.json";
 const D_SENDER: usize = 2048;
 const D_RECEIVER: usize = 1536;
 const N_SAMPLE: usize = 40;
+/// ADR-047 M6: the payload every M6 arm is displaced from and measured
+/// against — the same object M4h Stage 1, M4i, M5 and M5X injected.
+const ALIGNED_PAYLOAD_LABEL: &str = "m4h-s1-m3-mlp-lasttoken-depooled";
+/// One label per registered dose, index-aligned with
+/// [`displace::M6_TARGET_COSINES`].
+const M6_DOSE_LABELS: [&str; 4] = [
+    "m6-aligned-displaced-cos0.99",
+    "m6-aligned-displaced-cos0.95",
+    "m6-aligned-displaced-cos0.90",
+    "m6-aligned-displaced-cos0.75",
+];
 const TOPK: usize = 10;
 /// Number of dominant tokens listed per candidate in the receipt.
 const N_DOMINANT: usize = 8;
@@ -139,6 +151,8 @@ fn pool(rows: &[f32], dim: usize, n_rows: usize) -> Vec<f32> {
 
 /// Everything one item supplies to every candidate emitter.
 struct ItemCtx {
+    /// GSM8K item index — seeds the M6 displacement stream (ADR-047 §4.2(3)).
+    item: usize,
     sender_rows: Vec<f32>,
     n_rows: usize,
     sender_pooled: Vec<f32>,
@@ -162,6 +176,14 @@ enum Emitter {
     MlpLastToken(Box<MlpTransform>),
     /// M4: run the sequence from h0 = 0, pool the translated output stream.
     FastGrnn(Box<FastGrnnTransform>),
+    /// ADR-047 M6: the M4h-S1 / M5 payload (M3 MLP, last translated token),
+    /// then rotated to a TARGET COSINE with the norm preserved. One factor
+    /// moves — direction — with the producing computation bit-identical.
+    MlpLastTokenDisplaced(Box<MlpTransform>, f64),
+    /// ADR-047 M6 far anchor: a Gaussian norm-matched to that same payload.
+    /// Wrong on BOTH axes at once, which is precisely why M5 could not
+    /// attribute `aligned > random` to either.
+    MlpLastTokenRandom(Box<MlpTransform>),
     /// Reference, no adapter: the receiver's own pooled L14 state.
     NaturalPooled,
     /// Reference, no adapter and no pooling: one real receiver L14 state
@@ -177,6 +199,19 @@ impl Emitter {
             Emitter::MlpPooled(t) => t.apply(&c.sender_pooled),
             Emitter::MlpLastToken(t) => t.apply_last_row(&c.sender_rows, c.n_rows),
             Emitter::FastGrnn(t) => t.translate_seq_then_pool(&c.sender_rows, c.n_rows),
+            Emitter::MlpLastTokenDisplaced(t, target) => {
+                let base = t.apply_last_row(&c.sender_rows, c.n_rows);
+                // Seed is per (item, dose): the dose enters as its target in
+                // basis points so 0.99 and 0.90 never share a stream.
+                let seed = displace::M6_DISPLACE_SEED_BASE
+                    + c.item as u64 * 1000
+                    + (target * 10_000.0).round() as u64;
+                displace::displace_to_cosine(&base, *target, seed)
+            }
+            Emitter::MlpLastTokenRandom(t) => {
+                let base = t.apply_last_row(&c.sender_rows, c.n_rows);
+                displace::norm_matched_random(&base, displace::M6_RANDOM_SEED_BASE + c.item as u64)
+            }
             Emitter::NaturalPooled => c.receiver_pooled.clone(),
             Emitter::NaturalLastRow => c.receiver_last_row.clone(),
         }
@@ -198,6 +233,9 @@ struct Candidate {
 struct ItemRow {
     l2: f64,
     cos_to_natural_same_item: f64,
+    /// ADR-047 §5: cosine to the UNROUNDED payload (`aligned`) for this item.
+    /// 1.0 for `aligned` itself by construction.
+    cos_to_aligned_payload: f64,
     top10: Vec<u32>,
     entropy_rmsnorm: f64,
     entropy_plain: f64,
@@ -573,6 +611,44 @@ fn build_candidates() -> anyhow::Result<(Vec<Candidate>, serde_json::Value)> {
         )?);
     }
 
+    // ---- ADR-047 M6: the manifold-conformity dose ladder + far anchor ----
+    // Same M3 artifact and same `apply_last_row` derivation as the `aligned`
+    // payload above — byte-identical weights, asserted by that candidate's own
+    // hash gate. Only the emitted DIRECTION moves (ADR-047 §4.2(1,2)).
+    {
+        let m3_mlp = crate_path("receipts/run2-m3-mlp-cellL18toL14.f32bin");
+        for (i, &target) in displace::M6_TARGET_COSINES.iter().enumerate() {
+            let t = MlpTransform::load(&m3_mlp)?;
+            v.push(Candidate {
+                label: M6_DOSE_LABELS[i],
+                family: "m6-aligned-displaced",
+                training: "ADR-047 M6 manifold cell: the M4h-S1 payload rotated to a TARGET COSINE with its norm preserved. The producing computation is bit-identical to `aligned`; content is held exactly; one factor (direction) moves. Displacement is per-(item, dose) ChaCha8-seeded and reproducible from this receipt",
+                artifact: "receipts/run2-m3-mlp-cellL18toL14.f32bin".to_string(),
+                hash: t.content_hash.clone(),
+                gate: serde_json::json!({
+                    "shares_artifact_with": ALIGNED_PAYLOAD_LABEL,
+                    "target_cosine": target,
+                    "displacement_seed_base": displace::M6_DISPLACE_SEED_BASE,
+                    "note": "no separate hash gate: this is the SAME artifact bytes as the aligned candidate, which carries the gate",
+                }),
+                emitter: Emitter::MlpLastTokenDisplaced(Box::new(t), target),
+            });
+        }
+        let t = MlpTransform::load(&m3_mlp)?;
+        v.push(Candidate {
+            label: "m6-random-norm-matched",
+            family: "m6-far-anchor",
+            training: "ADR-047 M6 far anchor: a per-item seeded Gaussian norm-matched to the same payload. Wrong on BOTH axes at once (content-free AND off-manifold) — the defect in M5's only control, reproduced here deliberately as the ladder's endpoint",
+            artifact: "receipts/run2-m3-mlp-cellL18toL14.f32bin".to_string(),
+            hash: t.content_hash.clone(),
+            gate: serde_json::json!({
+                "shares_artifact_with": ALIGNED_PAYLOAD_LABEL,
+                "random_seed_base": displace::M6_RANDOM_SEED_BASE,
+            }),
+            emitter: Emitter::MlpLastTokenRandom(Box::new(t)),
+        });
+    }
+
     v.push(Candidate {
         label: "reference-receiver-L14-pooled",
         family: "reference-on-manifold",
@@ -606,6 +682,83 @@ fn build_candidates() -> anyhow::Result<(Vec<Candidate>, serde_json::Value)> {
         },
     });
     Ok((v, status))
+}
+
+/// ADR-047 §5's gate, computed from the per-candidate table.
+///
+/// Two arms, both required: the measured cosine to the unrounded payload must
+/// be within [`displace::M6_COSINE_TOLERANCE`] of the dose's target, and the
+/// dose's typicality must sit **strictly between** `aligned` and `random`.
+/// Doses failing either are DROPPED and reported — never adjusted to pass.
+fn m6_manipulation_check(table: &[serde_json::Value]) -> serde_json::Value {
+    let find = |label: &str| table.iter().find(|r| r["label"] == label);
+    let typ = |r: &serde_json::Value| -> f64 {
+        r["manifold"]["mean_cosine_to_same_item_natural_receiver_L14_pooled"]
+            .as_f64()
+            .unwrap_or(f64::NAN)
+    };
+    let (aligned, random) = (find(ALIGNED_PAYLOAD_LABEL), find("m6-random-norm-matched"));
+    let (Some(aligned), Some(random)) = (aligned, random) else {
+        return serde_json::json!({
+            "ran": false,
+            "why": "the aligned payload or the M6 far anchor is absent from this run",
+        });
+    };
+    let band = displace::ManifoldBand {
+        lo: typ(random),
+        hi: typ(aligned),
+    };
+
+    let mut doses = Vec::new();
+    let (mut admitted, mut dropped) = (0usize, 0usize);
+    for (i, &target) in displace::M6_TARGET_COSINES.iter().enumerate() {
+        let Some(r) = find(M6_DOSE_LABELS[i]) else {
+            continue;
+        };
+        let measured = r["m6_cosine_to_unrounded_payload"]["mean"]
+            .as_f64()
+            .unwrap_or(f64::NAN);
+        let t = typ(r);
+        let cos_ok = displace::cosine_in_tolerance(measured, target);
+        let band_ok = band.admits(t);
+        let pass = cos_ok && band_ok;
+        if pass {
+            admitted += 1
+        } else {
+            dropped += 1
+        }
+        doses.push(serde_json::json!({
+            "label": M6_DOSE_LABELS[i],
+            "target_cosine": target,
+            "measured_cosine_to_unrounded_payload": measured,
+            "cosine_within_tolerance": cos_ok,
+            "typicality_vs_receiver_own_L14": t,
+            "typicality_strictly_between_aligned_and_random": band_ok,
+            "admitted": pass,
+        }));
+    }
+    serde_json::json!({
+        "ran": true,
+        "adr": "docs/adr/047-m6-manifold-content-factorial.md §5",
+        "band": {
+            "lower_endpoint_random": band.lo,
+            "upper_endpoint_aligned": band.hi,
+            "width": band.width(),
+            "why_not_off_manifold_cosine": format!(
+                "ADR-047 §5 forbids reusing lens::OFF_MANIFOLD_COSINE ({}), a COLLAPSE detector that would admit every dose. The band is anchored on this run's own measured endpoints instead.",
+                common::lens::OFF_MANIFOLD_COSINE),
+        },
+        "cosine_tolerance": displace::M6_COSINE_TOLERANCE,
+        "doses": doses,
+        "n_admitted": admitted,
+        "n_dropped": dropped,
+        "registered_dose_for_the_manifold_primary": 0.90,
+        "manifold_primary_dose_admitted": doses.iter()
+            .find(|d| d["target_cosine"] == 0.90)
+            .and_then(|d| d["admitted"].as_bool())
+            .unwrap_or(false),
+        "honest_scope": "The cosine arm is satisfied BY CONSTRUCTION: displace_to_cosine performs an exact rotation, so it verifies arithmetic rather than an empirical risk. The empirical content of this check is the typicality arm and the WIDTH of the band the doses must fit inside.",
+    })
 }
 
 // ---------------------------------------------------------------------------
@@ -767,12 +920,22 @@ fn main() -> anyhow::Result<()> {
     let mut emitted: Vec<Vec<Vec<f32>>> = vec![Vec::with_capacity(N_SAMPLE); n_cand];
     let mut per_item: Vec<Vec<ItemRow>> = vec![Vec::with_capacity(N_SAMPLE); n_cand];
 
+    // ADR-047 §5's cosine arm is measured against the UNROUNDED payload —
+    // the M4h-S1 / M5 `aligned` vector, which is a candidate in its own right.
+    let aligned_idx = candidates
+        .iter()
+        .position(|c| c.label == ALIGNED_PAYLOAD_LABEL)
+        .ok_or_else(|| {
+            anyhow::anyhow!("no '{ALIGNED_PAYLOAD_LABEL}' candidate to measure against")
+        })?;
+
     for (slot, &row) in holdout_rows.iter().enumerate() {
         let n_rows = gen_len[row];
         let off = token_offsets[row];
         let sender_rows = read_rows(&sdump, D_SENDER, off, n_rows)?;
         let receiver_rows = read_rows(&rdump, D_RECEIVER, off, n_rows)?;
         let ctx = ItemCtx {
+            item: item_indices[row],
             sender_pooled: pool(&sender_rows, D_SENDER, n_rows),
             receiver_pooled: pool(&receiver_rows, D_RECEIVER, n_rows),
             receiver_last_row: receiver_rows[(n_rows - 1) * D_RECEIVER..].to_vec(),
@@ -810,6 +973,7 @@ fn main() -> anyhow::Result<()> {
             per_item[k].push(ItemRow {
                 l2: norms::l2(v) as f64,
                 cos_to_natural_same_item: cosine(v, &ctx.receiver_pooled),
+                cos_to_aligned_payload: cosine(v, &vs[aligned_idx]),
                 top10: top_k(z_norm, TOPK),
                 entropy_rmsnorm: entropy_nats(z_norm),
                 entropy_plain: entropy_nats(z_plain),
@@ -919,6 +1083,12 @@ fn main() -> anyhow::Result<()> {
                 "rmsnorm_lens_mean": mean(&col(|r| r.entropy_rmsnorm)),
                 "plain_lens_mean": mean(&col(|r| r.entropy_plain)),
                 "uniform": (vocab as f64).ln(),
+            },
+            "m6_cosine_to_unrounded_payload": {
+                "mean": mean(&col(|r| r.cos_to_aligned_payload)),
+                "min": minmax(&col(|r| r.cos_to_aligned_payload)).0,
+                "max": minmax(&col(|r| r.cos_to_aligned_payload)).1,
+                "measured_against": ALIGNED_PAYLOAD_LABEL,
             },
             "manifold": {
                 "mean_cosine_to_same_item_natural_receiver_L14_pooled": manifold_cos,
@@ -1111,6 +1281,10 @@ fn main() -> anyhow::Result<()> {
             "note": "chosen to reproduce docs/research/033 §4's own characterisation of M4c (77 distinct tokens across 40 items; 'nearly item-invariant'; 'off the receiver's residual-stream manifold') and applied identically to every candidate INCLUDING the on-manifold references, which therefore act as the calibration of the thresholds rather than as an exception to them",
         },
         "threshold_calibration_against_the_on_manifold_reference": threshold_calibration,
+        // ---- ADR-047 §5 MANDATORY MANIPULATION CHECK ---------------------
+        // Evaluated here from the table's own stored fields, so the verdict is
+        // reproducible from the receipt without re-running anything.
+        "m6_manipulation_check": m6_manipulation_check(&table),
         "candidates": table,
         "verdict": {
             "answer": verdict,

@@ -33,10 +33,22 @@
 //! not the composed one), and the rescale/slot-broadcast operator itself is
 //! pinned against the probe's own `InjectionSpec::effective_vector` by a
 //! measured equivalence gate (`deploy`).
+//! M5 scope (ADR-045, receiver-side adaptation): the first rung that trains
+//! the RECEIVER rather than the payload. `receiver_lora` is the additive
+//! low-rank adapter on the receiver's residual stream at the L14 injection
+//! site; sender and translator are frozen, and the loss is next-token CE on
+//! the **gold-answer continuation** — not the sender's own generated span,
+//! which `docs/research/034` names as M4c's diagnosed target mismatch. The
+//! adapter's deployed form lives in the runtime crate
+//! (`latentmesh_runtime::lora::ResidualLora`) because a receiver weight
+//! change must be live on decode steps, not only during prefill; the two
+//! implementations are pinned to each other by unit test and by golden pairs.
 pub mod dataset;
 pub mod deploy;
 pub mod fastgrnn;
+pub mod m5receipt;
 pub mod mlp;
 pub mod qwen2_c;
+pub mod receiver_lora;
 pub mod split;
 pub mod taskdata;
