@@ -543,3 +543,40 @@ re-measured on its own adapted receiver. Per correction #23, the FAIL branch's
 "the likelihood-level effect remains real" does **not** hold on the adapted
 receiver, with 3/3 support. The ADR-024 firewall is unchanged: M5 is
 same-model, receiver-adapted, and tests the apparatus, never transfer.
+
+---
+
+## APPENDED BY M6 — correction #23 is narrowed by a better control
+
+**Not a rewrite. #23's text above stands as written, and its null is reproduced
+exactly.** What M6 adds is the reason that null appeared.
+
+Correction #23 concluded, from `aligned` vs `random` alone, that the adapted
+receiver's likelihood movement is **not content-specific**. M6
+([ADR-047](047-m6-manifold-content-factorial.md)) ran the same receiver — the
+rank-2 adapter, same stream, same site, same operator — and added `mismatched`,
+another episode's genuine payload: on-manifold, norm-identical, wrong only in
+content.
+
+| NLL contrast, M6, 300 items | split | one-sided p |
+|---|---|---|
+| `aligned` vs `random` (#23's comparison) | **156/144** | **0.263** |
+| `aligned` vs **`mismatched`** | **181/119** | **2.05e-4** |
+
+The first row is **the same integers #23 reported** — M6 reproduces M5 rank 2
+exactly on all 12 shared battery pairs, so this is not a second sample but the
+same measurement re-run. On the same items, the content contrast against an
+**on-manifold** control is significant.
+
+**So #23's null is a property of its CONTROL, not of the receiver.** `random` is
+wrong on two axes at once — content-free *and* off-manifold — and against it the
+content contrast cancels to null. Read #23 hereafter as scoped to that
+comparison, not as a statement that the adapted receiver is content-insensitive.
+
+**What is NOT thereby established.** M6's own decision endpoint is a powered
+null (W 3.8153 vs 20; n_disc 55, 34W/21L), and its likelihood picture is not
+internally clean: `random` improves likelihood *more* than `mismatched` does, on
+both means and counts. ADR-047's outcomes record the candidate mechanism
+(off-manifold payloads produce a larger generic likelihood shift) explicitly as
+a hypothesis that data generated rather than established. **Neither #23 nor this
+append licenses "the likelihood effect is content-specific" as a finding.**
