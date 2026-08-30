@@ -273,6 +273,13 @@ pub fn receipt(c: &ReceiptCtx<'_>, o: &DrawOutcome) -> serde_json::Value {
             "no_p_value_translation": "This receipt reports NO exact-sign or mid-p p-value for the PRIMARY accuracy comparison. The e-process outcome is reported on its own scale and is not translated into an equivalent p-value.",
             "no_completed_rung_redrawn": "No completed rung was re-drawn. M3 through M4i stand exactly as recorded.",
             "cross_rung_levels_not_comparable": "accuracy and NLL LEVELS here are on a different model (an adapted receiver) than every prior rung's. Only the within-rung paired comparisons are interpretable.",
+            "the_adapted_receiver_is_a_MATERIALLY_DIFFERENT_GENERATOR": {
+                "measured": "mean generated length is 252 chars with the adapter installed vs 841 without — a 3.3x reduction. See receiver_adaptation.transfer_check_gate.decision_side_diagnostic_carried_forward for the per-item rows.",
+                "what_it_is": "concision, not truncation. Accuracy is PRESERVED across the same shift (34/64 adapted vs 31/64 unadapted), and ~252 chars is about the length of a GSM8K reference solution, which is what the amended render_gold target trains toward.",
+                "why_length_is_not_the_diagnostic": "the v1 adapter, which DID collapse (5/64), shortened output only 2.2x (841 -> 389). The v2 adapter shortens it MORE, 3.3x, and does not collapse. A larger length reduction therefore does not predict the decision-side failure — accuracy does. Length is reported as a description of the generator, not as a proxy for its health.",
+                "CONSEQUENCE_FOR_CROSS_RUNG_USE": "the M5 adapted receiver's output distribution has shifted substantially from the one M4i and M5X ran. Any cross-rung comparison of M5 against M4i/M5X is NOT apples-to-apples on generation behaviour. M5's accuracy and NLL numbers MUST NOT be presented side by side with M4i's as if one receiver produced both; a table that lists them together must carry this caveat on the row.",
+                "what_it_does_NOT_threaten": "the M5 primary (aligned vs random) is paired WITHIN this rung, with both arms on this same adapted receiver. It is unaffected — that is the point of the design.",
+            },
             "firewall": "ADR-045: M5 is same-model, receiver-adapted. It tests THE APPARATUS, never transfer. Neither outcome may be cited for or against cross-model transferability.",
         },
         "gates": {

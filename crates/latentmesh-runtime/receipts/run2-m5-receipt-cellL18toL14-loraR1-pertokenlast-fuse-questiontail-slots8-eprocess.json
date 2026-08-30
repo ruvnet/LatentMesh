@@ -4,15 +4,23 @@
     "cross_rung_levels_not_comparable": "accuracy and NLL LEVELS here are on a different model (an adapted receiver) than every prior rung's. Only the within-rung paired comparisons are interpretable.",
     "firewall": "ADR-045: M5 is same-model, receiver-adapted. It tests THE APPARATUS, never transfer. Neither outcome may be cited for or against cross-model transferability.",
     "no_completed_rung_redrawn": "No completed rung was re-drawn. M3 through M4i stand exactly as recorded.",
-    "no_p_value_translation": "This receipt reports NO exact-sign or mid-p p-value for the PRIMARY accuracy comparison. The e-process outcome is reported on its own scale and is not translated into an equivalent p-value."
+    "no_p_value_translation": "This receipt reports NO exact-sign or mid-p p-value for the PRIMARY accuracy comparison. The e-process outcome is reported on its own scale and is not translated into an equivalent p-value.",
+    "the_adapted_receiver_is_a_MATERIALLY_DIFFERENT_GENERATOR": {
+      "APPENDED_AFTER_THE_DRAW": "This field was added to an already-written receipt on coordinator instruction, AFTER the draw completed. It records a caveat about numbers the draw already measured; NO measurement, statistic, condition, gate or outcome in this receipt was altered, recomputed or re-run. The draw itself remains the single registered draw.",
+      "measured": "mean generated length is 251.9 chars with the adapter installed vs 840.8 without \u2014 a 3.3x reduction. Per-item rows are in receiver_adaptation.transfer_check_gate.decision_side_diagnostic_carried_forward.items.",
+      "what_it_is": "concision, not truncation. Accuracy is PRESERVED across the same shift (34/64 adapted vs 31/64 unadapted), and ~252 chars is about the length of a GSM8K reference solution, which is what the amended render_gold target trains toward.",
+      "why_length_is_not_the_diagnostic": "the v1 adapter, which DID collapse (5/64), shortened output only 2.2x (841 -> 389). The v2 adapter shortens it MORE, 3.3x, and does not collapse. A larger length reduction therefore does not predict the decision-side failure \u2014 accuracy does. Length is reported as a description of the generator, not as a proxy for its health.",
+      "CONSEQUENCE_FOR_CROSS_RUNG_USE": "the M5 adapted receiver's output distribution has shifted substantially from the one M4i and M5X ran. Any cross-rung comparison of M5 against M4i/M5X is NOT apples-to-apples on generation behaviour. M5's accuracy and NLL numbers MUST NOT be presented side by side with M4i's as if one receiver produced both; a table that lists them together must carry this caveat on the row.",
+      "what_it_does_NOT_threaten": "the M5 primary (aligned vs random) is paired WITHIN this rung, with both arms on this same adapted receiver. It is unaffected \u2014 that is the point of the design."
+    }
   },
   "config": {
     "cell": "L18->L14 (S2 winner; M5 registers on this cell only)",
     "conditions": {
       "aligned_real": "sender per-token capture -> M3 MLP per token -> LAST token -> fused at the 8 question-tail positions, rescaled to natural median, on the ADAPTED receiver",
-      "baseline_uninjected": "no injection (spec=None), same prompt, SAME ADAPTED RECEIVER — re-measured here, never inherited",
+      "baseline_uninjected": "no injection (spec=None), same prompt, SAME ADAPTED RECEIVER \u2014 re-measured here, never inherited",
       "random": "per-item seeded gaussian, norm-matched to the effective aligned vector, same positions, same operator, same ADAPTED receiver",
-      "zerovec_injected": "TRUE ZERO VECTOR through the same path (scale: None). Under fuse this is h += 0, an exact no-op, so it collapses onto baseline_uninjected — on the adapted receiver as on any other."
+      "zerovec_injected": "TRUE ZERO VECTOR through the same path (scale: None). Under fuse this is h += 0, an exact no-op, so it collapses onto baseline_uninjected \u2014 on the adapted receiver as on any other."
     },
     "decoding": "greedy, batch=1, max_new_tokens=400",
     "injection_operator": {
@@ -20,9 +28,9 @@
       "mode": "fuse"
     },
     "injection_site": "question_tail_ordinary_tokens",
-    "natural_norm_source": "receiver forward_capture over this rung's prompt at the inject block, per item — captured BEFORE the adapter runs",
+    "natural_norm_source": "receiver forward_capture over this rung's prompt at the inject block, per item \u2014 captured BEFORE the adapter runs",
     "placeholder_token": null,
-    "pool_span": "NONE — de-pooled; the payload is the last translated token of the generated span, broadcast to the 8 positions",
+    "pool_span": "NONE \u2014 de-pooled; the payload is the last translated token of the generated span, broadcast to the 8 positions",
     "randvec_seed_base": 1369571328,
     "receiver": "Qwen/Qwen2.5-1.5B-Instruct",
     "receiver_inject_block": 14,
@@ -31,7 +39,7 @@
     "resolved_pad_id_unused": 151662,
     "sender": "Qwen/Qwen2.5-3B-Instruct",
     "sender_capture_block": 18,
-    "site_description": "the last 8 tokens of the item's own question — ordinary content tokens already present in the prompt; no slot sentence, no bracket, no placeholder token anywhere (docs/research/043 §4)",
+    "site_description": "the last 8 tokens of the item's own question \u2014 ordinary content tokens already present in the prompt; no slot sentence, no bracket, no placeholder token anywhere (docs/research/043 \u00a74)",
     "slots": 8,
     "transform": {
       "content_hash": "a864e518cdfb09429988862775278bd7734e4342f8c6445fc6081f5ed9d73c91",
@@ -40,11 +48,11 @@
         "golden_file": "/home/ruvultra/projects/LatentMesh-1/crates/latentmesh-runtime/receipts/run2-m3-golden-mlp-cellL18toL14.json",
         "golden_input_seed_chacha8": 1295212573,
         "golden_pairs": 8,
-        "max_relative_l2_error": 4.5287788452696986e-7,
+        "max_relative_l2_error": 4.5287788452696986e-07,
         "pass": true,
-        "tolerance": 9.999999747378752e-6
+        "tolerance": 9.999999747378752e-06
       },
-      "kind": "M3's ALREADY-TRAINED reconstruction MLP 2048->512->1536 ReLU — byte-identical weights, no retraining",
+      "kind": "M3's ALREADY-TRAINED reconstruction MLP 2048->512->1536 ReLU \u2014 byte-identical weights, no retraining",
       "payload_derivation": "apply_last_row on the LAST generated-span token state",
       "training_receipt": "receipts/run2-m3-training-receipt-cellL18toL14.json"
     }
@@ -62,9 +70,9 @@
         "control_vs_control": false,
         "nll_lower_is_better": {
           "losses": 100,
-          "mid_p_one_sided": 2.9867753540053252e-9,
+          "mid_p_one_sided": 2.9867753540053252e-09,
           "n_discordant": 300,
-          "p_one_sided": 4.00743760827381e-9,
+          "p_one_sided": 4.00743760827381e-09,
           "wins": 200
         }
       },
@@ -96,9 +104,9 @@
         "control_vs_control": false,
         "nll_lower_is_better": {
           "losses": 100,
-          "mid_p_one_sided": 2.9867753540053252e-9,
+          "mid_p_one_sided": 2.9867753540053252e-09,
           "n_discordant": 300,
-          "p_one_sided": 4.00743760827381e-9,
+          "p_one_sided": 4.00743760827381e-09,
           "wins": 200
         }
       },
@@ -262,22 +270,22 @@
       "zerovec_injected",
       "random"
     ],
-    "scope_limit_disclosed": "ADR-045 registers exactly these four conditions. ADR-003's `mismatched` and `self_generated` controls are NOT registered for this rung, so no comparison involving them appears here — adding a fifth condition would be an unregistered change to a frozen design. This battery is complete OVER THE REGISTERED SET, not over ADR-003's five-control set.",
+    "scope_limit_disclosed": "ADR-045 registers exactly these four conditions. ADR-003's `mismatched` and `self_generated` controls are NOT registered for this rung, so no comparison involving them appears here \u2014 adding a fifth condition would be an unregistered change to a frozen design. This battery is complete OVER THE REGISTERED SET, not over ADR-003's five-control set.",
     "statistics_are_secondary": "these p-values are the ladder's standing SECONDARY diagnostics. The rung's verdict is the e-process outcome on aligned vs random, and no number here is translated into or out of that scale.",
     "why": "ADR-045 mandatory co-report. Coordinator error #21: a receipt that only tests one condition against one control lets an unsupported rank ordering stand as a claim. Every ordered pair among the registered conditions is computed here and stored, whether or not anyone asks for it.",
     "zerovec_is_degenerate_under_fuse": "under InjectionMode::Fuse the zerovec condition is h += 0, an exact no-op, so zerovec == baseline by construction. Every pair involving zerovec is therefore an operator-correctness check, not an independent control comparison, and the substantive control-vs-control pair is random vs baseline."
   },
   "delta_v": {
     "computed_here": false,
-    "why": "docs/research/034 §3 prices ONE properly powered verify_edge draw at ~3 GPU-h — more than this entire rung — and ADR-028 forbids frozen-probe fitness for any adapter search. ADR-045 registers ΔV as a single post-hoc characterisation, never an online training signal. It was not used during training and is not used here."
+    "why": "docs/research/034 \u00a73 prices ONE properly powered verify_edge draw at ~3 GPU-h \u2014 more than this entire rung \u2014 and ADR-028 forbids frozen-probe fitness for any adapter search. ADR-045 registers \u0394V as a single post-hoc characterisation, never an online training signal. It was not used during training and is not used here."
   },
-  "design": "docs/adr/045-m5-receiver-side-adaptation-pre-registration.md (ACCEPTED — EXECUTING; everything below its MANDATORY POWER CALCULATION heading was frozen before any item was drawn). Evaluation protocol = docs/adr/036-successor-rung-evaluation-protocol.md (e-process, adaptation-512 stream). Scout: docs/research/034.",
+  "design": "docs/adr/045-m5-receiver-side-adaptation-pre-registration.md (ACCEPTED \u2014 EXECUTING; everything below its MANDATORY POWER CALCULATION heading was frozen before any item was drawn). Evaluation protocol = docs/adr/036-successor-rung-evaluation-protocol.md (e-process, adaptation-512 stream). Scout: docs/research/034.",
   "e_process": {
     "alpha": 0.05,
     "comparison": "aligned_real vs random on paired per-item accuracy, both on the adapted receiver",
     "crossed": false,
     "crossed_at_item_count": null,
-    "degenerate_item_rule": "an item whose sender capture pass is degenerate yields no pair and no wealth update, but still CONSUMES one of the N_max budget items — registered, not chosen after seeing the data",
+    "degenerate_item_rule": "an item whose sender capture pass is degenerate yields no pair and no wealth update, but still CONSUMES one of the N_max budget items \u2014 registered, not chosen after seeing the data",
     "discordant_losses_aligned": 35,
     "discordant_wins_aligned": 42,
     "final_wealth": 1.1994211283154632,
@@ -288,7 +296,7 @@
     "n_max": 300,
     "never_restarted": "this is the one and only draw for this rank",
     "outcome": "FAIL",
-    "registered_source": "ADR-036 Decision 1, quoting ADR-030 §3.2 verbatim",
+    "registered_source": "ADR-036 Decision 1, quoting ADR-030 \u00a73.2 verbatim",
     "rule": "W_0 = 1. Concordant item: W_i = W_{i-1}. Discordant item: W_i = W_{i-1} * (1 + lambda*(X_i - 0.5)), X_i = 1 iff aligned wins the pair. PASS the instant W_i >= 1/alpha.",
     "stopping": "the draw stops at the first item where W_i >= the threshold; otherwise it runs the full N_max",
     "trajectory": [
@@ -2993,7 +3001,7 @@
         "x": null
       }
     ],
-    "trajectory_is_complete": "the full W_t path is committed regardless of outcome, per ADR-045's mandatory co-report on the trajectory's SHAPE — a reader can see whether the process trended toward the boundary and ran out of budget, or stayed flat.",
+    "trajectory_is_complete": "the full W_t path is committed regardless of outcome, per ADR-045's mandatory co-report on the trajectory's SHAPE \u2014 a reader can see whether the process trended toward the boundary and ran out of budget, or stayed flat.",
     "wealth_threshold": 20.0
   },
   "env": {
@@ -3034,11 +3042,11 @@
       "pass": true
     },
     "fuse_zero_payload_is_a_noop": {
-      "gating": "none — diagnostic",
+      "gating": "none \u2014 diagnostic",
       "pass": true
     },
     "hand_rolled_apply_matches_trained_network": {
-      "max_relative_l2_error": 4.5287788452696986e-7,
+      "max_relative_l2_error": 4.5287788452696986e-07,
       "pass": true
     },
     "item_supply_matches_adr_036": {
@@ -3051,7 +3059,7 @@
       "pass": true
     },
     "m5_adapter_matches_its_golden_pairs": {
-      "max_relative_l2_error": 3.3887152994793723e-7,
+      "max_relative_l2_error": 3.3887152994793723e-07,
       "pass": true
     },
     "m5_transfer_check_passed_before_this_draw": {
@@ -3086,7 +3094,7 @@
       "unanimous_inversion_vs_baseline": false
     },
     "registered_reading_if_aligned_inverts": "ADR-045: if the aligned condition inverts the same way here, the FIRST hypothesis is off-manifold input, NOT a channel effect, and it must be reported that way.",
-    "why_this_rung_is_not_that_experiment": "M5 trains the RECEIVER and leaves the payload at M3's on-manifold reconstruction weights — the same payload M4i ran, which was inert rather than harmful."
+    "why_this_rung_is_not_that_experiment": "M5 trains the RECEIVER and leaves the payload at M3's on-manifold reconstruction weights \u2014 the same payload M4i ran, which was inert rather than harmful."
   },
   "item_supply": {
     "adr": "ADR-036 Decision 2",
@@ -11485,7 +11493,7 @@
           70,
           71
         ],
-        "positions_decoded": "8. What is Brad’s zip code",
+        "positions_decoded": "8. What is Brad\u2019s zip code",
         "prompt_tokens": 120,
         "site": "question_tail_ordinary_tokens"
       },
@@ -13817,7 +13825,7 @@
       }
     },
     {
-      "aligned_answer_tail": "hua’s share = $40 - $13 = $27\n#### 27\nJoshua’s share is $27.",
+      "aligned_answer_tail": "hua\u2019s share = $40 - $13 = $27\n#### 27\nJoshua\u2019s share is $27.",
       "capture": {
         "aligned_l2_raw": 42.802757263183594,
         "hidden_size": 2048,
@@ -13885,7 +13893,7 @@
           40,
           41
         ],
-        "positions_decoded": "’s. How much is Joshua's share",
+        "positions_decoded": "\u2019s. How much is Joshua's share",
         "prompt_tokens": 90,
         "site": "question_tail_ordinary_tokens"
       },
@@ -23417,7 +23425,7 @@
       }
     },
     {
-      "aligned_answer_tail": "remaining shirts is $40 ÷ 2 = $20.\n#### 20\nThe answer is 20.",
+      "aligned_answer_tail": "remaining shirts is $40 \u00f7 2 = $20.\n#### 20\nThe answer is 20.",
       "capture": {
         "aligned_l2_raw": 47.030517578125,
         "hidden_size": 2048,
@@ -25097,7 +25105,7 @@
       }
     },
     {
-      "aligned_answer_tail": "\nThe farmer will make 10*6=$60 from the pig’s bacon.\n#### 60",
+      "aligned_answer_tail": "\nThe farmer will make 10*6=$60 from the pig\u2019s bacon.\n#### 60",
       "capture": {
         "aligned_l2_raw": 41.50543975830078,
         "hidden_size": 2048,
@@ -25165,7 +25173,7 @@
           74,
           75
         ],
-        "positions_decoded": " the farmer make from the pig’s bacon",
+        "positions_decoded": " the farmer make from the pig\u2019s bacon",
         "prompt_tokens": 124,
         "site": "question_tail_ordinary_tokens"
       },
@@ -25325,7 +25333,7 @@
           135,
           136
         ],
-        "positions_decoded": "uts will Andrew’s mother need to buy",
+        "positions_decoded": "uts will Andrew\u2019s mother need to buy",
         "prompt_tokens": 185,
         "site": "question_tail_ordinary_tokens"
       },
@@ -27262,7 +27270,7 @@
     "era": "SUCCESSOR-RUNG ERA. Not the frozen 40-item sign-test protocol that governed M3 through M4h Stage 1.",
     "item_supply": "adaptation-512, fixed index order, ADR-024's 13-item leakage exclusion applied",
     "must_travel_with_every_headline_number": "Per ADR-036 Decision 3, any write-up quoting a number from this receipt must state in the same sentence that it was produced under the e-process protocol on the adaptation-512 stream, on a RECEIVER-ADAPTED model.",
-    "statistics": "ADR-036 anytime-valid Bernoulli e-process (ADR-030 §3.2 mechanics verbatim)"
+    "statistics": "ADR-036 anytime-valid Bernoulli e-process (ADR-030 \u00a73.2 mechanics verbatim)"
   },
   "rank": 1,
   "receiver_adaptation": {
@@ -27272,10 +27280,10 @@
     "equation": "h' = h + ((h @ A) @ B) * (alpha / rank), F32 matmuls, delta cast to BF16 before the add",
     "frozen_during_training": "the sender, the M3 translator, and every receiver weight; only A and B were optimised",
     "golden_verification": {
-      "max_relative_l2_error": 3.3887152994793723e-7,
+      "max_relative_l2_error": 3.3887152994793723e-07,
       "pairs": 8,
       "pass": true,
-      "tolerance": 9.999999747378752e-6,
+      "tolerance": 9.999999747378752e-06,
       "what_it_pins": "the adapter this probe loaded is bit-for-bit the one the trainer wrote, and the probe-side ResidualLora computes the same function the trainer's LoraAdapter did"
     },
     "param_count": 3072,
@@ -27288,7 +27296,7 @@
       "decision_side_diagnostic_carried_forward": {
         "accuracy_adapter_off": 31,
         "accuracy_adapter_on": 34,
-        "condition": "baseline (no injection), greedy, batch=1, max_new_tokens=400 — the draw's own decoding",
+        "condition": "baseline (no injection), greedy, batch=1, max_new_tokens=400 \u2014 the draw's own decoding",
         "gating": "NONE",
         "items": [
           {
@@ -27807,7 +27815,7 @@
         "mean_generated_chars_adapter_off": 840.796875,
         "mean_generated_chars_adapter_on": 251.921875,
         "n_items": 64,
-        "why": "an adapter trained on an answer-shaped target can learn the FORMAT and stop reasoning — measured, not hypothetical: the v1 adapter trained on '#### {gold}' alone scored 5/64 against 31/64 (ADR-045 error #22). That collapse makes the draw uninformative — almost no discordant pairs, because every condition is wrong — for a reason that has nothing to do with the channel. Measured here, before the draw, on HOLDOUT items only.",
+        "why": "an adapter trained on an answer-shaped target can learn the FORMAT and stop reasoning \u2014 measured, not hypothetical: the v1 adapter trained on '#### {gold}' alone scored 5/64 against 31/64 (ADR-045 error #22). That collapse makes the draw uninformative \u2014 almost no discordant pairs, because every condition is wrong \u2014 for a reason that has nothing to do with the channel. Measured here, before the draw, on HOLDOUT items only.",
         "why_not_gating": "gating the adapter on GSM8K accuracy would select it against the very confound ADR-045 keeps out of the primary. This is reported so a null can be read correctly: 'the receiver stopped answering' is a different finding from 'the channel carries nothing'."
       },
       "mean_fused_train_target_ce_adapter_off": 0.7376343182196804,
@@ -27821,19 +27829,19 @@
         "mean_fused_nll_adapter_off": 2.2352603849242714,
         "mean_fused_nll_adapter_on": 4.1975674065889095,
         "sign_test_p_one_sided": 1.0,
-        "target": "#### {gold} — the probe's own teacher-forced NLL target, frozen and unchanged by the error-#22 amendment",
+        "target": "#### {gold} \u2014 the probe's own teacher-forced NLL target, frozen and unchanged by the error-#22 amendment",
         "wins_adapter_on_lower": 5
       },
       "scope": "composed->fused BF16 transfer only, on holdout items. It says nothing about the channel: an adapter that merely made the receiver a better GSM8K solver would pass it too.",
-      "why_carried_forward": "ADR-045 § Deviations (coordinator error #22) makes the decision-side diagnostic mandatory from v2 onward. It is copied into THIS receipt so a reader of the draw alone can see whether the adapted receiver still reasons — without it, 'the receiver stopped answering' and 'the channel carries nothing' are indistinguishable."
+      "why_carried_forward": "ADR-045 \u00a7 Deviations (coordinator error #22) makes the decision-side diagnostic mandatory from v2 onward. It is copied into THIS receipt so a reader of the draw alone can see whether the adapted receiver still reasons \u2014 without it, 'the receiver stopped answering' and 'the channel carries nothing' are indistinguishable."
     },
     "transfer_receipt": "run2-m5-transfer-receipt-cellL18toL14-r1.json"
   },
   "registered_power_accounting": {
-    "adr": "ADR-045 § MANDATORY POWER CALCULATION, frozen before any item was drawn",
+    "adr": "ADR-045 \u00a7 MANDATORY POWER CALCULATION, frozen before any item was drawn",
     "crossed_the_registered_bar": false,
     "expected_n_discordant": 65,
-    "if_uninformative": "ADR-045: with n_disc < 30 the rung is reported UNINFORMATIVE and the power model is recorded as wrong — a finding about our estimation, not about the apparatus.",
+    "if_uninformative": "ADR-045: with n_disc < 30 the rung is reported UNINFORMATIVE and the power model is recorded as wrong \u2014 a finding about our estimation, not about the apparatus.",
     "realised_discordant_wins": 42,
     "realised_n_discordant": 77,
     "registered_crossing_bar": ">= 45 of 65 discordant wins (69.2%)",
@@ -27862,15 +27870,15 @@
     },
     "fuse_zero_is_noop_vs_baseline": {
       "accuracy_disagreements": 0,
-      "expected": "EXACT identity — under fuse the zerovec condition is h += 0, at any site and on an adapted receiver too",
-      "gating": "NONE — operator-correctness diagnostic. It is also a check that installing the adapter did not break the injection path.",
+      "expected": "EXACT identity \u2014 under fuse the zerovec condition is h += 0, at any site and on an adapted receiver too",
+      "gating": "NONE \u2014 operator-correctness diagnostic. It is also a check that installing the adapter did not break the injection path.",
       "max_abs_nll_delta": 0.0,
       "n_items": 300,
       "nll_bit_identical_items": 300,
       "pass": true,
-      "tolerance": 9.999999974752427e-7
+      "tolerance": 9.999999974752427e-07
     },
-    "headline": "E-PROCESS FAIL on a RECEIVER-ADAPTED model under ADR-036's successor protocol (adaptation-512 stream) — the wealth boundary was not crossed within N_max",
+    "headline": "E-PROCESS FAIL on a RECEIVER-ADAPTED model under ADR-036's successor protocol (adaptation-512 stream) \u2014 the wealth boundary was not crossed within N_max",
     "likelihood_arm": {
       "see": "control_vs_control_battery",
       "why_co_reported": "ADR-045 mandatory: accuracy alone is a DEAF endpoint, proven twice on this programme. The per-item sign tests against baseline, zerovec AND norm-matched random are in control_vs_control_battery.pairs, under the aligned_real_vs_* keys."
@@ -27894,13 +27902,13 @@
     "baseline_re_measured_on_this_receiver": true,
     "confound": "ADR-045: a task-loss-adapted receiver could simply become a better GSM8K solver, improving regardless of injected content.",
     "no_frozen_receiver_baseline_is_reused_anywhere": "every number in this receipt's accuracy and NLL blocks was measured on the ADAPTED receiver in this run. M4i's numbers are referenced only to assert the held-fixed factors, never as an arm of a comparison.",
-    "primary": "aligned vs random — both arms on the same adapted receiver, so a general fine-tuning effect raises both and cancels",
+    "primary": "aligned vs random \u2014 both arms on the same adapted receiver, so a general fine-tuning effect raises both and cancels",
     "secondary_and_confounded": "aligned vs baseline. It is reported, and it is NOT immune; it may only be read against the freshly measured adapted baseline above."
   },
   "the_single_changed_factor": {
     "adapter_order_declared": "block 14 -> injection edit -> LoRA. The adapter sees the injected content, which is its purpose. A Capture tap at the same block runs BEFORE the adapter, so the rescale target is the base receiver's and is unchanged from M4i.",
     "comparator_receipt": "receipts/run2-m4i-receipt-cellL18toL14-mlp-pertokenlast-fuse-questiontail-slots8-eprocess.json",
-    "factor": "THE RECEIVER — it carries a trained additive low-rank adapter",
+    "factor": "THE RECEIVER \u2014 it carries a trained additive low-rank adapter",
     "from": "unadapted Qwen2.5-1.5B-Instruct (every rung through M4i)",
     "held_fixed_against_the_comparator": [
       "payload artifact: M3's trained on-manifold reconstruction MLP, byte-identical (hash asserted against M3's training receipt AND the comparator's recorded hash)",
@@ -27911,7 +27919,7 @@
       "depth: receiver block 14, cell L18->L14",
       "rescale: to the per-item natural median at the inject block, captured on the residual BEFORE the adapter",
       "decoding: greedy, batch=1, max_new_tokens=400",
-      "item stream and statistic: adaptation-512 in fixed index order; lambda=0.30, N_max=300, PASS at W>=20 — all asserted equal to the comparator's own recorded values"
+      "item stream and statistic: adaptation-512 in fixed index order; lambda=0.30, N_max=300, PASS at W>=20 \u2014 all asserted equal to the comparator's own recorded values"
     ],
     "to": "the same weights plus a rank-1 LoRA on the residual stream after block 14"
   },
