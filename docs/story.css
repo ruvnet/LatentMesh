@@ -343,11 +343,16 @@ a { color: var(--cyan); text-decoration-thickness: 1px; text-underline-offset: 3
 /* ================= MOBILE ================= */
 @media (max-width: 860px) {
   .scrolly-inner { grid-template-columns: 1fr; gap: 0; }
-  .steps { position: relative; z-index: 3; }
+  /* The sticky figure sits ABOVE the scrolling copy, so text passes behind it
+     rather than over it. The gradient tail hides the text as it approaches. */
+  .steps { position: relative; z-index: 1; }
   .bg-grid { background-size: 44px 44px; }
   .step { min-height: auto; opacity: 1; }
-  .viz-col { z-index: 2; padding-bottom: 6px;
-    background: linear-gradient(to bottom, var(--navy) 72%, transparent); }
+  .viz-col { z-index: 3; padding-bottom: 14px;
+    background: linear-gradient(to bottom,
+      var(--navy) 0%, var(--navy) 78%,
+      color-mix(in srgb, var(--navy) 70%, transparent) 92%,
+      transparent 100%); }
 
   /* The sticky figure was eating 58vh, leaving too little room for the prose
      it is meant to illustrate. */
