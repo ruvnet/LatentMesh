@@ -353,3 +353,56 @@ a { color: var(--cyan); text-decoration-thickness: 1px; text-underline-offset: 3
 .app.spec::after { content: "SPECULATIVE"; position: absolute; top: 1.1rem; right: 1.2rem;
   font-family: var(--mono); font-size: .5rem; letter-spacing: .14em; color: var(--violet); opacity: .55; }
 @media (prefers-reduced-motion: reduce) { .tabpanel.is-on { animation: none; } }
+
+/* ================= MOBILE ================= */
+@media (max-width: 860px) {
+  /* The sticky figure was eating 58vh, leaving too little room for the prose
+     it is meant to illustrate. */
+  .viz-col { height: 46vh; top: 48px; }
+  .viz { max-width: 290px; }
+  .step { padding: 1.2rem 0 2.4rem; }
+  .step h2 { font-size: 1.32rem; }
+  .step p { font-size: .93rem; }
+
+  /* Wide diagrams keep their detail by scrolling in their own container
+     rather than shrinking their labels into illegibility. */
+  .tab-viz, .pillar-viz { overflow-x: auto; overflow-y: hidden; -webkit-overflow-scrolling: touch; }
+  .tab-viz svg { min-width: 560px; }
+  .pillar-viz svg { min-width: 320px; }
+  .tab-viz::before, .pillar-viz::before { position: sticky; left: 8px; }
+
+  /* Tap targets */
+  .tab { flex: 1 1 100%; padding: .85rem .7rem; font-size: .66rem; }
+  .cta { display: block; text-align: center; margin: .5rem 0; padding: .85rem 1.2rem; }
+  .deploy { padding: 1.1rem 1.1rem; }
+
+  h1 { font-size: clamp(2rem, 8.5vw, 2.7rem); letter-spacing: -.02em; }
+  .hero { padding: 32px 0 34px; }
+  .hero .lede { font-size: 1rem; max-width: none; }
+  section.prose { padding: 42px 0; }
+  section.prose h2 { font-size: 1.5rem; }
+  .metric .val { font-size: 1.2rem; }
+  pre.code { font-size: .74rem; padding: .85rem .9rem .85rem 1.1rem; }
+}
+
+@media (max-width: 900px) {
+  /* Headline first: the value proposition should land before the ornament. */
+  .hero-viz { order: 0; margin-top: 1.4rem; max-width: 260px; }
+  .hero-grid { gap: 4px; }
+}
+
+@media (max-width: 520px) {
+  .viz-col { height: 40vh; }
+  .viz { max-width: 240px; }
+  .metrics { grid-template-columns: 1fr 1fr; }
+  .deploy { flex-direction: column; gap: .7rem; }
+  .deploy-ico { flex: none; }
+  .brand { font-size: .62rem; letter-spacing: .14em; }
+  .topbar .wrap { height: 46px; gap: .6rem; }
+}
+
+/* Two WebGL contexts is a lot to ask of a phone, and the SVG panels are
+   clearer at small sizes anyway. Keep the hero mesh, drop the scrolly one. */
+@media (max-width: 700px) {
+  .viz3d { display: none !important; }
+}

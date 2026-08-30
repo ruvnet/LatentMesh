@@ -10,7 +10,7 @@
 <meta property="og:description" content="Coordinate AI agents over LoRa, ham radio, BLE or audio. No internet. Runs on a $10 microcontroller.">
 <meta property="og:type" content="website">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='88'>📡</text></svg>">
-<link rel="stylesheet" href="story.css?v=202608301401">
+<link rel="stylesheet" href="story.css?v=202608301403">
 <script type="importmap">
 { "imports": { "three": "https://cdn.jsdelivr.net/npm/three@0.169.0/build/three.module.js" } }
 </script>
@@ -795,7 +795,7 @@ radio.set_destination(<span class="s">0xffffffff</span>); <span class="c">// bro
 </footer>
 
 <script type="module">
-  import { createScene, createHeroScene } from "./scene.js?v=202608301401";
+  import { createScene, createHeroScene } from "./scene.js?v=202608301403";
   const c = document.getElementById("mesh3d");
   const panel = document.querySelector(".viz3d");
   const scene = c ? createScene(c) : null;
@@ -805,6 +805,11 @@ radio.set_destination(<span class="s">0xffffffff</span>); <span class="c">// bro
     document.querySelectorAll('[data-scene]').forEach(function (el) {
       el.dataset.viz = el.dataset.scene;
     });
+  } else if (getComputedStyle(panel).display === "none") {
+    // Narrow viewport: the 3D panel is hidden by CSS, so send every step back
+    // to its SVG panel rather than pointing at something invisible.
+    panel.remove();
+    document.querySelectorAll("[data-scene]").forEach(function (el) { el.dataset.viz = el.dataset.scene; });
   } else {
     window.__lmScene = scene;
   }
@@ -815,6 +820,6 @@ radio.set_destination(<span class="s">0xffffffff</span>); <span class="c">// bro
     document.querySelector(".hero-viz").classList.add("no-webgl");
   }
 </script>
-<script src="story.js?v=202608301401"></script>
+<script src="story.js?v=202608301403"></script>
 </body>
 </html>
