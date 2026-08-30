@@ -136,22 +136,69 @@ pub const CONDITIONS: [&str; 4] = [
     "random",
 ];
 
-fn correct(q: &Quad, which: usize) -> bool {
-    match which {
-        0 => q.real.0,
-        1 => q.base.0,
-        2 => q.zero.0,
-        _ => q.rand.0,
+/// The registered conditions as a **type**, so the endpoint accessors below
+/// cannot silently mis-route.
+///
+/// This replaces a `usize` index whose match ended in `_ => q.rand`. Under
+/// that arm a fifth condition would have been read as `random` on **both**
+/// endpoints — a wrong number written into a stored receipt field, with no
+/// compile error, no panic, and no signal in the output that anything had
+/// gone wrong. M6 adds exactly such a condition, which is what made this
+/// worth fixing before rather than after.
+///
+/// The enum stays four-armed because ADR-045 registers four. M6's five-arm
+/// set lives on its own type in [`super::m6`]; widening *this* one now fails
+/// to compile at both accessors instead of quietly changing M5's frozen
+/// numbers.
+#[derive(Clone, Copy, PartialEq, Eq)]
+enum Cond {
+    AlignedReal,
+    BaselineUninjected,
+    ZerovecInjected,
+    Random,
+}
+
+impl Cond {
+    /// In receipt order — the same order, and the same labels, as
+    /// [`CONDITIONS`]. `labels_match_the_registered_order` pins that.
+    const ALL: [Cond; 4] = [
+        Cond::AlignedReal,
+        Cond::BaselineUninjected,
+        Cond::ZerovecInjected,
+        Cond::Random,
+    ];
+
+    fn label(self) -> &'static str {
+        match self {
+            Cond::AlignedReal => "aligned_real",
+            Cond::BaselineUninjected => "baseline_uninjected",
+            Cond::ZerovecInjected => "zerovec_injected",
+            Cond::Random => "random",
+        }
+    }
+
+    /// Everything except the treatment arm. Drives the battery's
+    /// `control_vs_control` flag, which previously read `a != 0 && b != 0`.
+    fn is_control(self) -> bool {
+        self != Cond::AlignedReal
     }
 }
 
-fn nll(q: &Quad, which: usize) -> f32 {
+fn endpoints(q: &Quad, which: Cond) -> (bool, f32) {
     match which {
-        0 => q.real.1,
-        1 => q.base.1,
-        2 => q.zero.1,
-        _ => q.rand.1,
+        Cond::AlignedReal => q.real,
+        Cond::BaselineUninjected => q.base,
+        Cond::ZerovecInjected => q.zero,
+        Cond::Random => q.rand,
     }
+}
+
+fn correct(q: &Quad, which: Cond) -> bool {
+    endpoints(q, which).0
+}
+
+fn nll(q: &Quad, which: Cond) -> f32 {
+    endpoints(q, which).1
 }
 
 /// Every ordered pair among the four registered conditions, on both endpoints.
@@ -164,11 +211,12 @@ fn nll(q: &Quad, which: usize) -> f32 {
 /// omits.
 pub fn condition_battery(paired: &[Quad]) -> serde_json::Value {
     let mut out = serde_json::Map::new();
-    for (a, name_a) in CONDITIONS.iter().enumerate() {
-        for (b, name_b) in CONDITIONS.iter().enumerate() {
+    for &a in &Cond::ALL {
+        for &b in &Cond::ALL {
             if a == b {
                 continue;
             }
+            let (name_a, name_b) = (a.label(), b.label());
             let acc_w = paired
                 .iter()
                 .filter(|q| correct(q, a) && !correct(q, b))
@@ -182,7 +230,7 @@ pub fn condition_battery(paired: &[Quad]) -> serde_json::Value {
             out.insert(
                 format!("{name_a}_vs_{name_b}"),
                 serde_json::json!({
-                    "control_vs_control": a != 0 && b != 0,
+                    "control_vs_control": a.is_control() && b.is_control(),
                     "accuracy": {
                         "wins": acc_w, "losses": acc_l, "n_discordant": acc_w + acc_l,
                         "p_one_sided": super::sign_test_one_sided(acc_w, acc_l),
@@ -218,6 +266,23 @@ mod tests {
             zero: z,
             rand: n,
         }
+    }
+
+    /// The refactor from a `usize` index to [`Cond`] must not have moved a
+    /// single receipt key. M5 is closed and its three drawn receipts are
+    /// committed, so a renamed or reordered pair key would silently
+    /// desynchronise the stored battery from the code that claims to produce
+    /// it.
+    #[test]
+    fn labels_match_the_registered_order() {
+        assert_eq!(Cond::ALL.len(), CONDITIONS.len());
+        for (c, name) in Cond::ALL.iter().zip(CONDITIONS.iter()) {
+            assert_eq!(c.label(), *name);
+        }
+        // The treatment arm is index 0, which is what the old
+        // `a != 0 && b != 0` flag encoded.
+        assert!(!Cond::ALL[0].is_control());
+        assert!(Cond::ALL[1..].iter().all(|c| c.is_control()));
     }
 
     #[test]

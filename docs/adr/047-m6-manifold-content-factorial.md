@@ -286,3 +286,177 @@ learned integration or cross-model transfer.
 
 **Single owner.** One implementing agent, rulings recorded on the branch that
 owner can read (coordinator errors #11 and #20).
+
+---
+
+## Outcomes
+
+*Appended after commit. Everything above this heading is frozen; every
+deviation below is a numbered coordinator error continuing M5's sequence.*
+
+### Phase 1 — the §5 manipulation check RAN, PASSED, and killed the cell anyway
+
+Receipt: `crates/latentmesh-runtime/receipts/run2-manifold-precheck-m6-phase1.json`
+(CPU-only, annotates only, reproducible byte-identically). Implementation:
+`crates/latentmesh-runtime/examples/common/displace.rs` (exact-rotation
+displacement `w = ‖v‖(c·u + √(1−c²)·e)` with `e` unit and orthogonal to `u`,
+per-(item, dose) ChaCha8 seeding) wired into `run2_manifold_precheck.rs`.
+
+**The registered gate passed 4 of 4 doses, 0 dropped.** Measured cosines were
+exact to six places (0.990000 / 0.950000 / 0.900000 / 0.750000, tolerance
+±0.02); every typicality fell strictly inside the band `[−0.000640, 0.681357]`;
+the 0.90 dose registered for the MANIFOLD primary was admitted.
+
+**The cell was nevertheless withdrawn, on evidence beyond the gate.** That
+distinction is what makes this a finding rather than a fudge: the doses did not
+fail the registered criterion, and no criterion was adjusted after the fact.
+
+### Coordinator error #24 — the registered gate could not fail
+
+**The error is the coordinator's, not the implementing agent's.** ADR-047 §5's
+gate has two arms: (a) measured cosine within ±0.02 of target, and (b)
+typicality strictly between `aligned` and `random`. **They measure the same
+quantity.** Arm (a) is satisfied *by construction* — `displace_to_cosine`
+performs an exact rotation, so it verifies arithmetic, not an empirical risk.
+And arm (b) turns out to be an affine restatement of the dose:
+
+| dose *c* | typicality | *c* × typicality(`aligned`) | residual |
+|---|---|---|---|
+| 0.99 | 0.674051 | 0.674544 | **−0.000493** |
+| 0.95 | 0.648818 | 0.647289 | **+0.001529** |
+| 0.90 | 0.613856 | 0.613222 | **+0.000634** |
+| 0.75 | 0.514531 | 0.511018 | **+0.003513** |
+
+Typicality is `c` × typicality(`aligned`) to within 0.0035 at every dose, so
+arm (b) is satisfied automatically whenever arm (a) is. A two-arm gate whose
+arms are the same measurement cannot fail, and it passed 4/4 for that reason
+rather than because the cell was sound.
+
+### The structural result — the real contribution of phase 1
+
+> **In 1536 dimensions a generic displacement direction is almost surely BOTH
+> off-manifold AND content-free, so rotating toward one necessarily moves both
+> factors in lockstep.**
+
+That is why the off-diagonal "right content, wrong manifold" cell resists
+construction *at all*, and it is not obvious in advance. §4 claimed the
+displacement holds "content exactly" and moves one factor. It does not: the
+rotation decomposes the payload into `c` × (true content) + `√(1−c²)` ×
+(generic noise), so **content magnitude is scaled by `c`**. At the 0.90 dose
+that is signal 0.900 against noise 0.436 — a 33% noise admixture by norm.
+**§4's "content is held exactly" is FALSE as written.**
+
+The measurements say the same thing without the geometry. Under **every**
+instrument in the lens kit, a displaced payload is a partial step toward
+`random`:
+
+| | `aligned` | 0.99 | 0.95 | 0.90 | 0.75 | `random` |
+|---|---|---|---|---|---|---|
+| typicality vs receiver L14 | 0.6814 | 0.6741 | 0.6488 | 0.6139 | 0.5145 | −0.0006 |
+| item-invariance | 0.6670 | 0.6539 | 0.6031 | 0.5390 | 0.3760 | −0.0000 |
+| RMSNorm-lens entropy (nats) | 3.3199 | 3.3295 | 3.5242 | 3.6822 | 4.9180 | 5.4452 |
+
+Monotone in every row. No measurement distinguishes a displaced vector from a
+partial step along the `aligned`→`random` segment — **M5's existing diagonal,
+sampled at intermediate points.** A dose-response along that segment cannot
+attribute, because both factors move together. `aligned_displaced` is not a
+distinct factorial cell.
+
+**Calibration, kept because it is the load-bearing check on the other column.**
+`aligned`'s typicality (0.6814) slightly **exceeds** a genuine un-pooled
+receiver L14 state (0.6670). The on-manifold column is sound; the failure is
+specific to the off-manifold cell, not to the instrument.
+
+**Correction to §4.1's analytic table, verified independently.** The quantise-
+dequantise cosines reproduce at absmax ≈ 2.3σ. But the "≈ 0.026" quoted for
+norm-matched random in 1536-d is `1/√d = 0.0255`, the **standard deviation** of
+the cosine; the **mean absolute** cosine is `√(2/(πd)) = 0.0204`. The table's
+conclusion is unaffected — 4-bit is still 99.6% of the way to `aligned` — but
+the figure is a σ, not a mean, and is now labelled as one.
+
+### AMENDMENT — the `aligned_displaced` cell and the MANIFOLD primary are WITHDRAWN
+
+- **`aligned_displaced` is dropped**, at every dose. The 2×2 of §2 collapses to
+  the CONTENT axis.
+- **§6.1's MANIFOLD primary at the 0.90 dose is WITHDRAWN.** M6 runs **one**
+  registered e-process, not two.
+- **§7.2 and §7.3 are unreachable** as written (both name the manifold arm) and
+  are recorded as moot rather than reinterpreted. §7.1, §7.4 and §7.5 stand.
+- **§8's battery is 20 ordered pairs at five conditions**, not 30 at six. Its
+  dose-response co-report is moot.
+- **§9's `six_conditions_at` is `five_conditions_at`.**
+
+**What is NOT affected.** The CONTENT axis — `aligned` vs `mismatched`, both
+on-manifold, both genuine payloads, norm-identical by the rescale rule — is
+untouched by any of the above. Its power anchor (M5's measured
+aligned-vs-baseline discordance, 60/50/58 at ranks 1/2/4; registered
+expectation n_disc ≈ 50–60) and its n-dependent bar stand exactly as
+registered. Nothing here bears on it.
+
+### Phase 2 — implementation, in the registered order
+
+1. **`feat/m5-receiver-lora` merged into this branch** (coordinator's call: a
+   normal merge commit, no rebase, no cherry-pick, main untouched). M6 depends
+   on M5's LoRA runtime, adapter loader and receipts. All **125** committed
+   receipt blobs are byte-identical across the merge; the only conflict was
+   `docs/adr/README.md`, where one side adds the 047 row and the other rewrites
+   the 045 row — both preserved verbatim.
+2. **ADR-047 §9's landmine is closed.** `common/m5.rs`'s `correct` and `nll`
+   were `match which { 0 => …, _ => q.rand.… }`; both are now exhaustive
+   matches on a four-armed `Cond` enum, with the receipt-key order pinned by a
+   test. M6's five-armed set is a separate type, so widening either fails to
+   compile rather than aliasing a new condition onto `random`.
+3. **`five_conditions_at` is added ALONGSIDE `four_conditions_at`**, in
+   `common/m6.rs`. `m3.rs` is not edited; M4c/M4d/M4g/M4i/M5/M5X keep their
+   exact historical code path (`m3.rs:365-367`'s house doctrine).
+4. **`mismatched` priming and carry-forward ported from run 3**
+   (`run3_gated_text_probe.rs:313-317, 361-363, 516-517`): primed from the last
+   eligible index, asserted outside the drawn stream, then carried forward
+   *after* each item is evaluated, so no lookahead exists and early stopping
+   stays honest. Norm-matching is free — M5's rescale rule already sends every
+   injected vector to the receiver's natural inject-block median — and all
+   three realised norms are stored per item so a reader can verify it.
+
+### OPEN REGISTRATION QUESTION — which receiver M6 runs on
+
+**ADR-047 never names it.** The evidence points at an M5-adapted receiver: the
+power model is anchored entirely on M5's measured battery, §10 compares wall
+clock to M5's, and phase 2's ordered steps include a transfer check, which only
+exists for an adapter. But **M5 produced three adapted receivers and the frozen
+text names no rank.**
+
+The probe therefore **requires the rank as an explicit argument and refuses to
+default**, because a silent default would make an unregistered choice look like
+a registered one. **Recommendation: rank 2** — §1's motivating case is rank 2's
+46W/23L, which is the specific ambiguity M6 exists to resolve. Awaiting the
+coordinator's ruling; it is a registration gap, not an implementation choice.
+
+**On the transfer check (phase-2 step 5).** It measures the composed→fused BF16
+agreement of *the adapter*, and M6 changes no adapter — so re-running it would
+reproduce M5's numbers under a name that would overwrite a frozen M5 receipt.
+The probe **reads and gates on M5's committed transfer receipt** for the named
+rank, and carries its mandatory NON-gating generation diagnostic into the M6
+receipt so a reader of the draw alone can tell "the receiver stopped answering"
+from "the channel carries nothing".
+
+### PROPOSED SUCCESSOR (not implemented, not folded into M6) — the subspace redesign
+
+The off-diagonal cell is unreachable by *generic* displacement, but not
+unreachable in principle. The fix is to stop displacing into a generic
+direction and start displacing **within a chosen subspace**:
+
+- **Arm A** — displace within the receiver's local L14 subspace (its top
+  principal directions at that block).
+- **Arm B** — displace **orthogonal** to that subspace, at **matched
+  magnitude**.
+
+Both arms attenuate true content by the same factor, so content is held equal
+*by construction* rather than by assertion; the only difference between them is
+conformity to the receiver's own activation geometry. **That isolates the
+manifold axis**, which is exactly what phase 1 showed a generic rotation cannot
+do.
+
+**This is a NEW REGISTRATION, not an amendment.** It changes the manipulation,
+its analytic model and its manipulation check, so it needs its own
+pre-registration with its own power calculation. It is recorded here as a
+proposed successor and is **not** implemented, not run, and not folded into M6.
