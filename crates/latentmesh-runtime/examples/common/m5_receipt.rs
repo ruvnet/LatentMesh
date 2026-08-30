@@ -203,7 +203,12 @@ pub fn receipt(c: &ReceiptCtx<'_>, o: &DrawOutcome) -> serde_json::Value {
             "registered_crossing_bar": format!(">= {REGISTERED_BAR_WINS} of {REGISTERED_BAR_OF} discordant wins (69.2%)"),
             "realised_n_discordant": n_disc,
             "realised_discordant_wins": o.wins,
-            "crossed_the_registered_bar": o.wins >= REGISTERED_BAR_WINS,
+            "registered_win_rate": REGISTERED_BAR_WINS as f64 / REGISTERED_BAR_OF as f64,
+            "realised_win_rate": o.wins as f64 / n_disc.max(1) as f64,
+            "crossed_the_registered_bar": o.wins as f64 / n_disc.max(1) as f64
+                >= REGISTERED_BAR_WINS as f64 / REGISTERED_BAR_OF as f64,
+            "how_the_bar_is_compared": "as a RATE, not a raw win count. ADR-045 registered '>= 45 of 65', i.e. 69.2%, derived as the win count that reaches W >= 20 AT n_disc = 65. When the realised n_disc differs, comparing the raw count alone is not the registered bar: at n_disc = 69, 46 wins is 66.7% and yields W = 14.75, which does NOT cross. An earlier version of this field compared raw counts and could therefore report 'crossed' for a draw the e-process failed; corrected here.",
+            "authoritative_outcome_is_the_e_process": "the wealth boundary is the registered decision rule. This block is power accounting, reported so the realised discordance can be checked against the model ADR-040 required; it never overrides e_process.outcome.",
             "uninformative_threshold": UNINFORMATIVE_BELOW_N_DISC,
             "uninformative": uninformative,
             "if_uninformative": "ADR-045: with n_disc < 30 the rung is reported UNINFORMATIVE and the power model is recorded as wrong — a finding about our estimation, not about the apparatus.",
