@@ -460,3 +460,55 @@ do.
 its analytic model and its manipulation check, so it needs its own
 pre-registration with its own power calculation. It is recorded here as a
 proposed successor and is **not** implemented, not run, and not folded into M6.
+
+### Coordinator question #25 — the receiver is not named, and rank 2 is ASSUMED
+
+**RESOLVED BY ASSUMPTION, DECLARED BEFORE THE DRAW, not after it.**
+
+ADR-047 never states which receiver M6 runs on. Three things in the frozen text
+point at an **M5-adapted** one: §6's power model is anchored entirely on M5's
+measured battery, §10 compares wall clock to M5's ~32 min, and the registered
+phase order includes a transfer check, which exists only for an adapter. But
+**M5 produced three adapted receivers and the frozen text names no rank** — a
+pre-registration that meant "adapted" would have had to name one, because M5's
+three receivers are three different experiments.
+
+**This draw runs on the M5 rank-2 adapted receiver.** The reason is §1: the
+motivating case is rank 2's 46W/23L, and that specific number is the ambiguity
+M6 exists to resolve. Resolving it on a different receiver would answer a
+question nobody asked.
+
+**The known cost of that choice, recorded here so it cannot be discovered
+later.** ADR-045's correction #23 found the *adapted* receiver is not
+content-specific at all, while the frozen receiver was weakly content-specific.
+M6 asks whether content is detectable, so running it on the receiver M5
+measured as least content-sensitive risks a design that is disposed toward
+"no". The registered power anchor, the comparator and the transfer-check step
+all come from M5, so this is still the reading the frozen text best supports —
+but a null here is **weaker evidence against content transmission** than the
+same null on a frozen receiver would be, and §7.4 must be read with that in
+mind.
+
+The probe **refuses to default**: the rank is a required argument, because a
+silent default would make an unregistered choice look like a registered one.
+The receipt names the receiver in its headline fields. If the coordinator rules
+for a different rank or for the frozen receiver, that is a separate draw with a
+separate comparator, reported separately and never pooled — the M5 precedent,
+not a retry.
+
+### Transfer check (phase-2 step 6, before the draw) — PASSED, no degeneration
+
+Read from M5's committed `run2-m5-transfer-receipt-cellL18toL14-r2.json` rather
+than regenerated: the check measures the composed→fused BF16 agreement of *the
+adapter*, and M6 changes no adapter, so re-running it would reproduce the same
+numbers under a name that would overwrite a frozen M5 receipt.
+
+- `gate_pass`: **true**. Fused training-target CE **0.5043** adapter-on vs
+  **0.7376** off, over 510 holdout items.
+- **Generation diagnostic (NON-gating, ADR-045 error #22, mandatory):**
+  accuracy **39/64 adapter-on vs 31/64 off** — the adapter *improves* the
+  decision endpoint. Mean generated length 241.2 vs 840.8 chars.
+
+**No degeneration.** The 3.4× length reduction is the caveat already recorded
+against M5's draws and is not itself a failure signal: length does not predict
+decision-side failure, accuracy does, and accuracy is up. The draw proceeds.
