@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
+<meta http-equiv="cache-control" content="no-cache">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>LatentMesh — agent coordination where the internet doesn't reach</title>
 <meta name="description" content="LatentMesh Air moves meaning between AI agents over LoRa, ham radio, BLE, WiFi or plain audio. No internet, no cell towers. Runs on a $10 ESP32.">
@@ -9,7 +10,7 @@
 <meta property="og:description" content="Coordinate AI agents over LoRa, ham radio, BLE or audio. No internet. Runs on a $10 microcontroller.">
 <meta property="og:type" content="website">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='88'>📡</text></svg>">
-<link rel="stylesheet" href="story.css">
+<link rel="stylesheet" href="story.css?v=202608301349">
 <script type="importmap">
 { "imports": { "three": "https://cdn.jsdelivr.net/npm/three@0.169.0/build/three.module.js" } }
 </script>
@@ -438,7 +439,7 @@ radio.set_destination(<span class="s">0xffffffff</span>); <span class="c">// bro
 </footer>
 
 <script type="module">
-  import { createScene, createHeroScene } from "./scene.js";
+  import { createScene, createHeroScene } from "./scene.js?v=202608301349";
   const c = document.getElementById("mesh3d");
   const panel = document.querySelector(".viz3d");
   const scene = c ? createScene(c) : null;
@@ -458,6 +459,6 @@ radio.set_destination(<span class="s">0xffffffff</span>); <span class="c">// bro
     document.querySelector(".hero-viz").classList.add("no-webgl");
   }
 </script>
-<script src="story.js"></script>
+<script src="story.js?v=202608301349"></script>
 </body>
 </html>
