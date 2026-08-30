@@ -1,0 +1,16 @@
+{
+  "name": "@latentmesh/representation-metaharness",
+  "private": true,
+  "version": "0.1.0",
+  "description": "ADR-046 MetaHarness suite for the eighth policy surface, representationPolicy: scores channel/admission/controls/alpha/costWeights genomes by measured causal utility density over receipts already committed to crates/latentmesh-runtime/receipts/. No simulator — fitness comes from real measurements, and an unmeasured channel is structurally ineligible rather than optimistically explored.",
+  "type": "module",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "benchmark": "node scripts/benchmark.mjs",
+    "optimize": "node scripts/optimize.mjs",
+    "test": "node --test test/*.test.mjs",
+    "validate": "npm test && npm run benchmark && npm run optimize"
+  }
+}
