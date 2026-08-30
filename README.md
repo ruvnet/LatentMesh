@@ -14,7 +14,9 @@
 
 **[Website](https://ruvnet.github.io/LatentMesh/) · [Air Studio](https://latentmesh-air.ruv.chatgpt.site/) · [Quickstart](#quickstart) · [Applications](#what-people-build-with-it) · [Decisions](docs/adr)**
 
-<img src="docs/media/hero.png" alt="LatentMesh — machines that share understanding, not just data" width="820">
+<a href="https://ruvnet.github.io/LatentMesh/"><img src="docs/media/hero.png" alt="LatentMesh — machines that share understanding, not just data. Click to open the interactive site." width="820"></a>
+
+<sub><a href="https://ruvnet.github.io/LatentMesh/">▶ Open the interactive site</a></sub>
 
 </div>
 
@@ -93,7 +95,7 @@ Reassembly, ordering, duplicate rejection and replay defence are handled for you
 
 ## What people build with it
 
-<img src="docs/media/apps.png" alt="Application tiers — shipping today, buildable now, speculative" width="860">
+<a href="https://ruvnet.github.io/LatentMesh/#applications"><img src="docs/media/apps.png" alt="Application tiers — shipping today, buildable now, speculative. Click to explore them live." width="860"></a>
 
 **Shipping today** — precision agriculture across hundreds of hectares with no cell plan per device · wildfire and flood sensors in terrain that never had coverage · disaster comms when towers are down or saturated · expedition and marine, past cellular range where satellite is billed by the byte.
 
@@ -134,7 +136,7 @@ Each layer is usable on its own. Take the whole stack or a single crate.
 
 ## The three pillars
 
-<img src="docs/media/pillars.png" alt="Reach, trust, and the open problem" width="860">
+<a href="https://ruvnet.github.io/LatentMesh/"><img src="docs/media/pillars.png" alt="Reach, trust, and the open problem — click to see them animated." width="860"></a>
 
 Ambient intelligence — devices around you reasoning together rather than shipping logs to a datacentre — needs three things. Two are built. The third is honestly unfinished, and this repo says which is which.
 
