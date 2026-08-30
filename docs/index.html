@@ -10,7 +10,7 @@
 <meta property="og:description" content="Coordinate AI agents over LoRa, ham radio, BLE or audio. No internet. Runs on a $10 microcontroller.">
 <meta property="og:type" content="website">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='88'>📡</text></svg>">
-<link rel="stylesheet" href="story.css?v=202608301358">
+<link rel="stylesheet" href="story.css?v=202608301401">
 <script type="importmap">
 { "imports": { "three": "https://cdn.jsdelivr.net/npm/three@0.169.0/build/three.module.js" } }
 </script>
@@ -615,28 +615,53 @@
     <div class="tabpanel" data-panel="t3" role="tabpanel">
       <div class="viz standalone tab-viz" data-label="Speculative · constraints only">
         <svg viewBox="0 0 720 200" role="img" aria-label="A long-delay relay chain across extreme distance, with bounded messages and local autonomy.">
-          <circle class="pop d1" cx="86" cy="100" r="26" fill="none" stroke="#50e6ff" stroke-width="1.4"/>
-          <circle class="pop d1" cx="86" cy="100" r="9" fill="#0c1624" stroke="#50e6ff" stroke-width="1"/>
-          <text class="mono faint" x="86" y="146" text-anchor="middle" font-size="6.5">ORIGIN</text>
-          <path class="draw d2" d="M114 100 L 246 100" stroke="#243951" stroke-width="1.2" fill="none" stroke-dasharray="4 5"/>
-          <text class="mono faint d2 fade" x="180" y="90" text-anchor="middle" font-size="6.5">LATENCY ≫ RTT</text>
+          <!-- distance scale -->
+          <line class="fade d1" x1="40" y1="176" x2="600" y2="176" stroke="#243951" stroke-width="1"/>
+          <g class="fade d1" stroke="#243951" stroke-width="1">
+            <line x1="40" y1="172" x2="40" y2="180"/><line x1="226" y1="172" x2="226" y2="180"/>
+            <line x1="413" y1="172" x2="413" y2="180"/><line x1="600" y1="172" x2="600" y2="180"/>
+          </g>
+          <text class="mono faint d1 fade" x="320" y="192" text-anchor="middle" font-size="7">DISTANCE · ROUND TRIP COSTS MINUTES</text>
+
+          <!-- origin -->
+          <g class="pop d1">
+            <circle cx="40" cy="96" r="21" fill="#0c1624" stroke="#50e6ff" stroke-width="2"/>
+            <circle cx="40" cy="96" r="6" fill="#50e6ff"/>
+          </g>
+          <text class="mono" x="40" y="140" text-anchor="middle" font-size="7.5" fill="#50e6ff">ORIGIN</text>
+
+          <!-- relays -->
           <g class="pop d3">
-            <rect x="248" y="82" width="34" height="34" rx="6" fill="#0c1624" stroke="#8d7cff" stroke-width="1.3"/>
-            <rect x="386" y="82" width="34" height="34" rx="6" fill="#0c1624" stroke="#8d7cff" stroke-width="1.3"/>
+            <rect x="206" y="76" width="40" height="40" rx="7" fill="#0c1624" stroke="#8d7cff" stroke-width="2"/>
+            <path d="M226 76 v -11 M 220 65 h 12" stroke="#8d7cff" stroke-width="1.6"/>
+            <rect x="393" y="76" width="40" height="40" rx="7" fill="#0c1624" stroke="#8d7cff" stroke-width="2"/>
+            <path d="M413 76 v -11 M 407 65 h 12" stroke="#8d7cff" stroke-width="1.6"/>
           </g>
-          <path class="draw d4" d="M282 100 L 386 100 M 420 100 L 520 100" stroke="#243951" stroke-width="1.2" fill="none" stroke-dasharray="4 5"/>
-          <circle r="2.6" fill="#4df3a5"><animateMotion dur="5s" repeatCount="indefinite" path="M114 100 L 248 100 L 386 100 L 520 100"/></circle>
+          <text class="mono faint" x="226" y="140" text-anchor="middle" font-size="7.5">RELAY</text>
+          <text class="mono faint" x="413" y="140" text-anchor="middle" font-size="7.5">RELAY</text>
+
+          <!-- hops -->
+          <g class="draw d2" stroke="#3d5a7a" stroke-width="2" fill="none" stroke-dasharray="7 6">
+            <path d="M61 96 L 204 96"/><path d="M248 96 L 391 96"/><path d="M435 96 L 578 96"/>
+          </g>
+          <circle r="4.5" fill="#4df3a5"><animateMotion dur="6s" repeatCount="indefinite" path="M61 96 L 204 96 L 391 96 L 578 96"/></circle>
+
+          <!-- destination, acting alone -->
           <g class="pop d5">
-            <circle cx="548" cy="100" r="24" fill="none" stroke="#4df3a5" stroke-width="1.4"/>
-            <circle cx="548" cy="100" r="7" fill="#4df3a5" opacity=".8"/>
+            <circle cx="600" cy="96" r="21" fill="#0c1624" stroke="#4df3a5" stroke-width="2"/>
+            <circle cx="600" cy="96" r="6" fill="#4df3a5"/>
           </g>
-          <text class="mono faint" x="548" y="142" text-anchor="middle" font-size="6.5">AUTONOMOUS</text>
-          <g class="fade d6">
-            <rect x="596" y="70" width="106" height="60" rx="7" fill="#0c1624" stroke="#1a2a3d"/>
-            <text class="mono faint" x="649" y="88" text-anchor="middle" font-size="6.5">WHY IT FITS</text>
-            <text class="mono" x="606" y="104" font-size="6" fill="#50e6ff">bounded frames</text>
-            <text class="mono" x="606" y="116" font-size="6" fill="#50e6ff">no round trips</text>
-            <text class="mono" x="606" y="128" font-size="6" fill="#50e6ff">local authority</text>
+          <g fill="none" stroke="#4df3a5" opacity=".55"><circle class="pulse" cx="600" cy="96" r="9" stroke-width="1.5"/></g>
+          <text class="mono" x="600" y="140" text-anchor="middle" font-size="7.5" fill="#4df3a5">ACTS ALONE</text>
+
+          <!-- why it fits -->
+          <g class="rise d6">
+            <rect x="632" y="52" width="82" height="90" rx="7" fill="#0c1624" stroke="#3d5a7a" stroke-width="1.4"/>
+            <text class="mono faint" x="673" y="68" text-anchor="middle" font-size="6.5">WHY IT FITS</text>
+            <text class="mono" x="641" y="88" font-size="6.8" fill="#50e6ff">bounded frames</text>
+            <text class="mono" x="641" y="104" font-size="6.8" fill="#50e6ff">no round trips</text>
+            <text class="mono" x="641" y="120" font-size="6.8" fill="#50e6ff">local authority</text>
+            <text class="mono" x="641" y="136" font-size="6.8" fill="#8d7cff">replay-safe</text>
           </g>
         </svg>
       </div>
@@ -770,7 +795,7 @@ radio.set_destination(<span class="s">0xffffffff</span>); <span class="c">// bro
 </footer>
 
 <script type="module">
-  import { createScene, createHeroScene } from "./scene.js?v=202608301358";
+  import { createScene, createHeroScene } from "./scene.js?v=202608301401";
   const c = document.getElementById("mesh3d");
   const panel = document.querySelector(".viz3d");
   const scene = c ? createScene(c) : null;
@@ -790,6 +815,6 @@ radio.set_destination(<span class="s">0xffffffff</span>); <span class="c">// bro
     document.querySelector(".hero-viz").classList.add("no-webgl");
   }
 </script>
-<script src="story.js?v=202608301358"></script>
+<script src="story.js?v=202608301401"></script>
 </body>
 </html>
