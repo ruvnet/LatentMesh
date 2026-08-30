@@ -92,3 +92,26 @@
 
 
 })();
+
+/* ---- application tabs ---- */
+(function () {
+  var tabs = document.querySelectorAll(".tab[data-tab]");
+  if (!tabs.length) return;
+  tabs.forEach(function (t) {
+    t.addEventListener("click", function () {
+      var id = t.dataset.tab;
+      tabs.forEach(function (o) {
+        var on = o === t;
+        o.classList.toggle("is-on", on);
+        o.setAttribute("aria-selected", on ? "true" : "false");
+      });
+      document.querySelectorAll(".tabpanel").forEach(function (p) {
+        var on = p.dataset.panel === id;
+        p.classList.toggle("is-on", on);
+        // Restart the panel's entry animation each time it is selected.
+        var v = p.querySelector(".viz");
+        if (on && v) { v.classList.remove("on"); void v.offsetWidth; requestAnimationFrame(function () { v.classList.add("on"); }); }
+      });
+    });
+  });
+})();
