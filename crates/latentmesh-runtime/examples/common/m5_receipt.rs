@@ -113,10 +113,13 @@ pub fn receipt(c: &ReceiptCtx<'_>, o: &DrawOutcome) -> serde_json::Value {
             "transfer_check_gate": {
                 "pass": true,
                 "criterion": c.transfer["gates"]["transfer"]["criterion"].clone(),
-                "mean_fused_nll_adapter_on": c.transfer["summary"]["mean_fused_nll_adapter_on"].clone(),
-                "mean_fused_nll_adapter_off": c.transfer["summary"]["mean_fused_nll_adapter_off"].clone(),
+                "mean_fused_train_target_ce_adapter_on": c.transfer["summary"]["mean_fused_train_target_ce_adapter_on"].clone(),
+                "mean_fused_train_target_ce_adapter_off": c.transfer["summary"]["mean_fused_train_target_ce_adapter_off"].clone(),
+                "probe_endpoint_reported_not_gating": c.transfer["summary"]["probe_endpoint_reported_not_gating"].clone(),
                 "n_evaluated": c.transfer["summary"]["n_evaluated"].clone(),
                 "scope": "composed->fused BF16 transfer only, on holdout items. It says nothing about the channel: an adapter that merely made the receiver a better GSM8K solver would pass it too.",
+                "decision_side_diagnostic_carried_forward": c.transfer["summary"]["generation_diagnostic"].clone(),
+                "why_carried_forward": "ADR-045 § Deviations (coordinator error #22) makes the decision-side diagnostic mandatory from v2 onward. It is copied into THIS receipt so a reader of the draw alone can see whether the adapted receiver still reasons — without it, 'the receiver stopped answering' and 'the channel carries nothing' are indistinguishable.",
             },
         },
         "the_confound_and_why_the_primary_is_immune": {

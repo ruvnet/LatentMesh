@@ -68,6 +68,11 @@ pub struct TrainingReceipt<'a> {
     pub holdout_items: usize,
     pub holdout_skipped: &'a [SkippedItem],
     pub natural_median_stats: serde_json::Value,
+    pub min_target: usize,
+    pub fit_mean_covered_fraction: f64,
+    pub fit_items_fully_covered: usize,
+    pub holdout_mean_covered_fraction: f64,
+    pub holdout_items_fully_covered: usize,
     pub step0_loss: f32,
     pub step0_grad_a: f32,
     pub step0_grad_b: f32,
@@ -98,11 +103,21 @@ fn what_is_trained(c: &TrainingReceipt<'_>, param_count: usize) -> serde_json::V
     })
 }
 
-fn objective() -> serde_json::Value {
+fn objective(c: &TrainingReceipt<'_>) -> serde_json::Value {
     serde_json::json!({
-        "loss": "teacher-forced next-token CE (nats/token, F32 upcast, detached-max log-softmax) on the GOLD-ANSWER CONTINUATION '#### {gold}', conditioned on the question-tail prompt with the frozen aligned payload fused at the 8 tail positions",
-        "target_is_the_probes_own": "the CE target tokens are literally encode(\"#### {gold}\") — the same string examples/common/m3.rs builds for its teacher-forced NLL arm. Training optimises the probe's likelihood endpoint directly.",
-        "not_the_sender_span": "docs/research/034 §5.2: task-loss training on the sender's generated span steered M4c toward reproducing the sender's tokens rather than the answer format the probe scores. ADR-045 registers the gold continuation; this trainer never sees the sender's generated tokens as a target.",
+        "loss": "teacher-forced next-token CE (nats/token, F32 upcast, detached-max log-softmax) on the RENDERED GOLD SOLUTION (render_gold: the human reference solution with GSM8K's <<a+b=c>> calculator annotations stripped, ending in its own '#### n' line), conditioned on the question-tail prompt with the frozen aligned payload fused at the 8 tail positions",
+        "amended_by": "ADR-045 § Deviations, coordinator error #22",
+        "what_changed_and_why": "ADR-045 registered the target as the gold-answer CONTINUATION alone ('#### {gold}'). Trained on that, the v1 rank-1 adapter cut holdout CE 2.3172 -> 0.6643 (508W/2L on the fused forward) while GSM8K accuracy collapsed 31/64 -> 5/64 and generated length halved (841 -> 389 chars). Raising the likelihood of the answer line does not require solving the problem; the cheapest descent direction is to stop reasoning and emit it immediately. That objective ALSO falsifies the power model the same ADR registers (n_disc ~= 65 is anchored on M4i/M5X, which ran a ~47% receiver; an 8% receiver cannot produce it). The amended target CONTAINS the reasoning whose absence was the pathology.",
+        "not_the_sender_span": "docs/research/034 §5.2: task-loss training on the sender's generated span steered M4c toward reproducing the sender's tokens rather than the answer format the probe scores. This trainer never sees the sender's generated tokens as a target — the target is the DATASET's reference solution.",
+        "probe_endpoints_unchanged": "the probe's teacher-forced NLL target remains '#### {gold}' and its accuracy endpoint is unchanged. Only the TRAINING target moved. The transfer check reports both: it gates on the fused CE of the TRAINING target (the actual composed->fused transfer question) and reports the probe-endpoint NLL alongside, so the two are never conflated.",
+        "cap_rule": format!("target_len = min(render_gold_len, {} - prompt_len), item skipped only if < {} (M4c's rule verbatim). Items are TRUNCATED, not dropped: dropping would keep only short problems, which correlates with difficulty and would bias the fit set.", c.seq_cap, c.min_target),
+        "measured_coverage": {
+            "fit_mean_covered_fraction": c.fit_mean_covered_fraction,
+            "fit_items_fully_covered": c.fit_items_fully_covered,
+            "holdout_mean_covered_fraction": c.holdout_mean_covered_fraction,
+            "holdout_items_fully_covered": c.holdout_items_fully_covered,
+            "why_recorded": "a silently truncated reasoning target is how error #22 would recur in another form",
+        },
         "delta_v_never_used": "ΔV is not computed here and is not a training signal. docs/research/034 §3 prices ONE properly powered verify_edge draw at ~3 GPU-h — more than this entire run — and ADR-028 forbids frozen-probe fitness for any adapter search. ADR-045 registers ΔV as a single post-hoc characterisation.",
     })
 }
@@ -178,7 +193,8 @@ fn caveat_and_plan() -> (serde_json::Value, serde_json::Value) {
             "statement": "training runs through the composed BF16 forward but the draw runs the vendored FUSED BF16 forward; the measured gap at L=128 is 116/128 argmax agreement, max|dlogit| 8.19 (pure rounding amplification — F32 parity 128/128 at max|dlogit| 0.119 proves same function). Inherited unchanged from M4c.",
             "mitigation_frozen_here": "BEFORE any draw, run2_m5_transfer_check (separate process, inference-only, no draw items, no generation) evaluates the trained adapter's teacher-forced gold-continuation NLL through the VENDORED fused forward on the holdout items, against the SAME receiver with the adapter OFF, under the identical aligned-payload delivery path",
             "why_off_and_not_the_init_artifact": "B is zero-initialised, so the init adapter IS the identity: 'adapter off' and 'adapter at init' are the same function, and the check uses the cheaper of the two. The init artifact and its goldens are committed anyway so the claim is auditable.",
-            "transfer_pass_criterion_frozen": "mean vendored-fused gold-continuation NLL(trained adapter) < mean vendored-fused NLL(adapter off) over the evaluable holdout items; per-item wins/losses + sign test reported as secondary, not gating",
+            "transfer_pass_criterion_frozen": "mean vendored-fused CE of the TRAINING TARGET (the rendered gold solution) with the trained adapter < the same quantity with the adapter off, over the evaluable holdout items; per-item wins/losses + sign test reported as secondary, not gating",
+            "why_the_criterion_is_on_the_training_target": "the transfer check exists to verify that the improvement measured through the COMPOSED forward survives the crossing to the vendored FUSED forward. Measuring that on a quantity training did not optimise would conflate transfer with generalisation. The probe's own endpoint ('#### {gold}' NLL) is reported in the same receipt, unchanged and comparable with the v1 receipt, but it does not gate.",
             "co_diagnostic_non_gating": "the transfer check ALSO generates on holdout items with the adapter on and off (baseline condition, the draw's own greedy decoding) and reports accuracy and mean generated length. A rank-1 adapter trained on '#### {gold}' can learn the answer FORMAT and stop reasoning; that collapse would make the draw uninformative for a reason unrelated to the channel. It does NOT gate — gating the adapter on GSM8K accuracy would select it against the very confound ADR-045 keeps out of the primary — it is reported so a null can be read correctly.",
             "on_transfer_fail": "the draw is NOT invoked; the transfer receipt plus diagnosis is the honest M5 outcome for that branch (a null would be confounded by the numeric gap)",
         }),
@@ -216,7 +232,7 @@ pub fn build(
         "what_is_trained_and_what_is_frozen",
         what_is_trained(c, lora.param_count()),
     );
-    put("training_objective", objective());
+    put("training_objective", objective(c));
     put("delivery_path", delivery(c));
     put("architecture", architecture(c, lora));
     put(

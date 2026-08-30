@@ -72,9 +72,15 @@ const GOLDEN_SEED: u64 = 0x4D35_061D;
 const GOLDEN_PAIRS: usize = 8;
 const LR: f64 = 1e-3;
 const EPOCHS: usize = 10;
-/// Max receiver sequence — M4c's largest MEASURED envelope on this 16 GB
-/// card (81 ms/step, 9,906 MiB at L=256). Longer is unmeasured; not used.
-const SEQ_CAP: usize = 256;
+/// Max receiver sequence. MEASURED on this 16 GB card by the M5 v1 run
+/// (9,842 MiB peak at prompt+answer-line lengths under 256) and re-measured by
+/// the v2 smoke at this value before the real run; the receipt records the
+/// peak actually observed.
+const SEQ_CAP: usize = 384;
+/// Minimum CE-target tokens for an item to train/evaluate — M4c's rule,
+/// verbatim. Items are TRUNCATED to the cap, not dropped, so this only
+/// excludes items whose prompt alone nearly fills the window.
+const MIN_TARGET: usize = 8;
 
 fn crate_rel(rel: &str) -> PathBuf {
     Path::new(env!("CARGO_MANIFEST_DIR")).join(rel)
@@ -197,10 +203,21 @@ fn main() -> anyhow::Result<()> {
             &ds.index.token_offsets,
             N_SLOTS,
             SEQ_CAP,
+            MIN_TARGET,
         )
     };
     let (fit_items, fit_skipped) = build(&split.fit)?;
     let (holdout_items, holdout_skipped) = build(&split.holdout)?;
+    // Truncation accounting for the amended render_gold target: how much of
+    // each item's reasoning the CE span actually covers. Reported, because a
+    // silently truncated target is how error #22 would recur in another form.
+    let coverage = |items: &[M5Item]| -> (f64, usize) {
+        let full = items.iter().filter(|i| i.covered_fraction() >= 1.0).count();
+        let mean = items.iter().map(|i| i.covered_fraction()).sum::<f64>() / items.len() as f64;
+        (mean, full)
+    };
+    let (fit_cov, fit_full) = coverage(&fit_items);
+    let (hold_cov, hold_full) = coverage(&holdout_items);
     println!(
         "split: fit {} items ({} skipped by cap), holdout {} ({} skipped); prompt-parity and \
          question-tail site gates passed on all {} built items",
@@ -209,6 +226,14 @@ fn main() -> anyhow::Result<()> {
         holdout_items.len(),
         holdout_skipped.len(),
         fit_items.len() + holdout_items.len()
+    );
+    println!(
+        "gold-solution coverage under SEQ_CAP {SEQ_CAP}: fit mean {:.3} ({fit_full}/{} items \
+         complete), holdout mean {:.3} ({hold_full}/{} complete)",
+        fit_cov,
+        fit_items.len(),
+        hold_cov,
+        holdout_items.len()
     );
 
     // ---- Disjointness from the probe's item stream, MEASURED --------------
@@ -461,6 +486,11 @@ fn main() -> anyhow::Result<()> {
             holdout_items: holdout_items.len(),
             holdout_skipped: &holdout_skipped,
             natural_median_stats: serde_json::json!(med_stats),
+            min_target: MIN_TARGET,
+            fit_mean_covered_fraction: fit_cov,
+            fit_items_fully_covered: fit_full,
+            holdout_mean_covered_fraction: hold_cov,
+            holdout_items_fully_covered: hold_full,
             step0_loss: loss0,
             step0_grad_a: a_grad0,
             step0_grad_b: b_grad0,

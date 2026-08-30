@@ -219,12 +219,28 @@ fn main() -> anyhow::Result<()> {
             == m5_training["artifact"]["content_hash_sha256"].as_str(),
         "the transfer check measured a different adapter than the training receipt names"
     );
+    let gen_diag = &transfer["summary"]["generation_diagnostic"];
     println!(
-        "transfer check PASSED: fused gold-continuation NLL {} (on) vs {} (off) over {} holdout \
-         items",
-        transfer["summary"]["mean_fused_nll_adapter_on"],
-        transfer["summary"]["mean_fused_nll_adapter_off"],
+        "transfer check PASSED: fused training-target CE {} (on) vs {} (off) over {} holdout items",
+        transfer["summary"]["mean_fused_train_target_ce_adapter_on"],
+        transfer["summary"]["mean_fused_train_target_ce_adapter_off"],
         transfer["summary"]["n_evaluated"]
+    );
+    // The decision-side diagnostic is MANDATORY from ADR-045 error #22 onward.
+    // It does not gate — but a draw whose receipt cannot show it is not a
+    // readable draw, so its absence is a hard failure here.
+    anyhow::ensure!(
+        gen_diag["accuracy_adapter_off"].is_number() && gen_diag["accuracy_adapter_on"].is_number(),
+        "the transfer receipt carries no generation diagnostic — mandatory since ADR-045 error #22"
+    );
+    println!(
+        "generation diagnostic (non-gating, carried into this receipt): baseline accuracy \
+         adapter-on {} vs off {} of {}; mean generated chars {} vs {}",
+        gen_diag["accuracy_adapter_on"],
+        gen_diag["accuracy_adapter_off"],
+        gen_diag["n_items"],
+        gen_diag["mean_generated_chars_adapter_on"],
+        gen_diag["mean_generated_chars_adapter_off"]
     );
 
     // ---- Item supply: ADR-036 Decision 2 ----------------------------------

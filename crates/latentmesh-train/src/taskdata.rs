@@ -259,8 +259,42 @@ pub fn extract_final_answer(text: &str) -> Option<String> {
     (!cleaned.is_empty()).then_some(cleaned)
 }
 
-/// GSM8K `(question, gold)` by item index, sha-gated — the probe's own
-/// `load_gsm8k` fields, minus the ones M5 does not use.
+/// **The M5 training target after coordinator error #22.** Verbatim replica of
+/// `examples/common/mod.rs::render_gold` (which this crate cannot import — the
+/// dependency runs the other way), pinned by unit test below.
+///
+/// GSM8K's `answer` field is the human reference *solution*: the reasoning
+/// followed by the `#### <n>` line the receiver's own `ANSWER_FORMAT` asks for.
+/// The only edit is removal of the dataset's `<<a+b=c>>` calculator
+/// annotations, an artifact of the GSM8K authoring tool that appears in no
+/// model's output distribution. Nothing is added, in particular no EOS.
+///
+/// **Why this and not `"#### {gold}"`.** ADR-045 registered the answer line
+/// alone. Trained on that, a rank-1 adapter cut holdout CE 2.3172 → 0.6643
+/// (508W/2L) while GSM8K accuracy collapsed 31/64 → 5/64: raising the
+/// likelihood of the answer line does not require solving the problem, and the
+/// cheapest descent direction is to stop reasoning and emit it immediately.
+/// The amended target CONTAINS the reasoning whose absence was the pathology.
+pub fn render_gold(answer_text: &str) -> String {
+    let mut out = String::with_capacity(answer_text.len());
+    let mut rest = answer_text;
+    while let Some(i) = rest.find("<<") {
+        out.push_str(&rest[..i]);
+        match rest[i..].find(">>") {
+            Some(j) => rest = &rest[i + j + 2..],
+            None => {
+                rest = "";
+                break;
+            }
+        }
+    }
+    out.push_str(rest);
+    out
+}
+
+/// GSM8K `(question, rendered gold solution)` by item index, sha-gated. The
+/// second field is [`render_gold`]'s output — the amended training target —
+/// not the normalised answer token.
 pub fn load_gsm8k_items(path: &Path) -> anyhow::Result<Vec<(String, String)>> {
     let bytes = read_pinned(path, GSM8K_TRAIN_SHA256)?;
     let mut items = Vec::new();
@@ -270,9 +304,12 @@ pub fn load_gsm8k_items(path: &Path) -> anyhow::Result<Vec<(String, String)>> {
         }
         let v: serde_json::Value = serde_json::from_str(line)?;
         let question = v["question"].as_str().unwrap_or_default().to_string();
-        let gold = extract_final_answer(v["answer"].as_str().unwrap_or_default())
+        let answer = v["answer"].as_str().unwrap_or_default();
+        // Every item must still carry a parsable answer line; the probe's
+        // endpoint depends on it, so a solution without one is a data fault.
+        extract_final_answer(answer)
             .ok_or_else(|| anyhow::anyhow!("item {index}: no '#### n' in gold answer"))?;
-        items.push((question, gold));
+        items.push((question, render_gold(answer)));
     }
     Ok(items)
 }
@@ -352,10 +389,14 @@ pub struct M5Item {
     /// The 8 question-tail delivery positions.
     pub positions: Vec<usize>,
     pub position_token_ids: Vec<u32>,
-    /// `prompt ‖ "#### {gold}"` — the teacher-forced training sequence.
+    /// `prompt ‖ render_gold(answer)[..target_len]` — the teacher-forced
+    /// training sequence.
     pub full_tokens: Vec<u32>,
-    /// CE targets: the `"#### {gold}"` tokens.
+    /// CE targets: the rendered gold **solution** tokens, capped.
     pub target_tokens: Vec<u32>,
+    /// Full rendered-solution token count before the cap — so the receipt can
+    /// report how much of the reasoning each item's CE actually covered.
+    pub target_tokens_total: usize,
     /// Logits-row start: `prompt_len - 1` (row p predicts token p+1).
     pub span_start: usize,
     /// Global token index of the item's LAST generated-span row in the dump —
@@ -363,8 +404,24 @@ pub struct M5Item {
     pub last_row_tok: usize,
 }
 
+impl M5Item {
+    /// Fraction of the rendered gold solution the CE span covers.
+    pub fn covered_fraction(&self) -> f64 {
+        self.target_tokens.len() as f64 / self.target_tokens_total.max(1) as f64
+    }
+}
+
 /// Build M5 items for a set of dataset rows. Every item passes the
 /// prompt-parity gate, the question-tail site gate, and the sequence cap.
+///
+/// **Cap rule, M4c's verbatim** (`target_len = min(len, seq_cap - prompt_len)`,
+/// skip only if `< min_target`): the rendered gold solution is TRUNCATED
+/// rather than the item dropped. Dropping instead would silently keep only
+/// short problems, which correlates with difficulty and would bias the fit set;
+/// truncating keeps every item and costs the tail of the reasoning on the long
+/// ones. The covered fraction is recorded per item and summarised in the
+/// receipt rather than left implicit.
+#[allow(clippy::too_many_arguments)]
 pub fn build_m5_items(
     rows: &[usize],
     streams: &[StreamRow],
@@ -373,6 +430,7 @@ pub fn build_m5_items(
     token_offsets: &[u64],
     n_slots: usize,
     seq_cap: usize,
+    min_target: usize,
 ) -> anyhow::Result<(Vec<M5Item>, Vec<SkippedItem>)> {
     let mut out = Vec::with_capacity(rows.len());
     let mut skipped = Vec::new();
@@ -392,18 +450,21 @@ pub fn build_m5_items(
             tokens.len(),
             sr.prompt_tokens.len()
         );
-        let target_tokens = encode(tok, &format!("#### {gold}"))?;
+        // `gold` is render_gold's output: the full solution, `<<..>>` stripped.
+        let full_target = encode(tok, gold)?;
         let prompt_len = tokens.len();
-        if prompt_len + target_tokens.len() > seq_cap {
+        let target_fit = seq_cap.saturating_sub(prompt_len).min(full_target.len());
+        if target_fit < min_target {
             skipped.push(SkippedItem {
                 row,
                 item: sr.item,
                 inj_len: prompt_len,
-                target_fit: target_tokens.len(),
-                reason: "prompt + gold continuation exceeds the measured seq cap",
+                target_fit,
+                reason: "gold-solution span under min_target after the seq cap",
             });
             continue;
         }
+        let target_tokens = full_target[..target_fit].to_vec();
         let mut full_tokens = tokens;
         full_tokens.extend_from_slice(&target_tokens);
         out.push(M5Item {
@@ -414,6 +475,7 @@ pub fn build_m5_items(
             position_token_ids,
             full_tokens,
             target_tokens,
+            target_tokens_total: full_target.len(),
             span_start: prompt_len - 1,
             last_row_tok: token_offsets[row] as usize + sr.gen_tokens.len() - 1,
         });
@@ -476,6 +538,23 @@ mod tests {
         assert_eq!(extract_final_answer("#### 18.").as_deref(), Some("18"));
         assert_eq!(extract_final_answer("#### -3").as_deref(), Some("-3"));
         assert_eq!(extract_final_answer("no marker"), None);
+    }
+
+    /// The amended M5 target must be the probe's own `render_gold` behaviour:
+    /// calculator annotations stripped, everything else — the reasoning AND
+    /// the `#### n` line — kept verbatim.
+    #[test]
+    fn render_gold_strips_only_calculator_annotations() {
+        assert_eq!(render_gold("a <<1+1=2>>b"), "a b");
+        assert_eq!(render_gold("no annotations"), "no annotations");
+        assert_eq!(render_gold("x <<unclosed"), "x ");
+        let answer = "Janet has 3 <<2+1=3>>eggs.\nShe sells 2.\n#### 1";
+        let rendered = render_gold(answer);
+        assert!(!rendered.contains("<<"));
+        // The reasoning survives — that is the entire point of the amendment.
+        assert!(rendered.contains("She sells 2."));
+        assert!(rendered.ends_with("#### 1"));
+        assert_eq!(extract_final_answer(&rendered).as_deref(), Some("1"));
     }
 
     #[test]
