@@ -461,9 +461,12 @@ its analytic model and its manipulation check, so it needs its own
 pre-registration with its own power calculation. It is recorded here as a
 proposed successor and is **not** implemented, not run, and not folded into M6.
 
-### Coordinator question #25 — the receiver is not named, and rank 2 is ASSUMED
+### Coordinator error #25 — the receiver is not named; rank 2 RULED
 
-**RESOLVED BY ASSUMPTION, DECLARED BEFORE THE DRAW, not after it.**
+**Declared before the draw, not after it.** Raised by the implementing agent as an
+open question, ruled by the coordinator, and recorded as **the coordinator's
+error**: a pre-registration that meant "adapted" had to name a rank, because
+M5's three receivers are three different experiments.
 
 ADR-047 never states which receiver M6 runs on. Three things in the frozen text
 point at an **M5-adapted** one: §6's power model is anchored entirely on M5's
@@ -478,23 +481,52 @@ motivating case is rank 2's 46W/23L, and that specific number is the ambiguity
 M6 exists to resolve. Resolving it on a different receiver would answer a
 question nobody asked.
 
-**The known cost of that choice, recorded here so it cannot be discovered
-later.** ADR-045's correction #23 found the *adapted* receiver is not
-content-specific at all, while the frozen receiver was weakly content-specific.
-M6 asks whether content is detectable, so running it on the receiver M5
-measured as least content-sensitive risks a design that is disposed toward
-"no". The registered power anchor, the comparator and the transfer-check step
-all come from M5, so this is still the reading the frozen text best supports —
-but a null here is **weaker evidence against content transmission** than the
-same null on a frozen receiver would be, and §7.4 must be read with that in
-mind.
+**A caveat the implementing agent first stated too strongly, corrected here
+rather than quietly dropped.** The claim offered was that ADR-045's correction
+#23 found the adapted receiver "not content-specific at all", and that a null
+here is therefore *weaker evidence* against content transmission than the same
+null on a frozen receiver. **That overstates #23, and the receipts say so:**
+
+| M5 rank | `aligned` vs `random`, **NLL** | same pair, **ACCURACY** |
+|---|---|---|
+| 1 | 147/153, p = 0.657 | 42/35, p = 0.2472 |
+| 2 | 156/144, p = 0.263 | **46/23, p = 0.0038** |
+| 4 | 146/154, p = 0.698 | **42/25, p = 0.0249** |
+
+**#23 rests entirely on the NLL arm — it is a statement about likelihood.** The
+decision endpoint on those same pairs is not null at all; it is where 46/23
+lives. And the decision arm's *content* sensitivity has never been isolated on
+**any** receiver, frozen or adapted, because `random` conflates content with
+manifold conformity. **That conflation is the entire reason M6 exists.** So the
+inference does not hold: rank 2 is not disposed toward "no". It tests a
+decision-level question that is open on both receivers, using the first control
+that can separate the factors.
+
+**The honest form of the concern, which does stand:** the adapted receiver's
+likelihood arm showed no content specificity across three ranks, so *if that
+generalises to decisions*, a null here would be unsurprising. That is a
+hypothesis about generalisation, not an established property, and it is **not**
+grounds for attaching "weaker evidence" to §7.4.
+
+### Registered BEFORE the draw — the likelihood prediction
+
+If correction #23 generalises, **the LIKELIHOOD arm should stay null in M6
+too.** Both endpoints are co-reported. Written down now so neither outcome can
+be fitted afterwards:
+
+- **Decision crosses while likelihood stays null** → a **dissociation**, and a
+  real finding.
+- **Both stay null** → consistent with M5, and it closes the content axis on
+  this receiver.
+- **Likelihood moves while decision does not** → the M4i/M5X shape again, and
+  it would mean `mismatched` behaves like `random` on likelihood, which is
+  itself informative about what the payload moves.
 
 The probe **refuses to default**: the rank is a required argument, because a
 silent default would make an unregistered choice look like a registered one.
-The receipt names the receiver in its headline fields. If the coordinator rules
-for a different rank or for the frozen receiver, that is a separate draw with a
-separate comparator, reported separately and never pooled — the M5 precedent,
-not a retry.
+The receipt names the receiver in its headline fields. A draw at a different rank or on the frozen receiver would be a
+separate draw with a separate comparator, reported separately and never pooled
+— the M5 precedent, not a retry.
 
 ### Transfer check (phase-2 step 6, before the draw) — PASSED, no degeneration
 
