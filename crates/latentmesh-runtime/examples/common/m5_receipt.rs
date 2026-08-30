@@ -45,6 +45,18 @@ pub struct ReceiptCtx<'a> {
 }
 
 /// The M5 receipt, one auditable object.
+/// Wins needed for the wealth process to reach `1/alpha` at a given discordant
+/// count, from the registered `lambda` and `alpha`. Reported for context; the
+/// crossing decision itself always defers to the wealth rule.
+///
+/// `W = (1+lambda/2)^k * (1-lambda/2)^(n-k) >= 1/alpha`, solved for the least
+/// integer `k`. The count is n-DEPENDENT, which is why no fixed bar derived
+/// from it can stand in for the wealth rule.
+fn wins_required(n: usize) -> usize {
+    let (up, dn) = ((1.0 + LAMBDA / 2.0).ln(), (1.0 - LAMBDA / 2.0).ln());
+    (((1.0 / E_ALPHA).ln() - n as f64 * dn) / (up - dn)).ceil() as usize
+}
+
 pub fn receipt(c: &ReceiptCtx<'_>, o: &DrawOutcome) -> serde_json::Value {
     let (n, n_disc, e_pass) = (o.n(), o.n_disc(), o.e_pass());
     let (noop_dis, noop_exact, noop_max, noop_pass) = o.noop_stats();
@@ -203,12 +215,10 @@ pub fn receipt(c: &ReceiptCtx<'_>, o: &DrawOutcome) -> serde_json::Value {
             "registered_crossing_bar": format!(">= {REGISTERED_BAR_WINS} of {REGISTERED_BAR_OF} discordant wins (69.2%)"),
             "realised_n_discordant": n_disc,
             "realised_discordant_wins": o.wins,
-            "registered_win_rate": REGISTERED_BAR_WINS as f64 / REGISTERED_BAR_OF as f64,
-            "realised_win_rate": o.wins as f64 / n_disc.max(1) as f64,
-            "crossed_the_registered_bar": o.wins as f64 / n_disc.max(1) as f64
-                >= REGISTERED_BAR_WINS as f64 / REGISTERED_BAR_OF as f64,
-            "how_the_bar_is_compared": "as a RATE, not a raw win count. ADR-045 registered '>= 45 of 65', i.e. 69.2%, derived as the win count that reaches W >= 20 AT n_disc = 65. When the realised n_disc differs, comparing the raw count alone is not the registered bar: at n_disc = 69, 46 wins is 66.7% and yields W = 14.75, which does NOT cross. An earlier version of this field compared raw counts and could therefore report 'crossed' for a draw the e-process failed; corrected here.",
-            "authoritative_outcome_is_the_e_process": "the wealth boundary is the registered decision rule. This block is power accounting, reported so the realised discordance can be checked against the model ADR-040 required; it never overrides e_process.outcome.",
+            "wins_required_to_cross_at_THIS_n_discordant": wins_required(n_disc),
+            "crossed": e_pass,
+            "how_crossing_is_decided": "BY THE WEALTH RULE, which is the registered decision rule and is exact. This field is `e_process.outcome`, not a recomputation, so it CANNOT disagree with it. ADR-045's '>= 45 of 65' is the exact requirement AT n_disc = 65 and nowhere else — the required count is n-dependent (45 of 65 = 69.2%, 48 of 69 = 69.6%, 52 of 77 = 67.5%), so any fixed raw count OR fixed rate derived from it will disagree with the wealth rule at some n, in both directions. Two earlier versions of this field did exactly that; see the receipts' CORRECTED_AFTER_THE_DRAW notes. `wins_required_to_cross_at_THIS_n_discordant` is computed from the registered lambda and alpha for the realised n and is reported for context only.",
+            "registered_bar_as_written_in_adr_045": format!(">= {REGISTERED_BAR_WINS} of {REGISTERED_BAR_OF} discordant wins (69.2%) — exact at n_disc = {REGISTERED_BAR_OF}"),
             "uninformative_threshold": UNINFORMATIVE_BELOW_N_DISC,
             "uninformative": uninformative,
             "if_uninformative": "ADR-045: with n_disc < 30 the rung is reported UNINFORMATIVE and the power model is recorded as wrong — a finding about our estimation, not about the apparatus.",

@@ -437,3 +437,107 @@ it. **The battery earning its keep is itself a result**, and the two fields
 doing the work — the battery's `scope_limit_disclosed` and the accuracy block's
 "NOT comparable to any prior rung" note — are carried into every subsequent
 rank's receipt by the receipt builder, not by anyone remembering to add them.
+
+## OUTCOME — the registered ladder {1, 2, 4}, complete
+
+Three ranks registered, three trained, three drawn under the frozen design.
+**None crossed.** Each draw is powered: realised `n_disc` 67–77, all far above
+the registered uninformative floor of 30.
+
+| rank | params | holdout CE | decision diag | W_final | n_disc | wins | wins needed | crossed |
+|---|---|---|---|---|---|---|---|---|
+| 1 | 3,072 | 0.5171 | 34/64 | 1.1994 | 77 | 42 | 52 | no |
+| **2** | **6,144** | 0.5094 | 39/64 | **14.7481** | 69 | 46 | 48 | no |
+| 4 | 12,288 | 0.5030 | 36/64 | 6.0923 | 67 | 42 | 46 | no |
+
+*(unadapted receiver: 31/64 on the same holdout items. "Wins needed" is the
+exact count reaching W ≥ 20 at that rung's realised `n_disc`; it is n-dependent
+— see the power-accounting correction below.)*
+
+**Capacity is not the explanation, and the trend is not monotone.** Rank 2 is
+the peak; rank 4 falls back. Three points that rise then fall are noise around
+a common rate, not a trend. The "capacity was too low" objection to the rank-1
+null is closed: 4× the parameters does not approach the boundary better than 2×.
+
+### Four findings replicate across all three independent adapters
+
+1. **The primary never crosses.** Three registered draws, three FAILs.
+2. **`aligned` vs `random` on NLL is null at every rank** — 147/153 (p = 0.66),
+   156/144 (p = 0.26), 146/154 (p = 0.70). Three independent nulls, two
+   pointing slightly the wrong way.
+3. **Both `aligned` AND `random` move NLL hard against baseline at every rank**
+   — aligned-vs-baseline 200/100, 202/98, 239/61; random-vs-baseline 205/95,
+   187/113, 216/84. The likelihood movement is **generic at every capacity**,
+   never content-specific. Correction #23 was written on rank 1 alone; it now
+   has 3/3 support.
+4. **Accuracy orders `baseline` > `aligned` > `random` at every rank** —
+   149/137/130, 172/154/131, 160/154/137. Injection always hurts; the
+   on-manifold payload always hurts less.
+
+### The disruption reading, and why it is preferred
+
+Finding 4 is what "aligned beats random" measures. That ordering is consistent
+with the on-manifold payload merely **disrupting the receiver less** than a
+norm-matched Gaussian — a magnitude effect, not a content effect. **Finding 2
+is what discriminates**: content that helps decisions should also raise its own
+likelihood, and across three adapters it never does.
+
+This is the norm-matched-Gaussian floor control doing its designed job. A rung
+reporting only the primary would have shown rank 2 at 46W/23L trending hard at
+the boundary and called it a channel effect in waiting.
+
+**The remaining ambiguity, stated plainly**: `random` is *off-manifold*, so
+`aligned` beats it on manifold-conformity alone. Distinguishing disruption from
+content needs a control that is **on-manifold but content-wrong** — ADR-003's
+`mismatched`. That control is **not registered for M5** and was deliberately
+not added mid-flight. Resolving this is a successor registration's job, and its
+content should be **the control set, not the item budget**: more items would
+only establish whether "aligned disrupts less" is real, never whether it is
+content.
+
+### A pre-registered prediction, falsified — recorded as such
+
+Before ranks 2 and 4 were drawn, the implementing owner predicted to the
+coordinator that both would **reproduce rank 1's null shape**, reasoning that
+rank 1's holdout CE was flat from epoch 1 with its best checkpoint at epoch 4
+of 10, so the adapter had unused budget and capacity was not the binding
+constraint.
+
+**Rank 2 falsified the shape prediction.** Wealth went 1.20 → 14.75; the
+trajectory changed from oscillating around 1 to rising and ending at its own
+maximum. Capacity plainly does something. The prediction's *conclusion* — that
+no rank would cross — held at all three, but its *stated reasoning* was wrong
+about what capacity does. Recorded because a pre-registered expectation that
+fails is worth more than one that quietly succeeds.
+
+### Power-accounting correction — a derived field that disagreed with the authority
+
+`registered_power_accounting.crossed_the_registered_bar` was **wrong twice**.
+
+- **v1** compared the **raw win count** against 45 — a bar ADR-045 derived *for
+  n_disc = 65*. At rank 2's realised `n_disc` = 69 it reported **`true` for a
+  draw the e-process FAILED**.
+- **v2** compared the **rate** against 45/65 = 69.2%. It reached the right
+  verdict on all three draws, but is also not exact: the required count is
+  **n-dependent** (45 of 65 = 69.2%, 48 of 69 = 69.6%, 52 of 77 = 67.5%).
+  Checked exhaustively over n ∈ [60, 85], the rate form disagrees with the
+  wealth rule in **34** (n, wins) combinations, **in both directions** —
+  including n_disc = 67, exactly where rank 4 landed.
+- **v3**, current, **defers to the wealth rule**: `crossed` *is*
+  `e_process.crossed`, so it cannot disagree with the authority. The exact
+  required count for the realised n is reported as context only.
+
+The lesson is general enough to record: **a derived field that can disagree
+with the decision rule will eventually disagree with it.** No measurement was
+changed by any correction; the receipts carry the superseded values and the
+reasoning.
+
+### Registered interpretation, discharged
+
+The FAIL-with-real-power branch applies. Under this apparatus, **neither
+payload training nor receiver training makes direct activation injection move
+decisions** — tested at three capacities, each powered, each with `baseline`
+re-measured on its own adapted receiver. Per correction #23, the FAIL branch's
+"the likelihood-level effect remains real" does **not** hold on the adapted
+receiver, with 3/3 support. The ADR-024 firewall is unchanged: M5 is
+same-model, receiver-adapted, and tests the apparatus, never transfer.

@@ -27838,19 +27838,23 @@
   },
   "registered_power_accounting": {
     "adr": "ADR-045 \u00a7 MANDATORY POWER CALCULATION, frozen before any item was drawn",
-    "crossed_the_registered_bar": false,
     "expected_n_discordant": 65,
     "if_uninformative": "ADR-045: with n_disc < 30 the rung is reported UNINFORMATIVE and the power model is recorded as wrong \u2014 a finding about our estimation, not about the apparatus.",
     "realised_discordant_wins": 46,
     "realised_n_discordant": 69,
-    "registered_crossing_bar": ">= 45 of 65 discordant wins (69.2%)",
     "uninformative": false,
     "uninformative_threshold": 30,
-    "CORRECTED_AFTER_THE_DRAW": "The `crossed_the_registered_bar` field originally compared the RAW win count against 45, a bar ADR-045 derived for n_disc = 65. That comparison is invalid when the realised n_disc differs, and for rank 2 it reported `true` for a draw whose e-process FAILED (46 wins of 69 = 66.7% yields W = 14.75 < 20). Corrected to a RATE comparison, which is what the registered bar means and which agrees with the wealth rule by construction. No measurement was changed: e_process.outcome, the trajectory, the battery and every count are byte-identical to the draw.",
-    "registered_win_rate": 0.6923076923076923,
-    "realised_win_rate": 0.6666666666666666,
-    "crossed_the_registered_bar_ORIGINAL_RAW_COUNT_COMPARISON": true,
-    "authoritative_outcome_is_the_e_process": "the wealth boundary is the registered decision rule; this block is power accounting and never overrides e_process.outcome."
+    "CORRECTED_AFTER_THE_DRAW": "This field has been wrong twice and is now removed as a derived quantity. v1 compared the RAW win count against 45, a bar ADR-045 derived FOR n_disc = 65; at rank 2's n_disc = 69 it reported `true` for a draw the e-process FAILED. v2 compared the RATE against 45/65 = 69.2%; that reached the right verdict on all three draws but is ALSO not exact, because the required count is n-dependent (45 of 65 = 69.2%, 48 of 69 = 69.6%, 52 of 77 = 67.5%). Checked exhaustively over n in [60,85]: the rate form disagrees with the wealth rule in 34 (n, wins) combinations, in BOTH directions \u2014 including n_disc = 67, which is exactly where rank 4 landed. v3, here, DEFERS to the wealth rule: `crossed` is `e_process.crossed` itself, so it cannot disagree with the authority. `wins_required_to_cross_at_THIS_n_discordant` is computed from the registered lambda and alpha for the realised n and is context only. No measurement was changed by any of these corrections: e_process, the trajectory, the battery, the items and every count are as drawn.",
+    "authoritative_outcome_is_the_e_process": "the wealth boundary is the registered decision rule; this block is power accounting and never overrides e_process.outcome.",
+    "wins_required_to_cross_at_THIS_n_discordant": 48,
+    "crossed": false,
+    "how_crossing_is_decided": "BY THE WEALTH RULE, the registered decision rule, which is exact. This field is e_process.crossed, not a recomputation.",
+    "registered_bar_as_written_in_adr_045": ">= 45 of 65 discordant wins (69.2%) \u2014 exact at n_disc = 65",
+    "superseded_derived_fields": {
+      "v1_raw_count_comparison": true,
+      "v2_rate_comparison": false,
+      "why_removed": "a derived field that can disagree with the authority will eventually disagree with it"
+    }
   },
   "stage": "run2-M5-receiver-side-adaptation-probe",
   "summary": {
