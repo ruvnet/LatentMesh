@@ -95,7 +95,7 @@ h1 {
   font-size: clamp(2.1rem, 1.2rem + 4.2vw, 4.3rem); line-height: 1.03; margin: 0 0 1.3rem;
 }
 h1 em { font-style: normal; color: var(--cyan); }
-.hero { padding: clamp(56px, 12vh, 118px) 0 clamp(44px, 8vh, 84px); }
+.hero { padding-block: clamp(56px, 12vh, 118px) clamp(44px, 8vh, 84px); }
 .hero .lede { font-size: clamp(1.02rem, .95rem + .55vw, 1.28rem); color: var(--muted); max-width: 44ch; }
 .kicker {
   font-family: var(--mono); font-size: .66rem; letter-spacing: .22em;
@@ -144,7 +144,7 @@ h1 em { font-style: normal; color: var(--cyan); }
 .step strong { color: var(--ink); font-weight: 600; }
 
 /* ---------- prose + components ---------- */
-section.prose { padding: clamp(48px, 9vh, 96px) 0; }
+section.prose { padding-block: clamp(48px, 9vh, 96px); }
 section.prose h2 { font-weight: 500; letter-spacing: -.02em;
   font-size: clamp(1.55rem, 1.25rem + 1.5vw, 2.25rem); margin: 0 0 1rem; }
 section.prose h3 { font-size: 1rem; margin: 2rem 0 .5rem; }
@@ -195,7 +195,7 @@ table.layers th, table.layers td { text-align: left; padding: .68rem .6rem; bord
 table.layers th { font-family: var(--mono); font-size: .6rem; text-transform: uppercase; letter-spacing: .16em; color: var(--faint); }
 table.layers td { color: var(--muted); } table.layers tr:hover td { color: var(--ink); }
 
-footer { border-top: 1px solid var(--line); padding: 2.4rem 0 4rem; font-size: .85rem; color: var(--faint); }
+footer { border-top: 1px solid var(--line); padding-block: 2.4rem 4rem; font-size: .85rem; color: var(--faint); }
 a { color: var(--cyan); text-decoration-thickness: 1px; text-underline-offset: 3px; }
 .progress { position: fixed; top: 0; left: 0; height: 2px; z-index: 60; width: 0;
   background: linear-gradient(90deg, var(--cyan), var(--violet)); box-shadow: 0 0 14px rgba(80,230,255,.9); }
@@ -375,9 +375,9 @@ a { color: var(--cyan); text-decoration-thickness: 1px; text-underline-offset: 3
   .deploy { padding: 1.1rem 1.1rem; }
 
   h1 { font-size: clamp(2rem, 8.5vw, 2.7rem); letter-spacing: -.02em; }
-  .hero { padding: 32px 0 34px; }
+  .hero { padding-block: 32px 34px; }
   .hero .lede { font-size: 1rem; max-width: none; }
-  section.prose { padding: 42px 0; }
+  section.prose { padding-block: 42px; }
   section.prose h2 { font-size: 1.5rem; }
   .metric .val { font-size: 1.2rem; }
   pre.code { font-size: .74rem; padding: .85rem .9rem .85rem 1.1rem; }
