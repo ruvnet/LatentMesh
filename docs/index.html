@@ -10,6 +10,9 @@
 <meta property="og:type" content="website">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='88'>📡</text></svg>">
 <link rel="stylesheet" href="story.css">
+<script type="importmap">
+{ "imports": { "three": "https://cdn.jsdelivr.net/npm/three@0.169.0/build/three.module.js" } }
+</script>
 </head>
 <body>
 <div class="bg" aria-hidden="true"></div>
@@ -28,9 +31,9 @@
 
 <header class="hero wrap">
   <div class="narrow">
-    <div class="eyebrow">Agent-to-agent communication · off-grid</div>
-    <h1>Agents that keep working where the internet <em>doesn't reach</em>.</h1>
-    <p class="lede">Move meaning between AI agents over LoRa, ham radio, Bluetooth, WiFi — even plain audio. No cloud. No cell towers. Runs on a $10 microcontroller.</p>
+    <div class="eyebrow">Ambient intelligence · the substrate</div>
+    <h1>Machines that share <em>understanding</em>, not just data.</h1>
+    <p class="lede">Ambient intelligence means cognition dissolved into the environment — the devices around you reasoning together instead of shipping logs to a datacentre. That needs three things nobody had assembled. LatentMesh builds them, and tests them honestly.</p>
     <p style="margin-top:2rem">
       <a class="cta" href="#start">Get started</a>
       <a class="cta ghost" href="https://latentmesh-air.ruv.chatgpt.site/">Open Air Studio ↗</a>
@@ -38,12 +41,45 @@
   </div>
 
   <div class="metrics">
-    <div class="metric cy"><span class="lab">Payload</span><span class="val">64 B</span><span class="sub">semantic delta</span></div>
-    <div class="metric gr"><span class="lab">Reduction</span><span class="val">624×</span><span class="sub">vs 64 KiB latent frame</span></div>
+    <div class="metric cy"><span class="lab">Packet ceiling</span><span class="val">227 B</span><span class="sub">measured live, not from spec</span></div>
+    <div class="metric gr"><span class="lab">Reduction</span><span class="val">624×</span><span class="sub">vs a 64 KiB latent frame</span></div>
     <div class="metric vi"><span class="lab">Carriers</span><span class="val">6</span><span class="sub">LoRa · HF · VHF · BLE · WiFi · audio</span></div>
-    <div class="metric am"><span class="lab">Min hardware</span><span class="val">$0</span><span class="sub">simulated transport</span></div>
+    <div class="metric am"><span class="lab">Min hardware</span><span class="val">$0</span><span class="sub">transport simulates</span></div>
   </div>
 </header>
+
+<hr class="rule">
+
+<section class="prose wrap">
+  <div class="narrow">
+    <div class="kicker">The three pillars</div>
+    <h2>Reach, trust, and the open problem</h2>
+    <p>Ambient intelligence needs machines to exchange <strong>thought rather than text</strong>, transports that <strong>reach everywhere</strong>, and a way to ensure shared thought <strong>can't corrupt the collective</strong>. Two of those are built. The third is honestly unfinished, and we say which is which.</p>
+  </div>
+
+  <div class="cards">
+    <div class="card">
+      <span class="tag">Shipped · the nervous system</span>
+      <h4>Reach</h4>
+      <p>Compact envelopes travel over Meshtastic LoRa — validated against real <code class="inline">meshtasticd</code> firmware, which is how we found the true <strong>227-byte</strong> ceiling rather than trusting the protocol's nominal 233. Also over bulletin boards for store-and-forward, and into a fleet API with signed device identity.</p>
+    </div>
+    <div class="card">
+      <span class="tag">Shipped · the immune system</span>
+      <h4>Trust</h4>
+      <p>An edge earns authority only by <strong>measured causal benefit</strong> against decoy controls — not by claiming confidence. Ambient intelligence without this is an ambient attack surface. With it, links earn trust the way certificates do.</p>
+    </div>
+    <div class="card">
+      <span class="tag">Open · the frontier</span>
+      <h4>Translation</h4>
+      <p>Two models' internal spaces can look <strong>geometrically aligned and still share no meaning</strong>. Looking alike is not understanding — which kills the cheap-translator assumption and is why real translators are being trained and measured rather than assumed.</p>
+    </div>
+  </div>
+
+  <div class="narrow">
+    <p style="font-size:.88rem">Where it's heading is already written down: verified knowledge replicated across a fleet (<a href="https://github.com/ruvnet/LatentMesh/blob/main/docs/adr/025-distributed-latent-data-fabric.md">ADR-025</a>), only causally-proven edges federating while receivers re-verify — hints, never authority (<a href="https://github.com/ruvnet/LatentMesh/blob/main/docs/adr/026-verified-edge-federation-wire-contract.md">ADR-026</a>), and a lower-trust delivery lane as fallback (<a href="https://github.com/ruvnet/LatentMesh/blob/main/docs/adr/027-latent-prefix-context-window-delivery.md">ADR-027</a>). A verified-edge message prices out at <strong>~140 bytes</strong> — arithmetic from field widths, not yet measured against a real serialization, and labelled that way in the ADR itself.</p>
+    <p style="font-size:.88rem"><strong>47 architecture decisions, every claim receipt-backed, every failure preserved.</strong> The honest state: reach is real, trust is real, translation is the open problem.</p>
+  </div>
+</section>
 
 <hr class="rule">
 
@@ -52,8 +88,14 @@
   <div class="scrolly-inner">
     <div class="viz-col">
 
-      <!-- V1 — no coverage -->
-      <div class="viz" data-viz="v1" data-label="Coverage · none">
+      <!-- 3D mesh scene — used for the network states (v1,v2,v4,v6) -->
+      <div class="viz viz3d" data-viz="v3d" data-label="Mesh · live">
+        <canvas id="mesh3d" aria-label="A three-dimensional wireframe terrain with radio nodes, links and travelling packets."></canvas>
+        <div class="viz3d-hud"><span id="hud3d">NODES 6 · LINKS 7</span></div>
+      </div>
+
+      <!-- V1 — no coverage (SVG fallback) -->
+      <div class="viz" data-viz="v1" data-label="Coverage · none" style="display:none">
         <svg viewBox="0 0 400 400" role="img" aria-label="Three field devices with no path to the cloud.">
           <defs>
             <linearGradient id="terr" x1="0" y1="0" x2="0" y2="1">
@@ -211,13 +253,13 @@
     </div><!-- /viz-col -->
 
     <div class="steps">
-      <div class="step" data-viz="v1"><div class="step-inner">
+      <div class="step" data-viz="v3d" data-scene="v1"><div class="step-inner">
         <h2>Your agents stop at the edge of coverage</h2>
         <p>A sensor fleet on a farm. A survey team in a canyon. A vessel forty miles out. Equipment in a warehouse with no WiFi. The moment there's no signal, anything cloud-dependent simply stops.</p>
         <p>That's a hard limit on where autonomous systems can operate — and <strong>most of the planet is on the wrong side of it</strong>.</p>
       </div></div>
 
-      <div class="step" data-viz="v2"><div class="step-inner">
+      <div class="step" data-viz="v3d" data-scene="v2"><div class="step-inner">
         <h2>LatentMesh lets them talk to each other instead</h2>
         <p>Give each node a cheap radio and they form their own mesh. Messages hop node to node, routing around whatever's in the way. No tower, no subscription, no backhaul.</p>
         <p>Range depends on the radio you choose — LoRa commonly covers <strong>2–15 km</strong> line of sight, and every hop extends it further.</p>
@@ -229,7 +271,7 @@
         <p>So LatentMesh sends a <strong>bounded semantic envelope</strong>: what changed, how important it is, which facts must arrive exactly, and a hash so the receiver can tell if its picture has drifted.</p>
       </div></div>
 
-      <div class="step" data-viz="v4"><div class="step-inner">
+      <div class="step" data-viz="v3d" data-scene="v4"><div class="step-inner">
         <h2>Nodes drop out. That's expected, not an error.</h2>
         <p>Radios lose line of sight. Vehicles drive behind hills. Batteries sleep to save power.</p>
         <p>Messages queue and forward when the node returns, with <strong>replay protection</strong> so a repeated frame can't be reprocessed as new. You design for intermittence instead of fighting it.</p>
@@ -241,7 +283,7 @@
         <p>Swap the carrier without touching your agent code.</p>
       </div></div>
 
-      <div class="step" data-viz="v6"><div class="step-inner">
+      <div class="step" data-viz="v3d" data-scene="v6"><div class="step-inner">
         <h2>When one node finds signal, everyone benefits</h2>
         <p>Put a gateway anywhere in the mesh that has connectivity — a vehicle driving back into range, a hilltop repeater, a base station — and it bridges the whole mesh to online services.</p>
         <p>The bridge decodes and republishes at a <strong>single explicit boundary</strong>. Radio bytes never tunnel blindly onto the internet.</p>
@@ -388,6 +430,21 @@ radio.set_destination(<span class="s">0xffffffff</span>); <span class="c">// bro
   </div>
 </footer>
 
+<script type="module">
+  import { createScene } from "./scene.js";
+  const c = document.getElementById("mesh3d");
+  const panel = document.querySelector(".viz3d");
+  const scene = c ? createScene(c) : null;
+  if (!scene) {
+    // No WebGL: drop the 3D panel and let the SVG panels carry every step.
+    if (panel) panel.remove();
+    document.querySelectorAll('[data-scene]').forEach(function (el) {
+      el.dataset.viz = el.dataset.scene;
+    });
+  } else {
+    window.__lmScene = scene;
+  }
+</script>
 <script src="story.js"></script>
 </body>
 </html>

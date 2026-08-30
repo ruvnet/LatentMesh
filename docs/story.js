@@ -62,6 +62,9 @@
           steps.forEach(function (s) { s.classList.toggle("active", s === e.target); });
           var id = e.target.dataset.viz;
           if (id && id !== current) { current = id; show(id); }
+          // Drive the 3D scene's state from the step, when it is the active panel.
+          var sc = e.target.dataset.scene;
+          if (sc && window.__lmScene) { window.__lmScene.setState(sc); }
         });
       },
       // A band across the middle of the viewport: a step activates when it
@@ -73,6 +76,7 @@
     // Show the first visual immediately so the panel is never blank.
     show(steps[0].dataset.viz);
     steps[0].classList.add("active");
+    if (steps[0].dataset.scene && window.__lmScene) window.__lmScene.setState(steps[0].dataset.scene);
   });
 
   /* ---- one-shot reveals for non-scrolly panels ---- */

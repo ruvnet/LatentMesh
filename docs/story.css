@@ -251,3 +251,12 @@ a { color: var(--cyan); text-decoration-thickness: 1px; text-underline-offset: 3
   .steps { position: relative; z-index: 3; }
   .bg-grid { background-size: 44px 44px; }
 }
+
+/* ---------- 3D panel ---------- */
+.viz3d { padding: 0; }
+.viz3d canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; border-radius: 14px; }
+.viz3d-hud {
+  position: absolute; bottom: 12px; left: 16px; z-index: 2;
+  font-family: var(--mono); font-size: .58rem; letter-spacing: .18em;
+  text-transform: uppercase; color: var(--faint); pointer-events: none;
+}
