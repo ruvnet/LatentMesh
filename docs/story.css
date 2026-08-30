@@ -160,3 +160,41 @@ a { color: var(--accent); text-decoration-thickness: 1px; text-underline-offset:
   .step-inner { background: var(--paper); }
   .steps { position: relative; z-index: 3; }
 }
+
+/* ---------- code + usage blocks ---------- */
+pre.code {
+  background: var(--panel); border: 1px solid var(--rule); border-radius: 10px;
+  padding: 1rem 1.1rem; overflow-x: auto; font-family: var(--mono);
+  font-size: .84rem; line-height: 1.65; margin: 1rem 0;
+}
+pre.code .c { color: var(--muted); }
+pre.code .k { color: var(--accent); }
+code.inline {
+  font-family: var(--mono); font-size: .88em; padding: .1rem .35rem;
+  background: color-mix(in srgb, var(--muted) 14%, transparent); border-radius: 4px;
+}
+.steps-num { counter-reset: s; margin: 1.6rem 0; padding: 0; list-style: none; }
+.steps-num li {
+  counter-increment: s; position: relative; padding-left: 2.6rem; margin-bottom: 1.4rem;
+}
+.steps-num li::before {
+  content: counter(s); position: absolute; left: 0; top: -.1rem;
+  width: 1.8rem; height: 1.8rem; border-radius: 50%; display: grid; place-items: center;
+  background: var(--accent); color: var(--paper); font-family: var(--mono);
+  font-size: .82rem; font-weight: 600;
+}
+.steps-num li h4 { margin: 0 0 .3rem; font-size: 1rem; }
+.steps-num li p { margin: 0; color: var(--muted); font-size: .93rem; }
+.hw { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px,1fr)); gap: 14px; margin: 1.5rem 0; }
+.hw div { border: 1px solid var(--rule); border-radius: 10px; padding: .9rem 1rem; background: var(--panel); }
+.hw strong { display: block; font-size: .95rem; }
+.hw span { font-size: .84rem; color: var(--muted); }
+.cta {
+  display: inline-block; margin: .4rem .6rem .4rem 0; padding: .7rem 1.2rem;
+  background: var(--accent); color: var(--paper); border-radius: 9px;
+  text-decoration: none; font-weight: 600; font-size: .95rem;
+}
+.cta.ghost { background: transparent; color: var(--accent); border: 1px solid var(--rule); }
+table.layers { width: 100%; border-collapse: collapse; margin: 1.4rem 0; font-size: .88rem; }
+table.layers th, table.layers td { text-align: left; padding: .65rem .6rem; border-bottom: 1px solid var(--rule); vertical-align: top; }
+table.layers th { font-size: .7rem; text-transform: uppercase; letter-spacing: .09em; color: var(--muted); }

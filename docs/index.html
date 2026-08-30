@@ -3,12 +3,12 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>LatentMesh — we tried to let AI agents skip talking</title>
-<meta name="description" content="We tried letting AI agents hand over raw internal state instead of sentences. It didn't work — and one of our own negative results turned out to be our control's fault.">
-<meta property="og:title" content="LatentMesh — we tried to let AI agents skip talking">
-<meta property="og:description" content="It didn't work. And one of our own negative results turned out to be our control's fault.">
+<title>LatentMesh — AI agents that keep working where the internet doesn't reach</title>
+<meta name="description" content="LatentMesh Air lets AI agents coordinate over LoRa, ham radio, BLE, WiFi or plain audio — no internet, no cell towers, no cloud. Runs on a $10 ESP32.">
+<meta property="og:title" content="LatentMesh — agents that work where the internet doesn't reach">
+<meta property="og:description" content="Coordinate AI agents over LoRa, ham radio, BLE or audio. No internet. Runs on a $10 microcontroller.">
 <meta property="og:type" content="website">
-<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🕸️</text></svg>">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📡</text></svg>">
 <link rel="stylesheet" href="story.css">
 </head>
 <body>
@@ -16,114 +16,155 @@
 
 <header class="hero wrap">
   <div class="narrow">
-    <div class="eyebrow">LatentMesh · research prototype · v0.2.0</div>
-    <h1>We tried to let AI&nbsp;agents skip talking.</h1>
-    <p class="lede">It didn't work. The more useful discovery was that one of our <em>own</em> negative results was wrong — and our measuring stick was the reason.</p>
-    <div class="verdict">
-      <strong>Six pre-registered experiments.</strong> All six say the same thing: handing a model's raw internal state to another model changes what it finds <em>likely</em>, and never changes what it <em>answers</em>.
-    </div>
-    <p style="margin-top:1.6rem"><button data-theme-toggle style="font:inherit;font-size:.85rem;padding:.4rem .8rem;border:1px solid var(--rule);background:var(--panel);color:var(--muted);border-radius:7px;cursor:pointer">◐ switch theme</button></p>
+    <div class="eyebrow">LatentMesh · open source · MIT OR Apache-2.0</div>
+    <h1>Agents that keep working where the internet doesn't&nbsp;reach.</h1>
+    <p class="lede">LatentMesh Air moves meaning between AI agents over LoRa, ham radio, Bluetooth, WiFi — even plain audio. No cloud. No cell towers. Runs on a $10 microcontroller.</p>
+    <p style="margin-top:2rem">
+      <a class="cta" href="#start">Get started</a>
+      <a class="cta ghost" href="https://github.com/ruvnet/LatentMesh">View on GitHub</a>
+    </p>
+    <p style="margin-top:1.4rem"><button data-theme-toggle style="font:inherit;font-size:.85rem;padding:.4rem .8rem;border:1px solid var(--rule);background:var(--panel);color:var(--muted);border-radius:7px;cursor:pointer">◐ switch theme</button></p>
   </div>
 </header>
 
 <hr class="rule">
 
-<!-- ============ SCROLLY 1 ============ -->
+<!-- ============ SCROLLY: the scenario ============ -->
 <div class="scrolly wrap">
   <div class="scrolly-inner">
     <div class="viz-col">
 
-      <!-- V1 — words as a bottleneck -->
+      <!-- V1 — offline site -->
       <div class="viz" data-viz="v1">
-        <svg viewBox="0 0 400 400" role="img" aria-label="One agent flattens a rich internal state into a sentence; the second agent rebuilds a poorer version.">
-          <circle cx="70" cy="120" r="34" fill="none" stroke="var(--accent)" stroke-width="2"/>
-          <text x="70" y="126" text-anchor="middle" font-size="15">A</text>
-          <g class="fade">
-            <circle cx="52" cy="102" r="3.5" fill="var(--accent)"/><circle cx="70" cy="98" r="3.5" fill="var(--accent)"/>
-            <circle cx="88" cy="104" r="3.5" fill="var(--accent)"/><circle cx="58" cy="120" r="3.5" fill="var(--accent)"/>
-            <circle cx="78" cy="122" r="3.5" fill="var(--accent)"/><circle cx="64" cy="138" r="3.5" fill="var(--accent)"/>
-            <circle cx="84" cy="140" r="3.5" fill="var(--accent)"/>
-          </g>
-          <path class="draw" d="M112 120 L 288 120" stroke="var(--rule)" stroke-width="2" fill="none"/>
-          <rect class="pop" x="150" y="185" width="100" height="34" rx="8" fill="none" stroke="var(--warm)" stroke-width="2"/>
-          <text class="pop mono dim" x="200" y="207" text-anchor="middle" font-size="12">"the answer is…"</text>
-          <path class="draw" d="M200 120 L 200 180" stroke="var(--warm)" stroke-width="2" fill="none" stroke-dasharray="4 4"/>
-          <path class="draw" d="M200 224 L 200 280" stroke="var(--warm)" stroke-width="2" fill="none" stroke-dasharray="4 4"/>
-          <circle cx="330" cy="120" r="34" fill="none" stroke="var(--muted)" stroke-width="2"/>
-          <text x="330" y="126" text-anchor="middle" font-size="15">B</text>
-          <g class="fade" opacity=".55">
-            <circle cx="318" cy="106" r="3.5" fill="var(--muted)"/><circle cx="340" cy="112" r="3.5" fill="var(--muted)"/>
-            <circle cx="326" cy="132" r="3.5" fill="var(--muted)"/>
-          </g>
-          <text class="fade dim" x="200" y="320" text-anchor="middle" font-size="13">7 pieces of state → a sentence → 3 rebuilt</text>
-        </svg>
-      </div>
-
-      <!-- V2 — the shortcut -->
-      <div class="viz" data-viz="v2" style="display:none">
-        <svg viewBox="0 0 400 400" role="img" aria-label="The proposed shortcut: pass the internal state directly, skipping words.">
-          <circle cx="80" cy="200" r="40" fill="none" stroke="var(--accent)" stroke-width="2"/>
-          <text x="80" y="206" text-anchor="middle" font-size="16">A</text>
-          <circle cx="320" cy="200" r="40" fill="none" stroke="var(--accent)" stroke-width="2"/>
-          <text x="320" y="206" text-anchor="middle" font-size="16">B</text>
-          <path class="draw" d="M124 200 L 276 200" stroke="var(--accent)" stroke-width="3" fill="none"/>
+        <svg viewBox="0 0 400 400" role="img" aria-label="A remote site with no cell coverage: three devices unable to reach the cloud.">
+          <path d="M30 300 Q 110 250 190 296 T 370 288" fill="none" stroke="var(--rule)" stroke-width="2"/>
           <g class="pop">
-            <circle cx="200" cy="200" r="26" fill="none" stroke="var(--accent)" stroke-width="2"/>
-            <circle cx="190" cy="192" r="3" fill="var(--accent)"/><circle cx="208" cy="190" r="3" fill="var(--accent)"/>
-            <circle cx="196" cy="206" r="3" fill="var(--accent)"/><circle cx="212" cy="208" r="3" fill="var(--accent)"/>
+            <rect x="60" y="240" width="42" height="42" rx="8" fill="none" stroke="var(--muted)" stroke-width="2"/>
+            <rect x="180" y="238" width="42" height="42" rx="8" fill="none" stroke="var(--muted)" stroke-width="2"/>
+            <rect x="300" y="232" width="42" height="42" rx="8" fill="none" stroke="var(--muted)" stroke-width="2"/>
           </g>
           <g class="fade">
-            <line x1="150" y1="150" x2="250" y2="150" stroke="var(--bad)" stroke-width="2"/>
-            <text class="dim" x="200" y="140" text-anchor="middle" font-size="12">no words</text>
+            <ellipse cx="200" cy="96" rx="66" ry="30" fill="none" stroke="var(--rule)" stroke-width="2" stroke-dasharray="5 5"/>
+            <text class="dim" x="200" y="102" text-anchor="middle" font-size="13">the cloud</text>
+            <line x1="150" y1="140" x2="250" y2="196" stroke="var(--bad)" stroke-width="2.5"/>
+            <line x1="250" y1="140" x2="150" y2="196" stroke="var(--bad)" stroke-width="2.5"/>
           </g>
-          <text class="fade dim" x="200" y="300" text-anchor="middle" font-size="13">hand the thinking over directly</text>
+          <text class="fade" x="200" y="350" text-anchor="middle" font-size="14">no signal · no backhaul · no coordination</text>
         </svg>
       </div>
 
-      <!-- V3 — the dissociation: two gauges -->
+      <!-- V2 — mesh forms -->
+      <div class="viz" data-viz="v2" style="display:none">
+        <svg viewBox="0 0 400 400" role="img" aria-label="The same devices linked directly to each other by radio, forming a mesh.">
+          <path d="M30 300 Q 110 250 190 296 T 370 288" fill="none" stroke="var(--rule)" stroke-width="2"/>
+          <path class="draw" d="M102 258 L 180 258" stroke="var(--accent)" stroke-width="2.5" fill="none"/>
+          <path class="draw" d="M222 256 L 300 252" stroke="var(--accent)" stroke-width="2.5" fill="none"/>
+          <path class="draw" d="M81 238 Q 200 150 321 230" stroke="var(--accent)" stroke-width="2" fill="none" stroke-dasharray="6 5"/>
+          <rect x="60" y="240" width="42" height="42" rx="8" fill="none" stroke="var(--accent)" stroke-width="2"/>
+          <rect x="180" y="238" width="42" height="42" rx="8" fill="none" stroke="var(--accent)" stroke-width="2"/>
+          <rect x="300" y="232" width="42" height="42" rx="8" fill="none" stroke="var(--accent)" stroke-width="2"/>
+          <g class="fade">
+            <circle cx="81" cy="230" r="9" fill="none" stroke="var(--accent)" stroke-width="1.5" opacity=".5"/>
+            <circle cx="201" cy="228" r="9" fill="none" stroke="var(--accent)" stroke-width="1.5" opacity=".5"/>
+            <circle cx="321" cy="222" r="9" fill="none" stroke="var(--accent)" stroke-width="1.5" opacity=".5"/>
+          </g>
+          <text class="fade" x="200" y="350" text-anchor="middle" font-size="14">they talk to <tspan font-weight="600">each other</tspan> instead</text>
+        </svg>
+      </div>
+
+      <!-- V3 — the bandwidth budget -->
       <div class="viz" data-viz="v3" style="display:none">
-        <svg viewBox="0 0 400 400" role="img" aria-label="Two gauges. The likelihood gauge swings far. The decision gauge does not move.">
-          <g transform="translate(105,150)">
-            <path d="M-62 0 A 62 62 0 0 1 62 0" fill="none" stroke="var(--rule)" stroke-width="9" stroke-linecap="round"/>
-            <path class="draw" d="M-62 0 A 62 62 0 0 1 40 -47" fill="none" stroke="var(--good)" stroke-width="9" stroke-linecap="round"/>
-            <line class="needle" x1="0" y1="6" x2="0" y2="-46" stroke="var(--ink)" stroke-width="3" stroke-linecap="round"
-                  style="transform: rotate(58deg)"/>
-            <circle cx="0" cy="6" r="5" fill="var(--ink)"/>
+        <svg viewBox="0 0 400 400" role="img" aria-label="A long JSON blob overflows the radio budget; a compact semantic envelope fits.">
+          <text class="dim" x="200" y="52" text-anchor="middle" font-size="12.5">what one radio packet can hold</text>
+          <rect x="60" y="72" width="280" height="30" rx="6" fill="none" stroke="var(--rule)" stroke-width="2"/>
+          <g class="slide-r">
+            <rect x="62" y="74" width="276" height="26" rx="5" fill="var(--bad)" opacity=".25"/>
+            <rect x="342" y="74" width="120" height="26" rx="5" fill="var(--bad)" opacity=".25"/>
+            <text class="mono" x="70" y="92" font-size="11" fill="var(--bad)">{"role":"assistant","content":"…</text>
           </g>
-          <text x="105" y="196" text-anchor="middle" font-size="13">what it finds likely</text>
-          <text class="mono" x="105" y="216" text-anchor="middle" font-size="12" fill="var(--good)">moves a lot</text>
+          <text class="dim" x="200" y="126" text-anchor="middle" font-size="12">raw JSON — overflows, gets fragmented, burns your airtime</text>
 
-          <g transform="translate(295,150)">
-            <path d="M-62 0 A 62 62 0 0 1 62 0" fill="none" stroke="var(--rule)" stroke-width="9" stroke-linecap="round"/>
-            <line class="needle" x1="0" y1="6" x2="0" y2="-46" stroke="var(--ink)" stroke-width="3" stroke-linecap="round"
-                  style="transform: rotate(-2deg)"/>
-            <circle cx="0" cy="6" r="5" fill="var(--ink)"/>
+          <rect x="60" y="188" width="280" height="30" rx="6" fill="none" stroke="var(--rule)" stroke-width="2"/>
+          <g class="slide-r">
+            <rect x="62" y="190" width="96" height="26" rx="5" fill="var(--good)" opacity=".4"/>
+            <text class="mono" x="70" y="208" font-size="11" fill="var(--good)">LMS1 envelope</text>
           </g>
-          <text x="295" y="196" text-anchor="middle" font-size="13">what it answers</text>
-          <text class="mono" x="295" y="216" text-anchor="middle" font-size="12" fill="var(--muted)">doesn't move</text>
+          <text class="dim" x="200" y="242" text-anchor="middle" font-size="12">a bounded semantic envelope — fits, with room spare</text>
 
-          <line class="fade" x1="200" y1="70" x2="200" y2="240" stroke="var(--rule)" stroke-width="1" stroke-dasharray="4 5"/>
-          <text class="fade" x="200" y="300" text-anchor="middle" font-size="14">the same injection, two endpoints</text>
-          <text class="fade dim" x="200" y="326" text-anchor="middle" font-size="12.5">only the right-hand one matters</text>
+          <g class="fade">
+            <text x="200" y="300" text-anchor="middle" font-size="13">priorities · critical facts kept exact</text>
+            <text x="200" y="322" text-anchor="middle" font-size="13">replay defence · state hash · optional signature</text>
+          </g>
         </svg>
       </div>
 
-      <!-- V4 — six nulls against a threshold -->
+      <!-- V4 — store and forward -->
       <div class="viz" data-viz="v4" style="display:none">
-        <svg viewBox="0 0 400 400" role="img" aria-label="Six experiment results, none reaching the significance threshold.">
-          <line x1="40" y1="90" x2="370" y2="90" stroke="var(--bad)" stroke-width="2" stroke-dasharray="6 4"/>
-          <text class="mono" x="370" y="80" text-anchor="end" font-size="11" fill="var(--bad)">the bar for "this is real"</text>
-          <g class="slide-r">
-            <rect x="55"  y="300" width="34" height="42"  rx="4" fill="var(--muted)" opacity=".55"/>
-            <rect x="106" y="286" width="34" height="56"  rx="4" fill="var(--muted)" opacity=".55"/>
-            <rect x="157" y="292" width="34" height="50"  rx="4" fill="var(--muted)" opacity=".55"/>
-            <rect x="208" y="336" width="34" height="6"   rx="3" fill="var(--muted)" opacity=".55"/>
-            <rect x="259" y="228" width="34" height="114" rx="4" fill="var(--warm)"  opacity=".8"/>
-            <rect x="310" y="284" width="34" height="58"  rx="4" fill="var(--muted)" opacity=".55"/>
+        <svg viewBox="0 0 400 400" role="img" aria-label="A node moves out of range, its messages queue, then deliver when it returns.">
+          <rect x="40" y="180" width="44" height="44" rx="9" fill="none" stroke="var(--accent)" stroke-width="2"/>
+          <text class="dim" x="62" y="248" text-anchor="middle" font-size="11">node A</text>
+          <g class="pop">
+            <rect x="120" y="188" width="16" height="12" rx="3" fill="var(--warm)"/>
+            <rect x="142" y="188" width="16" height="12" rx="3" fill="var(--warm)"/>
+            <rect x="164" y="188" width="16" height="12" rx="3" fill="var(--warm)"/>
+            <text class="dim" x="150" y="222" text-anchor="middle" font-size="11">queued</text>
           </g>
-          <line x1="40" y1="342" x2="370" y2="342" stroke="var(--rule)" stroke-width="2"/>
-          <text class="fade dim" x="276" y="218" text-anchor="middle" font-size="11.5">closest</text>
-          <text class="fade" x="205" y="372" text-anchor="middle" font-size="13">six experiments · none crossed</text>
+          <rect x="230" y="180" width="44" height="44" rx="9" fill="none" stroke="var(--muted)" stroke-width="2" stroke-dasharray="5 4"/>
+          <text class="dim" x="252" y="248" text-anchor="middle" font-size="11">node B — out of range</text>
+          <path class="draw" d="M300 202 Q 340 202 340 150" stroke="var(--rule)" stroke-width="2" fill="none" stroke-dasharray="5 4"/>
+          <g class="fade">
+            <rect x="230" y="90" width="44" height="44" rx="9" fill="none" stroke="var(--good)" stroke-width="2"/>
+            <text class="dim" x="252" y="80" text-anchor="middle" font-size="11">…comes back</text>
+            <path d="M186 190 L 226 130" stroke="var(--good)" stroke-width="2.5" fill="none" marker-end="url(#ar)"/>
+          </g>
+          <defs><marker id="ar" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto">
+            <path d="M0 0 L 8 4 L 0 8 z" fill="var(--good)"/></marker></defs>
+          <text class="fade" x="200" y="344" text-anchor="middle" font-size="14">nothing is lost when a node goes dark</text>
+        </svg>
+      </div>
+
+      <!-- V5 — one envelope, many carriers -->
+      <div class="viz" data-viz="v5" style="display:none">
+        <svg viewBox="0 0 400 400" role="img" aria-label="The same envelope carried over LoRa, ham radio, Bluetooth, WiFi and audio.">
+          <rect class="pop" x="140" y="46" width="120" height="42" rx="9" fill="none" stroke="var(--accent)" stroke-width="2.5"/>
+          <text class="pop mono" x="200" y="72" text-anchor="middle" font-size="13">one envelope</text>
+          <g class="draw" stroke="var(--rule)" stroke-width="2" fill="none">
+            <path d="M200 92 L 200 122 M 60 150 L 340 150 M 60 150 L 60 178 M 130 150 L 130 178 M 200 150 L 200 178 M 270 150 L 270 178 M 340 150 L 340 178 M 200 122 L 200 150"/>
+          </g>
+          <g class="fade">
+            <rect x="30" y="182" width="60" height="46" rx="8" fill="none" stroke="var(--muted)" stroke-width="1.5"/>
+            <text x="60" y="204" text-anchor="middle" font-size="11">LoRa</text><text class="dim" x="60" y="219" text-anchor="middle" font-size="9.5">Meshtastic</text>
+            <rect x="100" y="182" width="60" height="46" rx="8" fill="none" stroke="var(--muted)" stroke-width="1.5"/>
+            <text x="130" y="204" text-anchor="middle" font-size="11">HF/VHF</text><text class="dim" x="130" y="219" text-anchor="middle" font-size="9.5">ham</text>
+            <rect x="170" y="182" width="60" height="46" rx="8" fill="none" stroke="var(--muted)" stroke-width="1.5"/>
+            <text x="200" y="204" text-anchor="middle" font-size="11">BLE</text><text class="dim" x="200" y="219" text-anchor="middle" font-size="9.5">phone</text>
+            <rect x="240" y="182" width="60" height="46" rx="8" fill="none" stroke="var(--muted)" stroke-width="1.5"/>
+            <text x="270" y="204" text-anchor="middle" font-size="11">WiFi</text><text class="dim" x="270" y="219" text-anchor="middle" font-size="9.5">UDP</text>
+            <rect x="310" y="182" width="60" height="46" rx="8" fill="none" stroke="var(--muted)" stroke-width="1.5"/>
+            <text x="340" y="204" text-anchor="middle" font-size="11">audio</text><text class="dim" x="340" y="219" text-anchor="middle" font-size="9.5">AFSK</text>
+          </g>
+          <text class="fade" x="200" y="300" text-anchor="middle" font-size="14">swap the radio, keep everything above it</text>
+          <text class="fade dim" x="200" y="324" text-anchor="middle" font-size="12">your agent code never changes</text>
+        </svg>
+      </div>
+
+      <!-- V6 — gateway to the internet -->
+      <div class="viz" data-viz="v6" style="display:none">
+        <svg viewBox="0 0 400 400" role="img" aria-label="One node with internet access bridges the mesh to online services.">
+          <g class="pop">
+            <rect x="40" y="230" width="40" height="40" rx="8" fill="none" stroke="var(--accent)" stroke-width="2"/>
+            <rect x="110" y="252" width="40" height="40" rx="8" fill="none" stroke="var(--accent)" stroke-width="2"/>
+            <rect x="180" y="234" width="40" height="40" rx="8" fill="none" stroke="var(--accent)" stroke-width="2"/>
+          </g>
+          <path class="draw" d="M80 250 L 110 268 M 150 268 L 180 254" stroke="var(--accent)" stroke-width="2" fill="none"/>
+          <path class="draw" d="M220 250 L 280 216" stroke="var(--accent)" stroke-width="2" fill="none"/>
+          <rect class="pop" x="278" y="182" width="76" height="52" rx="10" fill="none" stroke="var(--good)" stroke-width="2.5"/>
+          <text class="pop" x="316" y="205" text-anchor="middle" font-size="11.5">gateway</text>
+          <text class="pop dim" x="316" y="222" text-anchor="middle" font-size="10">has internet</text>
+          <path class="draw" d="M316 178 L 316 130" stroke="var(--good)" stroke-width="2" fill="none"/>
+          <ellipse class="fade" cx="316" cy="106" rx="52" ry="24" fill="none" stroke="var(--good)" stroke-width="2"/>
+          <text class="fade" x="316" y="112" text-anchor="middle" font-size="12">online</text>
+          <text class="fade" x="200" y="346" text-anchor="middle" font-size="14">one node with signal connects the rest</text>
         </svg>
       </div>
 
@@ -131,145 +172,39 @@
 
     <div class="steps">
       <div class="step" data-viz="v1"><div class="step-inner">
-        <h2>Right now, agents talk in sentences</h2>
-        <p>When one AI agent hands work to another, it has to write out its reasoning first. The second agent reads those words and rebuilds its own understanding from scratch.</p>
-        <p>If both are the same kind of model, that looks wasteful. A rich internal state gets flattened into a sentence, and something poorer gets rebuilt on the other side.</p>
+        <h2>Your agents stop at the edge of coverage</h2>
+        <p>A sensor fleet on a farm. A survey team in a canyon. A boat forty miles out. Equipment in a warehouse with no WiFi. The moment there's no signal, anything cloud-dependent simply stops.</p>
+        <p>That's a hard limit on where autonomous systems can go — and most of the planet is on the wrong side of it.</p>
       </div></div>
 
       <div class="step" data-viz="v2"><div class="step-inner">
-        <h2>So why not skip the words?</h2>
-        <p>That was the idea behind LatentMesh. Capture the numbers the first model is actually thinking with, hand them straight to the second, and skip the write-it-out-and-read-it-back step entirely.</p>
-        <p>It's an appealing premise. Denser, faster, no translation loss. We spent months testing whether it works.</p>
+        <h2>LatentMesh lets them talk to each other instead</h2>
+        <p>Give each node a cheap radio and they form their own mesh. Messages hop node to node, routing around whatever's in the way. No tower, no subscription, no backhaul.</p>
+        <p>Range depends on the radio you pick — LoRa commonly covers <strong>2–15 km</strong> line of sight, and each hop extends that further.</p>
       </div></div>
 
       <div class="step" data-viz="v3"><div class="step-inner">
-        <h2>Something happens. It just isn't the thing that matters.</h2>
-        <p>When we inject one model's state into another, we can measure a clear effect: the receiver shifts <strong>what it considers likely</strong>. That's real and it's easy to detect.</p>
-        <p>But its <strong>actual answer</strong> doesn't change. The needle moves on one dial and sits still on the other.</p>
-        <p>This matters more than it sounds. A dashboard tracking the left gauge would show a strong, statistically significant, entirely genuine effect — and it would mean nothing for what the system does.</p>
+        <h2>The catch: these links are tiny</h2>
+        <p>A long-range LoRa link gives you a few hundred bytes per message and strict limits on how often you may transmit. Sending raw JSON conversation history is hopeless — one message blows your whole budget.</p>
+        <p>So LatentMesh sends a <strong>bounded semantic envelope</strong> instead: what changed, how important it is, which facts must arrive exactly, and a hash so the receiver can tell if its picture has drifted.</p>
       </div></div>
 
       <div class="step" data-viz="v4"><div class="step-inner">
-        <h2>We tested it six ways. Six nulls.</h2>
-        <p>One injection point. Then two. Then we trained the <em>receiving</em> model to accept the payload, at three different sizes.</p>
-        <p>Every test was <strong>powered</strong> — it had enough data to detect an effect if one existed. One run came close enough to be interesting. None crossed.</p>
-        <p>Plain text, on the very same receiver, worked decisively.</p>
+        <h2>Nodes drop out. That's expected, not an error.</h2>
+        <p>Radios lose line of sight. Vehicles drive behind hills. Batteries sleep to save power.</p>
+        <p>Messages queue and forward when the node returns, with replay protection so a repeated frame can't be reprocessed as if it were new. You design for intermittence instead of fighting it.</p>
       </div></div>
-    </div>
-  </div>
-</div>
 
-<hr class="rule">
-
-<!-- ============ THE MISTAKE ============ -->
-<section class="prose wrap">
-  <div class="narrow">
-    <div class="kicker">the part where we were wrong</div>
-    <h2>Our own control was hiding the signal</h2>
-    <p>Along the way we reached a second conclusion: that the receiver wasn't sensitive to <em>what a message said</em> — only to the fact that something had been injected at all.</p>
-    <p>That came from comparing a real message against <strong>random noise</strong>. And random noise is wrong in two different ways at once.</p>
-  </div>
-</section>
-
-<!-- ============ SCROLLY 2 ============ -->
-<div class="scrolly wrap">
-  <div class="scrolly-inner">
-    <div class="viz-col">
-
-      <!-- V5 — the 2x2 -->
-      <div class="viz" data-viz="v5">
-        <svg viewBox="0 0 400 400" role="img" aria-label="A two-by-two grid of message properties: shaped right or wrong, meaning right or wrong.">
-          <text class="dim" x="128" y="52" text-anchor="middle" font-size="12">shaped like a thought</text>
-          <text class="dim" x="300" y="52" text-anchor="middle" font-size="12">shaped wrong</text>
-          <text class="dim" x="46" y="130" text-anchor="middle" font-size="12" transform="rotate(-90 46 130)">right meaning</text>
-          <text class="dim" x="46" y="272" text-anchor="middle" font-size="12" transform="rotate(-90 46 272)">wrong meaning</text>
-
-          <rect class="pop" x="72" y="72" width="112" height="112" rx="10" fill="none" stroke="var(--good)" stroke-width="2"/>
-          <text class="pop" x="128" y="126" text-anchor="middle" font-size="13">the real</text>
-          <text class="pop" x="128" y="144" text-anchor="middle" font-size="13">message</text>
-
-          <rect class="pop" x="72" y="216" width="112" height="112" rx="10" fill="none" stroke="var(--rule)" stroke-width="2" stroke-dasharray="5 4"/>
-          <text class="pop dim" x="128" y="278" text-anchor="middle" font-size="12.5">?</text>
-
-          <rect class="pop" x="244" y="72" width="112" height="112" rx="10" fill="none" stroke="var(--rule)" stroke-width="2" stroke-dasharray="5 4"/>
-          <text class="pop dim" x="300" y="134" text-anchor="middle" font-size="12.5">?</text>
-
-          <rect class="pop" x="244" y="216" width="112" height="112" rx="10" fill="none" stroke="var(--bad)" stroke-width="2"/>
-          <text class="pop" x="300" y="270" text-anchor="middle" font-size="13">random</text>
-          <text class="pop" x="300" y="288" text-anchor="middle" font-size="13">noise</text>
-
-          <path class="draw" d="M184 128 L 244 128 M 128 184 L 128 216 M 190 190 L 246 246"
-                stroke="var(--bad)" stroke-width="2" fill="none" opacity=".55"/>
-          <text class="fade" x="200" y="372" text-anchor="middle" font-size="13">noise differs on <tspan font-weight="600">both</tspan> axes at once</text>
-        </svg>
-      </div>
-
-      <!-- V6 — the missing cell filled -->
-      <div class="viz" data-viz="v6" style="display:none">
-        <svg viewBox="0 0 400 400" role="img" aria-label="The missing comparison: a different real message, same shape, wrong meaning.">
-          <rect x="72" y="72" width="112" height="112" rx="10" fill="none" stroke="var(--good)" stroke-width="2"/>
-          <text x="128" y="126" text-anchor="middle" font-size="13">the real</text>
-          <text x="128" y="144" text-anchor="middle" font-size="13">message</text>
-
-          <rect class="pop" x="72" y="216" width="112" height="112" rx="10" fill="none" stroke="var(--warm)" stroke-width="3"/>
-          <text class="pop" x="128" y="264" text-anchor="middle" font-size="13">a different</text>
-          <text class="pop" x="128" y="282" text-anchor="middle" font-size="13">real message</text>
-          <text class="pop dim" x="128" y="302" text-anchor="middle" font-size="11">(wrong answer)</text>
-
-          <rect x="244" y="216" width="112" height="112" rx="10" fill="none" stroke="var(--rule)" stroke-width="2" stroke-dasharray="5 4"/>
-          <text class="dim" x="300" y="278" text-anchor="middle" font-size="12.5">random noise</text>
-
-          <path class="draw" d="M128 184 L 128 216" stroke="var(--warm)" stroke-width="3" fill="none"/>
-          <text class="fade" x="255" y="140" text-anchor="middle" font-size="13">one axis</text>
-          <text class="fade" x="255" y="160" text-anchor="middle" font-size="13">at a time</text>
-          <text class="fade dim" x="200" y="372" text-anchor="middle" font-size="12.5">same shape · same size · wrong content</text>
-        </svg>
-      </div>
-
-      <!-- V7 — the reveal -->
-      <div class="viz" data-viz="v7" style="display:none">
-        <svg viewBox="0 0 400 400" role="img" aria-label="Against a different real message the signal is clear; against random noise it vanishes.">
-          <text x="200" y="60" text-anchor="middle" font-size="13" class="dim">same 300 problems · same model · one run</text>
-
-          <g class="slide-r">
-            <rect x="60" y="110" width="280" height="72" rx="10" fill="none" stroke="var(--good)" stroke-width="2"/>
-            <text x="78" y="140" font-size="13">vs a different real message</text>
-            <text class="mono" x="78" y="166" font-size="20" fill="var(--good)">p = 0.0002</text>
-            <text class="mono dim" x="322" y="166" text-anchor="end" font-size="12">clear signal</text>
-          </g>
-
-          <g class="slide-r">
-            <rect x="60" y="206" width="280" height="72" rx="10" fill="none" stroke="var(--rule)" stroke-width="2"/>
-            <text x="78" y="236" font-size="13">vs random noise</text>
-            <text class="mono" x="78" y="262" font-size="20" fill="var(--muted)">p = 0.26</text>
-            <text class="mono dim" x="322" y="262" text-anchor="end" font-size="12">nothing</text>
-          </g>
-
-          <text class="fade" x="200" y="330" text-anchor="middle" font-size="14">the signal was there the whole time</text>
-          <text class="fade dim" x="200" y="354" text-anchor="middle" font-size="12.5">our comparison was hiding it</text>
-        </svg>
-      </div>
-
-    </div><!-- /viz-col -->
-
-    <div class="steps">
       <div class="step" data-viz="v5"><div class="step-inner">
-        <h2>Noise is wrong twice over</h2>
-        <p>Random noise is <em>meaningless</em>, and it's also <em>shaped unlike anything the model produces internally</em>.</p>
-        <p>So when a real message beat it, we couldn't say which of those two things it had beaten. And when it <em>didn't</em> beat it, we concluded there was no signal at all.</p>
+        <h2>One envelope, whatever radio you have</h2>
+        <p>The same message travels over LoRa packets, ham HF/VHF, Bluetooth, WiFi UDP — or as audio tones through any voice channel, including a handheld radio held up to a speaker.</p>
+        <p>Swap the carrier without touching your agent code. Everything above the transport stays identical.</p>
       </div></div>
 
       <div class="step" data-viz="v6"><div class="step-inner">
-        <h2>The comparison we were missing</h2>
-        <p>Take a genuine message from a <em>different problem</em>. Same shape, same size, same statistics — but the wrong answer for the question at hand.</p>
-        <p>Now only one thing differs. If the receiver responds differently, it's responding to <strong>meaning</strong>.</p>
-      </div></div>
-
-      <div class="step" data-viz="v7"><div class="step-inner">
-        <h2>The signal had been there all along</h2>
-        <p>Against a different real message, the effect is unmistakable. Against random noise, on the very same run, it disappears.</p>
-        <p>The noise was so unlike a real message that it caused its own large, generic disturbance — big enough to drown out the thing we were trying to see.</p>
-        <p>We didn't quietly rewrite the old conclusion. We appended a note narrowing it and left its numbers untouched.</p>
+        <h2>When one node finds signal, everyone benefits</h2>
+        <p>Put a gateway anywhere in the mesh that has connectivity — a vehicle that drives back into range, a hilltop repeater, a base station — and it bridges the whole mesh to online services.</p>
+        <p>The bridge decodes and republishes at a single, explicit boundary. Radio bytes never tunnel blindly onto the internet.</p>
       </div></div>
     </div>
   </div>
@@ -277,88 +212,152 @@
 
 <hr class="rule">
 
-<!-- ============ THE LESSON ============ -->
+<!-- ============ WHAT YOU CAN BUILD ============ -->
 <section class="prose wrap">
   <div class="narrow">
-    <div class="kicker">why this matters beyond us</div>
-    <h2>Most "does this help?" tests are too weak</h2>
-    <p>Almost everyone compares <strong>X against nothing</strong>. That's the trap we fell into, and it's everywhere.</p>
-    <blockquote class="pull">If your comparison differs from the real thing in more than one way, a win tells you nothing about <em>which</em> difference caused it — and a loss can hide a real effect entirely.</blockquote>
-    <p>The stronger test is <strong>X against a realistic-but-wrong X</strong>:</p>
-    <div class="cards">
-      <div class="card"><h4>Retrieved documents</h4><p>Compare against documents retrieved for a <em>different question</em> — not against no documents.</p></div>
-      <div class="card"><h4>A system prompt</h4><p>Compare against a plausible <em>different</em> system prompt, not against an empty one.</p></div>
-      <div class="card"><h4>A memory layer</h4><p>Compare against <em>someone else's</em> memories, same shape and volume.</p></div>
-    </div>
-    <p>If it can't beat the realistic-but-wrong version, it isn't doing what you think it's doing.</p>
-
-    <h3>A geometry surprise, found for four minutes of CPU</h3>
-    <p>We wanted a fourth test case: right meaning, wrong shape. It turns out that in a 1536-dimensional space, pushing a message off its natural shape <strong>almost inevitably destroys its meaning at the same time</strong>. The two properties are nearly inseparable.</p>
-    <p>We found that with a check on a laptop CPU <em>before</em> spending any GPU time on an experiment that would have produced an uninterpretable result.</p>
+    <div class="kicker">what people build with it</div>
+    <h2>If your problem starts with "there's no signal there"</h2>
+  </div>
+  <div class="cards">
+    <div class="card"><h4>🌾 Farm &amp; field sensing</h4><p>Soil, water, livestock and gate sensors spread over hundreds of hectares, coordinating without a cell plan per device.</p></div>
+    <div class="card"><h4>🚨 Disaster response</h4><p>Infrastructure is down or saturated. Teams and drones keep sharing a common picture on battery-powered radios.</p></div>
+    <div class="card"><h4>⛵ Marine &amp; expedition</h4><p>Vessels and remote camps past cellular range, where satellite is expensive and metered by the byte.</p></div>
+    <div class="card"><h4>📻 Amateur radio</h4><p>Licensed operators moving structured agent data over HF/VHF, including audio-only paths through existing gear.</p></div>
+    <div class="card"><h4>🏭 Industrial &amp; underground</h4><p>Mines, tunnels, hulls and warehouses where RF is hostile and wiring every node is impractical.</p></div>
+    <div class="card"><h4>🔒 Air-gapped by choice</h4><p>Sites that could have internet and deliberately don't. The mesh works the same either way.</p></div>
   </div>
 </section>
 
 <hr class="rule">
 
-<!-- ============ WHAT SURVIVED ============ -->
-<section class="prose wrap">
+<!-- ============ QUICKSTART ============ -->
+<section class="prose wrap" id="start">
   <div class="narrow">
-    <div class="kicker">what we ended up with</div>
-    <h2>The pipe was never the problem</h2>
-    <p>Our negative result killed one <em>payload type</em>. It never touched the infrastructure built to test it — and that turned out to be the larger half of the project.</p>
-  </div>
+    <div class="kicker">getting started</div>
+    <h2>Run it in about five minutes</h2>
+    <p>Everything below runs on a laptop with no radio hardware at all — the transport is simulated so you can build and test the whole path before buying anything.</p>
 
-  <div class="stat-row">
-    <div class="stat"><span class="n" data-count="24918">0</span><span class="l">lines of Rust across 16 crates</span></div>
-    <div class="stat"><span class="n" data-count="292">0</span><span class="l">tests</span></div>
-    <div class="stat warm"><span class="n" data-count="47">0</span><span class="l">architecture decisions, each stating what's real and what isn't</span></div>
-    <div class="stat bad"><span class="n" data-count="4">0</span><span class="l">process errors logged <em>in this release alone</em> — two of them the coordinator's own</span></div>
-  </div>
+    <ol class="steps-num">
+      <li>
+        <h4>Clone and run the test suite</h4>
+        <p>Confirms the whole stack builds on your machine.</p>
+      </li>
+    </ol>
+<pre class="code"><span class="c"># Rust workspace — core, radio, Meshtastic adapter, bridge</span>
+git clone https://github.com/ruvnet/LatentMesh
+cd LatentMesh
+cargo test --workspace</pre>
 
-  <div class="narrow">
-    <div class="cards">
-      <div class="card"><h4>A radio mesh for agents</h4><p>Agents talking over LoRa with no internet and no cell towers — messages queueing and forwarding as nodes come and go. Tested against real Meshtastic firmware.</p></div>
-      <div class="card"><h4>A gate for "this helps"</h4><p>Five controls and a real significance test, wired into a runtime decision rather than a paper table.</p></div>
-      <div class="card"><h4>A router where "send nothing" can win</h4><p>And where anything <em>unmeasured</em> is ineligible, rather than optimistically explored.</p></div>
-      <div class="card"><h4>Receipts that can embarrass you</h4><p>Every experiment stores the comparisons that could contradict it — not just the flattering ones. That's what caught the mistake above.</p></div>
-    </div>
+    <ol class="steps-num" start="2">
+      <li>
+        <h4>Build the portable C core</h4>
+        <p>The same framing and error correction, allocation-free, for microcontrollers and embedded targets. Sanitizers on by default here.</p>
+      </li>
+    </ol>
+<pre class="code">cmake -S c -B /tmp/lm-air -DLM_AIR_ENABLE_SANITIZERS=ON
+cmake --build /tmp/lm-air
+ctest --test-dir /tmp/lm-air --output-on-failure</pre>
+
+    <ol class="steps-num" start="3">
+      <li>
+        <h4>Check the ESP32 logic on your host</h4>
+        <p>The microcontroller firmware's decision logic, testable without flashing a board.</p>
+      </li>
+    </ol>
+<pre class="code">make -C firmware/esp32/host_tests test</pre>
+
+    <h3>Sending your first message</h3>
+    <p>The Meshtastic adapter takes your payload, fragments it to fit the radio, and hands you frames ready to write to the device over serial or TCP.</p>
+<pre class="code"><span class="k">use</span> latentmesh_meshtastic::{MeshtasticAdapter, OutgoingMessage};
+
+<span class="k">let mut</span> radio = MeshtasticAdapter::new()?;
+radio.set_destination(<span class="c">/* node id */</span> 0xffffffff);
+
+<span class="c">// One call → the frames your radio should transmit</span>
+<span class="k">let</span> frames = radio.encode_message(OutgoingMessage { .. })?;
+
+<span class="c">// Feed bytes back in as they arrive; you get a whole</span>
+<span class="c">// message once every fragment has landed.</span>
+<span class="k">if let</span> Some(msg) = radio.ingest_from_radio(&amp;bytes)? {
+    <span class="c">// reassembled and verified — use it</span>
+}</pre>
+    <p style="font-size:.92rem;color:var(--muted)">Reassembly, ordering, duplicate rejection and replay defence are handled for you. A message can span up to 32 fragments.</p>
   </div>
 </section>
 
 <hr class="rule">
 
-<!-- ============ HONEST SCORECARD ============ -->
+<!-- ============ HARDWARE ============ -->
 <section class="prose wrap">
   <div class="narrow">
-    <div class="kicker">the honest scorecard</div>
-    <h2>Judged by its own premise, this failed</h2>
-    <p>Six powered experiments say the latent channel doesn't carry decisions. That's the headline and we're not softening it.</p>
-    <p>Judged by what it produced, it's a measuring instrument that caught its owners being wrong — including about one of their own negative results.</p>
+    <div class="kicker">hardware</div>
+    <h2>What you actually need</h2>
+    <p>Nothing, to start. When you're ready to go over the air, the cheapest useful setup is two LoRa boards.</p>
+  </div>
+  <div class="hw">
+    <div><strong>Nothing at all</strong><span>Simulated transport. Build and test the full path on a laptop.</span></div>
+    <div><strong>2 × LoRa boards</strong><span>Any Meshtastic-supported board. Roughly $25–40 each, antenna included.</span></div>
+    <div><strong>ESP32-S3</strong><span>Runs the firmware directly — WiFi UDP, BLE, KISS UART, I²S audio.</span></div>
+    <div><strong>A handheld radio</strong><span>Licensed operators: audio tones through the speaker/mic path of gear you already own.</span></div>
+  </div>
+  <div class="narrow">
+    <p style="font-size:.92rem;color:var(--muted)">RF licensing, power limits and band rules are yours to comply with. LatentMesh handles the bytes above the transceiver and deliberately owns nothing that touches transmit legality.</p>
+  </div>
+</section>
 
-    <h3>What is <em>not</em> claimed</h3>
-    <table class="cmp">
-      <tr><th>Closed</th><th>Untouched</th></tr>
-      <tr>
-        <td>Direct injection of one model's state into another, under this setup, at the sites and sizes tested.</td>
-        <td>Latent communication in general. Trained-fusion methods like Cache-to-Cache. Transfer between <em>different</em> models. None were tested here.</td>
-      </tr>
+<hr class="rule">
+
+<!-- ============ HOW IT FITS ============ -->
+<section class="prose wrap">
+  <div class="narrow">
+    <div class="kicker">how it fits together</div>
+    <h2>Pick your layer</h2>
+    <p>Each layer is usable on its own. Take the whole stack or one crate.</p>
+    <table class="layers">
+      <tr><th>You want to…</th><th>Use</th></tr>
+      <tr><td>Put agent messages on a LoRa mesh</td><td><code class="inline">latentmesh-meshtastic</code></td></tr>
+      <tr><td>Build frames for any other radio</td><td><code class="inline">latentmesh-air-core</code> — <code class="inline">no_std</code> capable</td></tr>
+      <tr><td>Drive audio or IQ hardware directly</td><td><code class="inline">latentmesh-air-radio</code> — AFSK, CPFSK, BPSK</td></tr>
+      <tr><td>Bridge the mesh to online services</td><td><code class="inline">latentmesh-agentbbs-bridge</code></td></tr>
+      <tr><td>Keep shared memory across the fleet</td><td><code class="inline">latentmesh-memory</code>, <code class="inline">latentmesh-federation</code></td></tr>
+      <tr><td>Run it on a microcontroller</td><td>the portable C11 core, or <code class="inline">firmware/esp32</code></td></tr>
+      <tr><td>Test whether a channel is worth its bandwidth</td><td><code class="inline">latentmesh-gate</code></td></tr>
     </table>
-    <p style="font-size:.92rem;color:var(--muted)">One control in the final design — the "other-example message" — is prior art from <a href="https://arxiv.org/abs/2607.26773">arXiv:2607.26773</a> and is cited as theirs, not claimed as ours. Two follow-up experiments are documented and deliberately <em>not</em> run; each needs its own pre-registration first.</p>
 
-    <blockquote class="pull">A tool that only ever confirms your hopes isn't a measuring instrument. This one told us our headline idea didn't work — and then told us one of our own negative results was our fault rather than reality's.</blockquote>
+    <h3>Safety properties you get by default</h3>
+    <div class="cards">
+      <div class="card"><h4>Fail closed</h4><p>A frame that fails its checksum, signature, replay window or reassembly is dropped. Nothing downstream can wave it through.</p></div>
+      <div class="card"><h4>Bounded everything</h4><p>Frame sizes, fragment counts and queues are all capped. A malformed or hostile transmission can't exhaust memory.</p></div>
+      <div class="card"><h4>Exact where it matters</h4><p>Critical values are carried deterministically. Compression never applies to the facts you marked as must-arrive-intact.</p></div>
+    </div>
+  </div>
+</section>
+
+<hr class="rule">
+
+<!-- ============ CLOSE ============ -->
+<section class="prose wrap">
+  <div class="narrow">
+    <h2>Start where you are</h2>
+    <p>Clone it, run the tests, send a simulated message. Add a radio when the simulation stops being enough.</p>
+    <p style="margin-top:1.6rem">
+      <a class="cta" href="https://github.com/ruvnet/LatentMesh">Get the code</a>
+      <a class="cta ghost" href="https://latentmesh-air.ruv.chatgpt.site/">Open the Air Studio</a>
+    </p>
+    <p style="font-size:.9rem;color:var(--muted);margin-top:1.8rem">LatentMesh is a research prototype under active development. The transport, framing, error correction and radio adapters are implemented and tested; the learned-radio stages on the roadmap are explicitly marked as not-yet-built rather than implied. Every performance claim in the repo traces to a committed measurement.</p>
   </div>
 </section>
 
 <footer class="wrap">
   <div class="narrow">
-    <p><strong>LatentMesh</strong> — a measurement stack for deciding which channel deserves your bandwidth.</p>
+    <p><strong>LatentMesh</strong> — agent coordination for places the internet doesn't reach.</p>
     <p>
-      <a href="https://github.com/ruvnet/LatentMesh">Code on GitHub</a> ·
-      <a href="https://github.com/ruvnet/LatentMesh/releases/tag/v0.2.0">Release v0.2.0</a> ·
-      <a href="https://github.com/ruvnet/LatentMesh/tree/main/docs/adr">All 47 decisions</a> ·
-      <a href="https://github.com/ruvnet/LatentMesh/tree/main/docs/research">Research writeups</a>
+      <a href="https://github.com/ruvnet/LatentMesh">GitHub</a> ·
+      <a href="https://github.com/ruvnet/LatentMesh#latentmesh-air">Air overview</a> ·
+      <a href="https://github.com/ruvnet/LatentMesh/tree/main/docs/adr">Design decisions</a> ·
+      <a href="https://github.com/ruvnet/LatentMesh/releases">Releases</a>
     </p>
-    <p style="font-size:.84rem">Every number on this page comes from a committed experiment receipt in the repository. MIT OR Apache-2.0.</p>
+    <p style="font-size:.84rem">MIT OR Apache-2.0. Rust 1.77+.</p>
   </div>
 </footer>
 
