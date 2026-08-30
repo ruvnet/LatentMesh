@@ -401,3 +401,51 @@ a { color: var(--cyan); text-decoration-thickness: 1px; text-underline-offset: 3
 @media (max-width: 700px) {
   .viz3d { display: none !important; }
 }
+
+/* ---------- mobile bottom nav ---------- */
+.botnav { display: none; }
+@media (max-width: 860px) {
+  .botnav {
+    display: grid; grid-template-columns: repeat(4, 1fr);
+    position: fixed; left: 0; right: 0; bottom: 0; z-index: 60;
+    background: color-mix(in srgb, var(--navy) 92%, transparent);
+    backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+    border-top: 1px solid var(--line);
+    padding-bottom: env(safe-area-inset-bottom, 0);
+  }
+  .botnav a {
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    gap: 3px; padding: .55rem 0 .5rem; text-decoration: none;
+    color: var(--faint); transition: color .2s; min-height: 52px;
+  }
+  .botnav a svg { width: 20px; height: 20px; display: block; }
+  .botnav a span {
+    font-family: var(--mono); font-size: .53rem; letter-spacing: .12em; text-transform: uppercase;
+  }
+  .botnav a:active, .botnav a.is-on { color: var(--cyan); }
+  .botnav a.is-on { box-shadow: inset 0 2px 0 var(--cyan); }
+  /* Keep the fixed bar from covering the end of the page. */
+  body { padding-bottom: 60px; }
+  footer { padding-bottom: 1.6rem; }
+}
+
+/* ---------- mobile breathing room ---------- */
+@media (max-width: 860px) {
+  .wrap { padding-inline: 20px; }
+  .metrics, .deploys, .appgrid, .hw, .tabs, .pillars, .cards { margin-inline: 0; }
+  .metric { padding: .95rem 1rem; }
+  .app, .deploy { padding: 1.15rem 1.15rem; }
+  .pillar { padding: 1rem 1.05rem 1.15rem; }
+  .card { padding: 1.05rem 1.1rem; }
+  .narrow > p, .narrow > h2, .narrow > h3, .narrow > .kicker { padding-inline: 0; }
+  section.prose h2 { margin-bottom: .8rem; }
+  .rule { margin-inline: 0; }
+  table.layers { font-size: .82rem; }
+  table.layers th, table.layers td { padding: .6rem .45rem; }
+}
+@media (max-width: 420px) {
+  .wrap { padding-inline: 16px; }
+  h1 { font-size: clamp(1.85rem, 8vw, 2.3rem); }
+  .metric .val { font-size: 1.1rem; }
+  .botnav a span { font-size: .5rem; }
+}

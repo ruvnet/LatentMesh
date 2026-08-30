@@ -10,7 +10,7 @@
 <meta property="og:description" content="Coordinate AI agents over LoRa, ham radio, BLE or audio. No internet. Runs on a $10 microcontroller.">
 <meta property="og:type" content="website">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='88'>📡</text></svg>">
-<link rel="stylesheet" href="story.css?v=202608301406">
+<link rel="stylesheet" href="story.css?v=202608301407">
 <script type="importmap">
 { "imports": { "three": "https://cdn.jsdelivr.net/npm/three@0.169.0/build/three.module.js" } }
 </script>
@@ -20,6 +20,7 @@
 <div class="bg-grid" aria-hidden="true"></div>
 <div class="progress" aria-hidden="true"></div>
 
+<span id="top"></span>
 <nav class="topbar">
   <div class="wrap">
     <span class="brand"><b>LATENTMESH</b> · AIR</span>
@@ -794,8 +795,28 @@ radio.set_destination(<span class="s">0xffffffff</span>); <span class="c">// bro
   </div>
 </footer>
 
+
+<nav class="botnav" aria-label="Section navigation">
+  <a href="#top" data-nav="top">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 18 q 5 -6 8 -2 t 8 -4" fill="none" stroke="currentColor" stroke-width="1.6"/><circle cx="7" cy="15" r="1.8" fill="currentColor"/><circle cx="17" cy="12" r="1.8" fill="currentColor"/></svg>
+    <span>Overview</span>
+  </a>
+  <a href="#applications" data-nav="applications">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="7" height="7" rx="1.5" fill="none" stroke="currentColor" stroke-width="1.6"/><rect x="14" y="4" width="7" height="7" rx="1.5" fill="none" stroke="currentColor" stroke-width="1.6"/><rect x="3" y="14" width="7" height="7" rx="1.5" fill="none" stroke="currentColor" stroke-width="1.6"/><rect x="14" y="14" width="7" height="7" rx="1.5" fill="none" stroke="currentColor" stroke-width="1.6"/></svg>
+    <span>Uses</span>
+  </a>
+  <a href="#start" data-nav="start">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5 l 10 7 l -10 7 z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg>
+    <span>Start</span>
+  </a>
+  <a href="https://github.com/ruvnet/LatentMesh">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 19c-4 1.5-4-2-6-2.5m12 4v-3.5c0-1 .1-1.4-.5-2 2.8-.3 5.5-1.4 5.5-6a4.6 4.6 0 0 0-1.3-3.2 4.3 4.3 0 0 0-.1-3.2s-1-.3-3.5 1.3a12 12 0 0 0-6.3 0C6.3 2.3 5.3 2.6 5.3 2.6a4.3 4.3 0 0 0-.1 3.2A4.6 4.6 0 0 0 3.9 9c0 4.6 2.7 5.7 5.5 6-.6.6-.6 1.2-.5 2V21" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    <span>Code</span>
+  </a>
+</nav>
+
 <script type="module">
-  import { createScene, createHeroScene } from "./scene.js?v=202608301406";
+  import { createScene, createHeroScene } from "./scene.js?v=202608301407";
   const c = document.getElementById("mesh3d");
   const panel = document.querySelector(".viz3d");
   const scene = c ? createScene(c) : null;
@@ -820,6 +841,6 @@ radio.set_destination(<span class="s">0xffffffff</span>); <span class="c">// bro
     document.querySelector(".hero-viz").classList.add("no-webgl");
   }
 </script>
-<script src="story.js?v=202608301406"></script>
+<script src="story.js?v=202608301407"></script>
 </body>
 </html>

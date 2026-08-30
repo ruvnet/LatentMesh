@@ -115,3 +115,20 @@
     });
   });
 })();
+
+/* ---- bottom-nav active state ---- */
+(function () {
+  var nav = document.querySelector(".botnav");
+  if (!nav || !("IntersectionObserver" in window)) return;
+  var links = {};
+  nav.querySelectorAll("a[data-nav]").forEach(function (a) { links[a.dataset.nav] = a; });
+  var targets = Object.keys(links).map(function (id) { return document.getElementById(id); }).filter(Boolean);
+  if (!targets.length) return;
+  var io = new IntersectionObserver(function (entries) {
+    entries.forEach(function (e) {
+      if (!e.isIntersecting) return;
+      Object.keys(links).forEach(function (k) { links[k].classList.toggle("is-on", k === e.target.id); });
+    });
+  }, { rootMargin: "-45% 0px -50% 0px", threshold: 0 });
+  targets.forEach(function (t) { io.observe(t); });
+})();
