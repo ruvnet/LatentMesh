@@ -10,7 +10,7 @@
 <meta property="og:description" content="Coordinate AI agents over LoRa, ham radio, BLE or audio. No internet. Runs on a $10 microcontroller.">
 <meta property="og:type" content="website">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='88'>📡</text></svg>">
-<link rel="stylesheet" href="story.css?v=202608301407">
+<link rel="stylesheet" href="story.css?v=202608301411">
 <script type="importmap">
 { "imports": { "three": "https://cdn.jsdelivr.net/npm/three@0.169.0/build/three.module.js" } }
 </script>
@@ -60,7 +60,7 @@
 <hr class="rule">
 
 <section class="prose wrap">
-  <div class="narrow">
+  <div class="narrow lead">
     <div class="kicker">The three pillars</div>
     <h2>Reach, trust, and the open problem</h2>
     <p>Ambient intelligence needs machines to exchange <strong>thought rather than text</strong>, transports that <strong>reach everywhere</strong>, and a way to ensure shared thought <strong>can't corrupt the collective</strong>. Two of those are built. The third is honestly unfinished, and we say which is which.</p>
@@ -413,7 +413,7 @@
 <hr class="rule">
 
 <section class="prose wrap">
-  <div class="narrow">
+  <div class="narrow lead">
     <div class="kicker">Deployments</div>
     <h2>If your problem starts with <span class="quo">"there's no signal there"</span></h2>
     <p>Six shapes this takes in practice. The common thread: coverage is the constraint, and adding towers isn't an option.</p>
@@ -522,7 +522,7 @@
 <hr class="rule">
 
 <section class="prose wrap" id="applications">
-  <div class="narrow">
+  <div class="narrow lead">
     <div class="kicker">Applications</div>
     <h2>From the practical to the <span class="quo">frankly speculative</span></h2>
     <p>Three tiers, honestly labelled. The first ships today. The second is buildable with what exists. The third is where the constraints happen to line up — stated as speculation, not roadmap.</p>
@@ -723,7 +723,7 @@ radio.set_destination(<span class="s">0xffffffff</span>); <span class="c">// bro
 <hr class="rule">
 
 <section class="prose wrap">
-  <div class="narrow">
+  <div class="narrow lead">
     <div class="kicker">Hardware</div>
     <h2>What you actually need</h2>
     <p>Nothing, to start. When you're ready to go over the air, the cheapest useful setup is two LoRa boards.</p>
@@ -742,7 +742,7 @@ radio.set_destination(<span class="s">0xffffffff</span>); <span class="c">// bro
 <hr class="rule">
 
 <section class="prose wrap">
-  <div class="narrow">
+  <div class="narrow lead">
     <div class="kicker">Architecture</div>
     <h2>Pick your layer</h2>
     <p>Each layer is usable on its own. Take the whole stack or a single crate.</p>
@@ -816,7 +816,7 @@ radio.set_destination(<span class="s">0xffffffff</span>); <span class="c">// bro
 </nav>
 
 <script type="module">
-  import { createScene, createHeroScene } from "./scene.js?v=202608301407";
+  import { createScene, createHeroScene } from "./scene.js?v=202608301411";
   const c = document.getElementById("mesh3d");
   const panel = document.querySelector(".viz3d");
   const scene = c ? createScene(c) : null;
@@ -841,6 +841,6 @@ radio.set_destination(<span class="s">0xffffffff</span>); <span class="c">// bro
     document.querySelector(".hero-viz").classList.add("no-webgl");
   }
 </script>
-<script src="story.js?v=202608301407"></script>
+<script src="story.js?v=202608301411"></script>
 </body>
 </html>

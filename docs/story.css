@@ -449,3 +449,11 @@ a { color: var(--cyan); text-decoration-thickness: 1px; text-underline-offset: 3
   .metric .val { font-size: 1.1rem; }
   .botnav a span { font-size: .5rem; }
 }
+
+/* A section intro that sits above a full-width grid must share that grid's
+   left edge. Centring it (the .narrow default) leaves the copy floating in
+   the middle of the page with nothing aligned to it. */
+.narrow.lead { margin-inline: 0; }
+.pillars, .deploys, .appgrid, .hw, .cards, .tabs, .metrics, .tabpanels { margin-inline: 0; }
+/* Trailing note under a grid keeps the same edge. */
+section.prose > .narrow:last-child:not(:first-child) { margin-inline: 0; }
