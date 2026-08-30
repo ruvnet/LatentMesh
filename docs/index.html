@@ -30,14 +30,21 @@
 </nav>
 
 <header class="hero wrap">
-  <div class="narrow">
-    <div class="eyebrow">Ambient intelligence · the substrate</div>
-    <h1>Machines that share <em>understanding</em>, not just data.</h1>
-    <p class="lede">Ambient intelligence means cognition dissolved into the environment — the devices around you reasoning together instead of shipping logs to a datacentre. That needs three things nobody had assembled. LatentMesh builds them, and tests them honestly.</p>
-    <p style="margin-top:2rem">
-      <a class="cta" href="#start">Get started</a>
-      <a class="cta ghost" href="https://latentmesh-air.ruv.chatgpt.site/">Open Air Studio ↗</a>
-    </p>
+  <div class="hero-grid">
+    <div class="hero-copy">
+      <div class="eyebrow">Ambient intelligence · the substrate</div>
+      <h1>Machines that share <em>understanding</em>, not just data.</h1>
+      <p class="lede">Ambient intelligence means cognition dissolved into the environment — the devices around you reasoning together instead of shipping logs to a datacentre. That needs three things nobody had assembled. LatentMesh builds them, and tests them honestly.</p>
+      <p style="margin-top:2rem">
+        <a class="cta" href="#start">Get started</a>
+        <a class="cta ghost" href="https://latentmesh-air.ruv.chatgpt.site/">Open Air Studio ↗</a>
+      </p>
+    </div>
+    <div class="hero-viz">
+      <canvas id="heroMesh" aria-label="A slowly rotating sphere of networked nodes with messages travelling between them."></canvas>
+      <div class="hero-viz-fallback" aria-hidden="true"></div>
+      <span class="hero-viz-label">MESH · 46 NODES · LIVE</span>
+    </div>
   </div>
 
   <div class="metrics">
@@ -431,7 +438,7 @@ radio.set_destination(<span class="s">0xffffffff</span>); <span class="c">// bro
 </footer>
 
 <script type="module">
-  import { createScene } from "./scene.js";
+  import { createScene, createHeroScene } from "./scene.js";
   const c = document.getElementById("mesh3d");
   const panel = document.querySelector(".viz3d");
   const scene = c ? createScene(c) : null;
@@ -443,6 +450,12 @@ radio.set_destination(<span class="s">0xffffffff</span>); <span class="c">// bro
     });
   } else {
     window.__lmScene = scene;
+  }
+  // Hero mesh is independent: if it fails, the CSS fallback orb shows instead.
+  var hc = document.getElementById("heroMesh");
+  if (hc && !createHeroScene(hc)) {
+    hc.remove();
+    document.querySelector(".hero-viz").classList.add("no-webgl");
   }
 </script>
 <script src="story.js"></script>

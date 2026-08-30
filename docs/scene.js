@@ -241,3 +241,148 @@ export function createScene(canvas) {
 
   return { setState, resize };
 }
+
+/* ---------------------------------------------------------------------------
+   Hero scene — an ambient node sphere. Distinct from the terrain scene above:
+   this one reads as "cognition distributed through an environment" rather than
+   "radios on a hillside", which is what the hero copy is about.
+   --------------------------------------------------------------------------- */
+export function createHeroScene(canvas) {
+  let renderer;
+  try {
+    renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true, powerPreference: "low-power" });
+  } catch (e) { return null; }
+  if (!renderer.getContext()) return null;
+
+  renderer.setClearColor(0x000000, 0);
+  renderer.setPixelRatio(Math.min(devicePixelRatio || 1, 2));
+
+  const scene = new THREE.Scene();
+  const camera = new THREE.PerspectiveCamera(38, 1, 0.1, 60);
+  camera.position.set(0, 0, 12.2);
+
+  const root = new THREE.Group();
+  root.rotation.z = 0.24;
+  scene.add(root);
+
+  // Fibonacci sphere: even coverage without clustering at the poles.
+  const N = 46, R = 4.1;
+  const pts = [];
+  const golden = Math.PI * (3 - Math.sqrt(5));
+  for (let i = 0; i < N; i++) {
+    const y = 1 - (i / (N - 1)) * 2;
+    const r = Math.sqrt(Math.max(0, 1 - y * y));
+    const th = golden * i;
+    pts.push(new THREE.Vector3(Math.cos(th) * r * R, y * R, Math.sin(th) * r * R));
+  }
+
+  // Nodes
+  const nodeGeo = new THREE.SphereGeometry(0.062, 8, 8);
+  const nodeMat = new THREE.MeshBasicMaterial({ color: CYAN, transparent: true, opacity: 0.92 });
+  const inst = new THREE.InstancedMesh(nodeGeo, nodeMat, N);
+  const dummy = new THREE.Object3D();
+  pts.forEach((p, i) => { dummy.position.copy(p); dummy.updateMatrix(); inst.setMatrixAt(i, dummy.matrix); });
+  inst.instanceMatrix.needsUpdate = true;
+  root.add(inst);
+
+  // Links between near neighbours only — a full graph reads as noise.
+  const segs = [], pairs = [];
+  const LINK_MAX = R * 1.02;
+  for (let i = 0; i < N; i++) {
+    for (let j = i + 1; j < N; j++) {
+      if (pts[i].distanceTo(pts[j]) < LINK_MAX) { segs.push(pts[i], pts[j]); pairs.push([i, j]); }
+    }
+  }
+  const lines = new THREE.LineSegments(
+    new THREE.BufferGeometry().setFromPoints(segs),
+    new THREE.LineBasicMaterial({ color: CYAN, transparent: true, opacity: 0.17 })
+  );
+  root.add(lines);
+
+  // A halo so the sphere reads as volume rather than a flat scatter.
+  const halo = new THREE.Mesh(
+    new THREE.SphereGeometry(R * 1.16, 30, 30),
+    new THREE.MeshBasicMaterial({ color: VIOLET, transparent: true, opacity: 0.045, side: THREE.BackSide })
+  );
+  root.add(halo);
+
+  // Packets hopping real edges, so the motion matches the topology.
+  const PK = 14;
+  const pkGeo = new THREE.SphereGeometry(0.075, 8, 8);
+  const pkMat = new THREE.MeshBasicMaterial({ color: GREEN, transparent: true, opacity: 0.95 });
+  const pk = new THREE.InstancedMesh(pkGeo, pkMat, PK);
+  root.add(pk);
+  const flights = Array.from({ length: PK }, (_, i) => ({
+    e: (i * 7) % pairs.length, t: (i / PK), speed: 0.24 + (i % 5) * 0.045,
+  }));
+
+  const resize = () => {
+    const r = canvas.getBoundingClientRect();
+    const w = Math.max(1, r.width), h = Math.max(1, r.height);
+    renderer.setSize(w, h, false);
+    camera.aspect = w / h; camera.updateProjectionMatrix();
+  };
+  resize();
+  addEventListener("resize", resize, { passive: true });
+
+  // Gentle parallax toward the pointer — desktop only, and never on touch.
+  let px = 0, py = 0, tx = 0, ty = 0;
+  if (matchMedia("(hover: hover) and (pointer: fine)").matches) {
+    addEventListener("pointermove", (e) => {
+      tx = (e.clientX / innerWidth - 0.5) * 0.22;
+      ty = (e.clientY / innerHeight - 0.5) * 0.16;
+    }, { passive: true });
+  }
+
+  let running = true, last = 0;
+  const frame = (ms) => {
+    if (!running) return;
+    requestAnimationFrame(frame);
+    const t = ms * 0.001, dt = Math.min(0.05, t - last || 0.016);
+    last = t;
+
+    root.rotation.y += dt * 0.085;
+    px += (tx - px) * 0.045; py += (ty - py) * 0.045;
+    root.rotation.x = -py + Math.sin(t * 0.24) * 0.05;
+    camera.position.x = px * 3.4;
+    camera.lookAt(0, 0, 0);
+
+    flights.forEach((f, i) => {
+      f.t += dt * f.speed;
+      if (f.t >= 1) { f.t = 0; f.e = (f.e + 11) % pairs.length; }
+      const [a, b] = pairs[f.e];
+      dummy.position.lerpVectors(pts[a], pts[b], f.t).multiplyScalar(1.012);
+      const s = 0.55 + Math.sin(f.t * Math.PI) * 0.75;
+      dummy.scale.setScalar(s);
+      dummy.updateMatrix();
+      pk.setMatrixAt(i, dummy.matrix);
+    });
+    pk.instanceMatrix.needsUpdate = true;
+
+    lines.material.opacity = 0.14 + Math.sin(t * 0.7) * 0.035;
+    renderer.render(scene, camera);
+  };
+
+  if (reduce) {
+    flights.forEach((f, i) => {
+      const [a, b] = pairs[f.e];
+      dummy.position.lerpVectors(pts[a], pts[b], f.t).multiplyScalar(1.012);
+      dummy.scale.setScalar(1); dummy.updateMatrix(); pk.setMatrixAt(i, dummy.matrix);
+    });
+    pk.instanceMatrix.needsUpdate = true;
+    renderer.render(scene, camera);
+  } else {
+    requestAnimationFrame(frame);
+  }
+
+  if (!reduce && "IntersectionObserver" in window) {
+    new IntersectionObserver((es) => {
+      es.forEach((e) => {
+        if (e.isIntersecting && !running) { running = true; last = 0; requestAnimationFrame(frame); }
+        else if (!e.isIntersecting) running = false;
+      });
+    }, { threshold: 0.01 }).observe(canvas);
+  }
+
+  return { resize };
+}

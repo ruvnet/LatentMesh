@@ -260,3 +260,28 @@ a { color: var(--cyan); text-decoration-thickness: 1px; text-underline-offset: 3
   font-family: var(--mono); font-size: .58rem; letter-spacing: .18em;
   text-transform: uppercase; color: var(--faint); pointer-events: none;
 }
+
+/* ---------- hero with live mesh ---------- */
+.hero-grid {
+  display: grid; grid-template-columns: minmax(0,1.05fr) minmax(0,.95fr);
+  gap: clamp(20px, 4vw, 56px); align-items: center;
+}
+.hero-viz { position: relative; aspect-ratio: 1/1; width: 100%; max-width: 520px; margin-inline: auto; }
+.hero-viz canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+/* Shown only when the canvas is absent (no WebGL) so the column never sits empty. */
+.hero-viz-fallback {
+  position: absolute; inset: 12%; border-radius: 50%; display: none;
+  border: 1px solid var(--line2);
+  background: radial-gradient(circle at 38% 32%, rgba(80,230,255,.16), transparent 62%);
+}
+.hero-viz.no-webgl .hero-viz-fallback { display: block; }
+.hero-viz-label {
+  position: absolute; bottom: 4%; left: 50%; transform: translateX(-50%);
+  font-family: var(--mono); font-size: .56rem; letter-spacing: .22em;
+  text-transform: uppercase; color: var(--faint); white-space: nowrap;
+}
+@media (max-width: 900px) {
+  .hero-grid { grid-template-columns: 1fr; gap: 8px; }
+  .hero-viz { max-width: 340px; order: -1; }
+  .hero-viz-label { display: none; }
+}
