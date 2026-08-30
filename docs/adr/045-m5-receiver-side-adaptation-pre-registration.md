@@ -193,3 +193,166 @@ transferability. The scope freeze in ADR-024's head applies unchanged.
 **Exactly one implementing agent**, and **rulings must be recorded on the branch
 that owner can read** — coordinator errors #11 and #20 were a duplicate owner
 and a wrong-branch delivery respectively.
+
+---
+
+# Deviations and outcomes — APPENDED AFTER EXECUTION BEGAN
+
+Everything above this line is the frozen registration and is unedited. This
+section is the append-only record ADR-045's head requires. Nothing here
+changes the registered design retroactively; where the design itself is
+amended, the amendment is numbered and its justification is stated.
+
+## Coordinator error #22 — the registered training target falsifies the registered power model
+
+**Discovered 2026-08-29, BEFORE any draw. No rank-1 draw existed when this was
+found and none has been spent; the one-draw-per-rank budget is intact.**
+
+### What was registered
+
+Two things, in the same document:
+
+1. **Training objective** (§Design): "Loss: next-token CE on the **gold-answer
+   continuation** — *not* the sender's span". Implemented literally: the CE
+   target is `"#### {gold}"`, token for token the probe's own teacher-forced
+   NLL target.
+2. **Power model** (§MANDATORY POWER CALCULATION): `n_disc ≈ 65`, anchored on
+   **measured** discordance for this exact stream and site — M4i's 66 and
+   M5X's 64 — and a registered crossing bar of ≥45 of 65.
+
+### What it produced
+
+Rank-1 adapter, 3,072 parameters, best of 10 epochs by holdout CE
+(`receipts/run2-m5-training-receipt-cellL18toL14-r1.json`,
+`receipts/run2-m5-transfer-receipt-cellL18toL14-r1.json`):
+
+| quantity | with adapter | without |
+|---|---|---|
+| holdout gold-continuation CE (composed, training) | **0.6643** | 2.3172 |
+| holdout gold-continuation NLL (vendored fused) | **0.6602** | 2.2353 |
+| per-item NLL wins/losses | **508 W / 2 L** of 510 | — |
+| **baseline GSM8K accuracy, 64 holdout items** | **5 / 64** | **31 / 64** |
+| mean generated characters | **389** | 841 |
+
+The likelihood endpoint improved by 1.58 nats and won 508 of 510 paired items.
+The decision endpoint **collapsed**: 48% → 8%. Generated length halved. The
+adapter learned to emit `#### N` early instead of reasoning.
+
+### Why the two registered elements are inconsistent
+
+M4i and M5X — the two rungs the power model is anchored on — ran a receiver
+answering ~47% of items (M4i: baseline 140/300). The registered training
+objective produces a receiver answering ~8%. **An 8% receiver cannot yield
+n_disc ≈ 65**: `aligned` and `random` are concordantly wrong on nearly every
+item, so almost no pair is discordant and the wealth process never moves.
+
+The objective therefore **falsifies the power model the same document
+registers**. No draw can satisfy both registered elements at once. That is a
+defect in the registration, discovered before any item was drawn — exactly the
+failure ADR-040's mandatory power calculation exists to catch — and not an
+outcome of the experiment.
+
+### Why it happened, mechanistically
+
+The CE target was the **final answer line only**. Raising the likelihood of
+`"#### N"` given the question does not require solving the problem; the
+cheapest available descent direction is to stop producing chain-of-thought and
+emit the answer line immediately. The objective rewards abandoning the very
+reasoning the accuracy endpoint scores.
+
+This is a target mismatch of the **same kind** as M4c's, which
+[research/034](../research/034-m5-receiver-side-adaptation-scout.md) §5.2
+diagnosed ("steer[ed] the receiver toward reproducing the sender's generated
+token span... not the answer-format objective the probe scores") and which
+ADR-045's gold-continuation target was introduced to fix. **The fix swapped one
+mismatch for another.** M4c's target was too far from the endpoint; this one
+was too close to a degenerate corner of it.
+
+### AMENDMENT — training target only
+
+**CHANGED**: the training CE target becomes **`render_gold`** — the full gold
+solution with GSM8K's `<<a+b=c>>` calculator annotations stripped, already in
+this repo as `examples/common/mod.rs::render_gold` and already used by PC1 —
+so that **the target contains the reasoning whose absence is the pathology**.
+It still ends with the `#### N` line.
+
+**UNCHANGED, explicitly**: the probe's endpoints. The teacher-forced NLL target
+stays `#### {gold}`. The accuracy endpoint stays as registered. The primary
+stays `aligned` vs `random`. The bar stays ≥45 of 65. `baseline` is still
+re-measured on the adapted receiver. The conditions stay the registered four.
+The item stream, the statistic, λ, N_max, the site, the operator, the slot
+count, the depth and the frozen sender/translator all stay as registered.
+
+The retrained adapter receives rank 1's single draw. The v1 artifact, its
+goldens and both receipts are committed unchanged as the record of this error.
+
+## FINDING — the likelihood and decision endpoints are in TENSION
+
+Recorded because it is a larger result than the rung was designed to produce,
+and it arrives from the error above rather than from a draw.
+
+Run 2 established that direct activation injection is **semantic at the
+likelihood level and non-semantic at the decision level** — the two endpoints
+disagree. The v1 rank-1 adapter demonstrates the **converse**: optimising the
+likelihood endpoint *directly*, on its own target tokens, **destroys** the
+decision endpoint. Likelihood 2.3172 → 0.6643 with 508W/2L, accuracy 31/64 →
+5/64, in one training run.
+
+So the two endpoints are not merely different measurements of one underlying
+quantity that happen to disagree in sensitivity. **They are in tension: a
+gradient on one is not a gradient on the other, and can be a gradient against
+it.** Any future rung that trains against a likelihood target and reads an
+accuracy endpoint must carry a decision-side diagnostic, or it is not measuring
+what it reports.
+
+This also retro-illuminates the ladder's standing NLL-vs-accuracy dissociation:
+it need not indicate a weak channel measured two ways. Two endpoints that can
+be driven in opposite directions by a single gradient are, to that extent,
+measuring different things.
+
+## Deviation — mandatory decision-side diagnostic in the transfer check
+
+**Introduced by the implementing owner before the v1 training run; APPROVED by
+the coordinator and now MANDATORY for every subsequent rank.**
+
+The transfer check generates on **holdout items** (never draw items) with the
+adapter installed and removed, under the draw's own greedy decoding, and
+reports accuracy and mean generated length.
+
+It is **deliberately NOT gating**. Gating the adapter on GSM8K accuracy would
+select it against the very general-fine-tuning confound the registered primary
+is designed to exclude. It is reported so that a null can be read correctly:
+*"the receiver stopped answering"* is a different finding from *"the channel
+carries nothing"*.
+
+Without it, the v1 transfer check's 508W/2L would have waved a broken receiver
+straight into an irreversible draw. This is the discipline §"Mandatory
+co-reports" already calls for, applied one step earlier.
+
+## Deviation — control-vs-control battery is COMPLETE but THIN, and says so
+
+The probe computes **every ordered pair** among the four registered conditions
+on both endpoints — twelve pairs — and stores them as receipt fields, per
+§"Mandatory co-reports" and coordinator error #21.
+
+**Disclosed consequence, recorded rather than left for a reader to notice.**
+ADR-003's `mismatched` and `self_generated` controls are **not registered for
+this rung**, so no comparison involving them exists; adding a fifth condition
+mid-flight would be an unregistered design edit and was **not** done. And
+because `zerovec ≡ baseline` **exactly** under `InjectionMode::Fuse` (`h += 0`
+is an exact no-op), every pair involving `zerovec` is an operator-correctness
+check rather than an independent control comparison.
+
+**The twelve ordered pairs therefore collapse to ONE substantive
+control-vs-control comparison: `random` vs `baseline`.** A thin battery that
+states its own thinness is acceptable; a thin battery that reads as complete is
+error #21 again. The receipt carries this text in its own
+`control_vs_control_battery.scope_limit_disclosed` field.
+
+## Deviation — the draw was withheld at v1
+
+The implementing owner did not run the registered draw on the v1 adapter,
+against the letter of the task brief. **Recorded as a justified deviation, not
+an error.** ADR-045 permits one draw per rank and forbids retry; spending it on
+a receiver answering 8% of items would have burned it irreversibly on a null
+attributable to the objective rather than to the channel.
