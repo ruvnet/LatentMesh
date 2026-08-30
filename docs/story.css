@@ -242,15 +242,6 @@ a { color: var(--cyan); text-decoration-thickness: 1px; text-underline-offset: 3
   .viz.on .pulse,.viz.on .pulse2,.viz.on .pulse3 { opacity: .22; }
 }
 
-@media (max-width: 860px) {
-  .scrolly-inner { grid-template-columns: 1fr; gap: 0; }
-  .viz-col { height: 58vh; z-index: 2; padding-bottom: 6px;
-    background: linear-gradient(to bottom, var(--navy) 72%, transparent); }
-  .viz { max-width: 320px; }
-  .step { min-height: auto; padding: 1.4rem 0 2.8rem; opacity: 1; }
-  .steps { position: relative; z-index: 3; }
-  .bg-grid { background-size: 44px 44px; }
-}
 
 /* ---------- 3D panel ---------- */
 .viz3d { padding: 0; }
@@ -279,11 +270,6 @@ a { color: var(--cyan); text-decoration-thickness: 1px; text-underline-offset: 3
   position: absolute; bottom: 4%; left: 50%; transform: translateX(-50%);
   font-family: var(--mono); font-size: .56rem; letter-spacing: .22em;
   text-transform: uppercase; color: var(--faint); white-space: nowrap;
-}
-@media (max-width: 900px) {
-  .hero-grid { grid-template-columns: 1fr; gap: 8px; }
-  .hero-viz { max-width: 340px; order: -1; }
-  .hero-viz-label { display: none; }
 }
 
 /* ---------- illustrated pillars ---------- */
@@ -356,6 +342,13 @@ a { color: var(--cyan); text-decoration-thickness: 1px; text-underline-offset: 3
 
 /* ================= MOBILE ================= */
 @media (max-width: 860px) {
+  .scrolly-inner { grid-template-columns: 1fr; gap: 0; }
+  .steps { position: relative; z-index: 3; }
+  .bg-grid { background-size: 44px 44px; }
+  .step { min-height: auto; opacity: 1; }
+  .viz-col { z-index: 2; padding-bottom: 6px;
+    background: linear-gradient(to bottom, var(--navy) 72%, transparent); }
+
   /* The sticky figure was eating 58vh, leaving too little room for the prose
      it is meant to illustrate. */
   .viz-col { height: 46vh; top: 48px; }
@@ -386,6 +379,8 @@ a { color: var(--cyan); text-decoration-thickness: 1px; text-underline-offset: 3
 }
 
 @media (max-width: 900px) {
+  .hero-grid { grid-template-columns: 1fr; }
+  .hero-viz-label { display: none; }
   /* Headline first: the value proposition should land before the ornament. */
   .hero-viz { order: 0; margin-top: 1.4rem; max-width: 260px; }
   .hero-grid { gap: 4px; }
