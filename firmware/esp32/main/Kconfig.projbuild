@@ -10,6 +10,32 @@ config LM_QUEUE_DEPTH
     range 2 64
     default 8
 
+config LM_DEMO_BEACON
+    bool "Send a periodic demo beacon and log received messages"
+    default n
+    help
+        Off by default: enabling it makes the node transmit on its enabled
+        links.  It never enables external RF transmission, which stays gated by
+        LM_RF_TX_ENABLE and the operator interlock.
+
+        With this off, app_main starts the transports and returns, and the
+        default lm_air_pipeline_message_hook is a no-op, so a freshly flashed
+        pair of nodes is silent in both directions and there is no built-in way
+        to see whether the link works.  Enable this on two boards to get an
+        observable end-to-end round trip.
+
+config LM_DEMO_BEACON_PERIOD_MS
+    int "Demo beacon period in milliseconds"
+    range 250 60000
+    default 5000
+    depends on LM_DEMO_BEACON
+
+config LM_DEMO_BEACON_BYTES
+    int "Demo beacon body bytes"
+    range 1 1024
+    default 64
+    depends on LM_DEMO_BEACON
+
 config LM_STREAM_ID
     int "Base Air stream identifier"
     range 1 65532
