@@ -14,8 +14,21 @@
 #include "lwip/inet.h"
 #include "lwip/sockets.h"
 
+#include "latentmesh_air.h"
 #include "lm_air_metrics.h"
 #include "lm_air_radio.h"
+
+/* lm_air_tx_send() drains every fragment of a message into the link queue in a
+ * tight loop, and udp_task sends each one immediately, so an N-fragment message
+ * reaches the peer as a burst of N datagrams with no pacing.  The receiving
+ * socket must be able to hold that burst: if LWIP's UDP receive mailbox is
+ * smaller than the largest message in fragments, the tail of every long message
+ * is dropped inside the stack and reassembly silently never completes.  See
+ * sdkconfig.defaults. */
+#if CONFIG_LWIP_UDP_RECVMBOX_SIZE < LM_AIR_MAX_FRAGMENTS
+#warning "CONFIG_LWIP_UDP_RECVMBOX_SIZE is smaller than LM_AIR_MAX_FRAGMENTS: \
+multi-fragment messages longer than the mailbox will be undeliverable"
+#endif
 
 static const char *TAG = "lm_wifi";
 static EventGroupHandle_t s_events;

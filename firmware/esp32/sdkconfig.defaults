@@ -24,3 +24,12 @@ CONFIG_LM_OPERATOR_ATTESTED=n
 CONFIG_LM_RF_TX_INTERLOCK_GPIO=-1
 CONFIG_LM_MAX_FRAME_SIZE=512
 CONFIG_LM_QUEUE_DEPTH=8
+
+# A semantic message larger than one fragment is emitted as a back-to-back
+# burst of UDP datagrams, one per fragment, with no pacing.  LWIP's default UDP
+# receive mailbox holds 6, so a burst longer than that overflows the socket
+# before the receive task can drain it and reassembly can never complete.  With
+# the default the practical ceiling was about 8 fragments (~1700 bytes) even
+# though LM_AIR_MAX_FRAGMENTS is 32.  Size the mailbox to hold a full
+# maximum-length burst plus headroom for a second sender.
+CONFIG_LWIP_UDP_RECVMBOX_SIZE=64
