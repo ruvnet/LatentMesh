@@ -47,11 +47,24 @@ static void demo_beacon_task(void *arg)
     uint32_t sequence = 0;
 
     for (;;) {
-        const int header = snprintf((char *)body, sizeof(body),
-                                    "latentmesh demo %06lX %lu ",
-                                    (unsigned long)(s_demo_source_id & 0xFFFFFFu),
-                                    (unsigned long)sequence);
-        for (size_t i = (header > 0 ? (size_t)header : 0u); i < sizeof(body); i++) {
+        /* Render the header into a fixed scratch buffer rather than straight
+         * into body[]: body is sized by Kconfig and can legally be smaller
+         * than the header, which makes a direct snprintf into it a
+         * statically-provable truncation and so a -Werror=format-truncation
+         * build failure across much of the configurable range. */
+        char header[40];
+        const int header_len = snprintf(header, sizeof(header),
+                                        "latentmesh demo %06lX %lu ",
+                                        (unsigned long)(s_demo_source_id & 0xFFFFFFu),
+                                        (unsigned long)sequence);
+        const size_t copied =
+            (header_len > 0 && (size_t)header_len < sizeof(body))
+                ? (size_t)header_len
+                : 0u;
+        if (copied != 0u) {
+            memcpy(body, header, copied);
+        }
+        for (size_t i = copied; i < sizeof(body); i++) {
             body[i] = (uint8_t)('A' + ((i + sequence) % 26u));
         }
 
