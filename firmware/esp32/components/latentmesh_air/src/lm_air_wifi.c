@@ -26,8 +26,12 @@
  * is dropped inside the stack and reassembly silently never completes.  See
  * sdkconfig.defaults. */
 #if CONFIG_LWIP_UDP_RECVMBOX_SIZE < LM_AIR_MAX_FRAGMENTS
-#warning "CONFIG_LWIP_UDP_RECVMBOX_SIZE is smaller than LM_AIR_MAX_FRAGMENTS: \
-multi-fragment messages longer than the mailbox will be undeliverable"
+/* Deliberately #pragma message and not #warning: a tree that already has a
+ * generated sdkconfig keeps it in preference to sdkconfig.defaults, so #warning
+ * becomes a hard build failure under -Werror=cpp for anyone who merely pulls
+ * this change without reconfiguring. The same condition is reported at runtime
+ * in lm_air_wifi_start(). */
+#pragma message("CONFIG_LWIP_UDP_RECVMBOX_SIZE is smaller than LM_AIR_MAX_FRAGMENTS: long messages will not reassemble; see sdkconfig.defaults")
 #endif
 
 static const char *TAG = "lm_wifi";
@@ -122,6 +126,12 @@ static void udp_task(void *arg)
 
 esp_err_t lm_air_wifi_start(void)
 {
+#if CONFIG_LWIP_UDP_RECVMBOX_SIZE < LM_AIR_MAX_FRAGMENTS
+    ESP_LOGW(TAG,
+             "UDP receive mailbox holds %d datagrams but a message can be %d "
+             "fragments; messages longer than the mailbox will not reassemble",
+             (int)CONFIG_LWIP_UDP_RECVMBOX_SIZE, (int)LM_AIR_MAX_FRAGMENTS);
+#endif
     if (CONFIG_LM_WIFI_SSID[0] == '\0') {
         ESP_LOGW(TAG, "%s", "Wi-Fi adapter dormant: configure LM_WIFI_SSID");
         return ESP_OK;
