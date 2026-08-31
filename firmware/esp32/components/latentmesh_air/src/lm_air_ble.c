@@ -112,21 +112,59 @@ static int gap_event(struct ble_gap_event *event, void *arg)
     }
 }
 
+/* A legacy advertisement PDU carries at most 31 bytes of AD structures. Flags
+ * cost 3 and a complete 128-bit service UUID costs 18, leaving only 10 for the
+ * name AD -- 8 characters. The default LM_BLE_DEVICE_NAME is longer than that,
+ * so packing both into the advertisement made ble_gap_adv_set_fields() fail
+ * with BLE_HS_EMSGSIZE and the node never advertised at all.
+ *
+ * The service UUID goes in the scan response, which has its own 31-byte budget,
+ * leaving the advertisement for flags plus the name. A scanner still filters on
+ * the UUID; it just arrives in the scan response. If a name is configured that
+ * is too long even for that, it is advertised shortened rather than dropping
+ * the node off the air entirely. */
+#define LM_BLE_ADV_BUDGET      31u
+#define LM_BLE_ADV_FLAGS_COST   3u
+#define LM_BLE_ADV_HDR_COST     2u
+
 static void advertise(void)
 {
+    const size_t name_budget =
+        LM_BLE_ADV_BUDGET - LM_BLE_ADV_FLAGS_COST - LM_BLE_ADV_HDR_COST;
+    size_t name_len = strlen(CONFIG_LM_BLE_DEVICE_NAME);
+    uint8_t name_is_complete = 1;
+    if (name_len > name_budget) {
+        ESP_LOGW(TAG,
+                 "LM_BLE_DEVICE_NAME is %u bytes; advertising the first %u "
+                 "(legacy advertisement fits %u)",
+                 (unsigned)name_len, (unsigned)name_budget,
+                 (unsigned)name_budget);
+        name_len = name_budget;
+        name_is_complete = 0;
+    }
+
     struct ble_hs_adv_fields fields = {0};
     fields.flags = BLE_HS_ADV_F_DISC_GEN | BLE_HS_ADV_F_BREDR_UNSUP;
     fields.name = (const uint8_t *)CONFIG_LM_BLE_DEVICE_NAME;
-    fields.name_len = strlen(CONFIG_LM_BLE_DEVICE_NAME);
-    fields.name_is_complete = 1;
-    fields.uuids128 = (ble_uuid128_t *)&s_service_uuid;
-    fields.num_uuids128 = 1;
-    fields.uuids128_is_complete = 1;
+    fields.name_len = (uint8_t)name_len;
+    fields.name_is_complete = name_is_complete;
     int rc = ble_gap_adv_set_fields(&fields);
     if (rc != 0) {
         ESP_LOGE(TAG, "adv fields: %d", rc);
         return;
     }
+
+    struct ble_hs_adv_fields rsp = {0};
+    rsp.uuids128 = (ble_uuid128_t *)&s_service_uuid;
+    rsp.num_uuids128 = 1;
+    rsp.uuids128_is_complete = 1;
+    rc = ble_gap_adv_rsp_set_fields(&rsp);
+    if (rc != 0) {
+        /* Not fatal: the node stays discoverable by name, it just cannot be
+         * filtered on the service UUID before connecting. */
+        ESP_LOGW(TAG, "adv rsp fields: %d (service UUID not advertised)", rc);
+    }
+
     struct ble_gap_adv_params params = {
         .conn_mode = BLE_GAP_CONN_MODE_UND,
         .disc_mode = BLE_GAP_DISC_MODE_GEN,
