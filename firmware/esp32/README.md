@@ -71,6 +71,34 @@ The committed default has no WiFi credentials and external RF transmission is
 off. Do not commit credentials in `sdkconfig`. Use a local defaults file, NVS
 provisioning in a downstream product, or menuconfig.
 
+## Seeing the link work
+
+By default `app_main` starts the transports and returns. Nothing transmits, and
+the default `lm_air_pipeline_message_hook` is a no-op, so two freshly flashed
+boards associate and then sit silent in both directions. That is deliberate --
+the firmware does not become a transmitting station on first boot -- but it
+means there is no built-in way to tell whether the link works.
+
+Enable the demo beacon on two boards to get an observable round trip:
+
+```sh
+idf.py menuconfig    # LatentMesh Air -> Send a periodic demo beacon
+idf.py build flash monitor
+```
+
+Each node then sends a small message on its enabled links and logs what it
+receives:
+
+```
+demo beacon enabled; source=269090 period=3000ms bytes=64
+demo tx: message=0 bytes=64 result=ESP_OK
+demo rx: source=27B460 message=0 bytes=64 authenticated=0
+```
+
+The beacon never enables external RF transmission; that stays gated by
+`LM_RF_TX_ENABLE` and the operator interlock. Turn it off for anything other
+than bring-up.
+
 Native deterministic tests do not require ESP IDF:
 
 ```sh
