@@ -1,6 +1,7 @@
 #include "lm_air_ble.h"
 
 #include <assert.h>
+#include <stdbool.h>
 #include <string.h>
 #include "esp_log.h"
 #include "freertos/FreeRTOS.h"
@@ -112,21 +113,76 @@ static int gap_event(struct ble_gap_event *event, void *arg)
     }
 }
 
+/* A legacy advertisement PDU carries at most 31 bytes of AD structures. Flags
+ * cost 3 and a complete 128-bit service UUID costs 18, leaving 10 for the name
+ * AD -- 8 characters. The default LM_BLE_DEVICE_NAME is longer than that, so
+ * packing both into the advertisement made ble_gap_adv_set_fields() fail with
+ * BLE_HS_EMSGSIZE and the node never advertised at all.
+ *
+ * Keep both in the advertisement when they fit, because a UUID in the primary
+ * advertisement is discoverable by a passive scanner; a scan response is only
+ * obtainable by an active scan. Only when the name is too long for that layout
+ * does the UUID move to the scan response, which has its own 31-byte budget.
+ * A name too long even for the advertisement on its own is shortened rather
+ * than taking the node off the air entirely. */
+#define LM_BLE_ADV_BUDGET       31u
+#define LM_BLE_ADV_FLAGS_COST    3u
+#define LM_BLE_ADV_AD_HDR_COST   2u
+#define LM_BLE_ADV_UUID128_COST 18u
+
 static void advertise(void)
 {
+    const size_t name_len_cfg = strlen(CONFIG_LM_BLE_DEVICE_NAME);
+    const size_t budget_with_uuid = LM_BLE_ADV_BUDGET - LM_BLE_ADV_FLAGS_COST -
+                                    LM_BLE_ADV_UUID128_COST -
+                                    LM_BLE_ADV_AD_HDR_COST;
+    const size_t budget_name_only = LM_BLE_ADV_BUDGET - LM_BLE_ADV_FLAGS_COST -
+                                    LM_BLE_ADV_AD_HDR_COST;
+
+    /* Preferred layout: flags + UUID + name in the advertisement, so a passive
+     * scanner filtering on the service UUID still finds this node. */
+    const bool uuid_fits_in_adv = name_len_cfg <= budget_with_uuid;
+    size_t name_len = name_len_cfg;
+    uint8_t name_is_complete = 1;
+    if (!uuid_fits_in_adv && name_len > budget_name_only) {
+        ESP_LOGW(TAG,
+                 "LM_BLE_DEVICE_NAME is %u bytes; advertising the first %u",
+                 (unsigned)name_len, (unsigned)budget_name_only);
+        name_len = budget_name_only;
+        name_is_complete = 0;
+    }
+
     struct ble_hs_adv_fields fields = {0};
     fields.flags = BLE_HS_ADV_F_DISC_GEN | BLE_HS_ADV_F_BREDR_UNSUP;
     fields.name = (const uint8_t *)CONFIG_LM_BLE_DEVICE_NAME;
-    fields.name_len = strlen(CONFIG_LM_BLE_DEVICE_NAME);
-    fields.name_is_complete = 1;
-    fields.uuids128 = (ble_uuid128_t *)&s_service_uuid;
-    fields.num_uuids128 = 1;
-    fields.uuids128_is_complete = 1;
+    fields.name_len = (uint8_t)name_len;
+    fields.name_is_complete = name_is_complete;
+    if (uuid_fits_in_adv) {
+        fields.uuids128 = (ble_uuid128_t *)&s_service_uuid;
+        fields.num_uuids128 = 1;
+        fields.uuids128_is_complete = 1;
+    }
     int rc = ble_gap_adv_set_fields(&fields);
     if (rc != 0) {
         ESP_LOGE(TAG, "adv fields: %d", rc);
         return;
     }
+
+    if (!uuid_fits_in_adv) {
+        /* The name displaced the UUID from the advertisement. Put it in the
+         * scan response so an active scan can still filter on it. */
+        struct ble_hs_adv_fields rsp = {0};
+        rsp.uuids128 = (ble_uuid128_t *)&s_service_uuid;
+        rsp.num_uuids128 = 1;
+        rsp.uuids128_is_complete = 1;
+        rc = ble_gap_adv_rsp_set_fields(&rsp);
+        if (rc != 0) {
+            /* Not fatal: still discoverable by name, just not filterable on
+             * the service UUID before connecting. */
+            ESP_LOGW(TAG, "adv rsp fields: %d (service UUID not advertised)", rc);
+        }
+    }
+
     struct ble_gap_adv_params params = {
         .conn_mode = BLE_GAP_CONN_MODE_UND,
         .disc_mode = BLE_GAP_DISC_MODE_GEN,
@@ -197,7 +253,28 @@ esp_err_t lm_air_ble_start(void)
     ESP_ERROR_CHECK(nimble_port_init());
     ble_svc_gap_init();
     ble_svc_gatt_init();
-    int rc = ble_svc_gap_device_name_set(CONFIG_LM_BLE_DEVICE_NAME);
+    /* NimBLE stores the GAP device name in a fixed buffer of
+     * CONFIG_BT_NIMBLE_GAP_DEVICE_NAME_MAX_LEN bytes and rejects anything
+     * longer with BLE_HS_EINVAL. That return used to propagate out of this
+     * function into ESP_ERROR_CHECK in start_transports(), aborting the node
+     * into a permanent boot loop -- a configuration string long enough to
+     * overflow a buffer bricked the device. Clamp it instead. */
+    char device_name[CONFIG_BT_NIMBLE_GAP_DEVICE_NAME_MAX_LEN + 1];
+    const size_t configured_name_len = strlen(CONFIG_LM_BLE_DEVICE_NAME);
+    if (configured_name_len > CONFIG_BT_NIMBLE_GAP_DEVICE_NAME_MAX_LEN) {
+        ESP_LOGW(TAG,
+                 "LM_BLE_DEVICE_NAME is %u bytes; NimBLE stores at most %u, "
+                 "using the first %u",
+                 (unsigned)configured_name_len,
+                 (unsigned)CONFIG_BT_NIMBLE_GAP_DEVICE_NAME_MAX_LEN,
+                 (unsigned)CONFIG_BT_NIMBLE_GAP_DEVICE_NAME_MAX_LEN);
+    }
+    const size_t copy_len = configured_name_len < sizeof(device_name) - 1u
+                                ? configured_name_len
+                                : sizeof(device_name) - 1u;
+    memcpy(device_name, CONFIG_LM_BLE_DEVICE_NAME, copy_len);
+    device_name[copy_len] = '\0';
+    int rc = ble_svc_gap_device_name_set(device_name);
     if (rc == 0) {
         rc = ble_gatts_count_cfg(s_services);
     }
