@@ -14,8 +14,25 @@
 #include "lwip/inet.h"
 #include "lwip/sockets.h"
 
+#include "latentmesh_air.h"
 #include "lm_air_metrics.h"
 #include "lm_air_radio.h"
+
+/* lm_air_tx_send() drains every fragment of a message into the link queue in a
+ * tight loop, and udp_task sends each one immediately, so an N-fragment message
+ * reaches the peer as a burst of N datagrams with no pacing.  The receiving
+ * socket must be able to hold that burst: if LWIP's UDP receive mailbox is
+ * smaller than the largest message in fragments, the tail of every long message
+ * is dropped inside the stack and reassembly silently never completes.  See
+ * sdkconfig.defaults. */
+#if CONFIG_LWIP_UDP_RECVMBOX_SIZE < LM_AIR_MAX_FRAGMENTS
+/* Deliberately #pragma message and not #warning: a tree that already has a
+ * generated sdkconfig keeps it in preference to sdkconfig.defaults, so #warning
+ * becomes a hard build failure under -Werror=cpp for anyone who merely pulls
+ * this change without reconfiguring. The same condition is reported at runtime
+ * in lm_air_wifi_start(). */
+#pragma message("CONFIG_LWIP_UDP_RECVMBOX_SIZE is smaller than LM_AIR_MAX_FRAGMENTS: long messages will not reassemble; see sdkconfig.defaults")
+#endif
 
 static const char *TAG = "lm_wifi";
 static EventGroupHandle_t s_events;
@@ -109,6 +126,12 @@ static void udp_task(void *arg)
 
 esp_err_t lm_air_wifi_start(void)
 {
+#if CONFIG_LWIP_UDP_RECVMBOX_SIZE < LM_AIR_MAX_FRAGMENTS
+    ESP_LOGW(TAG,
+             "UDP receive mailbox holds %d datagrams but a message can be %d "
+             "fragments; messages longer than the mailbox will not reassemble",
+             (int)CONFIG_LWIP_UDP_RECVMBOX_SIZE, (int)LM_AIR_MAX_FRAGMENTS);
+#endif
     if (CONFIG_LM_WIFI_SSID[0] == '\0') {
         ESP_LOGW(TAG, "%s", "Wi-Fi adapter dormant: configure LM_WIFI_SSID");
         return ESP_OK;
