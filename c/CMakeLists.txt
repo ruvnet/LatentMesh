@@ -24,6 +24,7 @@ option(LM_AIR_BUILD_BENCHMARKS "Build microbenchmarks" ON)
 option(LM_AIR_ENABLE_SANITIZERS "Enable address and undefined sanitizers" OFF)
 
 add_library(latentmesh_air STATIC ${LM_AIR_SOURCES})
+target_sources(latentmesh_air PRIVATE src/runtime.c)
 add_library(latentmesh::air ALIAS latentmesh_air)
 target_include_directories(latentmesh_air
     PUBLIC
@@ -48,6 +49,9 @@ if(LM_AIR_BUILD_TESTS)
     add_executable(latentmesh_air_tests tests/test_air.c)
     target_link_libraries(latentmesh_air_tests PRIVATE latentmesh_air)
     add_test(NAME latentmesh_air_tests COMMAND latentmesh_air_tests)
+    add_executable(latentmesh_runtime_tests tests/test_runtime.c)
+    target_link_libraries(latentmesh_runtime_tests PRIVATE latentmesh_air)
+    add_test(NAME latentmesh_runtime_tests COMMAND latentmesh_runtime_tests)
 endif()
 
 if(LM_AIR_BUILD_EXAMPLES)
@@ -56,6 +60,10 @@ if(LM_AIR_BUILD_EXAMPLES)
 endif()
 
 if(LM_AIR_BUILD_BENCHMARKS)
+    if(UNIX)
+        add_executable(latentmesh-runtime-bench bench/runtime.c)
+        target_link_libraries(latentmesh-runtime-bench PRIVATE latentmesh_air)
+    endif()
     add_executable(latentmesh-air-bench bench/bench.c)
     target_link_libraries(latentmesh-air-bench PRIVATE latentmesh_air)
 endif()
