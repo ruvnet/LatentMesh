@@ -1,0 +1,19 @@
+name: Reasoning mode control
+on:
+  pull_request:
+    paths: ['harness/mode-control/**', '.github/workflows/mode-control.yml']
+  push:
+    branches: [main]
+    paths: ['harness/mode-control/**', '.github/workflows/mode-control.yml']
+permissions:
+  contents: read
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - run: npm test
+        working-directory: harness/mode-control
