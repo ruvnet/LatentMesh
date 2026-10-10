@@ -174,3 +174,8 @@ MIT OR Apache-2.0, at your option.
 ambient intelligence · edge AI · ESP32 · ham radio data · disaster communications ·
 multi-agent coordination · semantic compression · no_std Rust</sub>
 </div>
+
+<!-- ruv-constellation:manifest -->
+## ruv constellation
+
+[manifest.ruv](manifest.ruv) describes this repository with source-pinned capability evidence. Explore the [ruvnet nexus](https://github.com/ruvnet/ruvnet/blob/main/docs/ruv-catalog.md) and [manifest contract](https://github.com/ruvnet/ruvnet/blob/main/docs/ruv-manifest.md). Declared integration roles are discovery metadata and do not grant execution authority or certify runtime behavior.
