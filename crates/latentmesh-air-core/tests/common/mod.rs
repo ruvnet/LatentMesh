@@ -140,3 +140,61 @@ pub fn random_residual_mask(rng: &mut Rng) -> Vec<MaskEntry> {
     }
     entries
 }
+
+pub const RESERVED: [ReservedField; 9] = [
+    ReservedField::Signature,
+    ReservedField::ReplaySequence,
+    ReservedField::Epoch,
+    ReservedField::MessageId,
+    ReservedField::SourceId,
+    ReservedField::StateHash,
+    ReservedField::Provenance,
+    ReservedField::CriticalHash,
+    ReservedField::SafetyMetadata,
+];
+/// Canonical (ascending) mask mixing Reserved, Symbol and Residual entries
+/// with random classes and ranks, including the adversarial rank 63.
+pub fn hostile_mask(rng: &mut Rng) -> Vec<MaskEntry> {
+    let mut entries = Vec::new();
+    let hostile = rng.below(4) == 0;
+    for sym in 0..12u16 {
+        if hostile && rng.below(4) == 0 {
+            entries.push(entry(
+                FieldRef::Symbol(sym),
+                random_class(rng),
+                rng_rank(rng),
+            ));
+        }
+    }
+    for slot in 0..16u8 {
+        if rng.below(3) != 0 {
+            entries.push(entry(
+                FieldRef::Residual(slot),
+                random_class(rng),
+                rng_rank(rng),
+            ));
+        }
+    }
+    for r in RESERVED {
+        if hostile && rng.below(5) == 0 {
+            entries.push(entry(
+                FieldRef::Reserved(r),
+                random_class(rng),
+                rng_rank(rng),
+            ));
+        }
+    }
+    entries
+}
+
+pub fn random_class(rng: &mut Rng) -> FieldClass {
+    match rng.below(3) {
+        0 => FieldClass::Required,
+        1 => FieldClass::Optional,
+        _ => FieldClass::Discardable,
+    }
+}
+
+pub fn rng_rank(rng: &mut Rng) -> u8 {
+    [0u8, 63, rng.below(64) as u8][rng.below(3) as usize]
+}
