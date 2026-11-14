@@ -1,7 +1,7 @@
 //! Window-airtime link, bounded drop-oldest queue, outage, reorder, stale-drop,
 //! and a receiver that commits every delivery through `ReplayWindow`.
 
-use std::collections::VecDeque;
+use std::collections::{BTreeMap, VecDeque};
 
 use latentmesh_air_core::{AirError, ReplayWindow};
 
@@ -46,6 +46,10 @@ pub struct Metrics {
     pub replay_inconsistencies: u64,
     pub queue_bound_violations: u64,
     pub airtime_window_violations: u64,
+    /// Legitimately generated messages rejected `TooOld` because they were
+    /// displaced 64 or more positions behind the window head. A real loss,
+    /// reported separately: it is not an integrity violation.
+    pub replay_window_rejections: u64,
 }
 
 #[cfg_attr(not(test), allow(dead_code))]
@@ -56,10 +60,12 @@ pub struct SimOut {
     pub highest: Option<u16>,
 }
 
-struct Delivery {
-    arrival: u64,
-    idx: usize,
-    age: u64,
+/// One frame reaching the receiver. `pub(super)` so the adversarial tests can
+/// inject delivery orders directly.
+pub(super) struct Delivery {
+    pub(super) arrival: u64,
+    pub(super) idx: usize,
+    pub(super) age: u64,
 }
 
 struct Sender {
@@ -70,6 +76,24 @@ struct Sender {
     used: u64,
     occ_sum: u64,
     dropped: Vec<bool>,
+    /// Every transmission as `(start_ms, frame_bytes)`, for the post-hoc audit.
+    log: Vec<(u64, u64)>,
+}
+
+/// Independent post-hoc audit of the airtime budget. Re-sums the transmission
+/// log per aligned window (a transmission counts against the window it starts
+/// in) and counts transmissions whose window running total exceeds `budget`.
+/// It shares no state with the scheduler, so a scheduler bug that overfills a
+/// window shows up here instead of being masked by the scheduler's own check.
+pub(super) fn audit_airtime(log: &[(u64, u64)], budget: u64) -> u64 {
+    let mut totals: BTreeMap<u64, u64> = BTreeMap::new();
+    let mut violations = 0;
+    for &(start_ms, frame_bytes) in log {
+        let total = totals.entry(start_ms / WINDOW_MS).or_default();
+        *total += frame_bytes;
+        violations += u64::from(*total > budget);
+    }
+    violations
 }
 
 fn nearest_rank(sorted: &[u64], pct: u64) -> u64 {
@@ -123,6 +147,7 @@ fn run_sender(
         used: 0,
         occ_sum: 0,
         dropped: vec![false; m.msgs.len()],
+        log: Vec::new(),
     };
     let mut out = Vec::new();
     loop {
@@ -160,8 +185,8 @@ fn run_sender(
         }
         s.q.pop_front();
         s.used += pay.frame_bytes;
-        mt.airtime_window_violations += u64::from(s.used > p.budget_bytes);
         let start = s.t;
+        s.log.push((start, pay.frame_bytes));
         s.t += (pay.frame_bytes * 1000).div_ceil(LINK_BYTES_PER_S);
         mt.bytes_on_air += pay.frame_bytes;
         mt.payload_bytes_tx += pay.payload_bytes;
@@ -180,11 +205,12 @@ fn run_sender(
         }
     }
     mt.queue_occupancy_mean_milli = s.occ_sum * 1000 / m.msgs.len() as u64;
+    mt.airtime_window_violations = audit_airtime(&s.log, p.budget_bytes);
     (out, s.dropped)
 }
 
 /// Receiver: every delivery, stale or not, goes through `commit`.
-fn run_receiver(
+pub(super) fn run_receiver(
     m: &Materialized,
     b: usize,
     p: &SimParams,
@@ -206,11 +232,21 @@ fn run_receiver(
                 ages.push(d.age);
                 score(m, b, d, mt);
             }
-            Err(AirError::TooOld) => {
+            Err(err) => {
+                // Displacement behind the window head (0 for an exact repeat).
                 let behind = win.highest().map_or(0, |h| h.wrapping_sub(seq));
-                mt.replay_inconsistencies += u64::from(behind <= 63);
+                if matches!(err, AirError::TooOld) && behind >= 64 && !committed[d.idx] {
+                    // A legitimately generated message displaced beyond the
+                    // 64-wide window: a visible loss, not an integrity fault.
+                    mt.replay_window_rejections += 1;
+                } else {
+                    // Any other rejection is an inconsistency: a `Duplicate`
+                    // decision for a message never committed (a sequence
+                    // collision inside the window), or a rejected re-delivery
+                    // of a message already committed.
+                    mt.replay_inconsistencies += 1;
+                }
             }
-            Err(_) => mt.replay_inconsistencies += 1,
         }
     }
     ages.sort_unstable();

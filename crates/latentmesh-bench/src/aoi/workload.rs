@@ -159,6 +159,45 @@ fn priority_keep(importance: &[u8; RESIDUAL_SLOTS], fixed: usize, cap: usize) ->
     kept
 }
 
+/// Wire bytes of one residual's header (slot, importance, scale_exp, length),
+/// as written by `SemanticDelta::encode`.
+const RESIDUAL_WIRE_HEADER: usize = 4;
+
+/// What the priority_field baseline keeps for one message: the fixed envelope
+/// bytes, every symbol update, and the residual slots chosen by importance.
+pub struct PriorityKept {
+    pub fixed_bytes: usize,
+    pub symbols: usize,
+    pub slots: Vec<usize>,
+}
+
+/// Independent mandatory check for priority_field (ADR-049 section 2,
+/// invariants 1 and 4). The expected fixed component is derived from the real
+/// encoded length minus the residual section as it appears on the wire, not
+/// from the planner's arithmetic. Violation if any symbol update or any fixed
+/// byte is missing from the kept set, or if a kept residual slot is not a
+/// distinct, real slot. Returns the violation count for this message (0 or 1).
+pub fn priority_mandatory_violation(
+    kept: &PriorityKept,
+    encoded_len: usize,
+    delta: &SemanticDelta,
+) -> u64 {
+    let residual_section: usize = delta
+        .residuals
+        .iter()
+        .map(|r| RESIDUAL_WIRE_HEADER + r.values.len())
+        .sum();
+    let fixed_on_wire = encoded_len.checked_sub(residual_section);
+    let mut slots = kept.slots.clone();
+    slots.sort_unstable();
+    slots.dedup();
+    let slots_ok =
+        slots.len() == kept.slots.len() && kept.slots.iter().all(|&s| s < RESIDUAL_SLOTS);
+    let ok =
+        kept.symbols == delta.updates.len() && fixed_on_wire == Some(kept.fixed_bytes) && slots_ok;
+    u64::from(!ok)
+}
+
 struct Ctx<'a> {
     relevant: [bool; RESIDUAL_SLOTS],
     mask: &'a BoundMask,
@@ -169,6 +208,7 @@ fn build_payloads(
     c: &Ctx,
     seq: u16,
     env: &SemanticEnvelope,
+    delta: &SemanticDelta,
     importance: &[u8; RESIDUAL_SLOTS],
     out: &mut [Vec<Payload>; 3],
     viol: &mut [u64; 3],
@@ -185,9 +225,14 @@ fn build_payloads(
         weight: w_max,
     });
 
-    let kept = priority_keep(importance, plan.fixed_bytes, c.cap);
-    let rel_kept = kept.iter().filter(|&&s| c.relevant[s]).count() as u64;
-    let p_len = plan.fixed_bytes + kept.len() * RESIDUAL_ITEM_BYTES;
+    let slots = priority_keep(importance, plan.fixed_bytes, c.cap);
+    let rel_kept = slots.iter().filter(|&&s| c.relevant[s]).count() as u64;
+    let kept = PriorityKept {
+        fixed_bytes: plan.fixed_bytes,
+        symbols: delta.updates.len(),
+        slots,
+    };
+    let p_len = kept.fixed_bytes + kept.slots.len() * RESIDUAL_ITEM_BYTES;
     let (pf, pb) = frame_cost(seq, &vec![0u8; p_len])?;
     out[PRIORITY].push(Payload {
         payload_bytes: p_len as u64,
@@ -195,7 +240,7 @@ fn build_payloads(
         frames: pf,
         weight: SYMBOLS as u64 * WEIGHT_SYMBOL + rel_kept * WEIGHT_RELEVANT_RESIDUAL,
     });
-    viol[PRIORITY] += u64::from(p_len < plan.fixed_bytes);
+    viol[PRIORITY] += priority_mandatory_violation(&kept, bytes.len(), delta);
 
     let rel_slots: Vec<u8> = (0..RESIDUAL_SLOTS as u8)
         .filter(|&s| c.relevant[usize::from(s)])
@@ -260,6 +305,7 @@ pub fn materialize(cell: &Cell, seed: u64, seq_base: u16) -> Result<Materialized
             &ctx,
             seq,
             &env,
+            &delta,
             &importance,
             &mut m.payloads,
             &mut m.mandatory_violations,
