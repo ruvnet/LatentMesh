@@ -31,3 +31,6 @@ latentmesh-federation = { path = "../latentmesh-federation" }
 latentmesh-evolve = { path = "../latentmesh-evolve" }
 rand = { workspace = true }
 serde_json = { workspace = true }
+latentmesh-air-core = { path = "../latentmesh-air-core" }
+sha2 = { workspace = true }
+rand_chacha = { workspace = true }

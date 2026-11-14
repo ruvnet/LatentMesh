@@ -27,6 +27,7 @@
 //! Run: `cargo run --release -p latentmesh-bench`
 //! Run with the RuVector backend: `cargo run --release -p latentmesh-bench --features ruvector`
 
+mod aoi;
 mod integrations;
 
 use latentmesh_align::AlignmentTransform;
@@ -37,6 +38,14 @@ use rand::{Rng, SeedableRng};
 use std::time::Instant;
 
 fn main() {
+    let args: Vec<String> = std::env::args().skip(1).collect();
+    if args.first().map(String::as_str) == Some("aoi") {
+        if let Err(e) = aoi::main(&args[1..]) {
+            eprintln!("aoi: {e}");
+            std::process::exit(2);
+        }
+        return;
+    }
     println!("# LatentMesh bench — measured, not asserted (ADR-001 §8, ADR-002, ADR-003)\n");
     bench_wire_bytes();
     bench_alignment();
