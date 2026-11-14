@@ -11,6 +11,7 @@ include = ["src/**", "tests/**", "examples/**", "fixtures/learned/**", "fixtures
 
 [features]
 default = []
+accelerate = ["candle-core/accelerate", "candle-nn/accelerate", "candle-transformers/accelerate"]
 metal = ["candle-core/metal", "candle-nn/metal", "candle-transformers/metal"]
 cuda = ["candle-core/cuda", "candle-nn/cuda", "candle-transformers/cuda"]
 

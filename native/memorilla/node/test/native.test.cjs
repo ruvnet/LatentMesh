@@ -2,7 +2,7 @@ const { test } = require('node:test')
 const assert = require('node:assert/strict')
 const path = require('node:path')
 const fs = require('node:fs')
-const { loadMemory, loadAgent, exportFrame } = require('..')
+const { loadMemory, loadAgent, exportFrame } = require(process.env.MEMORILLA_PACKAGE || '..')
 const device = process.env.MEMORILLA_TEST_DEVICE || 'cpu'
 const open = (directory, scope, budget) => loadMemory(directory, scope, budget, device, 'f32')
 const fixture = path.resolve(__dirname, '../../core/fixtures/learned')

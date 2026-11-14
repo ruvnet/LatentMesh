@@ -17,7 +17,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-24.04, macos-14]
+        os: [ubuntu-24.04, macos-15]
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v4
@@ -41,12 +41,16 @@ jobs:
         run: |
           npm ci
           if [ "${{ runner.os }}" = "macOS" ]; then
-            npm run build -- --features metal
+            npm run build -- --features metal,accelerate
           else
             npm run build
           fi
           npm test
           node examples/embeddings.cjs
+          archive=$(npm pack --silent)
+          install_dir=$(mktemp -d)
+          npm install --prefix "$install_dir" "$PWD/$archive"
+          MEMORILLA_PACKAGE="$install_dir/node_modules/@latentmesh/memorilla" npm test
       - name: Package Rust crate
         working-directory: native/memorilla
         run: cargo +1.97.1 package --locked -p latentmesh-memorilla

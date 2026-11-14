@@ -11,6 +11,7 @@ crate-type = ["cdylib"]
 
 [features]
 default = []
+accelerate = ["latentmesh-memorilla/accelerate"]
 metal = ["latentmesh-memorilla/metal"]
 cuda = ["latentmesh-memorilla/cuda"]
 
