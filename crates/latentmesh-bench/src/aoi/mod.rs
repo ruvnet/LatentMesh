@@ -13,6 +13,9 @@ mod workload;
 #[cfg(test)]
 mod tests;
 
+#[cfg(test)]
+mod adversarial;
+
 use std::path::PathBuf;
 
 use grid::Axes;
