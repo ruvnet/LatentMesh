@@ -311,7 +311,9 @@ useful if the selector fails to earn its complexity.
 
 ## Post-first-run review (2026-11-13)
 
-The first full run (receipt `aoi-bench-v1-47bff02`, frozen digest `858b88d6…ec5e618`, not pinned)
+The first full run (receipt `aoi-bench-v1-47bff02`, a pre-push commit later rewritten to drop
+commit trailers; frozen digest `858b88d6…ec5e618`, not pinned; `cells` byte-identical to the
+current receipt)
 returned PROMOTE on c1 and c2 in all five seeds; c3 failed. An adversarial test pass then found
 the following. The rule applied: **correctness defects are fixed; design weaknesses are disclosed
 and left unchanged**, because altering a comparator, guard or grid after seeing the verdict is the
