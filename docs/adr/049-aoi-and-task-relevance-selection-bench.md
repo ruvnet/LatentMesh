@@ -309,6 +309,52 @@ useful if the selector fails to earn its complexity.
   `result_hash`. The achievable byte saving is therefore bounded by the residual share of the
   message, and the benchmark may well find that is not enough. That would be a valid outcome.
 
+## Post-first-run review (2026-11-13)
+
+The first full run (receipt `aoi-bench-v1-47bff02`, frozen digest `858b88d6…ec5e618`, not pinned)
+returned PROMOTE on c1 and c2 in all five seeds; c3 failed. An adversarial test pass then found
+the following. The rule applied: **correctness defects are fixed; design weaknesses are disclosed
+and left unchanged**, because altering a comparator, guard or grid after seeing the verdict is the
+post-hoc tuning ADR-032 forbids.
+
+**Fixed (defects; the receipt is regenerated after the fixes):**
+
+- D1. The gate did not bind `cells` to the frozen axes (count, unique `cell_id`, membership,
+  coverage); a resealed receipt with cells deleted still promoted.
+- D2. The gate's no-harm guard read `mean` without recomputing it from `per_seed`.
+- D3. `airtime_window_violations` was checked before the add and could never fire; it is now an
+  independent audit over the transmission log. Aligned-window semantics are unchanged.
+- D4. The replay `TooOld` inconsistency branch was unreachable; messages displaced by 64 or more
+  were lost silently. They are now counted as `replay_window_rejections` (a loss metric, not an
+  integrity failure).
+- D5. The `priority_field` mandatory-field check was vacuous.
+
+**Disclosed, not changed (design weaknesses of `grid_v1`):**
+
+- W1. The `priority_field` guard aggregates over the primary set and hides per-cell losses: in
+  135 of 648 cells S has lower mean utility than `priority_field` (worst cell: budget 600,
+  queue 16, rho 0.5, about 5.8 times in favour of `priority_field`). Over the budget-600 primary
+  slice S/F absolute utility is 0.97.
+- W2. The per-message cap (`airtime_budget_bytes / 4`) binds `priority_field` but not S, whose
+  Required bytes are exempt; at budget 600 the cap is below the fixed content, so
+  `priority_field` sends no residuals. Its importance scores are random and uncorrelated with
+  relevance, and S has an oracle relevant set with no mask error.
+- W3. S keeps every relevant field, so its per-message weight equals W's. S's advantage over W is
+  throughput and age (shorter airtime, fewer fragments, less queueing), not better coverage. The
+  byte saving follows from the workload's definition that irrelevant residuals weigh 0.
+- W4. The c2 margin is narrow (per-seed S/W utility 1.224 to 1.229 against 1.20) and is carried by
+  the budget-1200 slice, the only one where W is queue-starved. c1 carries the verdict.
+- W5. The whole `age_of_information_ms = 2000` slice scores 0 utility for every baseline (a third of
+  the primary set); it does not change ratios but wastes grid.
+- W6. The airtime budget is an aligned 1000 ms window, not a rolling one; a rolling second can carry
+  up to twice the budget.
+
+Any promotion from `grid_v1` therefore means only "relevance selection beats whole-payload under
+this abstract simulated link", not "beats a competent task-agnostic selector". A `grid_v2`
+addressing W1-W6 (per-cell priority guard, a cap that binds all reduced baselines equally,
+correlated importance and noisy relevance masks, a rolling budget, an AoI axis without a dead
+slice) must be pre-registered as a new ADR **before** it is run.
+
 ## Consequences
 
 Positive: AoI becomes a first-class, replayable curve; the selector's safety invariants are
