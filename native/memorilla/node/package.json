@@ -1,0 +1,34 @@
+{
+  "name": "@latentmesh/memorilla",
+  "version": "0.1.0",
+  "private": true,
+  "license": "Apache-2.0",
+  "main": "index.js",
+  "types": "index.d.ts",
+  "engines": {
+    "node": ">=20.17.0"
+  },
+  "files": [
+    "index.js",
+    "index.d.ts",
+    "*.node",
+    "README.md",
+    "LICENSE",
+    "NOTICE"
+  ],
+  "napi": {
+    "binaryName": "memorilla",
+    "targets": [
+      "aarch64-apple-darwin",
+      "x86_64-unknown-linux-gnu"
+    ]
+  },
+  "scripts": {
+    "build": "napi build --platform --release",
+    "build:debug": "napi build --platform",
+    "test": "node --test test/*.test.cjs"
+  },
+  "devDependencies": {
+    "@napi-rs/cli": "3.10.12"
+  }
+}

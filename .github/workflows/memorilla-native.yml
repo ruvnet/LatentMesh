@@ -1,0 +1,41 @@
+name: Memorilla native
+on:
+  pull_request:
+    paths:
+      - 'native/memorilla/**'
+      - 'crates/latentmesh-gate/**'
+      - 'Cargo.toml'
+      - '.github/workflows/memorilla-native.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  native:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-24.04, macos-14]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22.22.1'
+      - run: rustup toolchain install 1.97.1 --component clippy --component rustfmt
+      - name: Rust checks
+        working-directory: native/memorilla
+        run: |
+          cargo +1.97.1 fmt --all --check
+          cargo +1.97.1 clippy --locked --workspace --all-targets -- -D warnings
+          cargo +1.97.1 test --locked -p latentmesh-memorilla
+      - name: Node build and behavioral tests
+        working-directory: native/memorilla/node
+        env:
+          RUSTUP_TOOLCHAIN: '1.97.1'
+        run: |
+          npm ci
+          npm run build
+          npm test
+          node examples/embeddings.cjs
+      - name: Existing mesh contract
+        run: cargo +1.97.1 test -p latentmesh-gate -p latentmesh-core -p latentmesh-memory

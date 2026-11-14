@@ -160,6 +160,8 @@ The project's founding idea — agents exchanging raw internal state instead of 
 
 ## Documentation
 
+Native Memorilla memory inference with Rust, Qwen3 input embeddings and asynchronous napi bindings is available in [native/memorilla](native/memorilla/README.md). Its validation scope and model requirements are documented there; exported frames retain ObserveOnly authority.
+
 - **[Website](https://ruvnet.github.io/LatentMesh/)** — animated explainer, applications, quickstart
 - **[Air Studio](https://latentmesh-air.ruv.chatgpt.site/)** — interactive engineering console
 - **[Architecture decisions](docs/adr)** — 47 ADRs, each stating what's real and what isn't

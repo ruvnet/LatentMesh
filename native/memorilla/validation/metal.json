@@ -1,0 +1,33 @@
+{
+  "schema": "memorilla.native.validation.v1",
+  "timestamp": "2026-11-14T15:25:22.479Z",
+  "upstreamCommit": "d3e3f8f1b6dd2560971dfc989ffd017c40d5b825",
+  "checkpointRevision": "f6b15af56aa687861c8d2d03b1cd8f7979881361",
+  "checkpointHash": "edad84f1ee5b3896ecb51fd0391187d5d3c39b21bd1dc06ae3943ac5618fbb0a",
+  "platform": "darwin",
+  "arch": "arm64",
+  "cpu": "Apple M4 Pro",
+  "node": "v26.4.0",
+  "device": "metal",
+  "dtype": "f32",
+  "documents": 3,
+  "outputShape": [
+    1,
+    16,
+    4096
+  ],
+  "cacheBytes": 122880,
+  "loadMs": 941.156083,
+  "writeMs": 6949.341625,
+  "readMs": [
+    10.161916999999448,
+    8.101082999999562,
+    7.47400000000016,
+    6.093290999999226,
+    5.8793340000011085
+  ],
+  "medianReadMs": 7.47400000000016,
+  "maxAbsoluteError": 0.00002288818359375,
+  "fullModelQualityEvaluated": false,
+  "notes": "Released memory weights with synthetic embeddings. Read timing includes NAPI and host output copy; excludes text encoder and decoder."
+}
