@@ -92,7 +92,19 @@ impl Attention {
         mask: Option<&Tensor>,
     ) -> Result<Tensor> {
         let (batch, count, _) = slots.dims3()?;
-        let q = self.split(self.q.forward(slots)?)?;
+        let mut q = self.split(self.q.forward(slots)?)?;
+        // One collection can serve many questions. Pack questions into the
+        // sequence axis, so matmul never broadcasts/copies the document K/V
+        // cache across the query batch. Each attention row remains independent.
+        let shared = batch > 1 && keys.dim(0)? == 1;
+        if shared {
+            q = q.transpose(0, 1)?.contiguous()?.reshape((
+                1,
+                self.heads,
+                batch * count,
+                self.dim / self.heads,
+            ))?;
+        }
         let mut scores = (q.broadcast_matmul(keys)?.to_dtype(DType::F32)?
             * (self.dim as f64 / self.heads as f64).sqrt().recip())?;
         if let Some(mask) = mask {
@@ -106,8 +118,13 @@ impl Attention {
             )?;
         }
         let probs = candle_nn::ops::softmax_last_dim(&scores)?.to_dtype(values.dtype())?;
-        let attended = probs
-            .broadcast_matmul(values)?
+        let mut attended = probs.broadcast_matmul(values)?;
+        if shared {
+            attended = attended
+                .reshape((self.heads, batch, count, self.dim / self.heads))?
+                .transpose(0, 1)?;
+        }
+        let attended = attended
             .transpose(1, 2)?
             .contiguous()?
             .reshape((batch, count, self.dim))?;
@@ -118,6 +135,11 @@ impl Attention {
         self.attend(slots, &k, &v, mask)
     }
 }
+struct QuestionConditioner {
+    value: Linear,
+    output: Linear,
+}
+
 struct Block {
     attn: Attention,
     attn_norm: LayerNorm,
@@ -139,7 +161,7 @@ pub struct MemoryModule {
     device: Device,
     dtype: DType,
     queries: Option<Tensor>,
-    query_attn: Attention,
+    query_attn: QuestionConditioner,
     query_norm: LayerNorm,
     doc_norm: LayerNorm,
     encoder: Vec<EncoderBlock>,
@@ -186,7 +208,22 @@ impl MemoryModule {
         } else {
             Some(w.tensor("memory_queries", &[1, config.num_memories, d])?)
         };
-        let query_attn = Attention::load(&mut w, "query_cond_attn", d, h)?;
+        let attention = Attention::load(&mut w, "query_cond_attn", d, h)?;
+        // Strictly validate every checkpoint tensor, then release Q/K weights:
+        // with exactly one question key softmax([score]) is always [1].
+        let query_attn = QuestionConditioner {
+            // A contiguous narrow can retain its entire parent allocation.
+            // Materialize only V so the unused Q/K storage can be freed.
+            value: Linear::new(
+                attention.v.weight().force_contiguous()?,
+                attention
+                    .v
+                    .bias()
+                    .map(Tensor::force_contiguous)
+                    .transpose()?,
+            ),
+            output: attention.out,
+        };
         let query_norm = w.norm("query_cond_norm", d)?;
         let doc_norm = w.norm("doc_norm", d)?;
         let mut encoder = Vec::new();
@@ -310,9 +347,15 @@ impl MemoryModule {
             }
             Tensor::from_vec(selected, (b, m, d), &self.device)?.to_dtype(self.dtype)?
         };
-        let question = questions.unsqueeze(1)?;
-        self.query_norm
-            .forward(&(&slots + self.query_attn.forward(&slots, &question, None)?)?)
+        // Project each question once, instead of repeating identical attention
+        // output projection for every memory slot. This is inference only;
+        // upstream attention dropout is disabled, as in model.eval().
+        let conditioned = self
+            .query_attn
+            .output
+            .forward(&self.query_attn.value.forward(questions)?)?
+            .unsqueeze(1)?;
+        self.query_norm.forward(&slots.broadcast_add(&conditioned)?)
     }
     pub fn forward(
         &self,

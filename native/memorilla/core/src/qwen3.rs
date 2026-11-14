@@ -482,7 +482,7 @@ mod tests {
     use super::*;
     #[test]
     fn input_embeddings_and_cached_decode_match_transformers() -> Result<()> {
-        let root = std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join("../fixtures/pipeline");
+        let root = std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join("fixtures/pipeline");
         let gold: serde_json::Value =
             serde_json::from_slice(&std::fs::read(root.join("golden.json"))?)
                 .map_err(candle_core::Error::wrap)?;

@@ -4,7 +4,7 @@ use latentmesh_gate::{AdmissionError, Gate, Policy};
 #[test]
 fn native_memorilla_frame_preserves_existing_gate_boundary() {
     let value: serde_json::Value = serde_json::from_str(include_str!(
-        "../../../native/memorilla/fixtures/frame.json"
+        "../../../native/memorilla/core/fixtures/frame.json"
     ))
     .unwrap();
     let mut frame: LatentFrame = serde_json::from_value(value["frame"].clone()).unwrap();

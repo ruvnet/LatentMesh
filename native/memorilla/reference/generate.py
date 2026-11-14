@@ -68,7 +68,7 @@ if __name__=="__main__":
     args=parser.parse_args()
     module=upstream_module()
     if args.checkpoint:
-        fixture(module,ROOT/"fixtures/real",module.MemoryModule.from_pretrained(args.checkpoint))
+        fixture(module,ROOT/"core/fixtures/real",module.MemoryModule.from_pretrained(args.checkpoint))
     else:
         for name in ("learned","retrieval"):
-            fixture(module,ROOT/"fixtures"/name)
+            fixture(module,ROOT/"core/fixtures"/name)

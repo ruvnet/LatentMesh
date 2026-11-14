@@ -3,7 +3,7 @@
 /node/*.node
 /node/index.js
 /node/index.d.ts
-/fixtures/real/
+/core/fixtures/real/
 __pycache__/
 *.pyc
 /artifacts/

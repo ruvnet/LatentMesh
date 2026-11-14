@@ -5,7 +5,7 @@ const fs = require('node:fs')
 const { loadMemory, loadAgent, exportFrame } = require('..')
 const device = process.env.MEMORILLA_TEST_DEVICE || 'cpu'
 const open = (directory, scope, budget) => loadMemory(directory, scope, budget, device, 'f32')
-const fixture = path.resolve(__dirname, '../../fixtures/learned')
+const fixture = path.resolve(__dirname, '../../core/fixtures/learned')
 const golden = JSON.parse(fs.readFileSync(path.join(fixture, 'golden.json')))
 
 test('native cache agrees with the upstream PyTorch oracle and owns inputs', async () => {
@@ -63,7 +63,7 @@ test('native work yields to the Node event loop', async () => {
 })
 
 test('native text encoder, memory and decoder agree with Transformers', async () => {
-  const root = path.resolve(__dirname, '../../fixtures/pipeline')
+  const root = path.resolve(__dirname, '../../core/fixtures/pipeline')
   const data = JSON.parse(fs.readFileSync(path.join(root, 'golden.json')))
   const agent = await loadAgent(fixture, path.join(root, 'encoder'), path.join(root, 'decoder'), 'tenant', 1_000_000, device, 'f32')
   await agent.write('history', data.documents)

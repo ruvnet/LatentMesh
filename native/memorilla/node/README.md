@@ -2,7 +2,7 @@ Native Rust Memorilla with asynchronous napi bindings. Inference runs locally in
 
 Build locally with `npm ci && npm run build`, then run `npm test`.
 
-This private package has not been published. CPU is the default backend; optional Metal and CUDA builds require explicit feature selection.
+CPU is the default backend. The macOS ARM64 release binary also supports Metal. Linux x64 GNU uses CPU. CUDA requires a source build and separate validation.
 
 ```js
 const { loadMemory } = require('@latentmesh/memorilla')
@@ -18,4 +18,4 @@ Document embeddings and question embeddings are Float32Array values, with 2560 v
 
 `exportFrame(tokens, receiverModel, sequence, timestamp)` emits LatentMesh JSON at ObserveOnly authority. It does not grant generation or action rights to a remote receiver.
 
-The local packed artifact contains the macOS ARM64 binary. Other platforms require their own build. The complete source guide and measured receipts are in `native/memorilla/README.md` and `native/memorilla/validation/` in the source checkout.
+Release packages contain macOS ARM64 and Linux x64 GNU binaries. Other platforms require their own build. The complete source guide and measured receipts are in `native/memorilla/README.md` and `native/memorilla/validation/` in the source checkout.

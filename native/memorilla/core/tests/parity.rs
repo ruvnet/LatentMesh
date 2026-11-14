@@ -13,7 +13,7 @@ struct Golden {
 }
 fn root(name: &str) -> PathBuf {
     Path::new(env!("CARGO_MANIFEST_DIR"))
-        .join("../fixtures")
+        .join("fixtures")
         .join(name)
 }
 fn flat(v: &[Vec<Vec<f32>>]) -> Vec<f32> {
@@ -110,4 +110,35 @@ fn invalid_inputs_and_scope_isolation() {
     let docs = Tensor::zeros((1, 2, 8), DType::F32, &Device::Cpu).unwrap();
     let mask = Tensor::ones((1, 2), DType::U8, &Device::Cpu).unwrap();
     assert!(module().write_cache(&docs, Some(&mask)).is_err());
+}
+
+#[test]
+fn shared_masked_batch_equals_independent_queries() {
+    let model = MemoryModule::load(root("learned"), &Device::Cpu, DType::F32).unwrap();
+    let g: Golden =
+        serde_json::from_slice(&std::fs::read(root("learned/golden.json")).unwrap()).unwrap();
+    let n = g.documents[0].len();
+    let d = g.questions[0].len();
+    let docs = Tensor::from_vec(flat(&g.documents[..1]), (1, n, d), &Device::Cpu).unwrap();
+    let mask = Tensor::from_vec(g.mask[0].clone(), (1, n), &Device::Cpu).unwrap();
+    let cache = model.write_cache(&docs, Some(&mask)).unwrap();
+    let queries = Tensor::from_vec(
+        (0..9 * d)
+            .map(|i| (i as f32 * 0.37).sin())
+            .collect::<Vec<_>>(),
+        (9, d),
+        &Device::Cpu,
+    )
+    .unwrap();
+    let batch = model
+        .read_cache(&cache, &queries)
+        .unwrap()
+        .to_vec3::<f32>()
+        .unwrap();
+    for (i, expected) in batch.iter().enumerate() {
+        let single = model
+            .read_cache(&cache, &queries.narrow(0, i, 1).unwrap())
+            .unwrap();
+        check(&single, std::slice::from_ref(expected), 2e-5);
+    }
 }

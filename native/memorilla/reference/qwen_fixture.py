@@ -14,7 +14,7 @@ from generate import upstream_module,ROOT
 
 torch.manual_seed(91)
 torch.set_num_threads(1)
-root=ROOT/"fixtures/pipeline"
+root=ROOT/"core/fixtures/pipeline"
 root.mkdir(parents=True,exist_ok=True)
 vocab={s:i for i,s in enumerate(["[UNK]","<|im_start|>","<|im_end|>","<|endoftext|>","<|memory|>",
     "system","user","assistant","Memory","<think>","</think>","alpha","beta","gamma","delta","Which","value","?","Use","memory","."])}
@@ -39,7 +39,7 @@ for name,model in [("encoder",encoder),("decoder",decoder)]:
     cfg["max_window_layers"]=2
     (directory/"config.json").write_text(json.dumps(cfg,indent=2)+"\n")
 
-memory=upstream_module().MemoryModule.from_pretrained(ROOT/"fixtures/learned").eval()
+memory=upstream_module().MemoryModule.from_pretrained(ROOT/"core/fixtures/learned").eval()
 documents=["alpha beta","gamma delta"]
 question="Which value ?"
 system="Use memory ."

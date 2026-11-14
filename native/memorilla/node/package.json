@@ -1,7 +1,6 @@
 {
   "name": "@latentmesh/memorilla",
   "version": "0.1.0",
-  "private": true,
   "license": "Apache-2.0",
   "main": "index.js",
   "types": "index.d.ts",
@@ -30,5 +29,13 @@
   },
   "devDependencies": {
     "@napi-rs/cli": "3.10.12"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ruvnet/LatentMesh.git",
+    "directory": "native/memorilla/node"
+  },
+  "publishConfig": {
+    "access": "public"
   }
 }
