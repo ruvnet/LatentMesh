@@ -1,0 +1,168 @@
+{
+  "schema": "memorilla.benchmark.comparison.v1",
+  "samplesPerCasePerVersion": 200,
+  "rounds": 2,
+  "warmupsPerRound": 20,
+  "baselineBuildCommit": "e0ddc288894ea8207eaf33c6f9d13f2770b89315",
+  "optimizedBuildCommit": "2cf14fc93d230f9d1b4b031fe85977f2bd1221fd",
+  "baselineBuildFeatures": [
+    "metal"
+  ],
+  "optimizedBuildFeatures": [
+    "metal",
+    "accelerate"
+  ],
+  "rows": [
+    {
+      "device": "cpu",
+      "documents": 8,
+      "batch": 1,
+      "baseline": {
+        "p50Ms": 30.441874999999982,
+        "p95Ms": 51.13824999999997
+      },
+      "optimized": {
+        "p50Ms": 13.071582999999919,
+        "p95Ms": 15.490542000000005
+      },
+      "speedup": 2.328859098396894,
+      "maxAbsoluteError": 5.7220458984375e-05
+    },
+    {
+      "device": "cpu",
+      "documents": 128,
+      "batch": 1,
+      "baseline": {
+        "p50Ms": 30.874166999999943,
+        "p95Ms": 49.11099999999897
+      },
+      "optimized": {
+        "p50Ms": 13.703459000000294,
+        "p95Ms": 19.80579200000011
+      },
+      "speedup": 2.253019985683854,
+      "maxAbsoluteError": 4.1961669921875e-05
+    },
+    {
+      "device": "cpu",
+      "documents": 128,
+      "batch": 8,
+      "baseline": {
+        "p50Ms": 130.99283400000058,
+        "p95Ms": 211.17291699999987
+      },
+      "optimized": {
+        "p50Ms": 30.719750000000204,
+        "p95Ms": 35.64470799999981
+      },
+      "speedup": 4.264124349970286,
+      "maxAbsoluteError": 5.7220458984375e-05
+    },
+    {
+      "device": "cpu",
+      "documents": 1024,
+      "batch": 1,
+      "baseline": {
+        "p50Ms": 33.137000000002445,
+        "p95Ms": 42.34533399999782
+      },
+      "optimized": {
+        "p50Ms": 14.418040999998993,
+        "p95Ms": 15.654083999999784
+      },
+      "speedup": 2.2983011353626166,
+      "maxAbsoluteError": 7.2479248046875e-05
+    },
+    {
+      "device": "cpu",
+      "documents": 1024,
+      "batch": 8,
+      "baseline": {
+        "p50Ms": 129.74287500000355,
+        "p95Ms": 159.09325000000536
+      },
+      "optimized": {
+        "p50Ms": 35.09662500000013,
+        "p95Ms": 43.79141600000003
+      },
+      "speedup": 3.6967336602879355,
+      "maxAbsoluteError": 6.008148193359375e-05
+    },
+    {
+      "device": "metal",
+      "documents": 8,
+      "batch": 1,
+      "baseline": {
+        "p50Ms": 7.275792000000365,
+        "p95Ms": 10.727040999999872
+      },
+      "optimized": {
+        "p50Ms": 7.098124999999982,
+        "p95Ms": 9.598415999999816
+      },
+      "speedup": 1.025030131196673,
+      "maxAbsoluteError": 9.5367431640625e-06
+    },
+    {
+      "device": "metal",
+      "documents": 128,
+      "batch": 1,
+      "baseline": {
+        "p50Ms": 7.564459000001079,
+        "p95Ms": 11.358374999999796
+      },
+      "optimized": {
+        "p50Ms": 7.035833999999795,
+        "p95Ms": 9.371708000000126
+      },
+      "speedup": 1.0751332393574522,
+      "maxAbsoluteError": 1.9073486328125e-05
+    },
+    {
+      "device": "metal",
+      "documents": 128,
+      "batch": 8,
+      "baseline": {
+        "p50Ms": 17.29241600000023,
+        "p95Ms": 24.419875000000502
+      },
+      "optimized": {
+        "p50Ms": 16.82941699999992,
+        "p95Ms": 21.498125000000073
+      },
+      "speedup": 1.0275112916864744,
+      "maxAbsoluteError": 0
+    },
+    {
+      "device": "metal",
+      "documents": 1024,
+      "batch": 1,
+      "baseline": {
+        "p50Ms": 7.44695800000045,
+        "p95Ms": 10.208832999999686
+      },
+      "optimized": {
+        "p50Ms": 7.824040999999852,
+        "p95Ms": 10.34270799999922
+      },
+      "speedup": 0.9518045725988131,
+      "maxAbsoluteError": 2.3126602172851562e-05
+    },
+    {
+      "device": "metal",
+      "documents": 1024,
+      "batch": 8,
+      "baseline": {
+        "p50Ms": 33.52850000000035,
+        "p95Ms": 38.67991600000096
+      },
+      "optimized": {
+        "p50Ms": 17.46649999999954,
+        "p95Ms": 19.391708000000108
+      },
+      "speedup": 1.9195889273753315,
+      "maxAbsoluteError": 0
+    }
+  ],
+  "notes": "Raw sourceCommit fields identify the harness checkout at measurement time. Build provenance is the separate build commits and per-receipt binarySha256. Baseline binary was saved before editing. No local builds ran during timed measurements. Host load and thermal state were not controlled."
+}

@@ -2,7 +2,7 @@ Native Rust Memorilla with asynchronous napi bindings. Inference runs locally in
 
 Build locally with `npm ci && npm run build`, then run `npm test`.
 
-CPU is the default backend. The macOS ARM64 release binary also supports Metal. Linux x64 GNU uses CPU. CUDA requires a source build and separate validation.
+CPU is the default backend. The macOS ARM64 release binary uses Apple Accelerate on CPU and also supports Metal. Linux x64 GNU uses the portable CPU implementation and is built and tested on Ubuntu 24.04. CUDA requires a source build and separate validation.
 
 ```js
 const { loadMemory } = require('@latentmesh/memorilla')

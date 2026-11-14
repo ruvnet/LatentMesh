@@ -18,7 +18,7 @@ npm test
 node examples/embeddings.cjs
 ```
 
-For Apple GPU support, build with `npm run build -- --features metal` and pass `metal` as the device. For a configured CUDA toolchain, build with `npm run build -- --features cuda` and pass `cuda`. CUDA has not been executed in this validation. A requested backend absent from the binary fails explicitly.
+For Apple GPU support and accelerated CPU matrix multiplication, build with `npm run build -- --features metal,accelerate` and pass `metal` as the device. For a configured CUDA toolchain, build with `npm run build -- --features cuda` and pass `cuda`. CUDA has not been executed in this validation. A requested backend absent from the binary fails explicitly.
 
 **Node interface**
 
@@ -103,7 +103,7 @@ The committed fixtures compare native computation with the original PyTorch memo
 
 The released Stage 3 memory checkpoint was additionally checked against PyTorch using synthetic document and query embeddings. Direct, cached and shared reads passed a 0.0002 absolute error bound. See `validation/` for measured receipts. These measurements do not establish full pretrained encoder and decoder parity, task accuracy, production latency, fleet operation, radio delivery or CUDA performance. F16 and BF16 execution are available but require separate numerical qualification.
 
-On the recorded Apple M4 Pro run with three synthetic document embeddings, F32 cached reads took a median 23.75 ms on CPU and 7.47 ms on Metal, including napi dispatch and the output copy. Maximum absolute differences from PyTorch were 0.0000382 and 0.0000229 respectively. The first Metal write took 6.95 seconds including kernel preparation. Five timed reads are a smoke measurement, not a throughput benchmark or a stable latency percentile.
+The repeated Apple M4 Pro benchmark recorded CPU median latency reductions of 56% to 77% across the five cases using Apple Accelerate and the algorithm changes. For eight queries over 1024 documents, Metal improved from 33.53 to 17.47 ms. Single query Metal results were mixed, including a 5% regression in one case. See [the benchmark report](validation/benchmark/README.md) for all 200 sample comparisons, source commits, binary hashes and limitations.
 
 The default wire export uses F32 to preserve the returned Float32Array exactly. A released output is therefore 256 KiB of tensor bytes, plus JSON expansion and metadata. It is not a 16 token radio message. Do not send it through the current 32 fragment Meshtastic path; keep memory local and transmit compact results or references.
 
