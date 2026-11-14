@@ -58,7 +58,7 @@ pub fn git_info() -> Result<GitInfo, String> {
     })
 }
 
-type Row = [(&'static str, u64); 20];
+type Row = [(&'static str, u64); 21];
 
 fn pairs(m: &Metrics) -> Row {
     [
@@ -82,6 +82,7 @@ fn pairs(m: &Metrics) -> Row {
         ("replay_inconsistencies", m.replay_inconsistencies),
         ("queue_bound_violations", m.queue_bound_violations),
         ("airtime_window_violations", m.airtime_window_violations),
+        ("replay_window_rejections", m.replay_window_rejections),
     ]
 }
 
@@ -99,7 +100,7 @@ fn row_json(seed: Option<u64>, m: &Metrics) -> Value {
 /// Integer (floor) mean of each metric across seeds.
 fn mean_metrics(rows: &[Metrics]) -> Metrics {
     let n = rows.len() as u64;
-    let mut sums = [0u64; 20];
+    let mut sums = [0u64; 21];
     for r in rows {
         for (i, (_, v)) in pairs(r).iter().enumerate() {
             sums[i] += v;
@@ -127,6 +128,7 @@ fn mean_metrics(rows: &[Metrics]) -> Metrics {
         replay_inconsistencies: f(17),
         queue_bound_violations: f(18),
         airtime_window_violations: f(19),
+        replay_window_rejections: f(20),
     }
 }
 

@@ -32,6 +32,20 @@ const INTEGRITY_KEYS = [
   "queue_bound_violations",
   "airtime_window_violations",
 ];
+/** Frozen axis names, in the order of the bench's Cartesian product. */
+const AXIS_KEYS = [
+  "age_of_information_ms", "airtime_budget_bytes", "queue_depth", "loss_rate_ppm",
+  "reorder_rate_ppm", "link_outage_ms", "task_relevance_ppm",
+];
+/** Every per-seed and mean metric the bench writes (ADR-049 section 3). */
+const METRIC_KEYS = [
+  "messages_generated", "messages_delivered", "bytes_on_air", "payload_bytes_tx",
+  "utility_micro", "utility_per_byte_micro", "stale_deliveries", "stale_delivery_rate_ppm",
+  "useful_fresh_deliveries", "queue_occupancy_mean_milli", "queue_occupancy_max",
+  "queue_overflow_drops", "stale_drops", "unschedulable_drops", "evidence_age_p50_ms",
+  "evidence_age_p95_ms", "mandatory_violations", "replay_inconsistencies",
+  "queue_bound_violations", "airtime_window_violations", "replay_window_rejections",
+];
 const HEX64 = /^[0-9a-f]{64}$/;
 const BASELINES = ["whole_payload", "priority_field", "relevance_selected"];
 const SUM_KEYS = ["payload_bytes_tx", "utility_micro", "bytes_on_air", "stale_deliveries",
@@ -81,6 +95,59 @@ function checkDigests(receipt, pinned, reasons) {
 
 const isPrimary = (cell) => cell.axes.task_relevance_ppm <= PRIMARY_MAX_RELEVANCE_PPM;
 
+/** Cell binding (D1): cells must be exactly the Cartesian product of the frozen axes. */
+function checkGrid(receipt, reasons) {
+  const axes = receipt.axes ?? {};
+  const lists = AXIS_KEYS.map((k) => axes[k]);
+  if (!lists.every((l) => Array.isArray(l) && l.length > 0)) {
+    reasons.push("receipt.axes lacks a non-empty list for each of the seven axes");
+    return;
+  }
+  const expected = lists.reduce((a, l) => a * l.length, 1);
+  if (receipt.cells.length !== expected) {
+    reasons.push(`cells has ${receipt.cells.length} rows, the frozen axes imply ${expected}`);
+    return;
+  }
+  const allowed = lists.map((l) => new Set(l));
+  const ids = new Set();
+  const tuples = new Set();
+  for (const cell of receipt.cells) {
+    ids.add(cell?.cell_id);
+    const values = AXIS_KEYS.map((k) => cell?.axes?.[k]);
+    values.forEach((v, i) => {
+      if (!allowed[i].has(v)) reasons.push(`cell ${cell?.cell_id} ${AXIS_KEYS[i]} ${v} is not a frozen axis value`);
+    });
+    tuples.add(values.join(","));
+  }
+  if (ids.size !== receipt.cells.length) reasons.push("cell_id values are not unique");
+  if (tuples.size !== expected) reasons.push("cells do not cover the full Cartesian product of the frozen axes");
+}
+
+/** Mean cross-check (D2): each mean must equal the integer floor mean of per_seed. */
+function checkMeans(cell, name, seeds, reasons) {
+  const b = cell.baselines[name];
+  for (const [i, row] of b.per_seed.entries()) {
+    if (row.seed !== seeds[i]) reasons.push(`cell ${cell.cell_id} ${name} row ${i} is seed ${row.seed}, not ${seeds[i]}`);
+    for (const key of METRIC_KEYS) {
+      if (!Number.isSafeInteger(row[key]) || row[key] < 0) {
+        reasons.push(`cell ${cell.cell_id} ${name} seed ${row.seed} ${key} is not a non-negative integer`);
+        return;
+      }
+    }
+  }
+  for (const key of METRIC_KEYS) {
+    if (!Number.isSafeInteger(b.mean[key])) {
+      reasons.push(`cell ${cell.cell_id} ${name} mean.${key} is not an integer`);
+      continue;
+    }
+    const sum = b.per_seed.reduce((acc, row) => acc + BigInt(row[key]), 0n);
+    const expect = sum / BigInt(b.per_seed.length);
+    if (BigInt(b.mean[key]) !== expect) {
+      reasons.push(`cell ${cell.cell_id} ${name} mean.${key} is ${b.mean[key]}, per_seed gives ${expect}`);
+    }
+  }
+}
+
 function checkShape(receipt, reasons) {
   const n = receipt.seeds.length;
   if (!Array.isArray(receipt.cells) || receipt.cells.length === 0) {
@@ -96,6 +163,12 @@ function checkShape(receipt, reasons) {
       }
     }
   }
+  checkGrid(receipt, reasons);
+  if (reasons.length > 0) return;
+  for (const cell of receipt.cells) {
+    for (const name of BASELINES) checkMeans(cell, name, receipt.seeds, reasons);
+  }
+  if (reasons.length > 0) return;
   if (!receipt.cells.some(isPrimary)) reasons.push("no primary cells (task_relevance_ppm <= 500000)");
 }
 
