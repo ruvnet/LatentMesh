@@ -17,10 +17,19 @@ const VECTOR = resolve(here, "../../../crates/latentmesh-bench/testdata/canonica
 const SEEDS = [11, 23, 37, 53, 71];
 
 // Baseline numbers: S == W, so no criterion holds until a test overrides S.
+// Every metric the bench writes is present (the gate requires the full key set).
 const BASE = {
-  payload_bytes_tx: 1000, utility_micro: 1000, bytes_on_air: 1000, stale_deliveries: 100,
-  messages_delivered: 400, useful_fresh_deliveries: 300,
-  mandatory_violations: 0, replay_inconsistencies: 0, queue_bound_violations: 0, airtime_window_violations: 0,
+  messages_generated: 512, messages_delivered: 400, bytes_on_air: 1000, payload_bytes_tx: 1000,
+  utility_micro: 1000, utility_per_byte_micro: 1, stale_deliveries: 100, stale_delivery_rate_ppm: 250000,
+  useful_fresh_deliveries: 300, queue_occupancy_mean_milli: 0, queue_occupancy_max: 0,
+  queue_overflow_drops: 0, stale_drops: 0, unschedulable_drops: 0, evidence_age_p50_ms: 0,
+  evidence_age_p95_ms: 0, mandatory_violations: 0, replay_inconsistencies: 0,
+  queue_bound_violations: 0, airtime_window_violations: 0, replay_window_rejections: 0,
+};
+/** The seven frozen axes; this fixture grid varies only task_relevance_ppm (3 cells). */
+const FIXED_AXES = {
+  age_of_information_ms: 0, airtime_budget_bytes: 1200, queue_depth: 16,
+  loss_rate_ppm: 0, reorder_rate_ppm: 0, link_outage_ms: 0,
 };
 
 function baseline(overrides = {}) {
@@ -31,9 +40,21 @@ function baseline(overrides = {}) {
 function cell(id, rho, s = {}) {
   return {
     cell_id: id,
-    axes: { task_relevance_ppm: rho },
+    axes: { ...FIXED_AXES, task_relevance_ppm: rho },
     baselines: { whole_payload: baseline(), priority_field: baseline(), relevance_selected: baseline(s) },
   };
+}
+
+/** Recompute every mean from per_seed with the bench's integer floor rule. */
+function remean(receipt) {
+  for (const c of receipt.cells) {
+    for (const b of Object.values(c.baselines)) {
+      for (const k of Object.keys(b.mean)) {
+        b.mean[k] = Number(b.per_seed.reduce((a, row) => a + BigInt(row[k]), 0n) / BigInt(b.per_seed.length));
+      }
+    }
+  }
+  return receipt;
 }
 
 /** Recompute both digests so a mutated receipt is internally consistent. */
@@ -51,7 +72,10 @@ function makeReceipt(sOverrides = {}, mutate = () => {}) {
     frozen: true,
     git: { commit: "abc1234", dirty: false, dirty_snapshot_sha256: null },
     seeds: [...SEEDS],
-    axes: { task_relevance_ppm: [250000, 500000, 1000000] },
+    axes: {
+      ...Object.fromEntries(Object.entries(FIXED_AXES).map(([k, v]) => [k, [v]])),
+      task_relevance_ppm: [250000, 500000, 1000000],
+    },
     config: { msg_count: 512, primary_cells: "task_relevance_ppm<=500000" },
     cells: [cell(0, 250000, sOverrides), cell(1, 500000, sOverrides), cell(2, 1000000)],
     integrity: {
@@ -60,6 +84,9 @@ function makeReceipt(sOverrides = {}, mutate = () => {}) {
     },
   };
   mutate(receipt);
+  // Mutations edit per_seed rows; the means are re-derived so each test probes
+  // one property. Mean-vs-per_seed disagreement has its own tests below.
+  remean(receipt);
   return seal(receipt);
 }
 
@@ -216,15 +243,28 @@ test("priority_field guard fails if any single seed is worse", () => {
 });
 
 test("no-harm guard blocks promotion when a cell loses useful deliveries", () => {
-  const r = makeReceipt(C2, (x) => { x.cells[2].baselines.relevance_selected.mean.useful_fresh_deliveries = 269; });
+  const r = makeReceipt(C2, (x) => {
+    for (const row of x.cells[2].baselines.relevance_selected.per_seed) row.useful_fresh_deliveries = 269;
+  });
   const out = run(r);
   assert.equal(out.guards.no_harm, false);
   assert.equal(out.verdict, "REJECT");
 });
 
 test("no-harm guard allows exactly 0.90 of whole_payload", () => {
-  const r = makeReceipt(C2, (x) => { x.cells[2].baselines.relevance_selected.mean.useful_fresh_deliveries = 270; });
+  const r = makeReceipt(C2, (x) => {
+    for (const row of x.cells[2].baselines.relevance_selected.per_seed) row.useful_fresh_deliveries = 270;
+  });
   assert.equal(run(r).guards.no_harm, true);
+});
+
+test("no-harm guard reads the mean, which must agree with per_seed (a stale mean is INVALID)", () => {
+  const r = makeReceipt(C2);
+  r.cells[2].baselines.relevance_selected.mean.useful_fresh_deliveries = 269; // mean only, per_seed still 300
+  seal(r);
+  const out = run(r);
+  assert.equal(out.verdict, "INVALID");
+  assert.match(out.reasons.join(), /mean\.useful_fresh_deliveries/);
 });
 
 test("non-primary cells do not feed the utility criteria", () => {
