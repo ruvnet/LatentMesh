@@ -14,6 +14,7 @@ mod error;
 mod fec;
 mod fragment;
 mod replay;
+mod selector;
 mod semantic;
 mod wire;
 
@@ -30,6 +31,11 @@ pub use fragment::{
     MAX_FRAGMENTS, MAX_MESSAGE_BYTES,
 };
 pub use replay::{ReplayDecision, ReplayWindow};
+pub use selector::{
+    plan_delta, plan_envelope, BoundMask, FieldClass, FieldRef, MaskEntry, ReservedField,
+    SelectorError, TaskDefinition, TaskRegistry, TransmissionPlan, UnboundMask, MAX_MASK_ENTRIES,
+    MAX_MASK_WIRE_BYTES, MAX_REGIONS, MAX_SELECTOR_STEPS, MAX_TASKS, REGION_BYTES,
+};
 pub use semantic::{
     CriticalState, Residual, SemanticDelta, SymbolUpdate, SymbolValue, CRITICAL_HASH_BYTES,
     MAX_CRITICAL_FIELDS, MAX_RESIDUALS, MAX_RESIDUAL_VALUES, MAX_SYMBOL_BYTES,
