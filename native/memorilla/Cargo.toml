@@ -1,0 +1,14 @@
+[workspace]
+resolver = "2"
+members = ["core", "node"]
+
+[workspace.dependencies]
+candle-core = "=0.11.1"
+candle-nn = "=0.11.1"
+candle-transformers = "=0.11.1"
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+sha2 = "0.10"
+
+[profile.release]
+lto = "thin"

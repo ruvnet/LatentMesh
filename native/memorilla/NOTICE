@@ -1,0 +1,18 @@
+Native Memorilla for LatentMesh
+
+Memory inference is derived from Stanford Memorilla, Apache License 2.0.
+Source: https://github.com/snap-stanford/memorilla
+Commit: d3e3f8f1b6dd2560971dfc989ffd017c40d5b825
+Original memory.py is retained under reference/ solely for development validation.
+The Rust implementation is an inference port, not an upstream release.
+
+Qwen3 implementation is derived from Hugging Face Candle 0.11.1,
+used under the Apache License 2.0 option of MIT OR Apache-2.0.
+Changes expose input embeddings and cache reset and select standard attention paths.
+Source: https://github.com/huggingface/candle
+
+Released memory weights used in local validation:
+https://huggingface.co/memorilla/Memorilla-Qwen3-8B
+Revision: f6b15af56aa687861c8d2d03b1cd8f7979881361
+The released weights are not included in this source tree.
+Committed tiny weight fixtures are deterministic test models, not pretrained models.

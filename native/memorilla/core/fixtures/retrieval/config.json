@@ -1,0 +1,10 @@
+{
+  "embedding_dim": 8,
+  "output_dim": 12,
+  "num_memories": 3,
+  "num_heads": 2,
+  "num_self_attn_layers": 1,
+  "num_cross_attn_layers": 2,
+  "dropout": 0.1,
+  "retrieval_init": true
+}

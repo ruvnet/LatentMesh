@@ -1,0 +1,9 @@
+/target/
+/node/node_modules/
+/node/*.node
+/node/index.js
+/node/index.d.ts
+/core/fixtures/real/
+__pycache__/
+*.pyc
+/artifacts/

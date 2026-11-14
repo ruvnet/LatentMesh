@@ -1,0 +1,25 @@
+[package]
+name = "latentmesh-memorilla-node"
+version = "0.1.0"
+edition = "2021"
+rust-version = "1.88"
+license = "Apache-2.0"
+publish = false
+
+[lib]
+crate-type = ["cdylib"]
+
+[features]
+default = []
+accelerate = ["latentmesh-memorilla/accelerate"]
+metal = ["latentmesh-memorilla/metal"]
+cuda = ["latentmesh-memorilla/cuda"]
+
+[dependencies]
+latentmesh-memorilla = { path = "../core" }
+napi = { version = "=3.16.2", default-features = false, features = ["napi8"] }
+napi-derive = "=3.7.1"
+serde_json.workspace = true
+
+[build-dependencies]
+napi-build = "=2.6.0"

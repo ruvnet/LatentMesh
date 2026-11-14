@@ -214,3 +214,4 @@ jobs:
           cargo install cargo-audit --locked
           cargo generate-lockfile
           cargo audit
+          cargo audit --file native/memorilla/Cargo.lock

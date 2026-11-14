@@ -1,0 +1,67 @@
+name: Memorilla native
+on:
+  pull_request:
+    paths:
+      - 'native/memorilla/**'
+      - 'crates/latentmesh-gate/**'
+      - 'Cargo.toml'
+      - '.github/workflows/memorilla-native.yml'
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths: ['native/memorilla/**', '.github/workflows/memorilla-native.yml']
+permissions:
+  contents: read
+jobs:
+  native:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-24.04, macos-15]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22.22.1'
+      - run: rustup toolchain install 1.97.1 --component clippy --component rustfmt
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: native/memorilla -> target
+      - name: Rust checks
+        working-directory: native/memorilla
+        run: |
+          cargo +1.97.1 fmt --all --check
+          cargo +1.97.1 clippy --locked --workspace --all-targets -- -D warnings
+          cargo +1.97.1 test --locked -p latentmesh-memorilla
+      - name: Node build and behavioral tests
+        working-directory: native/memorilla/node
+        env:
+          RUSTUP_TOOLCHAIN: '1.97.1'
+        run: |
+          npm ci
+          if [ "${{ runner.os }}" = "macOS" ]; then
+            npm run build -- --features metal,accelerate
+          else
+            npm run build
+          fi
+          npm test
+          node examples/embeddings.cjs
+          archive=$(npm pack --silent)
+          install_dir=$(mktemp -d)
+          npm install --prefix "$install_dir" "$PWD/$archive"
+          MEMORILLA_PACKAGE="$install_dir/node_modules/@latentmesh/memorilla" npm test
+      - name: Package Rust crate
+        working-directory: native/memorilla
+        run: cargo +1.97.1 package --locked -p latentmesh-memorilla
+      - uses: actions/upload-artifact@v4
+        with:
+          name: memorilla-${{ runner.os }}-${{ runner.arch }}
+          path: |
+            native/memorilla/node/*.node
+            native/memorilla/node/index.js
+            native/memorilla/node/index.d.ts
+            native/memorilla/target/package/latentmesh-memorilla-*.crate
+          if-no-files-found: error
+      - name: Existing mesh contract
+        run: cargo +1.97.1 test -p latentmesh-gate -p latentmesh-core -p latentmesh-memory

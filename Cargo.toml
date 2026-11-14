@@ -7,7 +7,7 @@ resolver = "2"
 # MSRV pin. It builds standalone (own lockfile) and is driven as a subprocess,
 # per the harness precedent. See docs/research/024 + ADR-023.
 # latentmesh-train is excluded for the identical half-pin reason (ADR-024).
-exclude = ["crates/latentmesh-runtime", "crates/latentmesh-train"]
+exclude = ["crates/latentmesh-runtime", "crates/latentmesh-train", "native/memorilla"]
 members = [
   "crates/latentmesh-core",
   "crates/latentmesh-align",
