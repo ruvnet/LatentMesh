@@ -1,0 +1,38 @@
+{
+  "description": "ADR-049 section 4 cross-language canonical JSON vector. Rust (latentmesh-bench) and JS (harness/representation) must both produce `canonical` from `input` and `sha256` from `canonical`.",
+  "input": {
+    "seeds": [
+      11,
+      23,
+      37,
+      53,
+      71
+    ],
+    "config": {
+      "rng": "ChaCha8Rng/rand_chacha-0.3",
+      "msg_count": 512,
+      "Zeta": -3,
+      "weights": {
+        "symbol": 1,
+        "relevant_residual": 4
+      },
+      "note": "quote\" back\\\\slash",
+      "flag": true,
+      "missing": null
+    },
+    "axes": {
+      "loss_rate_ppm": [
+        0,
+        100000,
+        300000
+      ],
+      "age_of_information_ms": [
+        0,
+        500,
+        2000
+      ]
+    }
+  },
+  "canonical": "{\"axes\":{\"age_of_information_ms\":[0,500,2000],\"loss_rate_ppm\":[0,100000,300000]},\"config\":{\"Zeta\":-3,\"flag\":true,\"missing\":null,\"msg_count\":512,\"note\":\"quote\\\" back\\\\\\\\slash\",\"rng\":\"ChaCha8Rng/rand_chacha-0.3\",\"weights\":{\"relevant_residual\":4,\"symbol\":1}},\"seeds\":[11,23,37,53,71]}",
+  "sha256": "0b97e371af20b2193de906d33187d2b872ddc6cc77ba1e1a32aa093d46038ffa"
+}
