@@ -60,7 +60,9 @@ def panel(x, clean, parity):
     pred_pos = draws @ flags
     tp = draws @ (flags * py[:,None])
     total_pos = (draws @ py)[:,None]
-    boot = performance(tp,pred_pos-tp,total_pos)
+    # A tiny resample can contain zero positives. Preserve undefined rates for ci().
+    with np.errstate(divide="ignore", invalid="ignore"):
+        boot = performance(tp,pred_pos-tp,total_pos)
     points = {}
     for j,name in enumerate(METHODS):
         true = int(np.sum(z[:,j]*y,dtype=np.int64))

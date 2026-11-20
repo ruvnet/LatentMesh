@@ -14,9 +14,9 @@ from onnx import TensorProto, helper, numpy_helper
 HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE.parent / "dailydialog"))
 from install_receiver import BASE_SHA, LOCK_SHA as PARENT_SHA, digest, fingerprint
+from stream import OUTPUTS
 
 LOCK_SHA = "f7b72714a143c4706882d20f0b265e015eae504fa8c63083848e16a08451592f"
-OUTPUTS = ["logits", "ctx_score", "ctx_anger", "ctx_anger_f05", "ctx_next"]
 
 
 def unpack(blob, size):
