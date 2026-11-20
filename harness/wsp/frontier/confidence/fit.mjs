@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import { readFileSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { createHash } from 'node:crypto';
-import { wsp } from '../../dependency.mjs';
+import { fitLinear, modelHash } from './linear-fit.mjs';
 import { margin } from './receiver.mjs';
 
 const out = process.argv[2];
@@ -10,11 +10,6 @@ if (!out) throw Error('usage: node fit.mjs RUN_DIRECTORY');
 const input = readFileSync(join(out, 'fit.json'));
 const { headsSha256, arms, sets } = JSON.parse(input);
 const sha = bytes => createHash('sha256').update(bytes).digest('hex');
-const cfg = { simd: false };
-const base = { schema: 'ruv-fann.dense-layers/1', layers: [
-  { inputs: 2, outputs: 1, weights: [0, 0], bias: [0], activation: 'Linear', steepness: 1 }
-] };
-
 function samples(data, method) {
   const col = arms.indexOf(method === 'scoreOnly' ? 'wsp48' : method);
   return data.native.map((native, i) => ({
@@ -56,29 +51,19 @@ function choose(weights, skill, guard, mode) {
 
 async function ridge(skillFit, guardFit) {
   const rows = [...skillFit, ...guardFit];
-  const batch = { rows: rows.length, inputs: rows.flatMap(r => r.point) };
   const delta = [...skillFit.map(r => r.skill === 1 ? 1 : -1), ...guardFit.map(() => -1)];
-  const trace = await wsp.traceWeightModel(base, batch, cfg);
-  const patch = await wsp.proposeReadoutDelta(base, batch, { baseHash: trace.baseHash, inputHash: trace.inputHash,
-    output: 0, deltas: delta }, cfg);
-  const fitted = await wsp.applyWeightPatch(base, patch);
-  return fitted.layers[0];
+  return fitLinear(rows.map(r => r.point), delta);
 }
 
 async function fit(method, name) {
   const get = key => samples(sets[name + '.' + key], method);
   const skill = get('skillFit'), guards = get('guardFit').filter(r => r.correctNative);
   const head = await ridge(skill, guards), separateHead = await ridge(skill, []);
-  const baseHash = await wsp.fingerprintModel(base);
   const candidates = { fit: [...head.weights, head.bias[0]], separateFit: [...separateHead.weights, separateHead.bias[0]], correctGuardFit: guards.length };
   for (const mode of ['protected', 'tag', 'separate']) {
     const weights = mode === 'separate' ? separateHead.weights : head.weights;
     const selected = choose(weights, get('skillTune'), get('guardTune'), mode);
-    const [a, b, c] = selected.coefficients;
-    const edits = [{ layer: 0, parameter: 'weights', index: 0, value: a }, { layer: 0, parameter: 'weights', index: 1, value: b },
-      { layer: 0, parameter: 'bias', index: 0, value: c }].filter(e => e.value !== 0);
-    const model = edits.length ? await wsp.applyWeightPatch(base, { schema: 'ruv-fann.weight-patch/1', baseHash, edits }) : base;
-    candidates[mode] = { ...selected, modelSha256: await wsp.fingerprintModel(model) };
+    candidates[mode] = { ...selected, modelSha256: await modelHash(selected.coefficients) };
   }
   return candidates;
 }

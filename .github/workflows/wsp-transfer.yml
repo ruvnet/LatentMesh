@@ -26,7 +26,7 @@ jobs:
           node-version: 22
       - run: npm install --ignore-scripts --no-package-lock --no-audit --no-fund --workspaces=false
         working-directory: ruv-FANN/packages/wsp
-      - run: node --test harness/wsp/transfer.test.mjs harness/wsp/language/wire.test.mjs harness/wsp/frontier/packet.test.mjs
+      - run: node --test harness/wsp/transfer.test.mjs harness/wsp/language/wire.test.mjs harness/wsp/frontier/packet.test.mjs harness/wsp/frontier/confidence/receiver.test.mjs
         working-directory: LatentMesh
       - name: Reproduce the controlled repair experiment
         working-directory: LatentMesh
@@ -50,3 +50,11 @@ jobs:
           python harness/wsp/frontier/test_artifact.py
           python harness/wsp/frontier/evidence.py verify harness/wsp/frontier
           python harness/wsp/frontier/target/summarize.py verify harness/wsp/frontier/target
+      - name: Verify paired receiver comparisons and untouched dialogue confirmation
+        working-directory: LatentMesh/harness/wsp/frontier/confidence
+        env:
+          OPENBLAS_NUM_THREADS: '1'
+        run: |
+          python scorecard.py verify reference lock.json
+          python scorecard.py verify ruos lock.json
+          python confirm.py verify reference
