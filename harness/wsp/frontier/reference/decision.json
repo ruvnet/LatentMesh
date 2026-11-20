@@ -1,0 +1,275 @@
+{
+  "schema": "latentmesh.frontier-decision/1",
+  "observationsSha256": "36b1aef2dd3991011c4361b63e6cec244e8d79b0307d73f933b6db1d655f362e",
+  "lockSha256": "8d3daa52b562868281ac4bd0e1233d7051a5855c01828381ec0c152c5dec4b73",
+  "simultaneousTail": 0.002777777777777778,
+  "domains": {
+    "go": {
+      "skillRows": 512,
+      "retentionRows": 700,
+      "metrics": {
+        "wsp48": {
+          "newCorrect": 345,
+          "newAccuracy": 67.38281,
+          "retainedCorrect": 580,
+          "retainedAccuracy": 82.85714,
+          "retainedLost": 4,
+          "skillOverrides": 129,
+          "retentionOverrides": 4
+        },
+        "softKD": {
+          "newCorrect": 351,
+          "newAccuracy": 68.55469,
+          "retainedCorrect": 580,
+          "retainedAccuracy": 82.85714,
+          "retainedLost": 4,
+          "skillOverrides": 131,
+          "retentionOverrides": 5
+        },
+        "float13": {
+          "newCorrect": 355,
+          "newAccuracy": 69.33594,
+          "retainedCorrect": 578,
+          "retainedAccuracy": 82.57143,
+          "retainedLost": 6,
+          "skillOverrides": 149,
+          "retentionOverrides": 8
+        },
+        "hard416": {
+          "newCorrect": 340,
+          "newAccuracy": 66.40625,
+          "retainedCorrect": 580,
+          "retainedAccuracy": 82.85714,
+          "retainedLost": 4,
+          "skillOverrides": 112,
+          "retentionOverrides": 5
+        },
+        "binary4": {
+          "newCorrect": 351,
+          "newAccuracy": 68.55469,
+          "retainedCorrect": 579,
+          "retainedAccuracy": 82.71429,
+          "retainedLost": 5,
+          "skillOverrides": 117,
+          "retentionOverrides": 6
+        },
+        "text4": {
+          "newCorrect": 343,
+          "newAccuracy": 66.99219,
+          "retainedCorrect": 578,
+          "retainedAccuracy": 82.57143,
+          "retainedLost": 6,
+          "skillOverrides": 119,
+          "retentionOverrides": 7
+        },
+        "observed8": {
+          "newCorrect": 340,
+          "newAccuracy": 66.40625,
+          "retainedCorrect": 578,
+          "retainedAccuracy": 82.57143,
+          "retainedLost": 6,
+          "skillOverrides": 110,
+          "retentionOverrides": 7
+        },
+        "local": {
+          "newCorrect": 332,
+          "newAccuracy": 64.84375,
+          "retainedCorrect": 579,
+          "retainedAccuracy": 82.71429,
+          "retainedLost": 5,
+          "skillOverrides": 116,
+          "retentionOverrides": 7
+        },
+        "oracle": {
+          "newCorrect": 347,
+          "newAccuracy": 67.77344,
+          "retainedCorrect": 579,
+          "retainedAccuracy": 82.71429,
+          "retainedLost": 5,
+          "skillOverrides": 137,
+          "retentionOverrides": 6
+        },
+        "intact": {
+          "newCorrect": 256,
+          "newAccuracy": 50.0,
+          "retainedCorrect": 584,
+          "retainedAccuracy": 83.42857,
+          "retainedLost": 0,
+          "skillOverrides": 0,
+          "retentionOverrides": 0
+        }
+      },
+      "strongest": [
+        "float13"
+      ],
+      "advantagePp": -1.95312,
+      "retainedLossPp": 0.57143,
+      "paired95VsBest": {
+        "float13": [
+          -4.6875,
+          0.78125
+        ]
+      },
+      "simultaneousLowerPp": {
+        "softKD": -3.125,
+        "float13": -5.85938,
+        "hard416": -1.36719,
+        "binary4": -3.90625,
+        "text4": -2.73438,
+        "observed8": -1.95312,
+        "local": -1.17188,
+        "intact": 12.5
+      },
+      "retentionUpperPp": 1.90308,
+      "passesPoint": false,
+      "passesUncertainty": false
+    },
+    "tweet": {
+      "skillRows": 512,
+      "retentionRows": 900,
+      "metrics": {
+        "wsp48": {
+          "newCorrect": 291,
+          "newAccuracy": 56.83594,
+          "retainedCorrect": 609,
+          "retainedAccuracy": 67.66667,
+          "retainedLost": 60,
+          "skillOverrides": 35,
+          "retentionOverrides": 74
+        },
+        "softKD": {
+          "newCorrect": 293,
+          "newAccuracy": 57.22656,
+          "retainedCorrect": 605,
+          "retainedAccuracy": 67.22222,
+          "retainedLost": 64,
+          "skillOverrides": 37,
+          "retentionOverrides": 80
+        },
+        "float13": {
+          "newCorrect": 306,
+          "newAccuracy": 59.76562,
+          "retainedCorrect": 600,
+          "retainedAccuracy": 66.66667,
+          "retainedLost": 69,
+          "skillOverrides": 56,
+          "retentionOverrides": 81
+        },
+        "hard416": {
+          "newCorrect": 283,
+          "newAccuracy": 55.27344,
+          "retainedCorrect": 627,
+          "retainedAccuracy": 69.66667,
+          "retainedLost": 42,
+          "skillOverrides": 27,
+          "retentionOverrides": 51
+        },
+        "binary4": {
+          "newCorrect": 275,
+          "newAccuracy": 53.71094,
+          "retainedCorrect": 611,
+          "retainedAccuracy": 67.88889,
+          "retainedLost": 58,
+          "skillOverrides": 21,
+          "retentionOverrides": 75
+        },
+        "text4": {
+          "newCorrect": 281,
+          "newAccuracy": 54.88281,
+          "retainedCorrect": 605,
+          "retainedAccuracy": 67.22222,
+          "retainedLost": 64,
+          "skillOverrides": 27,
+          "retentionOverrides": 85
+        },
+        "observed8": {
+          "newCorrect": 278,
+          "newAccuracy": 54.29688,
+          "retainedCorrect": 606,
+          "retainedAccuracy": 67.33333,
+          "retainedLost": 63,
+          "skillOverrides": 24,
+          "retentionOverrides": 80
+        },
+        "local": {
+          "newCorrect": 284,
+          "newAccuracy": 55.46875,
+          "retainedCorrect": 605,
+          "retainedAccuracy": 67.22222,
+          "retainedLost": 64,
+          "skillOverrides": 30,
+          "retentionOverrides": 83
+        },
+        "oracle": {
+          "newCorrect": 293,
+          "newAccuracy": 57.22656,
+          "retainedCorrect": 600,
+          "retainedAccuracy": 66.66667,
+          "retainedLost": 69,
+          "skillOverrides": 37,
+          "retentionOverrides": 85
+        },
+        "intact": {
+          "newCorrect": 256,
+          "newAccuracy": 50.0,
+          "retainedCorrect": 669,
+          "retainedAccuracy": 74.33333,
+          "retainedLost": 0,
+          "skillOverrides": 0,
+          "retentionOverrides": 0
+        }
+      },
+      "strongest": [
+        "float13"
+      ],
+      "advantagePp": -2.92969,
+      "retainedLossPp": 6.66667,
+      "paired95VsBest": {
+        "float13": [
+          -5.07812,
+          -0.97656
+        ]
+      },
+      "simultaneousLowerPp": {
+        "softKD": -1.75781,
+        "float13": -5.85938,
+        "hard416": -0.19531,
+        "binary4": 0.97656,
+        "text4": -0.39062,
+        "observed8": 0.0,
+        "local": -1.5625,
+        "intact": 4.10156
+      },
+      "retentionUpperPp": 9.3008,
+      "passesPoint": false,
+      "passesUncertainty": false
+    }
+  },
+  "official": {
+    "rows": 1421,
+    "exactDevelopmentTextOverlaps": 0,
+    "macroF1": {
+      "wsp48": 80.31563,
+      "softKD": 80.31563,
+      "float13": 80.25883,
+      "hard416": 80.20942,
+      "binary4": 80.15528,
+      "text4": 80.15528,
+      "observed8": 80.15528,
+      "local": 80.14979,
+      "oracle": 80.31563,
+      "intact": 80.15528
+    },
+    "intactMacroF1": 80.15528,
+    "candidateVsIntactPp": 0.16035,
+    "paired95Pp": [
+      0.0,
+      0.37215
+    ],
+    "publishedTimeLMs2021": 80.2,
+    "candidateVsPublishedPp": 0.11563,
+    "clearsReference": false
+  },
+  "advance": false,
+  "comparativeEvidence": false
+}

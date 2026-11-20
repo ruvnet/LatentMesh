@@ -18,6 +18,8 @@ the sender outputs the same constant for every probe.
 
 A [second experiment on pretrained DistilBERT and RoBERTa](language/README.md) transfers an additional anger response with a 13 parameter adapter. All controls use the same 218 byte Air frame.
 
+A [registered follow up on GoEmotions and TweetEval](frontier/README.md) compares seven transmitted methods and two local controls, with independent CPU results and an installable ONNX readout.
+
 ## Reproduce
 
 Use sibling checkouts, Node 20.9 or newer, npm, and a C11 compiler. The compiler
