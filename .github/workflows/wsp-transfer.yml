@@ -49,3 +49,4 @@ jobs:
           python -m pip install --only-binary=:all: scipy==1.17.0 onnx==1.19.1
           python harness/wsp/frontier/test_artifact.py
           python harness/wsp/frontier/evidence.py verify harness/wsp/frontier
+          python harness/wsp/frontier/target/summarize.py verify harness/wsp/frontier/target

@@ -13,7 +13,7 @@ Anger accuracy is balanced accuracy on 512 cases per domain. Sentiment loss is t
 | ruOS, Reddit | 67.58% | 68.55% | 69.14% | 0.71 points (5/700) | −4.10 to +0.98 points |
 | ruOS, tweets | 57.03% | 58.59% | 59.18% | 6.78 points (61/900) | −4.30 to −0.20 points |
 
-The gate required a two point advantage above every compact control and at most one point of lost sentiment accuracy on each population. Both hosts missed the gate. Neither met the simultaneous confidence bounds. The reference gate lost one of 400 in calibration. Its loss on tweets shows the limit of calibrating exclusively on Reddit. A useful subsequent test would freeze a receiver gate using target domain calibration and evaluate it on a new sealed population.
+The gate required a two point advantage above every compact control and at most one point of lost sentiment accuracy on each population. Both hosts missed the gate. Neither met the simultaneous confidence bounds. The reference gate lost one of 400 in calibration. Its loss on tweets shows the limit of calibrating exclusively on Reddit. A separately [registered target domain calibration test](target/README.md) recovered 101 of 103 lost sentiment answers on 1,800 fresh tweets. Its stricter gate also reduced anger recognition.
 
 ## Official TweetEval emotion benchmark
 
@@ -28,7 +28,7 @@ This separate endpoint predicts anger, joy, optimism and sadness on all 1,421 of
 
 The new output corrected three reference predictions and two ruOS predictions. On the reference CPU, WSP and distillation made the same 1,421 decisions. On ruOS, distillation corrected one additional tweet. The benchmark authors' evaluation script reproduced every arm's macro F1 on each archive. The independent hosts do not constitute independent statistical samples.
 
-The original comparison selected the published TimeLMs 2021 score of 80.2. A stronger published result identified after registration is 81.5 for QA-BPE-nlp + BERTweet. Both use the official four class benchmark. These are external, unpaired point estimates. Neither establishes an advantage under our communication budget. The observed results do not establish a state of the art accuracy claim. [Official table and evaluator](https://github.com/cardiffnlp/tweeteval/tree/4fbd22cd78421f05b1ecdb4fc5725bc7a7bd8f66) · [QA-BPE Table 21](https://arxiv.org/html/2602.06394v1#A9.T21).
+The original comparison selected the published TimeLMs 2021 score of 80.2. A stronger published result identified after registration is 81.5 for QA-BPE-nlp + BERTweet. Both use the official four class benchmark. These are external, unpaired point estimates. Neither establishes an advantage under our communication budget. The observed results do not establish a state of the art accuracy claim. [Official table and evaluator](https://github.com/cardiffnlp/tweeteval/tree/4fbd22cd78421f05b1ecdb4fc5725bc7a7bd8f66) · [QA-BPE Table 21](https://arxiv.org/html/2602.06394v1).
 
 ## What crossed the link
 
