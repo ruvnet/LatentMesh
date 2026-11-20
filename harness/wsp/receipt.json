@@ -1,7 +1,7 @@
 {
   "schema": "latentmesh.readout-repair-benchmark/1",
   "evidence": "controlled ablation on UCI data; portable C loopback; scalar WASM",
-  "fannRevision": "0ef0a76ac4eddf8b8a4e2f989800d070e7d7a9c8",
+  "fannRevision": "1abb28d3d23f00c04810f59ff7b3797b57bdc24c",
   "runs": [
     {
       "dataset": "iris",

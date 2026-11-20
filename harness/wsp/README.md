@@ -24,8 +24,8 @@ git clone https://github.com/ruvnet/LatentMesh.git
 git -C LatentMesh fetch origin feat/latent-wsp-transfer
 git -C LatentMesh switch --detach FETCH_HEAD
 git clone https://github.com/ruvnet/ruv-FANN.git
-git -C ruv-FANN fetch origin 0ef0a76ac4eddf8b8a4e2f989800d070e7d7a9c8
-git -C ruv-FANN switch --detach 0ef0a76ac4eddf8b8a4e2f989800d070e7d7a9c8
+git -C ruv-FANN fetch origin 1abb28d3d23f00c04810f59ff7b3797b57bdc24c
+git -C ruv-FANN switch --detach 1abb28d3d23f00c04810f59ff7b3797b57bdc24c
 (cd ruv-FANN/packages/wsp && npm install --ignore-scripts --no-package-lock --workspaces=false)
 cd LatentMesh
 node --test harness/wsp/transfer.test.mjs

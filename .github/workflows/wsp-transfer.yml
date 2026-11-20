@@ -18,7 +18,7 @@ jobs:
       - uses: actions/checkout@v4
         with:
           repository: ruvnet/ruv-FANN
-          ref: 0ef0a76ac4eddf8b8a4e2f989800d070e7d7a9c8
+          ref: 1abb28d3d23f00c04810f59ff7b3797b57bdc24c
           path: ruv-FANN
           persist-credentials: false
       - uses: actions/setup-node@v4
