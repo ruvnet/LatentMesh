@@ -4,6 +4,8 @@ Training on anger against every other emotion improved the precision of the 13 f
 
 The [DailyDialog follow up](dailydialog/README.md) tests the frozen program on a different dialogue source and compares an adapted WSP readout with an equally sized local control.
 
+The next receiver carries eight coordinates from the preceding turn. Both contextual readouts were frozen before testing on fresh EmoContext conversations. [Results, stateful installer and paired controls](context/README.md).
+
 ## An anger tag in complete dialogues
 
 The receiver saw only the utterance text. Every calibrated method got the same 768 fit labels from 273 dialogues and the same 3,224 threshold selection labels from 308 other dialogues. The final 409 dialogues were disjoint from both groups and excluded normalized text found in the earlier evaluations. Of the 2,277 test utterances, 171 were angry (7.51%). The old dialogue calibrated tag and all new policies were evaluated on exactly these rows. The held out dialogues are from the same TV series. The two CPUs are independent executions on the same examples.

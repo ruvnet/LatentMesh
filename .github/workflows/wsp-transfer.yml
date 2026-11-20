@@ -71,3 +71,12 @@ jobs:
           python report.py verify ruos
           python report.py compare reference ruos
           python ranking.py verify reference
+      - name: Replay the contextual WSP experiment on independent conversations
+        working-directory: LatentMesh/harness/wsp/frontier/confidence/context
+        env:
+          OPENBLAS_NUM_THREADS: '1'
+        run: |
+          python test_score.py
+          python score.py verify reference
+          python score.py verify ruos
+          python score.py compare reference ruos
