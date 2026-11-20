@@ -2,10 +2,20 @@
 import unittest
 from unittest.mock import patch
 
+import numpy as np
 import report
+from ranking import positive_blocks, summarize
 
 
 class GateTests(unittest.TestCase):
+    def test_ranking_oracle_cannot_split_a_tied_score(self):
+        blocks = positive_blocks(np.array([3,3,2,1,0,0]), np.array([1,0,1,0,0,1]))
+        self.assertEqual(blocks, [[2,1],[3,2],[6,3]])
+        metrics = summarize(blocks, 6, 3)
+        self.assertEqual(metrics["maxPrecisionAt20Recall"], 66.66667)
+        self.assertEqual(metrics["averagePrecision"], 55.55556)
+        self.assertEqual(metrics["maxRecallAt50Precision"], 100.)
+
     @patch.object(report, "DRAWS", 250)
     def test_precision_recall_denominators_and_native_parity(self):
         # Each dialogue has one positive and nine negatives. One correct and one

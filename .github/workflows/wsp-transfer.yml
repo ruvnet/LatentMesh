@@ -61,3 +61,13 @@ jobs:
           python confirm.py verify ruos
           python precision/assess.py verify precision/reference precision/lock.json
           python precision/assess.py verify precision/ruos precision/lock.json
+      - name: Replay the independent DailyDialog test and compare both compiled receivers
+        working-directory: LatentMesh/harness/wsp/frontier/confidence/dailydialog
+        env:
+          OPENBLAS_NUM_THREADS: '1'
+        run: |
+          python test_report.py
+          python report.py verify reference
+          python report.py verify ruos
+          python report.py compare reference ruos
+          python ranking.py verify reference

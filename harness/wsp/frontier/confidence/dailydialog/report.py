@@ -163,6 +163,16 @@ def compare(first, second):
     for k in keys:
         if records[0][k] != records[1][k]:
             raise ValueError("independent host cohorts or installed programs differ: " + k)
+    controls = [json.loads((d / "controls.json").read_bytes()) for d in (first, second)]
+    if controls[0]["validation"] != controls[1]["validation"] or controls[0]["validation"]["rows"] != 128:
+        raise ValueError("control installation parity cohorts differ")
+    for name in ("transfer", "local", "pca"):
+        a, b = (r["methods"][name] for r in controls)
+        if a["installation"] != b["installation"] or (name == "transfer" and a["installation"] != graphs[0]):
+            raise ValueError("installation digest or graph receipt differs: " + name)
+        for val in (a,b):
+            if val["nativeDrift"] or val["tagDisagreements"] or not (0 <= val["maxScoreError"] <= 1e-8):
+                raise ValueError("native logit or tag parity failure in control installation")
     for arm in ("frozen.scoreOnly", "transfer.majority"):
         a, b = (rec["predictions"][arm] for rec in records)
         print(arm, "cross host decisions differing on official test:", sum(x != y for x,y in zip(a,b,strict=True)))
