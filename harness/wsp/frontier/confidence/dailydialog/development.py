@@ -14,13 +14,17 @@ NAMES = ("transfer", "local", "pca")
 WITNESS = {"transfer": "float13", "local": "local"}
 
 
+def fit_rows(train):
+    order = lambda r: sha(("daily-wsp-v1/" + r.id).encode())
+    return sorted((r for r in train if r.anger), key=order)[:192] + sorted((r for r in train if not r.anger), key=order)[:576]
+
+
 def prepare(cache, out):
     out.mkdir(parents=True, exist_ok=True)
     seen = history(cache)
     _, train, train_log = partition(cache, "train", seen)
     _, val, val_log = partition(cache, "validation", seen)
-    order = lambda r: sha(("daily-wsp-v1/" + r.id).encode())
-    fit = sorted((r for r in train if r.anger), key=order)[:192] + sorted((r for r in train if not r.anger), key=order)[:576]
+    fit = fit_rows(train)
     frozen = load_heads(HERE.parent / "heads")
     enc = Encoder(cache, "target")
     x, _ = enc.extract(r.text for r in fit)

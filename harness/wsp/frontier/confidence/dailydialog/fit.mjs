@@ -3,7 +3,9 @@ import { join } from 'node:path';
 import { wsp } from '../../../dependency.mjs';
 
 const directory = process.argv[2];
-if (!directory) throw Error('usage: node fit.mjs NEW_RUN_DIRECTORY');
+const matchedOnly = process.argv[3] === '--matched';
+if (!directory || (process.argv[3] && !matchedOnly) || process.argv.length > 4)
+  throw Error('usage: node fit.mjs NEW_RUN_DIRECTORY [--matched]');
 const data = JSON.parse(readFileSync(join(directory, 'features.json')));
 const { fit, tune } = data;
 if (fit.rows !== fit.truth.length || tune.rows !== tune.truth.length || fit.rows > 768) throw Error('invalid label budget');
@@ -52,7 +54,7 @@ function select(scores, truth) {
 
 const description = split => Object.fromEntries(['rows','positive','dialogues','idsSha256'].map(k => [k, split[k]]));
 const record = { data: { fit: description(fit), tune: description(tune), trainScreened: data.trainScreened, screen: data.screen }, methods: {} };
-for (const name of ['transfer','local','pca']) {
+for (const name of (matchedOnly ? ['transfer','local'] : ['transfer','local','pca'])) {
   const x = features(fit, name), width = x[0].length;
   const base = { schema: 'ruv-fann.dense-layers/1', layers: [
     { inputs: width, outputs: 1, weights: Array(width).fill(0), bias: [0], activation: 'Linear', steepness: 1 }
