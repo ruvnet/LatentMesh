@@ -1,0 +1,1095 @@
+{
+  "schema": "latentmesh.receiver-confidence/1",
+  "headsSha256": "e5035042fc80e9640c221ceff53127891d5985ddd53ff647eb308c446d76e396",
+  "fitSha256": "e4fda523d31f88d20aff16960c0e7054abdf611369eb1eca40e2b22225a359cb",
+  "arms": [
+    "wsp48",
+    "softKD",
+    "float13",
+    "hard416",
+    "binary4",
+    "text4",
+    "observed8",
+    "local"
+  ],
+  "sets": {
+    "transfer.skillFit": {
+      "ids": "903b8f65be7a22406ae4f5676f45caf813ab521326e2731a06be9fc0a8d60ecd",
+      "rows": 384
+    },
+    "transfer.skillTune": {
+      "ids": "361b3832d079d47a4aa623d49f8f501a5cc6c0c334add9f14e82887b46eb642d",
+      "rows": 192
+    },
+    "transfer.guardFit": {
+      "ids": "65673c29f7a001fb6f76fe424dea12bfdd89d53898e30328760979850fad126d",
+      "rows": 240
+    },
+    "transfer.guardTune": {
+      "ids": "a3666e3a6a45337865e477072c4fcfda5eabe9e5804e1d371c689ac1d43fe694",
+      "rows": 360
+    },
+    "adapted.skillFit": {
+      "ids": "6c17335dfb5ef39094c278c3545b26b73db9698968b3455588072aa97407ae98",
+      "rows": 384
+    },
+    "adapted.guardFit": {
+      "ids": "a95b6adf00e689d38b26c3fa35e7f5e0a2f676d2cbf5e2520826cb8a6e4f3056",
+      "rows": 240
+    },
+    "adapted.skillTune": {
+      "ids": "acfc3cb89159c993deae1f85897dfea8b090146ff3dc224af1ca709bcbe4be4a",
+      "rows": 192
+    },
+    "adapted.guardTune": {
+      "ids": "ad8212c97c68ac75ac39c566172686a44e744c6e6d94a1648abf9c16bc780328",
+      "rows": 360
+    }
+  },
+  "policies": {
+    "transfer": {
+      "wsp48": {
+        "fit": [
+          0.12749229080857838,
+          -0.49091543570029833,
+          0.1467973126684793
+        ],
+        "separateFit": [
+          1.618128325964407,
+          -0.723610662836066,
+          1.7723513691870392
+        ],
+        "correctGuardFit": 177,
+        "protected": {
+          "coefficients": [
+            0,
+            0,
+            -1
+          ],
+          "selection": {
+            "tp": 0,
+            "fp": 0,
+            "lost": 0
+          },
+          "modelSha256": "63dd554c4eb9fd17fa8b87ad44c805eb371b4425644d7cc3c9894bd2157bf89d"
+        },
+        "tag": {
+          "coefficients": [
+            0.12749229080857838,
+            -0.49091543570029833,
+            0.49989277302386703
+          ],
+          "selection": {
+            "tp": 74,
+            "fp": 45,
+            "lost": 174
+          },
+          "modelSha256": "1d5752aab9830d743247e19a175503637ca7e5590c620f5049c005b916a59564"
+        },
+        "separate": {
+          "coefficients": [
+            1.618128325964407,
+            -0.723610662836066,
+            1.6612998451553924
+          ],
+          "selection": {
+            "tp": 52,
+            "fp": 25,
+            "lost": 161
+          },
+          "modelSha256": "81d6a1f50a8480b1053d53a6c6ee156694b2c8a1342371cfa894e62345d64604"
+        }
+      },
+      "softKD": {
+        "fit": [
+          0.10242335289895449,
+          -0.4593357908096539,
+          0.2282184380991627
+        ],
+        "separateFit": [
+          0.5513880135076829,
+          -0.6588694718133079,
+          1.6349181440170517
+        ],
+        "correctGuardFit": 177,
+        "protected": {
+          "coefficients": [
+            0,
+            0,
+            -1
+          ],
+          "selection": {
+            "tp": 0,
+            "fp": 0,
+            "lost": 0
+          },
+          "modelSha256": "63dd554c4eb9fd17fa8b87ad44c805eb371b4425644d7cc3c9894bd2157bf89d"
+        },
+        "tag": {
+          "coefficients": [
+            0.10242335289895449,
+            -0.4593357908096539,
+            0.5795296465535633
+          ],
+          "selection": {
+            "tp": 71,
+            "fp": 43,
+            "lost": 167
+          },
+          "modelSha256": "70a2456e2030884c34a606ab10fa625020474e0bc281ee60f83d7a03549fc0d3"
+        },
+        "separate": {
+          "coefficients": [
+            0.5513880135076829,
+            -0.6588694718133079,
+            1.6042179341106257
+          ],
+          "selection": {
+            "tp": 58,
+            "fp": 31,
+            "lost": 161
+          },
+          "modelSha256": "20beba3d6b11c878c7c9db457a21cac17b32d13893e0d13671e962848ffb024e"
+        }
+      },
+      "float13": {
+        "fit": [
+          0.28662571506319556,
+          -0.480283684554022,
+          0.222610788755876
+        ],
+        "separateFit": [
+          1.5653262721004157,
+          -0.6395505182470418,
+          1.521375147838511
+        ],
+        "correctGuardFit": 177,
+        "protected": {
+          "coefficients": [
+            0,
+            0,
+            -1
+          ],
+          "selection": {
+            "tp": 0,
+            "fp": 0,
+            "lost": 0
+          },
+          "modelSha256": "63dd554c4eb9fd17fa8b87ad44c805eb371b4425644d7cc3c9894bd2157bf89d"
+        },
+        "tag": {
+          "coefficients": [
+            0.28662571506319556,
+            -0.480283684554022,
+            0.5839291262203342
+          ],
+          "selection": {
+            "tp": 74,
+            "fp": 49,
+            "lost": 181
+          },
+          "modelSha256": "b1cddd5104f0ff51b33f7d4e7cf2dcca61618f3dd29cdc8869643c757d25dead"
+        },
+        "separate": {
+          "coefficients": [
+            1.5653262721004157,
+            -0.6395505182470418,
+            1.393353311289534
+          ],
+          "selection": {
+            "tp": 52,
+            "fp": 28,
+            "lost": 159
+          },
+          "modelSha256": "a5c3fce9724aa40cab2f615c2fef182aaf6e2ce7b292916db280ad178d184db7"
+        }
+      },
+      "hard416": {
+        "fit": [
+          0.19611113287374482,
+          -0.5165522764234979,
+          0.22420456584203036
+        ],
+        "separateFit": [
+          1.3217532530534166,
+          -0.6581958346949058,
+          1.5969104319563334
+        ],
+        "correctGuardFit": 177,
+        "protected": {
+          "coefficients": [
+            0,
+            0,
+            -1
+          ],
+          "selection": {
+            "tp": 0,
+            "fp": 0,
+            "lost": 0
+          },
+          "modelSha256": "63dd554c4eb9fd17fa8b87ad44c805eb371b4425644d7cc3c9894bd2157bf89d"
+        },
+        "tag": {
+          "coefficients": [
+            0.19611113287374482,
+            -0.5165522764234979,
+            0.5724806051086255
+          ],
+          "selection": {
+            "tp": 70,
+            "fp": 38,
+            "lost": 167
+          },
+          "modelSha256": "7ff2d6d060e00b2d9bfbed4d2b49d72104b4df05e2b636e5735f723ccaed727e"
+        },
+        "separate": {
+          "coefficients": [
+            1.3217532530534166,
+            -0.6581958346949058,
+            1.6871253800491894
+          ],
+          "selection": {
+            "tp": 66,
+            "fp": 37,
+            "lost": 193
+          },
+          "modelSha256": "13d3a44181075935d978c213ade56c5262811d8d50e646233dac3757d4225c83"
+        }
+      },
+      "binary4": {
+        "fit": [
+          0.07679359906421315,
+          -0.4897316394556267,
+          0.11717164711982118
+        ],
+        "separateFit": [
+          1.2842347836781383,
+          -0.7517359706513612,
+          1.6172715620824631
+        ],
+        "correctGuardFit": 177,
+        "protected": {
+          "coefficients": [
+            0,
+            0,
+            -1
+          ],
+          "selection": {
+            "tp": 0,
+            "fp": 0,
+            "lost": 0
+          },
+          "modelSha256": "63dd554c4eb9fd17fa8b87ad44c805eb371b4425644d7cc3c9894bd2157bf89d"
+        },
+        "tag": {
+          "coefficients": [
+            0.07679359906421315,
+            -0.4897316394556267,
+            0.4763063812998506
+          ],
+          "selection": {
+            "tp": 75,
+            "fp": 55,
+            "lost": 176
+          },
+          "modelSha256": "a33da2021e4a8af8c313203acacce41a9c72e894fdbcbdc4db3f35f29ff30919"
+        },
+        "separate": {
+          "coefficients": [
+            1.2842347836781383,
+            -0.7517359706513612,
+            1.7458954298500253
+          ],
+          "selection": {
+            "tp": 71,
+            "fp": 39,
+            "lost": 192
+          },
+          "modelSha256": "300dc12bd4d2bcc5df48eb97f9d9e37190446ca959b9ef43d0f70c9b29e33b82"
+        }
+      },
+      "text4": {
+        "fit": [
+          0.16878430913273199,
+          -0.5086870843421029,
+          0.19501359648572097
+        ],
+        "separateFit": [
+          1.2821134628908348,
+          -0.8278127238682387,
+          1.6435966065274095
+        ],
+        "correctGuardFit": 177,
+        "protected": {
+          "coefficients": [
+            0,
+            0,
+            -1
+          ],
+          "selection": {
+            "tp": 0,
+            "fp": 0,
+            "lost": 0
+          },
+          "modelSha256": "63dd554c4eb9fd17fa8b87ad44c805eb371b4425644d7cc3c9894bd2157bf89d"
+        },
+        "tag": {
+          "coefficients": [
+            0.16878430913273199,
+            -0.5086870843421029,
+            0.5336792422877632
+          ],
+          "selection": {
+            "tp": 65,
+            "fp": 36,
+            "lost": 159
+          },
+          "modelSha256": "6e70471a8977ce73e104523ce52abd89ae8011b4905e411457f9970dbf96fbbf"
+        },
+        "separate": {
+          "coefficients": [
+            1.2821134628908348,
+            -0.8278127238682387,
+            1.7986169234579843
+          ],
+          "selection": {
+            "tp": 71,
+            "fp": 40,
+            "lost": 182
+          },
+          "modelSha256": "9fa03abf0f31b1dd1507da7b054509198613f6a468a3eaa419b0d796a63b93ed"
+        }
+      },
+      "observed8": {
+        "fit": [
+          0.2191684794640266,
+          -0.5202620240667339,
+          0.24048627428154623
+        ],
+        "separateFit": [
+          1.2630699427970347,
+          -0.8525284159671672,
+          1.6462066380351654
+        ],
+        "correctGuardFit": 177,
+        "protected": {
+          "coefficients": [
+            0,
+            0,
+            -1
+          ],
+          "selection": {
+            "tp": 0,
+            "fp": 0,
+            "lost": 0
+          },
+          "modelSha256": "63dd554c4eb9fd17fa8b87ad44c805eb371b4425644d7cc3c9894bd2157bf89d"
+        },
+        "tag": {
+          "coefficients": [
+            0.2191684794640266,
+            -0.5202620240667339,
+            0.5854454014371948
+          ],
+          "selection": {
+            "tp": 66,
+            "fp": 38,
+            "lost": 156
+          },
+          "modelSha256": "e1f10b5919e64134fd745ff47c9f9481e33d5b7f9f69ab620ab6f66bd95204f2"
+        },
+        "separate": {
+          "coefficients": [
+            1.2630699427970347,
+            -0.8525284159671672,
+            1.6497799033027212
+          ],
+          "selection": {
+            "tp": 60,
+            "fp": 31,
+            "lost": 158
+          },
+          "modelSha256": "4e858daf1a77517efc9233a486b5ed23b2e133ba0a4d3fb046955ea1755da3df"
+        }
+      },
+      "local": {
+        "fit": [
+          0.1848934875180701,
+          -0.5274970753614047,
+          0.22634806948611938
+        ],
+        "separateFit": [
+          1.114579890008173,
+          -0.896664800688025,
+          1.6024478554722357
+        ],
+        "correctGuardFit": 177,
+        "protected": {
+          "coefficients": [
+            0,
+            0,
+            -1
+          ],
+          "selection": {
+            "tp": 0,
+            "fp": 0,
+            "lost": 0
+          },
+          "modelSha256": "63dd554c4eb9fd17fa8b87ad44c805eb371b4425644d7cc3c9894bd2157bf89d"
+        },
+        "tag": {
+          "coefficients": [
+            0.1848934875180701,
+            -0.5274970753614047,
+            0.5726317214964463
+          ],
+          "selection": {
+            "tp": 68,
+            "fp": 36,
+            "lost": 169
+          },
+          "modelSha256": "46d7f00143d582b1c50e1e8d6716ee74fddc9027959504cd3c5640e0d7a34a22"
+        },
+        "separate": {
+          "coefficients": [
+            1.114579890008173,
+            -0.896664800688025,
+            1.630049564616383
+          ],
+          "selection": {
+            "tp": 62,
+            "fp": 29,
+            "lost": 170
+          },
+          "modelSha256": "599ed07eaf6424e7e4dd5352cc518acbf241424906ad8467f78ef04a64a9ce7c"
+        }
+      },
+      "scoreOnly": {
+        "fit": [
+          0.11731958604742079,
+          0,
+          -0.2394511387063604
+        ],
+        "separateFit": [
+          1.5382941498880152,
+          0,
+          1.1633971772657885
+        ],
+        "correctGuardFit": 177,
+        "protected": {
+          "coefficients": [
+            0,
+            0,
+            -1
+          ],
+          "selection": {
+            "tp": 0,
+            "fp": 0,
+            "lost": 0
+          },
+          "modelSha256": "63dd554c4eb9fd17fa8b87ad44c805eb371b4425644d7cc3c9894bd2157bf89d"
+        },
+        "tag": {
+          "coefficients": [
+            0.11731958604742079,
+            0,
+            0.0931860626572427
+          ],
+          "selection": {
+            "tp": 60,
+            "fp": 35,
+            "lost": 188
+          },
+          "modelSha256": "aed1c8280297ecc5173916a2be1d72fc656f575964844f2127611ecbdaddc3fd"
+        },
+        "separate": {
+          "coefficients": [
+            1.5382941498880152,
+            0,
+            1.2232193665242184
+          ],
+          "selection": {
+            "tp": 60,
+            "fp": 35,
+            "lost": 190
+          },
+          "modelSha256": "30b69dfaa4b7dcab28a0b4b4449dc0f4d347a0d32ed167bdb7793bea53c89c7f"
+        }
+      },
+      "confidenceOnly": {
+        "fit": [
+          0,
+          -0.4725411977070955,
+          0.049969895524884116
+        ],
+        "separateFit": [
+          0,
+          0.03689737398632791,
+          -0.02797226244322775
+        ],
+        "correctGuardFit": 177,
+        "protected": {
+          "coefficients": [
+            0,
+            -0.4725411977070955,
+            0.21429179616103008
+          ],
+          "selection": {
+            "tp": 2,
+            "fp": 0,
+            "lost": 1
+          },
+          "modelSha256": "edde7a533cbae9b576d4b4c7666a1e71cf7ce14c455d824dca29057741ed7736"
+        },
+        "tag": {
+          "coefficients": [
+            0,
+            -0.4725411977070955,
+            0.4162546569431043
+          ],
+          "selection": {
+            "tp": 79,
+            "fp": 69,
+            "lost": 154
+          },
+          "modelSha256": "32f78f878827fb2074a28103ccbb9a336c01f91921f4f18018224f2ad18fdeda"
+        },
+        "separate": {
+          "coefficients": [
+            0,
+            0.03689737398632791,
+            -0.017722350886193634
+          ],
+          "selection": {
+            "tp": 94,
+            "fp": 89,
+            "lost": 250
+          },
+          "modelSha256": "cbcf98b15a38905c31272877f3577fa0262d5744b57b386e5c983fc012dd7b91"
+        }
+      }
+    },
+    "adapted": {
+      "wsp48": {
+        "fit": [
+          0.8353477297867846,
+          -0.19811182075686243,
+          0.2564817267241781
+        ],
+        "separateFit": [
+          0.8131153368184761,
+          0.04775589416752788,
+          0.2830249441555971
+        ],
+        "correctGuardFit": 126,
+        "protected": {
+          "coefficients": [
+            0,
+            0,
+            -1
+          ],
+          "selection": {
+            "tp": 0,
+            "fp": 0,
+            "lost": 0
+          },
+          "modelSha256": "63dd554c4eb9fd17fa8b87ad44c805eb371b4425644d7cc3c9894bd2157bf89d"
+        },
+        "tag": {
+          "coefficients": [
+            0.8353477297867846,
+            -0.19811182075686243,
+            0.36912721711824314
+          ],
+          "selection": {
+            "tp": 59,
+            "fp": 18,
+            "lost": 55
+          },
+          "modelSha256": "fb90cc53ac1db38cb4f84a28325955acca44fe3d19ae1ce29346e02cb6aefe7a"
+        },
+        "separate": {
+          "coefficients": [
+            0.8131153368184761,
+            0.04775589416752788,
+            0.14405596454744665
+          ],
+          "selection": {
+            "tp": 54,
+            "fp": 14,
+            "lost": 49
+          },
+          "modelSha256": "84b57d10ef747d3489d960f5ffc257943f234118642355e278ad119e9d31f3fe"
+        }
+      },
+      "softKD": {
+        "fit": [
+          0.2481163177371149,
+          -0.11124898806969322,
+          0.16763095602746608
+        ],
+        "separateFit": [
+          0.24049972990633997,
+          0.09173946933729789,
+          0.22183959823759972
+        ],
+        "correctGuardFit": 126,
+        "protected": {
+          "coefficients": [
+            0,
+            0,
+            -1
+          ],
+          "selection": {
+            "tp": 0,
+            "fp": 0,
+            "lost": 0
+          },
+          "modelSha256": "63dd554c4eb9fd17fa8b87ad44c805eb371b4425644d7cc3c9894bd2157bf89d"
+        },
+        "tag": {
+          "coefficients": [
+            0.2481163177371149,
+            -0.11124898806969322,
+            0.2767240695722243
+          ],
+          "selection": {
+            "tp": 59,
+            "fp": 16,
+            "lost": 58
+          },
+          "modelSha256": "0c3bc6bac85b03e731b05e2a7cdb6e83aab07f46f0615db707cdd6ecdca6610a"
+        },
+        "separate": {
+          "coefficients": [
+            0.24049972990633997,
+            0.09173946933729789,
+            0.11095889957089777
+          ],
+          "selection": {
+            "tp": 55,
+            "fp": 14,
+            "lost": 56
+          },
+          "modelSha256": "5b2959ae1014b52cc32d639f7ca38e85bc9127b4e0e743e52fac90d8f9e14835"
+        }
+      },
+      "float13": {
+        "fit": [
+          0.8544371762373527,
+          -0.12603920591422793,
+          0.16331398375153403
+        ],
+        "separateFit": [
+          0.9144122736324856,
+          0.14727417061258488,
+          0.21202965505828827
+        ],
+        "correctGuardFit": 126,
+        "protected": {
+          "coefficients": [
+            0,
+            0,
+            -1
+          ],
+          "selection": {
+            "tp": 0,
+            "fp": 0,
+            "lost": 0
+          },
+          "modelSha256": "63dd554c4eb9fd17fa8b87ad44c805eb371b4425644d7cc3c9894bd2157bf89d"
+        },
+        "tag": {
+          "coefficients": [
+            0.8544371762373527,
+            -0.12603920591422793,
+            0.2837288947077784
+          ],
+          "selection": {
+            "tp": 65,
+            "fp": 17,
+            "lost": 64
+          },
+          "modelSha256": "4675353d0406cb395e77d7ae2218da1fe9667af66814184e0ae8fa968d9dcf68"
+        },
+        "separate": {
+          "coefficients": [
+            0.9144122736324856,
+            0.14727417061258488,
+            0.08728426400689952
+          ],
+          "selection": {
+            "tp": 59,
+            "fp": 14,
+            "lost": 59
+          },
+          "modelSha256": "de145ce32cd32b66084e5556fdf5e25806d551c79452e55a335f796af19657a5"
+        }
+      },
+      "hard416": {
+        "fit": [
+          0.7111232492057644,
+          -0.29092272630044813,
+          0.30473277874209875
+        ],
+        "separateFit": [
+          0.6791658457846619,
+          -0.020704733005804384,
+          0.31004218649263837
+        ],
+        "correctGuardFit": 126,
+        "protected": {
+          "coefficients": [
+            0,
+            0,
+            -1
+          ],
+          "selection": {
+            "tp": 0,
+            "fp": 0,
+            "lost": 0
+          },
+          "modelSha256": "63dd554c4eb9fd17fa8b87ad44c805eb371b4425644d7cc3c9894bd2157bf89d"
+        },
+        "tag": {
+          "coefficients": [
+            0.7111232492057644,
+            -0.29092272630044813,
+            0.5809626529267438
+          ],
+          "selection": {
+            "tp": 78,
+            "fp": 35,
+            "lost": 98
+          },
+          "modelSha256": "2b1a4a27a8cca7cbe51c265e74ad10fc52ce4c821078feab33ffdcd575517fe0"
+        },
+        "separate": {
+          "coefficients": [
+            0.6791658457846619,
+            -0.020704733005804384,
+            0.33844153548773015
+          ],
+          "selection": {
+            "tp": 70,
+            "fp": 29,
+            "lost": 83
+          },
+          "modelSha256": "b53bb4f3346840aad7f484e566af1d1dcb7f4e5ac298f091796f8b3f6e1a30c7"
+        }
+      },
+      "binary4": {
+        "fit": [
+          0.78963690126547,
+          -0.20855179950070954,
+          0.2639967218754565
+        ],
+        "separateFit": [
+          0.779131109844324,
+          0.05309036212638959,
+          0.2870663453964011
+        ],
+        "correctGuardFit": 126,
+        "protected": {
+          "coefficients": [
+            0,
+            0,
+            -1
+          ],
+          "selection": {
+            "tp": 0,
+            "fp": 0,
+            "lost": 0
+          },
+          "modelSha256": "63dd554c4eb9fd17fa8b87ad44c805eb371b4425644d7cc3c9894bd2157bf89d"
+        },
+        "tag": {
+          "coefficients": [
+            0.78963690126547,
+            -0.20855179950070954,
+            0.45234023033766657
+          ],
+          "selection": {
+            "tp": 69,
+            "fp": 27,
+            "lost": 76
+          },
+          "modelSha256": "ad1187a3048bb205876aa0b4aa82ae82dcb428ed4e1f379db22049a5012c449f"
+        },
+        "separate": {
+          "coefficients": [
+            0.779131109844324,
+            0.05309036212638959,
+            0.38576400635039026
+          ],
+          "selection": {
+            "tp": 80,
+            "fp": 38,
+            "lost": 109
+          },
+          "modelSha256": "a679bf8958acb1d78a047e50b15ea82ad9d6fe37bfe7f52598944b78a2550b72"
+        }
+      },
+      "text4": {
+        "fit": [
+          0.7282450286163523,
+          -0.2753413411794781,
+          0.330474793812327
+        ],
+        "separateFit": [
+          0.6795630820256687,
+          -0.03332857546402077,
+          0.34309594887434547
+        ],
+        "correctGuardFit": 126,
+        "protected": {
+          "coefficients": [
+            0,
+            0,
+            -1
+          ],
+          "selection": {
+            "tp": 0,
+            "fp": 0,
+            "lost": 0
+          },
+          "modelSha256": "63dd554c4eb9fd17fa8b87ad44c805eb371b4425644d7cc3c9894bd2157bf89d"
+        },
+        "tag": {
+          "coefficients": [
+            0.7282450286163523,
+            -0.2753413411794781,
+            0.44970903145738444
+          ],
+          "selection": {
+            "tp": 56,
+            "fp": 15,
+            "lost": 54
+          },
+          "modelSha256": "c2d3aec47936379cf16a5a49845c7d4b24d1cf821b377b4440a30cf9f28e710f"
+        },
+        "separate": {
+          "coefficients": [
+            0.6795630820256687,
+            -0.03332857546402077,
+            0.2611431236729154
+          ],
+          "selection": {
+            "tp": 55,
+            "fp": 16,
+            "lost": 55
+          },
+          "modelSha256": "a913a975c491146c84d70fb45c0e32373b72a45e37e2d38fcf91fc06444a9d6a"
+        }
+      },
+      "observed8": {
+        "fit": [
+          0.6871668803952391,
+          -0.342136323579946,
+          0.3921495643868762
+        ],
+        "separateFit": [
+          0.6351450951521308,
+          -0.0878826448320488,
+          0.3918881412749203
+        ],
+        "correctGuardFit": 126,
+        "protected": {
+          "coefficients": [
+            0.6871668803952391,
+            -0.342136323579946,
+            -0.3059804007862994
+          ],
+          "selection": {
+            "tp": 1,
+            "fp": 0,
+            "lost": 1
+          },
+          "modelSha256": "0e3ea1c82f82df5b4f2bc036cdac262034549b68df116f4635e71d03ebc1f520"
+        },
+        "tag": {
+          "coefficients": [
+            0.6871668803952391,
+            -0.342136323579946,
+            0.5551136985102725
+          ],
+          "selection": {
+            "tp": 62,
+            "fp": 18,
+            "lost": 59
+          },
+          "modelSha256": "7e4cc9138e7c86a1fd8b997b9662bceba8703b636960a6ac92f58238b1e7e623"
+        },
+        "separate": {
+          "coefficients": [
+            0.6351450951521308,
+            -0.0878826448320488,
+            0.3483112761045006
+          ],
+          "selection": {
+            "tp": 57,
+            "fp": 18,
+            "lost": 64
+          },
+          "modelSha256": "c0b80fe3e96173dec6e44b3850bd567fb47888ed2883f27e3df390ce3ebc5700"
+        }
+      },
+      "local": {
+        "fit": [
+          0.6062111747215099,
+          -0.37089496150259593,
+          0.3503938571712727
+        ],
+        "separateFit": [
+          0.5722368328030574,
+          -0.10740826580637665,
+          0.3598844038073093
+        ],
+        "correctGuardFit": 126,
+        "protected": {
+          "coefficients": [
+            0.6062111747215099,
+            -0.37089496150259593,
+            -0.22197974244307112
+          ],
+          "selection": {
+            "tp": 1,
+            "fp": 0,
+            "lost": 0
+          },
+          "modelSha256": "bbf809bb42a15b8535ff89ed6c561ba5bfe448efd77f14db19307127295f3f6f"
+        },
+        "tag": {
+          "coefficients": [
+            0.6062111747215099,
+            -0.37089496150259593,
+            0.5121297998347064
+          ],
+          "selection": {
+            "tp": 58,
+            "fp": 21,
+            "lost": 59
+          },
+          "modelSha256": "67e66503db59004a73678a7767ba500d76f8ca017a497c04a520beb6327dc836"
+        },
+        "separate": {
+          "coefficients": [
+            0.5722368328030574,
+            -0.10740826580637665,
+            0.3317132733135379
+          ],
+          "selection": {
+            "tp": 61,
+            "fp": 21,
+            "lost": 65
+          },
+          "modelSha256": "6f3cab9601f0d6a73bb8b7808ab60e330bd44c14ea6759ebb6086a939c78165a"
+        }
+      },
+      "scoreOnly": {
+        "fit": [
+          0.8451290111379252,
+          0,
+          0.11786057287388867
+        ],
+        "separateFit": [
+          0.8121508392544792,
+          0,
+          0.316431621787315
+        ],
+        "correctGuardFit": 126,
+        "protected": {
+          "coefficients": [
+            0,
+            0,
+            -1
+          ],
+          "selection": {
+            "tp": 0,
+            "fp": 0,
+            "lost": 0
+          },
+          "modelSha256": "63dd554c4eb9fd17fa8b87ad44c805eb371b4425644d7cc3c9894bd2157bf89d"
+        },
+        "tag": {
+          "coefficients": [
+            0.8451290111379252,
+            0,
+            0.18340998626861627
+          ],
+          "selection": {
+            "tp": 53,
+            "fp": 14,
+            "lost": 49
+          },
+          "modelSha256": "c6ed19ba20a266f72fcf3e91ddb4c54038ce5f7709577a5298fb79ed5b64202e"
+        },
+        "separate": {
+          "coefficients": [
+            0.8121508392544792,
+            0,
+            0.17794902958457687
+          ],
+          "selection": {
+            "tp": 53,
+            "fp": 14,
+            "lost": 49
+          },
+          "modelSha256": "5a69126e41446f6f6fde051eefbb5dfc5baaa999b525ab1ec19599ac6086808d"
+        }
+      },
+      "confidenceOnly": {
+        "fit": [
+          0,
+          -0.46567732486286295,
+          0.08873267136440799
+        ],
+        "separateFit": [
+          0,
+          -0.06680735679289215,
+          0.04725945049260935
+        ],
+        "correctGuardFit": 126,
+        "protected": {
+          "coefficients": [
+            0,
+            -0.46567732486286295,
+            0.20091153424657796
+          ],
+          "selection": {
+            "tp": 3,
+            "fp": 2,
+            "lost": 1
+          },
+          "modelSha256": "5f25df9607be7eaad26056c5f28e2c75a0e3f0a6231b019c74b2199a7c833ef3"
+        },
+        "tag": {
+          "coefficients": [
+            0,
+            -0.46567732486286295,
+            0.3215345948787092
+          ],
+          "selection": {
+            "tp": 53,
+            "fp": 41,
+            "lost": 76
+          },
+          "modelSha256": "2ddd2e2dbbf5c51185ff69b853f1a3c51d849a7aa57a49c742e371edd90e2011"
+        },
+        "separate": {
+          "coefficients": [
+            0,
+            -0.06680735679289215,
+            0.04629930898053562
+          ],
+          "selection": {
+            "tp": 53,
+            "fp": 41,
+            "lost": 78
+          },
+          "modelSha256": "e553626f9b3c63eb6427368606337c595f1d2ba2a99615011e8e11b312ce932e"
+        }
+      }
+    }
+  }
+}
