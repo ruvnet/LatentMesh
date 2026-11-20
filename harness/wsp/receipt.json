@@ -1,0 +1,2167 @@
+{
+  "schema": "latentmesh.readout-repair-benchmark/1",
+  "evidence": "controlled ablation on UCI data; portable C loopback; scalar WASM",
+  "fannRevision": "0ef0a76ac4eddf8b8a4e2f989800d070e7d7a9c8",
+  "runs": [
+    {
+      "dataset": "iris",
+      "seed": 17,
+      "datasetSha256": "6f608b71a7317216319b4d27b4d9bc84e6abd734eda7872b71a458569e2656c0",
+      "originalSplitHash": "844f12ccde3f667ef5b0419a9c6b283a1af21ee71c2bab667963870caf91cfae",
+      "uniqueSplitHash": "c01a50698687725c8feda2035df581cb4f66f49887396edad4be7d6b89095906",
+      "rows": {
+        "train": 89,
+        "probes": 29,
+        "test": 29
+      },
+      "contract": {
+        "schema": "latentmesh.readout-contract/1",
+        "skill": "iris/class-2-membership",
+        "sourceBaseHash": "8395f9c534e0a15d341a7e12cb8d56caaef11fae20a169cdedf0912b346a8559",
+        "sourceEditedHash": "bdbeff16d5f273703fe1575819153954e7fcf4c9edcee58153260da30a2a29fc",
+        "targetBaseHash": "79ffa82b443cecc98726e11c4755ed04b6315eeeb97e0a65acd2473e7d513894",
+        "inputHash": "c048e72099b78e45975a2c8b7487f0b845f8a3b04c5ebf1c6e528ea246e45b21",
+        "sourceOutput": 2,
+        "targetOutput": 2
+      },
+      "hiddenDirectionHash": "fd5c7556ddae55a1fa309add60f745f84c41288bf97b198d439bb5b4f438456f",
+      "hiddenPatchEqualsReadoutPatch": true,
+      "edits": 6,
+      "candidateHash": "4d42d6f2b72577c08ed476e244aebbd40d3401c1f6c0600062475e49e5ee600e",
+      "maxQuantizationError": 0.003908717051954835,
+      "costs": {
+        "q8": {
+          "applicationBytes": 135,
+          "frames": 1,
+          "airBytes": 199
+        },
+        "teacherBit": {
+          "applicationBytes": 106,
+          "frames": 1,
+          "airBytes": 170
+        }
+      },
+      "arms": {
+        "intact": {
+          "accuracy": 0.9655172413793104,
+          "macroF1": 0.9665831244778612,
+          "mse": 0.028767768426521248,
+          "oldCorrect": 18,
+          "oldRows": 19,
+          "retainedScoreMaxDrift": 0,
+          "confusion": [
+            [
+              9,
+              0,
+              0
+            ],
+            [
+              0,
+              9,
+              1
+            ],
+            [
+              0,
+              0,
+              10
+            ]
+          ]
+        },
+        "q8": {
+          "accuracy": 0.9655172413793104,
+          "macroF1": 0.9665831244778612,
+          "mse": 0.03851288575238723,
+          "oldCorrect": 18,
+          "oldRows": 19,
+          "retainedScoreMaxDrift": 0,
+          "confusion": [
+            [
+              9,
+              0,
+              0
+            ],
+            [
+              0,
+              9,
+              1
+            ],
+            [
+              0,
+              0,
+              10
+            ]
+          ]
+        },
+        "teacherBit": {
+          "accuracy": 0.9310344827586207,
+          "macroF1": 0.9333333333333332,
+          "mse": 0.036266302204377016,
+          "oldCorrect": 18,
+          "oldRows": 19,
+          "retainedScoreMaxDrift": 0,
+          "confusion": [
+            [
+              9,
+              0,
+              0
+            ],
+            [
+              0,
+              9,
+              1
+            ],
+            [
+              0,
+              1,
+              9
+            ]
+          ]
+        },
+        "float": {
+          "accuracy": 0.9655172413793104,
+          "macroF1": 0.9665831244778612,
+          "mse": 0.03849781531303346,
+          "oldCorrect": 18,
+          "oldRows": 19,
+          "retainedScoreMaxDrift": 0,
+          "confusion": [
+            [
+              9,
+              0,
+              0
+            ],
+            [
+              0,
+              9,
+              1
+            ],
+            [
+              0,
+              0,
+              10
+            ]
+          ]
+        },
+        "shuffled": {
+          "accuracy": 0.896551724137931,
+          "macroF1": 0.8933295806360823,
+          "mse": 0.0897838406569118,
+          "oldCorrect": 19,
+          "oldRows": 19,
+          "retainedScoreMaxDrift": 0,
+          "confusion": [
+            [
+              9,
+              0,
+              0
+            ],
+            [
+              0,
+              10,
+              0
+            ],
+            [
+              1,
+              2,
+              7
+            ]
+          ]
+        },
+        "random": {
+          "accuracy": 0.7241379310344828,
+          "macroF1": 0.6825396825396827,
+          "mse": 0.15579854952260855,
+          "oldCorrect": 19,
+          "oldRows": 19,
+          "retainedScoreMaxDrift": 0,
+          "confusion": [
+            [
+              9,
+              0,
+              0
+            ],
+            [
+              0,
+              10,
+              0
+            ],
+            [
+              0,
+              8,
+              2
+            ]
+          ]
+        },
+        "zero": {
+          "accuracy": 0.6896551724137931,
+          "macroF1": 0.6144907723855092,
+          "mse": 0.1315179370114374,
+          "oldCorrect": 19,
+          "oldRows": 19,
+          "retainedScoreMaxDrift": 0,
+          "confusion": [
+            [
+              9,
+              0,
+              0
+            ],
+            [
+              0,
+              10,
+              0
+            ],
+            [
+              1,
+              8,
+              1
+            ]
+          ]
+        }
+      }
+    },
+    {
+      "dataset": "iris",
+      "seed": 43,
+      "datasetSha256": "6f608b71a7317216319b4d27b4d9bc84e6abd734eda7872b71a458569e2656c0",
+      "originalSplitHash": "fc095c2c8cca934ca7074c3ad04ac99e5ced07acc69775a64835939685ec4e37",
+      "uniqueSplitHash": "7b760b5ff0edaa3c73ff9e1fd5fb657b0814276735d9dfb20dd180ca6ca6bb08",
+      "rows": {
+        "train": 90,
+        "probes": 28,
+        "test": 29
+      },
+      "contract": {
+        "schema": "latentmesh.readout-contract/1",
+        "skill": "iris/class-2-membership",
+        "sourceBaseHash": "2345d9a01828c9b0303a2678df95547ced8f6c84aaf6bd867d2bbaaccf6e51ed",
+        "sourceEditedHash": "0c0bf5fff612a78c09ae759e93bd35a84ef856fad0ed398bd5cb99f49ef03fda",
+        "targetBaseHash": "9315847dbc1f49e43963a0dca2dcc6af33b3206287d2c46ba665e363adfcc9de",
+        "inputHash": "bd374ebd3e193b56472c4ac2d55b6039cea3a2840205a6105121f3ec7ef5afd2",
+        "sourceOutput": 2,
+        "targetOutput": 2
+      },
+      "hiddenDirectionHash": "613f0e0f5e7f8b4be46ff0b3c14d45ba840b524dfd926a71f2ddf3d178d15829",
+      "hiddenPatchEqualsReadoutPatch": true,
+      "edits": 6,
+      "candidateHash": "1de4f0c560da8929babfd40575b62c0517f7515548130de8ad4618a00ebfec04",
+      "maxQuantizationError": 0.004247071218468457,
+      "costs": {
+        "q8": {
+          "applicationBytes": 134,
+          "frames": 1,
+          "airBytes": 198
+        },
+        "teacherBit": {
+          "applicationBytes": 106,
+          "frames": 1,
+          "airBytes": 170
+        }
+      },
+      "arms": {
+        "intact": {
+          "accuracy": 1,
+          "macroF1": 1,
+          "mse": 0.012653869820330222,
+          "oldCorrect": 19,
+          "oldRows": 19,
+          "retainedScoreMaxDrift": 0,
+          "confusion": [
+            [
+              9,
+              0,
+              0
+            ],
+            [
+              0,
+              10,
+              0
+            ],
+            [
+              0,
+              0,
+              10
+            ]
+          ]
+        },
+        "q8": {
+          "accuracy": 1,
+          "macroF1": 1,
+          "mse": 0.014037773962562101,
+          "oldCorrect": 19,
+          "oldRows": 19,
+          "retainedScoreMaxDrift": 0,
+          "confusion": [
+            [
+              9,
+              0,
+              0
+            ],
+            [
+              0,
+              10,
+              0
+            ],
+            [
+              0,
+              0,
+              10
+            ]
+          ]
+        },
+        "teacherBit": {
+          "accuracy": 1,
+          "macroF1": 1,
+          "mse": 0.013377458640186126,
+          "oldCorrect": 19,
+          "oldRows": 19,
+          "retainedScoreMaxDrift": 0,
+          "confusion": [
+            [
+              9,
+              0,
+              0
+            ],
+            [
+              0,
+              10,
+              0
+            ],
+            [
+              0,
+              0,
+              10
+            ]
+          ]
+        },
+        "float": {
+          "accuracy": 1,
+          "macroF1": 1,
+          "mse": 0.014023769291195635,
+          "oldCorrect": 19,
+          "oldRows": 19,
+          "retainedScoreMaxDrift": 0,
+          "confusion": [
+            [
+              9,
+              0,
+              0
+            ],
+            [
+              0,
+              10,
+              0
+            ],
+            [
+              0,
+              0,
+              10
+            ]
+          ]
+        },
+        "shuffled": {
+          "accuracy": 0.9655172413793104,
+          "macroF1": 0.9665831244778613,
+          "mse": 0.08846656529085922,
+          "oldCorrect": 19,
+          "oldRows": 19,
+          "retainedScoreMaxDrift": 0,
+          "confusion": [
+            [
+              9,
+              0,
+              0
+            ],
+            [
+              0,
+              10,
+              0
+            ],
+            [
+              0,
+              1,
+              9
+            ]
+          ]
+        },
+        "random": {
+          "accuracy": 0.7241379310344828,
+          "macroF1": 0.6616161616161617,
+          "mse": 0.12876451050773127,
+          "oldCorrect": 19,
+          "oldRows": 19,
+          "retainedScoreMaxDrift": 0,
+          "confusion": [
+            [
+              9,
+              0,
+              0
+            ],
+            [
+              0,
+              10,
+              0
+            ],
+            [
+              4,
+              4,
+              2
+            ]
+          ]
+        },
+        "zero": {
+          "accuracy": 0.6551724137931034,
+          "macroF1": 0.5275362318840581,
+          "mse": 0.12212440030552933,
+          "oldCorrect": 19,
+          "oldRows": 19,
+          "retainedScoreMaxDrift": 0,
+          "confusion": [
+            [
+              9,
+              0,
+              0
+            ],
+            [
+              0,
+              10,
+              0
+            ],
+            [
+              5,
+              5,
+              0
+            ]
+          ]
+        }
+      }
+    },
+    {
+      "dataset": "iris",
+      "seed": 101,
+      "datasetSha256": "6f608b71a7317216319b4d27b4d9bc84e6abd734eda7872b71a458569e2656c0",
+      "originalSplitHash": "310e0da0ade132ffc6d7c727a0b7902e6b709b8539da5f13599484d4037f8fd8",
+      "uniqueSplitHash": "7766c5174533e8bdf02e7fe3d8269dcc7551f6483688736481e261c7a335f9f4",
+      "rows": {
+        "train": 89,
+        "probes": 29,
+        "test": 29
+      },
+      "contract": {
+        "schema": "latentmesh.readout-contract/1",
+        "skill": "iris/class-2-membership",
+        "sourceBaseHash": "093e2fc96b75c0034704e821fe3294966e44929ec7f8615cb6ffea4c358c5c22",
+        "sourceEditedHash": "5602826dc179dbe1d82546ccd9ef7a2a62b34bd529b898763489f4d0cf9450df",
+        "targetBaseHash": "7bede95f4f20f6291acc2128d39175c05ad931aac7e8d60990682b6b73a42c8a",
+        "inputHash": "630e680ea154e0477858ebc0aba39b14c2241decd4942ad97e49fadf156f2fd1",
+        "sourceOutput": 2,
+        "targetOutput": 2
+      },
+      "hiddenDirectionHash": "87f9cc565bcf672d4842fff04b0fafb55bc70c99b68f72ac8cbbb6d51ac7c89c",
+      "hiddenPatchEqualsReadoutPatch": true,
+      "edits": 6,
+      "candidateHash": "05bacd4805944a952ad45a01526fa77782922e8f4a59f72966c4fab7514cce7e",
+      "maxQuantizationError": 0.003909343493800899,
+      "costs": {
+        "q8": {
+          "applicationBytes": 135,
+          "frames": 1,
+          "airBytes": 199
+        },
+        "teacherBit": {
+          "applicationBytes": 106,
+          "frames": 1,
+          "airBytes": 170
+        }
+      },
+      "arms": {
+        "intact": {
+          "accuracy": 0.9310344827586207,
+          "macroF1": 0.9326599326599326,
+          "mse": 0.04953502279910599,
+          "oldCorrect": 17,
+          "oldRows": 19,
+          "retainedScoreMaxDrift": 0,
+          "confusion": [
+            [
+              9,
+              0,
+              0
+            ],
+            [
+              0,
+              8,
+              2
+            ],
+            [
+              0,
+              0,
+              10
+            ]
+          ]
+        },
+        "q8": {
+          "accuracy": 0.9310344827586207,
+          "macroF1": 0.9326599326599326,
+          "mse": 0.04911703269419323,
+          "oldCorrect": 17,
+          "oldRows": 19,
+          "retainedScoreMaxDrift": 0,
+          "confusion": [
+            [
+              9,
+              0,
+              0
+            ],
+            [
+              0,
+              8,
+              2
+            ],
+            [
+              0,
+              0,
+              10
+            ]
+          ]
+        },
+        "teacherBit": {
+          "accuracy": 0.8620689655172413,
+          "macroF1": 0.8666666666666667,
+          "mse": 0.05089861217076699,
+          "oldCorrect": 17,
+          "oldRows": 19,
+          "retainedScoreMaxDrift": 0,
+          "confusion": [
+            [
+              9,
+              0,
+              0
+            ],
+            [
+              0,
+              8,
+              2
+            ],
+            [
+              0,
+              2,
+              8
+            ]
+          ]
+        },
+        "float": {
+          "accuracy": 0.9310344827586207,
+          "macroF1": 0.9326599326599326,
+          "mse": 0.049072273955026474,
+          "oldCorrect": 17,
+          "oldRows": 19,
+          "retainedScoreMaxDrift": 0,
+          "confusion": [
+            [
+              9,
+              0,
+              0
+            ],
+            [
+              0,
+              8,
+              2
+            ],
+            [
+              0,
+              0,
+              10
+            ]
+          ]
+        },
+        "shuffled": {
+          "accuracy": 0.7931034482758621,
+          "macroF1": 0.7916666666666666,
+          "mse": 0.097042771928378,
+          "oldCorrect": 18,
+          "oldRows": 19,
+          "retainedScoreMaxDrift": 0,
+          "confusion": [
+            [
+              9,
+              0,
+              0
+            ],
+            [
+              0,
+              9,
+              1
+            ],
+            [
+              0,
+              5,
+              5
+            ]
+          ]
+        },
+        "random": {
+          "accuracy": 0.6551724137931034,
+          "macroF1": 0.5380952380952381,
+          "mse": 0.19196658446895007,
+          "oldCorrect": 19,
+          "oldRows": 19,
+          "retainedScoreMaxDrift": 0,
+          "confusion": [
+            [
+              9,
+              0,
+              0
+            ],
+            [
+              0,
+              10,
+              0
+            ],
+            [
+              2,
+              8,
+              0
+            ]
+          ]
+        },
+        "zero": {
+          "accuracy": 0.6551724137931034,
+          "macroF1": 0.5380952380952381,
+          "mse": 0.1383674719827337,
+          "oldCorrect": 19,
+          "oldRows": 19,
+          "retainedScoreMaxDrift": 0,
+          "confusion": [
+            [
+              9,
+              0,
+              0
+            ],
+            [
+              0,
+              10,
+              0
+            ],
+            [
+              2,
+              8,
+              0
+            ]
+          ]
+        }
+      }
+    },
+    {
+      "dataset": "iris",
+      "seed": 211,
+      "datasetSha256": "6f608b71a7317216319b4d27b4d9bc84e6abd734eda7872b71a458569e2656c0",
+      "originalSplitHash": "156db411bacf2566e475e855f7810812b21194930410422613d3e2630ebcabee",
+      "uniqueSplitHash": "9ba88d189cb2f88496cd2b5a6259bcbdbc29445e0ea637607ba753e4c507ea0e",
+      "rows": {
+        "train": 89,
+        "probes": 29,
+        "test": 29
+      },
+      "contract": {
+        "schema": "latentmesh.readout-contract/1",
+        "skill": "iris/class-2-membership",
+        "sourceBaseHash": "2d461075afc5560bd834cd521f5564fc0d6ac346d0bac3808f81d06f54557bcb",
+        "sourceEditedHash": "52a05e8771d7df39b85fa8881b9ad1d2116e53736babfdc27ce4e87ba2960d53",
+        "targetBaseHash": "8662a7303b8984f1906bad4e5cce047c43591fea6dbd33e2cb45f66531d5b2d8",
+        "inputHash": "2c793eddd7961cbb7363b7036f09c2e571faa767767e8f36b5f0d855c663eda1",
+        "sourceOutput": 2,
+        "targetOutput": 2
+      },
+      "hiddenDirectionHash": "8bafa4243f1233d9c53d94110fe530788eb1ab33f767994fb42b89d07c1aa899",
+      "hiddenPatchEqualsReadoutPatch": true,
+      "edits": 6,
+      "candidateHash": "2652bec93dd9169fca23522c54843ba902b44447740f9ffb57eb660d7f215fc4",
+      "maxQuantizationError": 0.004755778357508261,
+      "costs": {
+        "q8": {
+          "applicationBytes": 135,
+          "frames": 1,
+          "airBytes": 199
+        },
+        "teacherBit": {
+          "applicationBytes": 106,
+          "frames": 1,
+          "airBytes": 170
+        }
+      },
+      "arms": {
+        "intact": {
+          "accuracy": 0.9310344827586207,
+          "macroF1": 0.9296296296296296,
+          "mse": 0.031024876284353128,
+          "oldCorrect": 18,
+          "oldRows": 20,
+          "retainedScoreMaxDrift": 0,
+          "confusion": [
+            [
+              10,
+              0,
+              0
+            ],
+            [
+              0,
+              8,
+              2
+            ],
+            [
+              0,
+              0,
+              9
+            ]
+          ]
+        },
+        "q8": {
+          "accuracy": 0.896551724137931,
+          "macroF1": 0.8935574229691876,
+          "mse": 0.04156112873596876,
+          "oldCorrect": 17,
+          "oldRows": 20,
+          "retainedScoreMaxDrift": 0,
+          "confusion": [
+            [
+              10,
+              0,
+              0
+            ],
+            [
+              0,
+              7,
+              3
+            ],
+            [
+              0,
+              0,
+              9
+            ]
+          ]
+        },
+        "teacherBit": {
+          "accuracy": 0.9310344827586207,
+          "macroF1": 0.9296296296296296,
+          "mse": 0.02636562440573295,
+          "oldCorrect": 18,
+          "oldRows": 20,
+          "retainedScoreMaxDrift": 0,
+          "confusion": [
+            [
+              10,
+              0,
+              0
+            ],
+            [
+              0,
+              8,
+              2
+            ],
+            [
+              0,
+              0,
+              9
+            ]
+          ]
+        },
+        "float": {
+          "accuracy": 0.896551724137931,
+          "macroF1": 0.8935574229691876,
+          "mse": 0.041581009526793,
+          "oldCorrect": 17,
+          "oldRows": 20,
+          "retainedScoreMaxDrift": 0,
+          "confusion": [
+            [
+              10,
+              0,
+              0
+            ],
+            [
+              0,
+              7,
+              3
+            ],
+            [
+              0,
+              0,
+              9
+            ]
+          ]
+        },
+        "shuffled": {
+          "accuracy": 0.9655172413793104,
+          "macroF1": 0.9649122807017543,
+          "mse": 0.08201497992172592,
+          "oldCorrect": 19,
+          "oldRows": 20,
+          "retainedScoreMaxDrift": 0,
+          "confusion": [
+            [
+              10,
+              0,
+              0
+            ],
+            [
+              0,
+              9,
+              1
+            ],
+            [
+              0,
+              0,
+              9
+            ]
+          ]
+        },
+        "random": {
+          "accuracy": 0.9310344827586207,
+          "macroF1": 0.9296296296296296,
+          "mse": 0.09576537408386464,
+          "oldCorrect": 19,
+          "oldRows": 20,
+          "retainedScoreMaxDrift": 0,
+          "confusion": [
+            [
+              10,
+              0,
+              0
+            ],
+            [
+              0,
+              9,
+              1
+            ],
+            [
+              0,
+              1,
+              8
+            ]
+          ]
+        },
+        "zero": {
+          "accuracy": 0.7931034482758621,
+          "macroF1": 0.7507936507936508,
+          "mse": 0.1198354459686898,
+          "oldCorrect": 20,
+          "oldRows": 20,
+          "retainedScoreMaxDrift": 0,
+          "confusion": [
+            [
+              10,
+              0,
+              0
+            ],
+            [
+              0,
+              10,
+              0
+            ],
+            [
+              1,
+              5,
+              3
+            ]
+          ]
+        }
+      }
+    },
+    {
+      "dataset": "iris",
+      "seed": 509,
+      "datasetSha256": "6f608b71a7317216319b4d27b4d9bc84e6abd734eda7872b71a458569e2656c0",
+      "originalSplitHash": "5e8aebc147b649de595463d06485eda54e374ab3f9bb4a825dbb062cbf7e84bd",
+      "uniqueSplitHash": "7dd42a7365dd93ac2137389c27dd81c012bc424779653ae3c39cc50cca15d004",
+      "rows": {
+        "train": 89,
+        "probes": 30,
+        "test": 28
+      },
+      "contract": {
+        "schema": "latentmesh.readout-contract/1",
+        "skill": "iris/class-2-membership",
+        "sourceBaseHash": "c52c51b8367a147f58ac5ff470be7dd8ff7f0c65715bb13a7b25c5d1c0049626",
+        "sourceEditedHash": "07144b5514071f2f7b684fa0d04c3d5b8e309e7bcdefa3b28d4f0941ecaeeaa6",
+        "targetBaseHash": "34c797cf46dfe3c1a2729a029dc88dd1e8e8b1b14507a785da45be4f2118ceb1",
+        "inputHash": "26ff62c2ef52fa9db99d3e51321ed360d97e5880f29776d30fae37e17f1aebd2",
+        "sourceOutput": 2,
+        "targetOutput": 2
+      },
+      "hiddenDirectionHash": "938bf64f79aa621b53ffc10d9db4d883fedc6a665ca207f527e6b0489efaf584",
+      "hiddenPatchEqualsReadoutPatch": true,
+      "edits": 6,
+      "candidateHash": "c023b25103b0697468303ab3a05d59e473ee0321ca6225752a073a3503510bcd",
+      "maxQuantizationError": 0.004120512791088438,
+      "costs": {
+        "q8": {
+          "applicationBytes": 136,
+          "frames": 1,
+          "airBytes": 200
+        },
+        "teacherBit": {
+          "applicationBytes": 106,
+          "frames": 1,
+          "airBytes": 170
+        }
+      },
+      "arms": {
+        "intact": {
+          "accuracy": 0.9642857142857143,
+          "macroF1": 0.9649122807017543,
+          "mse": 0.04208329697748541,
+          "oldCorrect": 18,
+          "oldRows": 19,
+          "retainedScoreMaxDrift": 0,
+          "confusion": [
+            [
+              9,
+              0,
+              0
+            ],
+            [
+              0,
+              9,
+              1
+            ],
+            [
+              0,
+              0,
+              9
+            ]
+          ]
+        },
+        "q8": {
+          "accuracy": 0.9642857142857143,
+          "macroF1": 0.9649122807017543,
+          "mse": 0.03687931753039288,
+          "oldCorrect": 18,
+          "oldRows": 19,
+          "retainedScoreMaxDrift": 0,
+          "confusion": [
+            [
+              9,
+              0,
+              0
+            ],
+            [
+              0,
+              9,
+              1
+            ],
+            [
+              0,
+              0,
+              9
+            ]
+          ]
+        },
+        "teacherBit": {
+          "accuracy": 0.9642857142857143,
+          "macroF1": 0.9649122807017543,
+          "mse": 0.03568846604676208,
+          "oldCorrect": 18,
+          "oldRows": 19,
+          "retainedScoreMaxDrift": 0,
+          "confusion": [
+            [
+              9,
+              0,
+              0
+            ],
+            [
+              0,
+              9,
+              1
+            ],
+            [
+              0,
+              0,
+              9
+            ]
+          ]
+        },
+        "float": {
+          "accuracy": 0.9642857142857143,
+          "macroF1": 0.9649122807017543,
+          "mse": 0.03693230647338285,
+          "oldCorrect": 18,
+          "oldRows": 19,
+          "retainedScoreMaxDrift": 0,
+          "confusion": [
+            [
+              9,
+              0,
+              0
+            ],
+            [
+              0,
+              9,
+              1
+            ],
+            [
+              0,
+              0,
+              9
+            ]
+          ]
+        },
+        "shuffled": {
+          "accuracy": 0.9285714285714286,
+          "macroF1": 0.9296296296296296,
+          "mse": 0.1007300819259412,
+          "oldCorrect": 18,
+          "oldRows": 19,
+          "retainedScoreMaxDrift": 0,
+          "confusion": [
+            [
+              9,
+              0,
+              0
+            ],
+            [
+              0,
+              9,
+              1
+            ],
+            [
+              0,
+              1,
+              8
+            ]
+          ]
+        },
+        "random": {
+          "accuracy": 0.7142857142857143,
+          "macroF1": 0.6293697205977907,
+          "mse": 0.19091414751106944,
+          "oldCorrect": 19,
+          "oldRows": 19,
+          "retainedScoreMaxDrift": 0,
+          "confusion": [
+            [
+              9,
+              0,
+              0
+            ],
+            [
+              0,
+              10,
+              0
+            ],
+            [
+              1,
+              7,
+              1
+            ]
+          ]
+        },
+        "zero": {
+          "accuracy": 0.6785714285714286,
+          "macroF1": 0.5538847117794486,
+          "mse": 0.12838625840635282,
+          "oldCorrect": 19,
+          "oldRows": 19,
+          "retainedScoreMaxDrift": 0,
+          "confusion": [
+            [
+              9,
+              0,
+              0
+            ],
+            [
+              0,
+              10,
+              0
+            ],
+            [
+              1,
+              8,
+              0
+            ]
+          ]
+        }
+      }
+    },
+    {
+      "dataset": "wine",
+      "seed": 17,
+      "datasetSha256": "6be6b1203f3d51df0b553a70e57b8a723cd405683958204f96d23d7cd6aea659",
+      "originalSplitHash": "9253ee13b4697bad62124d725acdae4f41a2547646f03dcf6c28a44e6e630e5a",
+      "uniqueSplitHash": "9253ee13b4697bad62124d725acdae4f41a2547646f03dcf6c28a44e6e630e5a",
+      "rows": {
+        "train": 105,
+        "probes": 34,
+        "test": 39
+      },
+      "contract": {
+        "schema": "latentmesh.readout-contract/1",
+        "skill": "wine/class-2-membership",
+        "sourceBaseHash": "4625d34f85333b614a18b7cb481a457533fc6c9a69281e7bdfd036772e61b16d",
+        "sourceEditedHash": "31575039841670145f7aea981101d0b11aa91167e639e2b273c82a1f39a9cb4f",
+        "targetBaseHash": "87338fc84d02acd0fec0bbcf0f602103a00420f5b578babbe2ae5b1a9fb16650",
+        "inputHash": "14cf74aa51a442311566487a858d7212d7200bba7f52623a9bedb390de5464cf",
+        "sourceOutput": 2,
+        "targetOutput": 2
+      },
+      "hiddenDirectionHash": "a43c7a3d6cc5156722c1858f787ad7b3c39fabe4f7c3c10277bcb034b8c0a9a5",
+      "hiddenPatchEqualsReadoutPatch": true,
+      "edits": 6,
+      "candidateHash": "231abda042fae0df4c9bb36c771ea53d4b48fa051030473e99cbf125491e9d41",
+      "maxQuantizationError": 0.003959498849696597,
+      "costs": {
+        "q8": {
+          "applicationBytes": 140,
+          "frames": 1,
+          "airBytes": 204
+        },
+        "teacherBit": {
+          "applicationBytes": 107,
+          "frames": 1,
+          "airBytes": 171
+        }
+      },
+      "arms": {
+        "intact": {
+          "accuracy": 0.9743589743589743,
+          "macroF1": 0.9761600681140911,
+          "mse": 0.03134239583440771,
+          "oldCorrect": 27,
+          "oldRows": 28,
+          "retainedScoreMaxDrift": 0,
+          "confusion": [
+            [
+              13,
+              0,
+              0
+            ],
+            [
+              1,
+              14,
+              0
+            ],
+            [
+              0,
+              0,
+              11
+            ]
+          ]
+        },
+        "q8": {
+          "accuracy": 0.9487179487179487,
+          "macroF1": 0.9495590828924163,
+          "mse": 0.03712493275783001,
+          "oldCorrect": 27,
+          "oldRows": 28,
+          "retainedScoreMaxDrift": 0,
+          "confusion": [
+            [
+              13,
+              0,
+              0
+            ],
+            [
+              1,
+              14,
+              0
+            ],
+            [
+              0,
+              1,
+              10
+            ]
+          ]
+        },
+        "teacherBit": {
+          "accuracy": 0.9743589743589743,
+          "macroF1": 0.9761600681140911,
+          "mse": 0.030107992533123913,
+          "oldCorrect": 27,
+          "oldRows": 28,
+          "retainedScoreMaxDrift": 0,
+          "confusion": [
+            [
+              13,
+              0,
+              0
+            ],
+            [
+              1,
+              14,
+              0
+            ],
+            [
+              0,
+              0,
+              11
+            ]
+          ]
+        },
+        "float": {
+          "accuracy": 0.9487179487179487,
+          "macroF1": 0.9495590828924163,
+          "mse": 0.0371615400718185,
+          "oldCorrect": 27,
+          "oldRows": 28,
+          "retainedScoreMaxDrift": 0,
+          "confusion": [
+            [
+              13,
+              0,
+              0
+            ],
+            [
+              1,
+              14,
+              0
+            ],
+            [
+              0,
+              1,
+              10
+            ]
+          ]
+        },
+        "shuffled": {
+          "accuracy": 0.8974358974358975,
+          "macroF1": 0.8933560753736192,
+          "mse": 0.09001125425121467,
+          "oldCorrect": 27,
+          "oldRows": 28,
+          "retainedScoreMaxDrift": 0,
+          "confusion": [
+            [
+              13,
+              0,
+              0
+            ],
+            [
+              1,
+              14,
+              0
+            ],
+            [
+              0,
+              3,
+              8
+            ]
+          ]
+        },
+        "random": {
+          "accuracy": 0.7692307692307693,
+          "macroF1": 0.7083743842364533,
+          "mse": 0.1192736084355392,
+          "oldCorrect": 27,
+          "oldRows": 28,
+          "retainedScoreMaxDrift": 0,
+          "confusion": [
+            [
+              13,
+              0,
+              0
+            ],
+            [
+              1,
+              14,
+              0
+            ],
+            [
+              2,
+              6,
+              3
+            ]
+          ]
+        },
+        "zero": {
+          "accuracy": 0.717948717948718,
+          "macroF1": 0.6037037037037037,
+          "mse": 0.11744344119218228,
+          "oldCorrect": 27,
+          "oldRows": 28,
+          "retainedScoreMaxDrift": 0,
+          "confusion": [
+            [
+              13,
+              0,
+              0
+            ],
+            [
+              1,
+              14,
+              0
+            ],
+            [
+              3,
+              7,
+              1
+            ]
+          ]
+        }
+      }
+    },
+    {
+      "dataset": "wine",
+      "seed": 43,
+      "datasetSha256": "6be6b1203f3d51df0b553a70e57b8a723cd405683958204f96d23d7cd6aea659",
+      "originalSplitHash": "c943f17be6f08e583e096679101a042933d0e666e7f14833903c45f2aad0a8e5",
+      "uniqueSplitHash": "c943f17be6f08e583e096679101a042933d0e666e7f14833903c45f2aad0a8e5",
+      "rows": {
+        "train": 105,
+        "probes": 34,
+        "test": 39
+      },
+      "contract": {
+        "schema": "latentmesh.readout-contract/1",
+        "skill": "wine/class-2-membership",
+        "sourceBaseHash": "f0fb6c132a32f989814fff2d115dea25f2993544ade74aa95d67d97df90db4bd",
+        "sourceEditedHash": "6b1228e3f3efa692deef49e02c2d8e39ae0e00551e10ac64d8ee672d66fa41b3",
+        "targetBaseHash": "d78b1fb647c269ae5724b20c072643555f866e4282e1fe4b0ed4b57b940ecca5",
+        "inputHash": "691d05901868726dbf499c1df9e18477dc6e39917d33168c18db2902116b167a",
+        "sourceOutput": 2,
+        "targetOutput": 2
+      },
+      "hiddenDirectionHash": "c7fdcf9a287fce0b3e4b8b450e14e439cac9843d9c75d0285334687c17d7bf0f",
+      "hiddenPatchEqualsReadoutPatch": true,
+      "edits": 6,
+      "candidateHash": "5d22314664cb52fee9cc6e4076240dbe183a479dfb191f246ad0dd4a0be0a91f",
+      "maxQuantizationError": 0.00416708941497787,
+      "costs": {
+        "q8": {
+          "applicationBytes": 140,
+          "frames": 1,
+          "airBytes": 204
+        },
+        "teacherBit": {
+          "applicationBytes": 107,
+          "frames": 1,
+          "airBytes": 171
+        }
+      },
+      "arms": {
+        "intact": {
+          "accuracy": 0.9487179487179487,
+          "macroF1": 0.9493520435549421,
+          "mse": 0.031757539407502366,
+          "oldCorrect": 26,
+          "oldRows": 28,
+          "retainedScoreMaxDrift": 0,
+          "confusion": [
+            [
+              13,
+              0,
+              0
+            ],
+            [
+              1,
+              13,
+              1
+            ],
+            [
+              0,
+              0,
+              11
+            ]
+          ]
+        },
+        "q8": {
+          "accuracy": 0.9487179487179487,
+          "macroF1": 0.9493520435549421,
+          "mse": 0.032059264257311454,
+          "oldCorrect": 26,
+          "oldRows": 28,
+          "retainedScoreMaxDrift": 0,
+          "confusion": [
+            [
+              13,
+              0,
+              0
+            ],
+            [
+              1,
+              13,
+              1
+            ],
+            [
+              0,
+              0,
+              11
+            ]
+          ]
+        },
+        "teacherBit": {
+          "accuracy": 0.9487179487179487,
+          "macroF1": 0.9493520435549421,
+          "mse": 0.029983719945388638,
+          "oldCorrect": 26,
+          "oldRows": 28,
+          "retainedScoreMaxDrift": 0,
+          "confusion": [
+            [
+              13,
+              0,
+              0
+            ],
+            [
+              1,
+              13,
+              1
+            ],
+            [
+              0,
+              0,
+              11
+            ]
+          ]
+        },
+        "float": {
+          "accuracy": 0.9487179487179487,
+          "macroF1": 0.9493520435549421,
+          "mse": 0.03203072138711821,
+          "oldCorrect": 26,
+          "oldRows": 28,
+          "retainedScoreMaxDrift": 0,
+          "confusion": [
+            [
+              13,
+              0,
+              0
+            ],
+            [
+              1,
+              13,
+              1
+            ],
+            [
+              0,
+              0,
+              11
+            ]
+          ]
+        },
+        "shuffled": {
+          "accuracy": 0.8717948717948718,
+          "macroF1": 0.8650793650793651,
+          "mse": 0.11782760838457824,
+          "oldCorrect": 26,
+          "oldRows": 28,
+          "retainedScoreMaxDrift": 0,
+          "confusion": [
+            [
+              13,
+              0,
+              0
+            ],
+            [
+              1,
+              13,
+              1
+            ],
+            [
+              1,
+              2,
+              8
+            ]
+          ]
+        },
+        "random": {
+          "accuracy": 0.6923076923076923,
+          "macroF1": 0.5392857142857143,
+          "mse": 0.15789425687748854,
+          "oldCorrect": 27,
+          "oldRows": 28,
+          "retainedScoreMaxDrift": 0,
+          "confusion": [
+            [
+              13,
+              0,
+              0
+            ],
+            [
+              1,
+              14,
+              0
+            ],
+            [
+              8,
+              3,
+              0
+            ]
+          ]
+        },
+        "zero": {
+          "accuracy": 0.7435897435897436,
+          "macroF1": 0.6568570318570318,
+          "mse": 0.11759860560775687,
+          "oldCorrect": 27,
+          "oldRows": 28,
+          "retainedScoreMaxDrift": 0,
+          "confusion": [
+            [
+              13,
+              0,
+              0
+            ],
+            [
+              1,
+              14,
+              0
+            ],
+            [
+              6,
+              3,
+              2
+            ]
+          ]
+        }
+      }
+    },
+    {
+      "dataset": "wine",
+      "seed": 101,
+      "datasetSha256": "6be6b1203f3d51df0b553a70e57b8a723cd405683958204f96d23d7cd6aea659",
+      "originalSplitHash": "df87736213eb6b4b85ce9cef61211bf0dd27052096972cec7b8a124f9bec539a",
+      "uniqueSplitHash": "df87736213eb6b4b85ce9cef61211bf0dd27052096972cec7b8a124f9bec539a",
+      "rows": {
+        "train": 105,
+        "probes": 34,
+        "test": 39
+      },
+      "contract": {
+        "schema": "latentmesh.readout-contract/1",
+        "skill": "wine/class-2-membership",
+        "sourceBaseHash": "2598f6fd96801e6777b707f6d32ece9189b94baf0b6d57111b94d189bf86bc59",
+        "sourceEditedHash": "18c531519cd587611655ef7b1b3d43b37b579cc58a826452869c4ffe064d98a3",
+        "targetBaseHash": "c62ea876f443d52befed8955a1afade171938e81db19c84ca2515152cdfb676e",
+        "inputHash": "07e6a817f059210c4bd051133a685a3f695cf6587fd70a72cff0e28484b4b993",
+        "sourceOutput": 2,
+        "targetOutput": 2
+      },
+      "hiddenDirectionHash": "bd0562b54c3a1691100d45cc05017a1c43794dbd5f3c5a12e97b570eaf132308",
+      "hiddenPatchEqualsReadoutPatch": true,
+      "edits": 6,
+      "candidateHash": "5405e52b4da0718124f8af03a1588427cccc798acd00f3e1b1f5308d5a07e738",
+      "maxQuantizationError": 0.003759296003871815,
+      "costs": {
+        "q8": {
+          "applicationBytes": 140,
+          "frames": 1,
+          "airBytes": 204
+        },
+        "teacherBit": {
+          "applicationBytes": 107,
+          "frames": 1,
+          "airBytes": 171
+        }
+      },
+      "arms": {
+        "intact": {
+          "accuracy": 1,
+          "macroF1": 1,
+          "mse": 0.02310003133163905,
+          "oldCorrect": 28,
+          "oldRows": 28,
+          "retainedScoreMaxDrift": 0,
+          "confusion": [
+            [
+              13,
+              0,
+              0
+            ],
+            [
+              0,
+              15,
+              0
+            ],
+            [
+              0,
+              0,
+              11
+            ]
+          ]
+        },
+        "q8": {
+          "accuracy": 1,
+          "macroF1": 1,
+          "mse": 0.024469286819490725,
+          "oldCorrect": 28,
+          "oldRows": 28,
+          "retainedScoreMaxDrift": 0,
+          "confusion": [
+            [
+              13,
+              0,
+              0
+            ],
+            [
+              0,
+              15,
+              0
+            ],
+            [
+              0,
+              0,
+              11
+            ]
+          ]
+        },
+        "teacherBit": {
+          "accuracy": 1,
+          "macroF1": 1,
+          "mse": 0.02371824711612961,
+          "oldCorrect": 28,
+          "oldRows": 28,
+          "retainedScoreMaxDrift": 0,
+          "confusion": [
+            [
+              13,
+              0,
+              0
+            ],
+            [
+              0,
+              15,
+              0
+            ],
+            [
+              0,
+              0,
+              11
+            ]
+          ]
+        },
+        "float": {
+          "accuracy": 1,
+          "macroF1": 1,
+          "mse": 0.02444275080086536,
+          "oldCorrect": 28,
+          "oldRows": 28,
+          "retainedScoreMaxDrift": 0,
+          "confusion": [
+            [
+              13,
+              0,
+              0
+            ],
+            [
+              0,
+              15,
+              0
+            ],
+            [
+              0,
+              0,
+              11
+            ]
+          ]
+        },
+        "shuffled": {
+          "accuracy": 0.9743589743589743,
+          "macroF1": 0.9733742959549412,
+          "mse": 0.08980660380412837,
+          "oldCorrect": 28,
+          "oldRows": 28,
+          "retainedScoreMaxDrift": 0,
+          "confusion": [
+            [
+              13,
+              0,
+              0
+            ],
+            [
+              0,
+              15,
+              0
+            ],
+            [
+              0,
+              1,
+              10
+            ]
+          ]
+        },
+        "random": {
+          "accuracy": 0.7948717948717948,
+          "macroF1": 0.7301587301587301,
+          "mse": 0.12459859128734381,
+          "oldCorrect": 28,
+          "oldRows": 28,
+          "retainedScoreMaxDrift": 0,
+          "confusion": [
+            [
+              13,
+              0,
+              0
+            ],
+            [
+              0,
+              15,
+              0
+            ],
+            [
+              2,
+              6,
+              3
+            ]
+          ]
+        },
+        "zero": {
+          "accuracy": 0.8461538461538461,
+          "macroF1": 0.8119747899159663,
+          "mse": 0.11081871683737454,
+          "oldCorrect": 28,
+          "oldRows": 28,
+          "retainedScoreMaxDrift": 0,
+          "confusion": [
+            [
+              13,
+              0,
+              0
+            ],
+            [
+              0,
+              15,
+              0
+            ],
+            [
+              2,
+              4,
+              5
+            ]
+          ]
+        }
+      }
+    },
+    {
+      "dataset": "wine",
+      "seed": 211,
+      "datasetSha256": "6be6b1203f3d51df0b553a70e57b8a723cd405683958204f96d23d7cd6aea659",
+      "originalSplitHash": "5901c851d869690fad1782a6978c536ac95625ee881019880bf872eaf6d31b0e",
+      "uniqueSplitHash": "5901c851d869690fad1782a6978c536ac95625ee881019880bf872eaf6d31b0e",
+      "rows": {
+        "train": 105,
+        "probes": 34,
+        "test": 39
+      },
+      "contract": {
+        "schema": "latentmesh.readout-contract/1",
+        "skill": "wine/class-2-membership",
+        "sourceBaseHash": "931408d7e6e979d2a5374a5e1b7fac94eb0ea9c22312093e8e1bdd801a03f035",
+        "sourceEditedHash": "ed425498ef3f1d2e404719910c051ab285ca649563d85663add2fa0e667830f1",
+        "targetBaseHash": "4b64245d094edb628ca3d4020d25b9c3ae183f22ba165b7b1139a374e1ecc1df",
+        "inputHash": "7aac5bcd122a547eea4679552a2ce20567a2f1e22ee59f7fbb12917c772f969a",
+        "sourceOutput": 2,
+        "targetOutput": 2
+      },
+      "hiddenDirectionHash": "ac3aae8371e5c983b82c3ee91c88d295d3899aacde62c779009a5ee2745cf91a",
+      "hiddenPatchEqualsReadoutPatch": true,
+      "edits": 6,
+      "candidateHash": "de67b45c0baa4b071b1b8500b933758af8a55149c5b52430276b4462c85eb4ba",
+      "maxQuantizationError": 0.004104427630556184,
+      "costs": {
+        "q8": {
+          "applicationBytes": 140,
+          "frames": 1,
+          "airBytes": 204
+        },
+        "teacherBit": {
+          "applicationBytes": 107,
+          "frames": 1,
+          "airBytes": 171
+        }
+      },
+      "arms": {
+        "intact": {
+          "accuracy": 0.9743589743589743,
+          "macroF1": 0.9733742959549412,
+          "mse": 0.032789562189599455,
+          "oldCorrect": 28,
+          "oldRows": 28,
+          "retainedScoreMaxDrift": 0,
+          "confusion": [
+            [
+              13,
+              0,
+              0
+            ],
+            [
+              0,
+              15,
+              0
+            ],
+            [
+              0,
+              1,
+              10
+            ]
+          ]
+        },
+        "q8": {
+          "accuracy": 0.9743589743589743,
+          "macroF1": 0.9733742959549412,
+          "mse": 0.033686098461336356,
+          "oldCorrect": 28,
+          "oldRows": 28,
+          "retainedScoreMaxDrift": 0,
+          "confusion": [
+            [
+              13,
+              0,
+              0
+            ],
+            [
+              0,
+              15,
+              0
+            ],
+            [
+              0,
+              1,
+              10
+            ]
+          ]
+        },
+        "teacherBit": {
+          "accuracy": 0.9487179487179487,
+          "macroF1": 0.9474747474747475,
+          "mse": 0.03393580805294904,
+          "oldCorrect": 27,
+          "oldRows": 28,
+          "retainedScoreMaxDrift": 0,
+          "confusion": [
+            [
+              13,
+              0,
+              0
+            ],
+            [
+              0,
+              14,
+              1
+            ],
+            [
+              0,
+              1,
+              10
+            ]
+          ]
+        },
+        "float": {
+          "accuracy": 0.9743589743589743,
+          "macroF1": 0.9733742959549412,
+          "mse": 0.03368692730507886,
+          "oldCorrect": 28,
+          "oldRows": 28,
+          "retainedScoreMaxDrift": 0,
+          "confusion": [
+            [
+              13,
+              0,
+              0
+            ],
+            [
+              0,
+              15,
+              0
+            ],
+            [
+              0,
+              1,
+              10
+            ]
+          ]
+        },
+        "shuffled": {
+          "accuracy": 0.9487179487179487,
+          "macroF1": 0.9474747474747475,
+          "mse": 0.07065545041203798,
+          "oldCorrect": 27,
+          "oldRows": 28,
+          "retainedScoreMaxDrift": 0,
+          "confusion": [
+            [
+              13,
+              0,
+              0
+            ],
+            [
+              0,
+              14,
+              1
+            ],
+            [
+              0,
+              1,
+              10
+            ]
+          ]
+        },
+        "random": {
+          "accuracy": 0.6923076923076923,
+          "macroF1": 0.5454545454545454,
+          "mse": 0.17046325607428398,
+          "oldCorrect": 27,
+          "oldRows": 28,
+          "retainedScoreMaxDrift": 0,
+          "confusion": [
+            [
+              13,
+              0,
+              0
+            ],
+            [
+              0,
+              14,
+              1
+            ],
+            [
+              7,
+              4,
+              0
+            ]
+          ]
+        },
+        "zero": {
+          "accuracy": 0.7435897435897436,
+          "macroF1": 0.6212121212121212,
+          "mse": 0.11757973204412249,
+          "oldCorrect": 28,
+          "oldRows": 28,
+          "retainedScoreMaxDrift": 0,
+          "confusion": [
+            [
+              13,
+              0,
+              0
+            ],
+            [
+              0,
+              15,
+              0
+            ],
+            [
+              7,
+              3,
+              1
+            ]
+          ]
+        }
+      }
+    },
+    {
+      "dataset": "wine",
+      "seed": 509,
+      "datasetSha256": "6be6b1203f3d51df0b553a70e57b8a723cd405683958204f96d23d7cd6aea659",
+      "originalSplitHash": "6aa72ce46017b6bc5638b51ab3a8fe08a4a6e02e48245a027c82759c8b06d2b2",
+      "uniqueSplitHash": "6aa72ce46017b6bc5638b51ab3a8fe08a4a6e02e48245a027c82759c8b06d2b2",
+      "rows": {
+        "train": 105,
+        "probes": 34,
+        "test": 39
+      },
+      "contract": {
+        "schema": "latentmesh.readout-contract/1",
+        "skill": "wine/class-2-membership",
+        "sourceBaseHash": "95309b5c8f37de3d6c5af81921d527d03dd6e47e44c48f3fa1cb77732fa93358",
+        "sourceEditedHash": "09a3e64db32c04dfa1a85bc606bae6047edcc58b0e058b13b48a985c24edb3f7",
+        "targetBaseHash": "3ff10453395e89f0b0249f8a4d7392f2507807a7a2bba6d7dd4ce639cce66b8f",
+        "inputHash": "353b517a16184ce2ca045df12fd297fda2ea9f76d545289abc997755b7861f30",
+        "sourceOutput": 2,
+        "targetOutput": 2
+      },
+      "hiddenDirectionHash": "0f0cd31439f479a68876cf165636d8a0c76328c01373577d1967d47865c1f039",
+      "hiddenPatchEqualsReadoutPatch": true,
+      "edits": 6,
+      "candidateHash": "9cd0f122efc851619602c74eb4b308f386e5ffa14295d5b1f3b0b81365c1be44",
+      "maxQuantizationError": 0.003862323646536936,
+      "costs": {
+        "q8": {
+          "applicationBytes": 140,
+          "frames": 1,
+          "airBytes": 204
+        },
+        "teacherBit": {
+          "applicationBytes": 107,
+          "frames": 1,
+          "airBytes": 171
+        }
+      },
+      "arms": {
+        "intact": {
+          "accuracy": 0.9743589743589743,
+          "macroF1": 0.9740129935032483,
+          "mse": 0.02112116850569198,
+          "oldCorrect": 27,
+          "oldRows": 28,
+          "retainedScoreMaxDrift": 0,
+          "confusion": [
+            [
+              13,
+              0,
+              0
+            ],
+            [
+              0,
+              14,
+              1
+            ],
+            [
+              0,
+              0,
+              11
+            ]
+          ]
+        },
+        "q8": {
+          "accuracy": 0.9743589743589743,
+          "macroF1": 0.9740129935032483,
+          "mse": 0.02275300449756091,
+          "oldCorrect": 27,
+          "oldRows": 28,
+          "retainedScoreMaxDrift": 0,
+          "confusion": [
+            [
+              13,
+              0,
+              0
+            ],
+            [
+              0,
+              14,
+              1
+            ],
+            [
+              0,
+              0,
+              11
+            ]
+          ]
+        },
+        "teacherBit": {
+          "accuracy": 0.9743589743589743,
+          "macroF1": 0.9740129935032483,
+          "mse": 0.022637995966885385,
+          "oldCorrect": 27,
+          "oldRows": 28,
+          "retainedScoreMaxDrift": 0,
+          "confusion": [
+            [
+              13,
+              0,
+              0
+            ],
+            [
+              0,
+              14,
+              1
+            ],
+            [
+              0,
+              0,
+              11
+            ]
+          ]
+        },
+        "float": {
+          "accuracy": 0.9743589743589743,
+          "macroF1": 0.9740129935032483,
+          "mse": 0.02278845967852954,
+          "oldCorrect": 27,
+          "oldRows": 28,
+          "retainedScoreMaxDrift": 0,
+          "confusion": [
+            [
+              13,
+              0,
+              0
+            ],
+            [
+              0,
+              14,
+              1
+            ],
+            [
+              0,
+              0,
+              11
+            ]
+          ]
+        },
+        "shuffled": {
+          "accuracy": 0.8974358974358975,
+          "macroF1": 0.8806904791331932,
+          "mse": 0.11027406947584947,
+          "oldCorrect": 28,
+          "oldRows": 28,
+          "retainedScoreMaxDrift": 0,
+          "confusion": [
+            [
+              13,
+              0,
+              0
+            ],
+            [
+              0,
+              15,
+              0
+            ],
+            [
+              3,
+              1,
+              7
+            ]
+          ]
+        },
+        "random": {
+          "accuracy": 0.8974358974358975,
+          "macroF1": 0.8812830687830688,
+          "mse": 0.11258552636067126,
+          "oldCorrect": 28,
+          "oldRows": 28,
+          "retainedScoreMaxDrift": 0,
+          "confusion": [
+            [
+              13,
+              0,
+              0
+            ],
+            [
+              0,
+              15,
+              0
+            ],
+            [
+              2,
+              2,
+              7
+            ]
+          ]
+        },
+        "zero": {
+          "accuracy": 0.7692307692307693,
+          "macroF1": 0.6771672771672771,
+          "mse": 0.10568158794199572,
+          "oldCorrect": 28,
+          "oldRows": 28,
+          "retainedScoreMaxDrift": 0,
+          "confusion": [
+            [
+              13,
+              0,
+              0
+            ],
+            [
+              0,
+              15,
+              0
+            ],
+            [
+              4,
+              5,
+              2
+            ]
+          ]
+        }
+      }
+    }
+  ]
+}

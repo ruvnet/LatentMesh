@@ -1,0 +1,36 @@
+name: WSP readout transfer
+on:
+  pull_request:
+    paths: ['harness/wsp/**', 'c/**', '.github/workflows/wsp-transfer.yml']
+  push:
+    branches: [main]
+    paths: ['harness/wsp/**', 'c/**', '.github/workflows/wsp-transfer.yml']
+permissions:
+  contents: read
+jobs:
+  transfer:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          path: LatentMesh
+          persist-credentials: false
+      - uses: actions/checkout@v4
+        with:
+          repository: ruvnet/ruv-FANN
+          ref: 0ef0a76ac4eddf8b8a4e2f989800d070e7d7a9c8
+          path: ruv-FANN
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: npm install --ignore-scripts --no-package-lock --no-audit --no-fund --workspaces=false
+        working-directory: ruv-FANN/packages/wsp
+      - run: node --test harness/wsp/transfer.test.mjs
+        working-directory: LatentMesh
+      - name: Reproduce the controlled repair experiment
+        working-directory: LatentMesh
+        run: |
+          node harness/wsp/benchmark.mjs > "$RUNNER_TEMP/readout-receipt.json"
+          cmp harness/wsp/receipt.json "$RUNNER_TEMP/readout-receipt.json"
+          node harness/wsp/summarize.mjs "$RUNNER_TEMP/readout-receipt.json"

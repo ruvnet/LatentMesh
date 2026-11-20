@@ -95,6 +95,11 @@ Reassembly, ordering, duplicate rejection and replay defence are handled for you
 
 ## What people build with it
 
+The [latent transfer and weight editing experiment](harness/wsp/README.md)
+projects a sender's hidden features into a signed packet and fits one receiver
+output without gradient descent. Its controlled Iris and Wine benchmark reports
+the repair, the cheaper one bit teacher comparison and the measured frame sizes.
+
 <a href="https://ruvnet.github.io/LatentMesh/#applications"><img src="docs/media/apps.png" alt="Application tiers — shipping today, buildable now, speculative. Click to explore them live." width="860"></a>
 
 **Shipping today** — precision agriculture across hundreds of hectares with no cell plan per device · wildfire and flood sensors in terrain that never had coverage · disaster comms when towers are down or saturated · expedition and marine, past cellular range where satellite is billed by the byte.
