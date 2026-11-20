@@ -72,3 +72,20 @@ test('both CPUs used the same held out rows, labels, dialogues and frozen progra
     for (const field of ['maxNativeLogitDrift', 'tagDisagreements', 'routeDisagreements']) assert.equal(graph.parity[field], 0);
   }
 });
+
+test('both CPUs rebuilt byte identical ONNX outputs for the two 13 float tags', async () => {
+  const { readFileSync } = await import('node:fs');
+  const read = host => JSON.parse(readFileSync(new URL('./precision/' + host + '/graphs.json', import.meta.url)));
+  const hosts = [read('reference'), read('ruos')];
+  for (const arm of ['float13', 'scoreOnly']) {
+    const entries = hosts.map(graphs => graphs.find(g => g.parity.arm === arm && g.parity.mode === 'f05'));
+    assert.deepEqual(entries[0].install, entries[1].install);
+    for (const { install, parity } of entries) {
+      assert.equal(install.modelSha256, parity.modelSha256);
+      assert.equal(parity.rows, 64);
+      assert.equal(parity.maxNativeLogitDrift, 0);
+      assert.equal(parity.tagDisagreements, 0);
+      assert.equal(parity.routeDisagreements, 0);
+    }
+  }
+});
