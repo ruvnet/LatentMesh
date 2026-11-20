@@ -19,3 +19,4 @@ fi
 python "$here/evaluate.py" "$cache" "$out"
 python "$here/report.py" score "$out"
 python "$here/report.py" verify "$out"
+python "$here/check_controls.py" "$cache" "$out/controls.json"

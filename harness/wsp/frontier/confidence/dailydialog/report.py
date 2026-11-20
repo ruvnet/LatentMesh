@@ -52,10 +52,11 @@ def verify_observations(x, graph):
             id_hash([v for v,flag in zip(ids, x["isClean"], strict=True) if flag == "1"]) != x["clean"]["idsSha256"]):
         raise ValueError("inconsistent population IDs")
     p = x["parity"]
-    if (p["checkedTurns"] != n or any(p[k] != 0 for k in (
-        "instrumentedDrift", "frozenDrift", "adaptedDrift", "frozenTagErrors", "adaptedMajorityErrors", "adaptedF05Errors")) or
-            not all(0 <= p[k] <= 1e-8 for k in ("maxFrozenEvidenceError", "maxAdaptedEvidenceError"))):
-        raise ValueError("parity failed")
+    if p["checkedTurns"] != n or any(not np.isfinite(v) or v < 0 for v in p.values()):
+        raise ValueError("invalid parity measurements")
+    for field in ("frozenTagErrors", "adaptedMajorityErrors", "adaptedF05Errors"):
+        if not isinstance(p[field], int) or p[field] > n:
+            raise ValueError("invalid tag mismatch count")
     e = x["exclusions"]
     if (e["alignedTurns"] != n or e["rawTurns"] < n or
             n - e["priorTextOverlaps"] - e["repeatOrEmpty"] != x["clean"]["rows"]):
@@ -115,6 +116,11 @@ def panel(x, name):
     for a in ("frozen.scoreOnly", "transfer.majority", "local.majority", "pca.majority"):
         m = methods[a]
         gates[a] = bool(m["tags"] and 2*m["tp"] >= m["tags"] and 5*m["tp"] >= pos)
+    p = x["parity"]
+    gates["frozen.scoreOnly"] &= (p["frozenDrift"] == 0 and p["frozenTagErrors"] == 0 and
+                                  p["instrumentedDrift"] == 0 and p["maxFrozenEvidenceError"] <= 1e-8)
+    gates["transfer.majority"] &= (p["adaptedDrift"] == 0 and p["adaptedMajorityErrors"] == 0 and
+                                   p["instrumentedDrift"] == 0 and p["maxAdaptedEvidenceError"] <= 1e-8)
     lower = comparisons["transfer.majority"]["local.majority"]["f05"]["paired95"]
     return {**x[name], "prevalence": rn(100*pos/len(truth)), "methods": methods, "paired": comparisons,
             "utilityGate": gates, "transferBenefit": bool(lower and lower[0] > 0)}
@@ -145,9 +151,33 @@ def run(mode, folder):
     print(mode, p["rows"], "turns;", p["positive"], "angry;", p["utilityGate"], "transfer benefit:", p["transferBenefit"])
 
 
+def compare(first, second):
+    records = [json.loads(load_archive(d / "observations.archive.json")) for d in (first, second)]
+    graphs = [json.loads((d / "graph.json").read_bytes()) for d in (first, second)]
+    for rec, g in zip(records, graphs, strict=True):
+        verify_observations(rec, g)
+    if graphs[0] != graphs[1]:
+        raise ValueError("compiled ONNX files differ")
+    keys = ("datasetSha256", "lockSha256", "frozenGraphSha256", "adaptedGraphSha256",
+            "official", "clean", "exclusions", "groups", "truth", "isClean")
+    for k in keys:
+        if records[0][k] != records[1][k]:
+            raise ValueError("independent host cohorts or installed programs differ: " + k)
+    for arm in ("frozen.scoreOnly", "transfer.majority"):
+        a, b = (rec["predictions"][arm] for rec in records)
+        print(arm, "cross host decisions differing on official test:", sum(x != y for x,y in zip(a,b,strict=True)))
+
+
 if __name__ == "__main__":
     p = argparse.ArgumentParser(description=__doc__)
-    p.add_argument("mode", choices=("score","verify"))
-    p.add_argument("folder", type=Path)
+    commands = p.add_subparsers(dest="mode", required=True)
+    for action in ("score", "verify"):
+        commands.add_parser(action).add_argument("folder", type=Path)
+    pair = commands.add_parser("compare")
+    pair.add_argument("first", type=Path)
+    pair.add_argument("second", type=Path)
     args = p.parse_args()
-    run(args.mode, args.folder)
+    if args.mode == "compare":
+        compare(args.first, args.second)
+    else:
+        run(args.mode, args.folder)
