@@ -4,6 +4,7 @@ import hashlib
 import json
 from pathlib import Path
 import sys
+import tempfile
 
 import numpy as np
 import onnxruntime as ort
@@ -11,8 +12,8 @@ import onnxruntime as ort
 from corpus import DATA_SHA, HERE, describe, history, partition
 from cohorts import ARMS, Encoder, ensure, file_hash, json_write, load_heads
 from data import session_options
-from install import PRECISION_LOCK_SHA256, install as install_frozen
 from install_receiver import FROZEN_SHA, LOCK_SHA, committed, install, readout
+from install import PRECISION_LOCK_SHA256, install as install_frozen
 sys.path.insert(0, str(HERE.parents[1]))
 from evidence import archive
 
@@ -42,8 +43,15 @@ def run(cache, out):
     base = ensure(cache, "target-model.onnx")
     if not frozen_path.exists():
         install_frozen(base, "all", "f05", frozen_path, "scoreOnly")
+    receipt = out / "graph.json"
     if not adapted_path.exists():
-        install(base, adapted_path)
+        json_write(receipt, install(base, adapted_path))
+    elif not receipt.exists():
+        with tempfile.TemporaryDirectory(dir=out) as temp:
+            fresh = install(base, Path(temp) / "receiver.onnx")
+        if fresh["modelSha256"] != file_hash(adapted_path):
+            raise ValueError("cached candidate differs from a clean install")
+        json_write(receipt, fresh)
     frozen_graph, adapted_graph = session(frozen_path, FROZEN_SHA), session(adapted_path, ADAPTED_SHA)
     enc = Encoder(cache, "target")
     heads = load_heads(HERE.parent / "heads")
