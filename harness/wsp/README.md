@@ -14,6 +14,10 @@ sender output deltas and a packed teacher label as comparison arms. A hidden
 feature fixture verifies that a nonconstant feature can transfer even when
 the sender outputs the same constant for every probe.
 
+## Language encoders
+
+A [second experiment on pretrained DistilBERT and RoBERTa](language/README.md) transfers an additional anger response with a 13 parameter adapter. All controls use the same 218 byte Air frame.
+
 ## Reproduce
 
 Use sibling checkouts, Node 20.9 or newer, npm, and a C11 compiler. The compiler

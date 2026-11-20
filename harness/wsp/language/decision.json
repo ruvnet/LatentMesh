@@ -1,0 +1,110 @@
+{
+  "schema": "latentmesh.language-decision/1",
+  "predictionsSha256": "5a3800707d13f4eff457550945d12a8bc0dcff7f84503e11f96edb752eadf797",
+  "freezeSha256": "8acf69a7fff5c7012448a4358c53612bf32666851642b7fc50a48af313336f60",
+  "candidatesSha256": "3f7cbbd018c6a6839118659ad15382bf02d6e3b7078d9f355c0ca830240d0f2f",
+  "rows": {
+    "primary": 262,
+    "retention": 184
+  },
+  "metrics": {
+    "intact": {
+      "newCorrect": 131,
+      "retainedCorrect": 158,
+      "newAccuracyPct": 50.0,
+      "retainedAccuracyPct": 85.8696,
+      "angerCorrect": 0,
+      "otherNegativeCorrect": 131
+    },
+    "hybrid": {
+      "newCorrect": 178,
+      "retainedCorrect": 147,
+      "newAccuracyPct": 67.9389,
+      "retainedAccuracyPct": 79.8913,
+      "angerCorrect": 89,
+      "otherNegativeCorrect": 89
+    },
+    "hard48": {
+      "newCorrect": 174,
+      "retainedCorrect": 152,
+      "newAccuracyPct": 66.4122,
+      "retainedAccuracyPct": 82.6087,
+      "angerCorrect": 85,
+      "otherNegativeCorrect": 89
+    },
+    "hard64": {
+      "newCorrect": 179,
+      "retainedCorrect": 152,
+      "newAccuracyPct": 68.3206,
+      "retainedAccuracyPct": 82.6087,
+      "angerCorrect": 80,
+      "otherNegativeCorrect": 99
+    },
+    "decimal52": {
+      "newCorrect": 180,
+      "retainedCorrect": 146,
+      "newAccuracyPct": 68.7023,
+      "retainedAccuracyPct": 79.3478,
+      "angerCorrect": 87,
+      "otherNegativeCorrect": 93
+    },
+    "text4": {
+      "newCorrect": 182,
+      "retainedCorrect": 147,
+      "newAccuracyPct": 69.4656,
+      "retainedAccuracyPct": 79.8913,
+      "angerCorrect": 87,
+      "otherNegativeCorrect": 95
+    },
+    "phrase": {
+      "newCorrect": 143,
+      "retainedCorrect": 49,
+      "newAccuracyPct": 54.5802,
+      "retainedAccuracyPct": 26.6304,
+      "angerCorrect": 129,
+      "otherNegativeCorrect": 14
+    },
+    "native": {
+      "newCorrect": 132,
+      "retainedCorrect": 18,
+      "newAccuracyPct": 50.3817,
+      "retainedAccuracyPct": 9.7826,
+      "angerCorrect": 130,
+      "otherNegativeCorrect": 2
+    },
+    "shuffled": {
+      "newCorrect": 132,
+      "retainedCorrect": 69,
+      "newAccuracyPct": 50.3817,
+      "retainedAccuracyPct": 37.5,
+      "angerCorrect": 99,
+      "otherNegativeCorrect": 33
+    }
+  },
+  "source": {
+    "directionAUROC": 0.7703513781248179,
+    "nativeNegativeAUROC": 0.48231455043412386,
+    "directionCorrect": 185,
+    "nativeNegativeCorrect": 127
+  },
+  "decision": {
+    "strongestCompactControls": [
+      "text4"
+    ],
+    "advantagePp": -1.5267,
+    "paired95PpByBestControl": {
+      "text4": [
+        -4.1985,
+        1.145
+      ]
+    },
+    "retainedChangePp": -5.9783,
+    "paired95RetentionPp": [
+      -9.7826,
+      -2.7174
+    ],
+    "advantagePass": false,
+    "retentionPass": false,
+    "advance": false
+  }
+}
