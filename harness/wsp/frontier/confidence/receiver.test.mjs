@@ -37,3 +37,38 @@ test('published WSP fingerprints cover every operating point and exact coefficie
     }
   }
 });
+
+test('all emotion programs match the committed WSP fingerprints', async () => {
+  const { readFileSync } = await import('node:fs');
+  const { modelHash } = await import('./linear-fit.mjs');
+  const lock = JSON.parse(readFileSync(new URL('./precision/lock.json', import.meta.url)));
+  for (const [arm, policy] of Object.entries(lock.policies)) {
+    for (const point of Object.values(policy)) {
+      assert.equal(await modelHash(point.coefficients), point.modelSha256);
+      if (arm === 'scoreOnly') assert.equal(point.coefficients[1], 0);
+    }
+  }
+});
+
+test('both CPUs used the same held out rows, labels, dialogues and frozen programs', async () => {
+  const { readFileSync } = await import('node:fs');
+  const { inflateSync } = await import('node:zlib');
+  function archive(host) {
+    const file = new URL('./precision/' + host + '/observations.archive.json', import.meta.url);
+    const data = JSON.parse(readFileSync(file));
+    return JSON.parse(inflateSync(Buffer.from(data.data, 'base64')));
+  }
+  const first = archive('reference'), second = archive('ruos');
+  for (const key of ['ids', 'truth', 'sentiment', 'groups', 'lockSha256']) {
+    assert.deepEqual(first[key], second[key], key);
+  }
+  const read = host => JSON.parse(readFileSync(new URL('./' + host + '/graphs.json', import.meta.url)));
+  const selected = graphs => graphs.find(g => g.parity.arm === 'float13' && g.parity.regime === 'transfer' && g.parity.mode === 'separate');
+  const [reference, remote] = [read('reference'), read('ruos')].map(selected);
+  assert.equal(reference.install.modelSha256, remote.install.modelSha256);
+  for (const graph of [reference, remote]) {
+    assert.equal(graph.parity.modelSha256, graph.install.modelSha256);
+    assert.equal(graph.parity.rows, 96);
+    for (const field of ['maxNativeLogitDrift', 'tagDisagreements', 'routeDisagreements']) assert.equal(graph.parity[field], 0);
+  }
+});

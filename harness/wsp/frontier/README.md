@@ -2,6 +2,8 @@
 
 A DistilBERT sender compressed its anger signal on 416 shared texts into 48 quantized readout parameters. A provisioned RoBERTa receiver installed the readout through ruv-FANN without gradient descent. Seven transmitted methods each used one signed 218 byte C Air loopback frame. A 13 float readout was the most accurate compact method on both fresh binary tests, on both CPUs. The registered advancement decision is **hold**.
 
+The [receiver calibration study](confidence/README.md) tests the 13 float and 48 coefficient programs on complete MELD dialogue populations, including every nonanger emotion. It provides independent CPU evidence and an installable additional ONNX output.
+
 ## Held out transfer
 
 Anger accuracy is balanced accuracy on 512 cases per domain. Sentiment loss is the percentage of original test cases on which the intact receiver was correct and the new output displaced its answer. GoEmotions used a separate set of 700 joy and sadness examples for retention. TweetEval used 900 independently selected negative, neutral and positive sentiment examples.

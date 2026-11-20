@@ -19,16 +19,21 @@ def validate(cache, out, path, regime, mode, arm):
     tokenizer = Tokenizer.from_file(str(ensure(cache, "target-tokenizer.json")))
     tokenizer.no_padding()
     tokenizer.enable_truncation(max_length=96)
-    sample = json.loads((out / "parity-input.json").read_bytes())
     raw_sets = json.loads((out / "test.json").read_bytes())
-    col = raw_sets["arms"].index(arm)
-    sources = [v for subset in raw_sets["sets"].values() for v in subset["scores"][:32]]
-    if len(sources) != len(sample):
-        raise ValueError("parity sample and held out features differ")
-    for row, scores in zip(sample, sources, strict=True):
-        if row["score"] != scores[0]:
-            raise ValueError("parity samples are reordered")
-        row["score"] = scores[col]
+    col = raw_sets["arms"].index("float13" if arm == "scoreOnly" else arm)
+    if regime == "all":
+        sample = json.loads((out / "sample.json").read_bytes())
+        for row in sample:
+            row["score"] = row["scores"][col]
+    else:
+        sample = json.loads((out / "parity-input.json").read_bytes())
+        sources = [v for subset in raw_sets["sets"].values() for v in subset["scores"][:32]]
+        if len(sources) != len(sample):
+            raise ValueError("parity sample and held out features differ")
+        for row, scores in zip(sample, sources, strict=True):
+            if row["score"] != scores[0]:
+                raise ValueError("parity samples are reordered")
+            row["score"] = scores[col]
     w = coefficients(regime, mode, arm)
     checkpoint = hashlib.sha256(path.read_bytes()).hexdigest()
     base_times, patch_times = [], []
@@ -69,8 +74,8 @@ if __name__ == "__main__":
     cli = argparse.ArgumentParser(description=__doc__)
     for arg in ("cache", "run", "model"):
         cli.add_argument(arg, type=Path)
-    cli.add_argument("regime", choices=("transfer", "adapted"))
-    cli.add_argument("mode", choices=("protected", "tag", "separate"))
-    cli.add_argument("--arm", choices=("wsp48", "float13"), default="wsp48")
+    cli.add_argument("regime", choices=("transfer", "adapted", "all"))
+    cli.add_argument("mode", choices=("protected", "tag", "separate", "f05", "majority"))
+    cli.add_argument("--arm", choices=("wsp48", "float13", "scoreOnly"), default="wsp48")
     args = cli.parse_args()
     print(json.dumps(validate(args.cache, args.run, args.model, args.regime, args.mode, args.arm)))

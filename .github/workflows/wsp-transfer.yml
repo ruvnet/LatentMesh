@@ -58,3 +58,6 @@ jobs:
           python scorecard.py verify reference lock.json
           python scorecard.py verify ruos lock.json
           python confirm.py verify reference
+          python confirm.py verify ruos
+          python precision/assess.py verify precision/reference precision/lock.json
+          python precision/assess.py verify precision/ruos precision/lock.json
