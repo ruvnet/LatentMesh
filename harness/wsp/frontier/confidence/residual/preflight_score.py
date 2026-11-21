@@ -28,6 +28,7 @@ def analyze(evidence):
     y, groups = decode(evidence["truth"]), decode(evidence["groups"])
     n = len(y)
     if (evidence["schema"] != "latentmesh.full-sender-screen/1" or
+            evidence["sourceSha256"] != "9f96b2966d2d83c4a2fe53bcd349c7bccd65f82ecf42d92570be38b17e6c73ea" or
             evidence["idsSha256"] != "f85ad492c9f3f9bbabc2ecffa66a1a3d0fef565421afd4e09efd20cc9f5ce11c" or
             n != 5617 or len(groups) != n or y.sum() != 53 or y.max() != 1 or
             not np.array_equal(np.unique(groups),np.arange(884))):

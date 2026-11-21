@@ -88,3 +88,4 @@ jobs:
           node wire.mjs verify .
           python test_results.py
           python score_results.py compare reference ruos
+          python preflight_score.py reference
