@@ -97,16 +97,17 @@ class Specialist:
         self.tok.no_padding()
         self.tok.enable_truncation(max_length=96)
 
+    def logits(self, text):
+        tokens = ["@user" if t.startswith("@") and len(t) > 1 else "http" if t.startswith("http") else t for t in text.split(" ")]
+        item = self.tok.encode(" ".join(tokens))
+        inputs = {"input_ids": np.array([item.ids], dtype="int64"),
+                  "attention_mask": np.array([item.attention_mask], dtype="int64")}
+        if any(i.name == "token_type_ids" for i in self.graph.get_inputs()):
+            inputs["token_type_ids"] = np.zeros_like(inputs["input_ids"])
+        return self.graph.run(["logits"], inputs)[0][0]
+
     def labels(self, rows):
-        result = []
-        for _, text, _ in rows:
-            tokens = ["@user" if t.startswith("@") and len(t) > 1 else "http" if t.startswith("http") else t for t in text.split(" ")]
-            item = self.tok.encode(" ".join(tokens))
-            inputs = {"input_ids": np.array([item.ids], dtype="int64"), "attention_mask": np.array([item.attention_mask], dtype="int64")}
-            if any(i.name == "token_type_ids" for i in self.graph.get_inputs()):
-                inputs["token_type_ids"] = np.zeros_like(inputs["input_ids"])
-            result.append(int(np.argmax(self.graph.run(["logits"], inputs)[0])))
-        return np.asarray(result)
+        return np.asarray([int(np.argmax(self.logits(text))) for _, text, _ in rows])
 
 
 def split_digest(rows):
