@@ -43,7 +43,11 @@ def parameters(arm):
 
 
 def install(base_path, destination, arm):
-    projection, offset, w, bias, prev_w, cross_w, points = parameters(arm)
+    return install_program(base_path, destination, arm, parameters(arm), LOCK_SHA)
+
+
+def install_program(base_path, destination, arm, params, lock_sha):
+    projection, offset, w, bias, prev_w, cross_w, points = params
     raw = base_path.read_bytes()
     if digest(raw) != BASE_SHA:
         raise ValueError("unexpected native checkpoint")
@@ -73,14 +77,23 @@ def install(base_path, destination, arm):
     constant("ctx_current_w", w[:, None])
     constant("ctx_bias", bias)
     constant("ctx_prev_w", prev_w[:, None])
-    constant("ctx_cross_w", cross_w[:, None])
+    dense_interaction = cross_w.shape == (8, 8)
+    if dense_interaction:
+        constant("ctx_cross_matrix", cross_w.T)
+    elif cross_w.shape != (8,):
+        raise ValueError("expected eight diagonal weights or an eight by eight interaction")
+    constant("ctx_cross_w", (np.ones(8) if dense_interaction else cross_w)[:, None])
     op("ctx_h", "Cast", [hidden], to=TensorProto.DOUBLE)
     op("ctx_projection", "MatMul", ["ctx_h", "ctx_project"])
     op("ctx_next", "Add", ["ctx_projection", "ctx_offset"])
     op("ctx_current_dot", "MatMul", ["ctx_h", "ctx_current_w"])
     op("ctx_current", "Add", ["ctx_current_dot", "ctx_bias"])
     op("ctx_prior", "MatMul", ["ctx_previous", "ctx_prev_w"])
-    op("ctx_product", "Mul", ["ctx_previous", "ctx_next"])
+    product_input = "ctx_previous"
+    if dense_interaction:
+        op("ctx_rotated", "MatMul", ["ctx_previous", "ctx_cross_matrix"])
+        product_input = "ctx_rotated"
+    op("ctx_product", "Mul", [product_input, "ctx_next"])
     op("ctx_interaction", "MatMul", ["ctx_product", "ctx_cross_w"])
     op("ctx_sum", "Add", ["ctx_current", "ctx_prior"])
     op("ctx_score", "Add", ["ctx_sum", "ctx_interaction"])
@@ -104,7 +117,7 @@ def install(base_path, destination, arm):
         handle.write(result)
         handle.flush()
         os.link(handle.name, destination)
-    return {"arm":arm, "lockSha256":LOCK_SHA, "baseSha256":BASE_SHA, "modelSha256":digest(result),
+    return {"arm":arm, "lockSha256":lock_sha, "baseSha256":BASE_SHA, "modelSha256":digest(result),
             "addedBytes":len(result)-len(raw), "stateBytes":8*8, "addedNodes":len(graph.node)-counts["node"],
             "originalNodes":counts["node"], "originalTensors":counts["initializer"]}
 
