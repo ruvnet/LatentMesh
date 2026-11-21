@@ -80,3 +80,11 @@ jobs:
           python score.py verify reference
           python score.py verify ruos
           python score.py compare reference ruos
+      - name: Verify residual programs, shuffled packets and paired Test1 decisions
+        working-directory: LatentMesh/harness/wsp/frontier/confidence/residual
+        env:
+          OPENBLAS_NUM_THREADS: '1'
+        run: |
+          node wire.mjs verify .
+          python test_results.py
+          python score_results.py compare reference ruos

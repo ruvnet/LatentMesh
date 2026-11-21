@@ -2,6 +2,8 @@
 
 The contextual transfer passed the registered precision and recall targets on previously unseen EmoContext final messages. The paired test for a sender advantage missed its criterion. It caught 62 of 239 angry messages and raised 22 false alarms on the reference CPU. The equally sized local model caught 64 with 24 false alarms. Each receiver used one cached eight dimensional state from the preceding turn. The original sentiment output was preserved on every official input on each CPU.
 
+The [residual sender experiment](../residual/README.md) tests a different 218 byte program with matched local supervision, shuffled sender probes and the separate official Test1 conversations.
+
 ## Prospective evaluation
 
 The final EmoContext split contains 5,509 conversations and 298 angry final messages. The ordered gold labels in the raw participant TSV agreed with the independent SemEvalWorkshop conversion for all 5,509 records. The primary test removed 490 final utterances present in prior sources and 644 further repeats or empty targets, retaining 4,375 conversations with 239 angry final messages (5.46%). This screens exact normalized test targets. It cannot identify overlap in backbone pretraining or determine whether multiple conversations share a user. The task label is the emotion of the last message. No EmoContext labels were used for fitting or selecting cutoffs. [Registration](https://github.com/ruvnet/LatentMesh/commit/2cb83f1f2e6e92ca6a42b3e3525a7f9e413f775b) · [Weights and cutoffs published before inference](https://github.com/ruvnet/LatentMesh/commit/4e17176b7245f7b5566c0914a665208cdfb75bb1) · [Original task](https://aclanthology.org/S19-2005/).

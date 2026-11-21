@@ -1,0 +1,1 @@
+{"sample":128,"warmup":8,"threads":2,"unit":"ms","scope":"pretokenized final turn and ready previous state, rotated order","latency":{"native":{"p50":8.3806,"p95":16.4644},"transfer":{"p50":8.3182,"p95":12.0003},"local":{"p50":8.7474,"p95":13.7946}}}
