@@ -1,0 +1,1 @@
+{"rows":4096,"sourceSeconds":92.6643,"targetSeconds":144.8139,"sourceEval":"one current turn, FP32, batches of 16, four CPU threads","targetEval":"previous and current turn separately, INT8, two CPU threads","includesCheckpointLoad":false}

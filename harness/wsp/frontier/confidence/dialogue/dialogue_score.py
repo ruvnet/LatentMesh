@@ -84,6 +84,8 @@ def compare(left,right):
     b,y=report(right,True)
     if (x["truth"],x["idsSha256"])!=(y["truth"],y["idsSha256"]):
         raise ValueError("hosts used different cases")
+    if a["passesFullSender"] != b["passesFullSender"]:
+        raise ValueError("hosts disagree on whether to test a packet")
     print(json.dumps({"passed":[a["passesFullSender"],b["passesFullSender"]],
                       "tagDifferences":{k:sum(p!=q for p,q in zip(x["predictions"][k],y["predictions"][k],strict=True))
                                         for k in x["predictions"]}}))

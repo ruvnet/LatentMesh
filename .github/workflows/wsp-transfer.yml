@@ -89,3 +89,10 @@ jobs:
           python test_results.py
           python score_results.py compare reference ruos
           python preflight_score.py reference
+      - name: Replay the unrestricted dialogue sender on both CPUs
+        working-directory: LatentMesh/harness/wsp/frontier/confidence/dialogue
+        env:
+          OPENBLAS_NUM_THREADS: '1'
+        run: |
+          python test_dialogue.py
+          python dialogue_score.py compare reference ruos
