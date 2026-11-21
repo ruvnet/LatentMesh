@@ -1,0 +1,98 @@
+name: WSP readout transfer
+on:
+  pull_request:
+    paths: ['harness/wsp/**', 'c/**', '.github/workflows/wsp-transfer.yml']
+  push:
+    branches: [main]
+    paths: ['harness/wsp/**', 'c/**', '.github/workflows/wsp-transfer.yml']
+permissions:
+  contents: read
+jobs:
+  transfer:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          path: LatentMesh
+          persist-credentials: false
+      - uses: actions/checkout@v4
+        with:
+          repository: ruvnet/ruv-FANN
+          ref: 1abb28d3d23f00c04810f59ff7b3797b57bdc24c
+          path: ruv-FANN
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: npm install --ignore-scripts --no-package-lock --no-audit --no-fund --workspaces=false
+        working-directory: ruv-FANN/packages/wsp
+      - run: node --test harness/wsp/transfer.test.mjs harness/wsp/language/wire.test.mjs harness/wsp/frontier/packet.test.mjs harness/wsp/frontier/confidence/receiver.test.mjs
+        working-directory: LatentMesh
+      - name: Reproduce the controlled repair experiment
+        working-directory: LatentMesh
+        run: |
+          node harness/wsp/benchmark.mjs > "$RUNNER_TEMP/readout-receipt.json"
+          cmp harness/wsp/receipt.json "$RUNNER_TEMP/readout-receipt.json"
+          node harness/wsp/summarize.mjs "$RUNNER_TEMP/readout-receipt.json"
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Replay the language transfer decision from paired predictions
+        working-directory: LatentMesh
+        run: |
+          python -m pip install --only-binary=:all: numpy==2.3.5
+          python harness/wsp/language/check.py harness/wsp/language harness/wsp/language --exact
+          python harness/wsp/language/check.py harness/wsp/language harness/wsp/language/ruos
+      - name: Replay both registered single frame transfer scorecards
+        working-directory: LatentMesh
+        run: |
+          python -m pip install --only-binary=:all: scipy==1.17.0 onnx==1.19.1
+          python harness/wsp/frontier/test_artifact.py
+          python harness/wsp/frontier/evidence.py verify harness/wsp/frontier
+          python harness/wsp/frontier/target/summarize.py verify harness/wsp/frontier/target
+      - name: Verify paired receiver comparisons and untouched dialogue confirmation
+        working-directory: LatentMesh/harness/wsp/frontier/confidence
+        env:
+          OPENBLAS_NUM_THREADS: '1'
+        run: |
+          python scorecard.py verify reference lock.json
+          python scorecard.py verify ruos lock.json
+          python confirm.py verify reference
+          python confirm.py verify ruos
+          python precision/assess.py verify precision/reference precision/lock.json
+          python precision/assess.py verify precision/ruos precision/lock.json
+      - name: Replay the independent DailyDialog test and compare both compiled receivers
+        working-directory: LatentMesh/harness/wsp/frontier/confidence/dailydialog
+        env:
+          OPENBLAS_NUM_THREADS: '1'
+        run: |
+          python test_report.py
+          python report.py verify reference
+          python report.py verify ruos
+          python report.py compare reference ruos
+          python ranking.py verify reference
+      - name: Replay the contextual WSP experiment on independent conversations
+        working-directory: LatentMesh/harness/wsp/frontier/confidence/context
+        env:
+          OPENBLAS_NUM_THREADS: '1'
+        run: |
+          python test_score.py
+          python score.py verify reference
+          python score.py verify ruos
+          python score.py compare reference ruos
+      - name: Verify residual programs, shuffled packets and paired Test1 decisions
+        working-directory: LatentMesh/harness/wsp/frontier/confidence/residual
+        env:
+          OPENBLAS_NUM_THREADS: '1'
+        run: |
+          node wire.mjs verify .
+          python test_results.py
+          python score_results.py compare reference ruos
+          python preflight_score.py reference
+      - name: Replay the unrestricted dialogue sender on both CPUs
+        working-directory: LatentMesh/harness/wsp/frontier/confidence/dialogue
+        env:
+          OPENBLAS_NUM_THREADS: '1'
+        run: |
+          python test_dialogue.py
+          python dialogue_score.py compare reference ruos

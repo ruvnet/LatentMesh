@@ -1,0 +1,1 @@
+{"featuresSha256":"16cc80846bf73b24e7798a7bd97e706d48836926b0fb9f81eadf5e1b888c6e25","fit":768,"validation":5617,"results":{"receiverFeatures":{"columnsWithBias":65,"rank":65,"rSquared":0.9860186,"rmseInSenderUnits":0.0351429},"receiverFeaturesAndLocalScore":{"columnsWithBias":66,"rank":66,"rSquared":0.9876322,"rmseInSenderUnits":0.0330528}}}

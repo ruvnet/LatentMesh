@@ -1,0 +1,17 @@
+{
+  "scriptSha256": "86c824e466ffba0cd407655fbbda759c6a9c09e541be4bfaaf547df8255d2793",
+  "officialTestLabelsSha256": "245072348c711961785be6d395997f97cf7fcda3effeae7805664171dc75f913",
+  "macroF1": {
+    "wsp48": 80.31563,
+    "softKD": 80.31563,
+    "float13": 80.25883,
+    "hard416": 80.20942,
+    "binary4": 80.15528,
+    "text4": 80.15528,
+    "observed8": 80.15528,
+    "local": 80.14979,
+    "oracle": 80.31563,
+    "intact": 80.15528
+  },
+  "rows": 1421
+}

@@ -1,0 +1,237 @@
+[
+  {
+    "install": {
+      "arm": "float13",
+      "regime": "adapted",
+      "mode": "separate",
+      "graph": {
+        "preserved": {
+          "node": 1557,
+          "initializer": 359,
+          "input": 2,
+          "output": 3
+        },
+        "prefixSha256": {
+          "node": "db6c5d9615a5f8458ee98cf3ade34a3b7f71e8a774d8453a6d72cfcd53259a56",
+          "initializer": "8aec1cc3bb915f8e9271716b658a7f6c9e231c3054e015bb5d28b5cce5b072e0",
+          "input": "fa1c0a9ec35c6daec98d5347f1744769afca97db5ef85b26dd355e20b183673e",
+          "output": "685eeddb3f8cdf8fa5c04728d9989cd78e8d50eeb355d116a33df83293d5b4a4"
+        },
+        "newNodes": 10,
+        "learnedScalars": 3
+      },
+      "originalNativeGraph": {
+        "originalNodes": 1551,
+        "originalInitializers": 355,
+        "originalInputs": [
+          "input_ids",
+          "attention_mask"
+        ],
+        "originalOutputs": [
+          "logits"
+        ],
+        "appendedPureNodes": 6,
+        "appendedInitializers": 4,
+        "nativeComputationIdentical": true
+      },
+      "calibrationLock": "68e02cc51c5c4f1073ab582d240bcdde6f94887402adcc0526252c17cd15aacb",
+      "modelSha256": "1dce20692cfe615a83a49bafc1293e92eb546a22c0be4555b35f2c87d499d9f6",
+      "bytesBeyondPreviousAdapter": 7137
+    },
+    "parity": {
+      "arm": "float13",
+      "regime": "adapted",
+      "mode": "separate",
+      "modelSha256": "1dce20692cfe615a83a49bafc1293e92eb546a22c0be4555b35f2c87d499d9f6",
+      "rows": 96,
+      "activeTags": 22,
+      "maxNativeLogitDrift": 0.0,
+      "maxEvidenceError": 8.326672684688674e-16,
+      "tagDisagreements": 0,
+      "routeDisagreements": 0,
+      "cpuMs": {
+        "baseP50": 12.907795499999999,
+        "patchP50": 13.3539755,
+        "baseP95": 26.50419,
+        "patchP95": 26.110601499999998,
+        "medianPairedChange": 0.02444699999999944
+      }
+    }
+  },
+  {
+    "install": {
+      "arm": "float13",
+      "regime": "transfer",
+      "mode": "separate",
+      "graph": {
+        "preserved": {
+          "node": 1557,
+          "initializer": 359,
+          "input": 2,
+          "output": 3
+        },
+        "prefixSha256": {
+          "node": "db6c5d9615a5f8458ee98cf3ade34a3b7f71e8a774d8453a6d72cfcd53259a56",
+          "initializer": "8aec1cc3bb915f8e9271716b658a7f6c9e231c3054e015bb5d28b5cce5b072e0",
+          "input": "fa1c0a9ec35c6daec98d5347f1744769afca97db5ef85b26dd355e20b183673e",
+          "output": "685eeddb3f8cdf8fa5c04728d9989cd78e8d50eeb355d116a33df83293d5b4a4"
+        },
+        "newNodes": 10,
+        "learnedScalars": 3
+      },
+      "originalNativeGraph": {
+        "originalNodes": 1551,
+        "originalInitializers": 355,
+        "originalInputs": [
+          "input_ids",
+          "attention_mask"
+        ],
+        "originalOutputs": [
+          "logits"
+        ],
+        "appendedPureNodes": 6,
+        "appendedInitializers": 4,
+        "nativeComputationIdentical": true
+      },
+      "calibrationLock": "68e02cc51c5c4f1073ab582d240bcdde6f94887402adcc0526252c17cd15aacb",
+      "modelSha256": "d33bbf2b6e9c6aa2786250ed854c00f960001768df306f27a3c9aad2bca1727e",
+      "bytesBeyondPreviousAdapter": 7137
+    },
+    "parity": {
+      "arm": "float13",
+      "regime": "transfer",
+      "mode": "separate",
+      "modelSha256": "d33bbf2b6e9c6aa2786250ed854c00f960001768df306f27a3c9aad2bca1727e",
+      "rows": 96,
+      "activeTags": 57,
+      "maxNativeLogitDrift": 0.0,
+      "maxEvidenceError": 1.5543122344752192e-15,
+      "tagDisagreements": 0,
+      "routeDisagreements": 0,
+      "cpuMs": {
+        "baseP50": 12.5986525,
+        "patchP50": 13.711539,
+        "baseP95": 24.250234749999997,
+        "patchP95": 26.15708425,
+        "medianPairedChange": 0.39101050000000015
+      }
+    }
+  },
+  {
+    "install": {
+      "regime": "transfer",
+      "mode": "separate",
+      "graph": {
+        "preserved": {
+          "node": 1557,
+          "initializer": 359,
+          "input": 2,
+          "output": 3
+        },
+        "prefixSha256": {
+          "node": "db6c5d9615a5f8458ee98cf3ade34a3b7f71e8a774d8453a6d72cfcd53259a56",
+          "initializer": "8aec1cc3bb915f8e9271716b658a7f6c9e231c3054e015bb5d28b5cce5b072e0",
+          "input": "fa1c0a9ec35c6daec98d5347f1744769afca97db5ef85b26dd355e20b183673e",
+          "output": "685eeddb3f8cdf8fa5c04728d9989cd78e8d50eeb355d116a33df83293d5b4a4"
+        },
+        "newNodes": 8,
+        "learnedScalars": 3
+      },
+      "originalNativeGraph": {
+        "originalNodes": 1551,
+        "originalInitializers": 355,
+        "originalInputs": [
+          "input_ids",
+          "attention_mask"
+        ],
+        "originalOutputs": [
+          "logits"
+        ],
+        "appendedPureNodes": 6,
+        "appendedInitializers": 4,
+        "nativeComputationIdentical": true
+      },
+      "calibrationLock": "68e02cc51c5c4f1073ab582d240bcdde6f94887402adcc0526252c17cd15aacb",
+      "modelSha256": "7c09f98f3f000ca0e198f6638adb1e4268f85d7292a09751366d851fbee2a207",
+      "bytesBeyondPreviousAdapter": 752
+    },
+    "parity": {
+      "arm": "wsp48",
+      "regime": "transfer",
+      "mode": "separate",
+      "modelSha256": "7c09f98f3f000ca0e198f6638adb1e4268f85d7292a09751366d851fbee2a207",
+      "rows": 96,
+      "activeTags": 62,
+      "maxNativeLogitDrift": 0.0,
+      "maxEvidenceError": 1.9984014443252818e-15,
+      "tagDisagreements": 0,
+      "routeDisagreements": 0,
+      "cpuMs": {
+        "baseP50": 10.991192999999999,
+        "patchP50": 10.9755995,
+        "baseP95": 23.110505250000003,
+        "patchP95": 20.6878725,
+        "medianPairedChange": -0.18118800000000013
+      }
+    }
+  },
+  {
+    "install": {
+      "arm": "wsp48",
+      "regime": "transfer",
+      "mode": "protected",
+      "graph": {
+        "preserved": {
+          "node": 1557,
+          "initializer": 359,
+          "input": 2,
+          "output": 3
+        },
+        "prefixSha256": {
+          "node": "db6c5d9615a5f8458ee98cf3ade34a3b7f71e8a774d8453a6d72cfcd53259a56",
+          "initializer": "8aec1cc3bb915f8e9271716b658a7f6c9e231c3054e015bb5d28b5cce5b072e0",
+          "input": "fa1c0a9ec35c6daec98d5347f1744769afca97db5ef85b26dd355e20b183673e",
+          "output": "685eeddb3f8cdf8fa5c04728d9989cd78e8d50eeb355d116a33df83293d5b4a4"
+        },
+        "newNodes": 8,
+        "learnedScalars": 3
+      },
+      "originalNativeGraph": {
+        "originalNodes": 1551,
+        "originalInitializers": 355,
+        "originalInputs": [
+          "input_ids",
+          "attention_mask"
+        ],
+        "originalOutputs": [
+          "logits"
+        ],
+        "appendedPureNodes": 6,
+        "appendedInitializers": 4,
+        "nativeComputationIdentical": true
+      },
+      "calibrationLock": "68e02cc51c5c4f1073ab582d240bcdde6f94887402adcc0526252c17cd15aacb",
+      "modelSha256": "fed833773b29bfd066be9c876c37c55e7cada1eaac2b062d8ebd7b364bac5531",
+      "bytesBeyondPreviousAdapter": 752
+    },
+    "parity": {
+      "arm": "wsp48",
+      "regime": "transfer",
+      "mode": "protected",
+      "modelSha256": "fed833773b29bfd066be9c876c37c55e7cada1eaac2b062d8ebd7b364bac5531",
+      "rows": 96,
+      "activeTags": 0,
+      "maxNativeLogitDrift": 0.0,
+      "maxEvidenceError": 0.0,
+      "tagDisagreements": 0,
+      "routeDisagreements": 0,
+      "cpuMs": {
+        "baseP50": 11.53623,
+        "patchP50": 14.1441225,
+        "baseP95": 26.0023535,
+        "patchP95": 26.846542499999998,
+        "medianPairedChange": 2.025216
+      }
+    }
+  }
+]

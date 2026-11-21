@@ -1,0 +1,179 @@
+[
+  {
+    "install": {
+      "arm": "float13",
+      "regime": "all",
+      "mode": "f05",
+      "graph": {
+        "preserved": {
+          "node": 1557,
+          "initializer": 359,
+          "input": 2,
+          "output": 3
+        },
+        "prefixSha256": {
+          "node": "db6c5d9615a5f8458ee98cf3ade34a3b7f71e8a774d8453a6d72cfcd53259a56",
+          "initializer": "8aec1cc3bb915f8e9271716b658a7f6c9e231c3054e015bb5d28b5cce5b072e0",
+          "input": "fa1c0a9ec35c6daec98d5347f1744769afca97db5ef85b26dd355e20b183673e",
+          "output": "685eeddb3f8cdf8fa5c04728d9989cd78e8d50eeb355d116a33df83293d5b4a4"
+        },
+        "newNodes": 10,
+        "learnedScalars": 3
+      },
+      "originalNativeGraph": {
+        "originalNodes": 1551,
+        "originalInitializers": 355,
+        "originalInputs": [
+          "input_ids",
+          "attention_mask"
+        ],
+        "originalOutputs": [
+          "logits"
+        ],
+        "appendedPureNodes": 6,
+        "appendedInitializers": 4,
+        "nativeComputationIdentical": true
+      },
+      "calibrationLock": "6765e09c6436e16457436b88d7611a8b1982eda4c61f610221ed9a7af2e8856d",
+      "modelSha256": "46453fa88662ed9103db1d50e5a5e7f0814256d1796d2e74831133e485915ef5",
+      "bytesBeyondPreviousAdapter": 7137
+    },
+    "parity": {
+      "arm": "float13",
+      "regime": "all",
+      "mode": "f05",
+      "modelSha256": "46453fa88662ed9103db1d50e5a5e7f0814256d1796d2e74831133e485915ef5",
+      "rows": 64,
+      "activeTags": 1,
+      "maxNativeLogitDrift": 0.0,
+      "maxEvidenceError": 5.551115123125783e-16,
+      "tagDisagreements": 0,
+      "routeDisagreements": 0,
+      "cpuMs": {
+        "baseP50": 10.680004499999999,
+        "patchP50": 10.794177,
+        "baseP95": 21.5025825,
+        "patchP95": 20.623138999999995,
+        "medianPairedChange": 0.13300000000000045
+      }
+    }
+  },
+  {
+    "install": {
+      "arm": "scoreOnly",
+      "regime": "all",
+      "mode": "f05",
+      "graph": {
+        "preserved": {
+          "node": 1557,
+          "initializer": 359,
+          "input": 2,
+          "output": 3
+        },
+        "prefixSha256": {
+          "node": "db6c5d9615a5f8458ee98cf3ade34a3b7f71e8a774d8453a6d72cfcd53259a56",
+          "initializer": "8aec1cc3bb915f8e9271716b658a7f6c9e231c3054e015bb5d28b5cce5b072e0",
+          "input": "fa1c0a9ec35c6daec98d5347f1744769afca97db5ef85b26dd355e20b183673e",
+          "output": "685eeddb3f8cdf8fa5c04728d9989cd78e8d50eeb355d116a33df83293d5b4a4"
+        },
+        "newNodes": 6,
+        "learnedScalars": 2
+      },
+      "originalNativeGraph": {
+        "originalNodes": 1551,
+        "originalInitializers": 355,
+        "originalInputs": [
+          "input_ids",
+          "attention_mask"
+        ],
+        "originalOutputs": [
+          "logits"
+        ],
+        "appendedPureNodes": 6,
+        "appendedInitializers": 4,
+        "nativeComputationIdentical": true
+      },
+      "calibrationLock": "6765e09c6436e16457436b88d7611a8b1982eda4c61f610221ed9a7af2e8856d",
+      "modelSha256": "e3d8c7b05aab5578e0e42fba5a1835678e2deff78fd998347097e6a277f7c815",
+      "bytesBeyondPreviousAdapter": 6800
+    },
+    "parity": {
+      "arm": "scoreOnly",
+      "regime": "all",
+      "mode": "f05",
+      "modelSha256": "e3d8c7b05aab5578e0e42fba5a1835678e2deff78fd998347097e6a277f7c815",
+      "rows": 64,
+      "activeTags": 2,
+      "maxNativeLogitDrift": 0.0,
+      "maxEvidenceError": 5.551115123125783e-16,
+      "tagDisagreements": 0,
+      "routeDisagreements": 0,
+      "cpuMs": {
+        "baseP50": 10.8509585,
+        "patchP50": 10.256293,
+        "baseP95": 19.138750049999995,
+        "patchP95": 17.844349749999992,
+        "medianPairedChange": -0.35615850000000027
+      }
+    }
+  },
+  {
+    "install": {
+      "arm": "float13",
+      "regime": "all",
+      "mode": "majority",
+      "graph": {
+        "preserved": {
+          "node": 1557,
+          "initializer": 359,
+          "input": 2,
+          "output": 3
+        },
+        "prefixSha256": {
+          "node": "db6c5d9615a5f8458ee98cf3ade34a3b7f71e8a774d8453a6d72cfcd53259a56",
+          "initializer": "8aec1cc3bb915f8e9271716b658a7f6c9e231c3054e015bb5d28b5cce5b072e0",
+          "input": "fa1c0a9ec35c6daec98d5347f1744769afca97db5ef85b26dd355e20b183673e",
+          "output": "685eeddb3f8cdf8fa5c04728d9989cd78e8d50eeb355d116a33df83293d5b4a4"
+        },
+        "newNodes": 10,
+        "learnedScalars": 3
+      },
+      "originalNativeGraph": {
+        "originalNodes": 1551,
+        "originalInitializers": 355,
+        "originalInputs": [
+          "input_ids",
+          "attention_mask"
+        ],
+        "originalOutputs": [
+          "logits"
+        ],
+        "appendedPureNodes": 6,
+        "appendedInitializers": 4,
+        "nativeComputationIdentical": true
+      },
+      "calibrationLock": "6765e09c6436e16457436b88d7611a8b1982eda4c61f610221ed9a7af2e8856d",
+      "modelSha256": "7360a6a7f02b97867d1ee11cf06aea2e0f31de8354efbb49b5eb1e4811d61fdf",
+      "bytesBeyondPreviousAdapter": 7137
+    },
+    "parity": {
+      "arm": "float13",
+      "regime": "all",
+      "mode": "majority",
+      "modelSha256": "7360a6a7f02b97867d1ee11cf06aea2e0f31de8354efbb49b5eb1e4811d61fdf",
+      "rows": 64,
+      "activeTags": 1,
+      "maxNativeLogitDrift": 0.0,
+      "maxEvidenceError": 5.551115123125783e-16,
+      "tagDisagreements": 0,
+      "routeDisagreements": 0,
+      "cpuMs": {
+        "baseP50": 11.018791,
+        "patchP50": 11.7720835,
+        "baseP95": 19.005996649999993,
+        "patchP95": 20.287044699999996,
+        "medianPairedChange": -0.004077000000000108
+      }
+    }
+  }
+]

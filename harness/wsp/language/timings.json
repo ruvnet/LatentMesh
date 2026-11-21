@@ -1,0 +1,46 @@
+{
+  "reference": {
+    "timingScope": "Host CPU; encoder includes tokenization and inference; compiler includes signature verification and WSP solve on cached features.",
+    "encoders": {
+      "source": {
+        "rowsAfterWarmup": 254,
+        "nativeDecisionsChecked": 8,
+        "msP50": 5.93472800028394,
+        "msP95": 10.823762951258685
+      },
+      "receiver": {
+        "rowsAfterWarmup": 438,
+        "nativeDecisionsChecked": 8,
+        "msP50": 10.974516499118181,
+        "msP95": 19.299981395306524
+      }
+    },
+    "hybridCompiler": {
+      "msP50": 0.6907640000000015,
+      "msP95": 1.106190999999967,
+      "samples": 32
+    }
+  },
+  "ruos": {
+    "timingScope": "Host CPU; encoder includes tokenization and inference; compiler includes signature verification and WSP solve on cached features.",
+    "encoders": {
+      "source": {
+        "rowsAfterWarmup": 254,
+        "nativeDecisionsChecked": 8,
+        "msP50": 13.120164999918416,
+        "msP95": 22.044991000029768
+      },
+      "receiver": {
+        "rowsAfterWarmup": 438,
+        "nativeDecisionsChecked": 8,
+        "msP50": 25.3077749998738,
+        "msP95": 45.16996050008401
+      }
+    },
+    "hybridCompiler": {
+      "msP50": 1.0236799999999562,
+      "msP95": 3.692639999999983,
+      "samples": 32
+    }
+  }
+}

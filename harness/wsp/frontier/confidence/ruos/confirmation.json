@@ -1,0 +1,65 @@
+{
+  "observationsSha256": "fcb292d9840f5ae8048904e1c9b505808fec269151d34d515e34a573dbfbdea9",
+  "ids": "65a63127ea40a9eae0e9e8fadb1499b677753159472b9b17a8c47a58ed496b5e",
+  "rawRows": 1109,
+  "rows": 963,
+  "dialogues": 113,
+  "anger": 142,
+  "sadness": 101,
+  "nativeCorrect": 570,
+  "metrics": {
+    "float13": {
+      "tp": 128,
+      "fn": 14,
+      "fpVsSadness": 55,
+      "tn": 46,
+      "balancedAccuracy": 67.8427,
+      "angerRecall": 90.14085,
+      "lostIfExclusive": 379,
+      "lossIfExclusivePp": 39.35618,
+      "allTagged": 656,
+      "allUtterancePrecision": 19.5122
+    },
+    "wsp48": {
+      "tp": 125,
+      "fn": 17,
+      "fpVsSadness": 71,
+      "tn": 30,
+      "balancedAccuracy": 58.86557,
+      "angerRecall": 88.02817,
+      "lostIfExclusive": 403,
+      "lossIfExclusivePp": 41.84839,
+      "allTagged": 689,
+      "allUtterancePrecision": 18.14224
+    },
+    "softKD": {
+      "tp": 120,
+      "fn": 22,
+      "fpVsSadness": 68,
+      "tn": 33,
+      "balancedAccuracy": 58.59015,
+      "angerRecall": 84.50704,
+      "lostIfExclusive": 381,
+      "lossIfExclusivePp": 39.56386,
+      "allTagged": 650,
+      "allUtterancePrecision": 18.46154
+    },
+    "local": {
+      "tp": 125,
+      "fn": 17,
+      "fpVsSadness": 72,
+      "tn": 29,
+      "balancedAccuracy": 58.37052,
+      "angerRecall": 88.02817,
+      "lostIfExclusive": 406,
+      "lossIfExclusivePp": 42.15992,
+      "allTagged": 689,
+      "allUtterancePrecision": 18.14224
+    }
+  },
+  "float13VsWsp48Pp": 8.97713,
+  "paired95Pp": [
+    2.16656,
+    14.58791
+  ]
+}
