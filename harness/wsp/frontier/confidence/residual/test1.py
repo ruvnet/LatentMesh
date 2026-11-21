@@ -3,7 +3,6 @@ import argparse
 from collections import Counter
 import csv
 import hashlib
-import subprocess
 import tempfile
 
 import onnxruntime as ort
@@ -12,6 +11,7 @@ from frozen import ARMS, GOLD_SHA, HERE, LOCK_SHA, MODES, PROGRAMS, TEST_SHA, lo
 from design import (ASSETS, Encoder, Path, apply, ensure, file_hash, history, incumbent, json_write,
                     np, pair_state, partition, score_program, unpack)
 from corpus import key
+from runtime import readout, verify_wire
 from receiver import install_program
 from stream import OUTPUTS
 from context.evaluate import TSV_SHA as TEST2_SHA, feed, flags
@@ -50,11 +50,6 @@ def examples(cache):
     return rows, {"historicalTarget":history_count, "repeatOrEmptyTarget":repeats}
 
 
-def program(method):
-    w = unpack(method["program"], 841)
-    return w[:768], w[768], w[769:777], w[777:].reshape(8,8)
-
-
 def bits(values):
     return "".join("1" if x else "0" for x in values)
 
@@ -62,7 +57,7 @@ def bits(values):
 def evaluate(cache, out):
     out.mkdir(parents=True, exist_ok=True)
     lock = locked()
-    subprocess.run(["node", str(HERE/"wire.mjs"), "verify", str(HERE)], check=True)
+    verify_wire()
     rows, exclusions = examples(cache)
     source = Encoder(cache, "source")
     teacher = unpack(lock["senderHead"], 769)
@@ -72,7 +67,7 @@ def evaluate(cache, out):
     target = Encoder(cache, "target")
     old = {a:incumbent(a) for a in ("transfer", "local")}
     matrix, offset = old["local"][:2]
-    params = {a:program(m) for a,m in lock["methods"].items()}
+    params = {a:readout(m) for a,m in lock["methods"].items()}
     opts = session_options()
     opts.log_severity_level = 3
     graphs, receipts = {}, {}
