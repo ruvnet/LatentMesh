@@ -58,13 +58,19 @@ def population(x, mask, exact):
             paired[arm+"."+mode] = {"gain":rn(points[METHODS[j]]["f05"] - points[METHODS[i]]["f05"]),
                                      "ci95":ci(boot["f05"][:,j] - boot["f05"][:,i]),
                                      "disagreements":int(np.count_nonzero(z[:,i] != z[:,j]))}
+    teacher = METHODS.index("teacher.majority")
+    teacher_pairs = {}
+    for arm in ("local", "incumbent.local"):
+        local = METHODS.index(arm+".majority")
+        teacher_pairs[arm] = {"gain":rn(points[METHODS[teacher]]["f05"] - points[METHODS[local]]["f05"]),
+                              "ci95":ci(boot["f05"][:,teacher] - boot["f05"][:,local])}
     m = points["transfer.majority"]
     def positive_lower(arm):
         c = paired[arm+".majority"]["ci95"]
         return c is not None and c[0] > 0
     gate = {"precision":m["tp"] > 0 and 2*m["tp"] >= m["tp"]+m["fp"], "recall":5*m["tp"] >= int(y.sum()),
             "beatsMatchedLocal":positive_lower("local"), "exactNativeAndReadout":exact}
-    return {"conversations":len(y), "angry":int(y.sum()), "methods":points, "paired":paired, "gate":gate,
+    return {"conversations":len(y), "angry":int(y.sum()), "methods":points, "paired":paired, "onlineTeacherDiagnostic":teacher_pairs, "gate":gate,
             "passes":all(gate.values()), "senderAttribution":positive_lower("shuffled"),
             "replacesIncumbent":all(gate.values()) and positive_lower("shuffled") and positive_lower("incumbent.local")}
 
